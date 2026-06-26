@@ -24,7 +24,10 @@ function isAllowedOrigin(origin) {
   if (allowedOrigins.has(origin)) return true;
   try {
     const url = new URL(origin);
-    return ['localhost', '127.0.0.1', '::1'].includes(url.hostname);
+    if (['localhost', '127.0.0.1', '::1'].includes(url.hostname)) return true;
+    // Allow all Vercel deployment domains
+    if (url.hostname.endsWith('.vercel.app')) return true;
+    return false;
   } catch {
     return false;
   }
