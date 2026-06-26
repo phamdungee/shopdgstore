@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dịch Vụ Tương Tác Mạng Xã Hội | DG Store</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
+  <link href="assets/css/common.css" rel="stylesheet" />
+  <link href="assets/css/icons.css" rel="stylesheet" />
+  <link href="assets/css/tuongtacmxh.css" rel="stylesheet" />
+</head>
+<body>
+  <!-- PRELOADER -->
+  <div id="preloader" data-auto-hide="false">
+    <div class="preloader-container">
+      <div class="preloader-logo">
+        <div class="preloader-bolt"><span class="dg-logo-text" style="font-size: 20px;">DG</span></div>
+        <div class="preloader-ring"></div>
+      </div>
+      <p class="preloader-text">DG Store</p>
+      <p class="preloader-subtext">Đang tải danh sách dịch vụ...</p>
+      <div class="preloader-bar">
+        <div class="preloader-progress"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sk-toast-stack" id="toast-container"></div>
+
+  <div class="sk-shell">
+    <header class="sk-topbar">
+      <div class="sk-topbar-inner">
+        <a class="sk-brand" href="index.html">
+          <span class="sk-brand-mark dg-logo-mark">
+            <span class="dg-logo-text">DG</span>
+            <span class="dg-logo-ring"></span>
+          </span>
+          <span>
+            <span class="sk-brand-title">DG Store</span>
+            <span class="sk-brand-subtitle">Tài khoản bản quyền</span>
+          </span>
+        </a>
+        <div style="flex: 1 1 auto;"></div>
+        <div class="sk-actions" id="headerAuthActions">
+          <a class="sk-icon-btn sk-cart-link" href="cart.html" aria-label="Giỏ hàng">
+            <i class="fa-solid fa-cart-shopping"></i>
+            <span class="sk-cart-count" id="headerCartCount">0</span>
+          </a>
+          <span id="authActionsContainer">
+            <a class="sk-btn sk-btn-primary" href="login.html"><i class="fa-solid fa-right-to-bracket"></i> <span class="btn-text">Login</span></a>
+          </span>
+        </div>
+      </div>
+    </header>
+
+    <aside class="sk-sidebar-new">
+      <div class="sk-sidebar-new-nav">
+        <div class="sidebar-title">TỔNG QUAN</div>
+        <a href="index.html" class="nav-item">
+          <i class="fa-solid fa-house"></i>
+          <span class="nav-label">Trang chủ</span>
+        </a>
+        <a href="index.html#product" class="nav-item">
+          <i class="fa-solid fa-layer-group"></i>
+          <span class="nav-label">Sản phẩm</span>
+        </a>
+        <a href="index.html#shopee" class="nav-item">
+          <i class="fa-solid fa-bag-shopping"></i>
+          <span class="nav-label">Shopee</span>
+        </a>
+        <a href="tuongtacmxh.html" class="nav-item active">
+          <i class="fa-solid fa-thumbs-up"></i>
+          <span class="nav-label">Tương tác MXH</span>
+        </a>
+        <a href="lichsudonmxh.html" class="nav-item nav-item-sub">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+          <span class="nav-label">Lịch sử đơn MXH</span>
+        </a>
+      </div>
+
+      <div class="sk-sidebar-new-nav">
+        <div class="sidebar-title">ĐƠN HÀNG</div>
+        <a href="index.html#orders" class="nav-item">
+          <i class="fa-solid fa-box"></i>
+          <span class="nav-label">Đơn hàng</span>
+        </a>
+        <a href="nap-tien.html" class="nav-item">
+          <i class="fa-solid fa-credit-card"></i>
+          <span class="nav-label">Nạp tiền</span>
+        </a>
+      </div>
+
+      <div class="sk-sidebar-new-nav">
+        <div class="sidebar-title">TÀI KHOẢN</div>
+        <a href="profile.html" class="nav-item">
+          <i class="fa-solid fa-user"></i>
+          <span class="nav-label">Tài khoản</span>
+        </a>
+        <a href="profile.html#policy" class="nav-item">
+          <i class="fa-solid fa-file-contract"></i>
+          <span class="nav-label">Chính sách</span>
+        </a>
+        <a href="https://zalo.me/0774391888" target="_blank" class="nav-item">
+          <i class="fa-solid fa-ticket"></i>
+          <span class="nav-label">Hỗ trợ</span>
+        </a>
+      </div>
+    </aside>
+
+    <main class="sk-layout" style="display:block">
+      <!-- Header page title -->
+      <section class="sk-page-title">
+        <div>
+          <span class="sk-badge sk-badge-accent"><i class="fa-solid fa-thumbs-up"></i> Dịch vụ tương tác</span>
+          <h1 style="margin-top:12px">Tương Tác Mạng Xã Hội</h1>
+          <p>Cổng đặt dịch vụ tăng Like, Follow, View, Comment tự động.</p>
+        </div>
+      </section>
+
+      <!-- Cửa hàng dịch vụ -->
+      <div class="sk-card filter-container" style="margin-bottom: 20px;">
+        <div class="filter-group">
+          <label>Chọn Nền Tảng</label>
+          <div class="custom-dropdown" id="platform-dropdown">
+            <button type="button" class="custom-dropdown-btn" id="platform-dropdown-btn">
+              <span class="dropdown-selected-val">
+                <span class="platform-option-icon"><i class="fa-solid fa-globe"></i></span>
+                <span class="platform-option-text">Tất cả nền tảng</span>
+              </span>
+              <span class="dropdown-chevron"><i class="fa-solid fa-chevron-down"></i></span>
+            </button>
+            <div class="custom-dropdown-menu" id="platform-dropdown-menu">
+              <div class="custom-dropdown-item active" data-value="">
+                <span class="platform-option-icon"><i class="fa-solid fa-globe"></i></span>
+                <span class="platform-option-text">Tất cả nền tảng</span>
+              </div>
+              <div class="custom-dropdown-item" data-value="fb">
+                <span class="platform-option-icon">
+                  <img src="assets/img/ảnh sản phẩm/logo-facebook-vong-tron-xanh-duong-voi-chu-f-mau-trang_1131634-495.avif" style="width:16px; height:16px; border-radius:50%; object-fit:cover;">
+                </span>
+                <span class="platform-option-text">Facebook</span>
+              </div>
+              <div class="custom-dropdown-item" data-value="tt">
+                <span class="platform-option-icon">
+                  <img src="assets/img/ảnh sản phẩm/logo-tiktok_705838-12827.avif" style="width:16px; height:16px; border-radius:50%; object-fit:cover;">
+                </span>
+                <span class="platform-option-text">TikTok</span>
+              </div>
+              <div class="custom-dropdown-item" data-value="ig">
+                <span class="platform-option-icon">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.051.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
+                </span>
+                <span class="platform-option-text">Instagram</span>
+              </div>
+              <div class="custom-dropdown-item" data-value="yt">
+                <span class="platform-option-icon">
+                  <img src="assets/img/ảnh sản phẩm/youtube-logo-youtube-icon-transparent-free-png.webp" style="width:16px; height:16px; border-radius:3px; object-fit:contain;">
+                </span>
+                <span class="platform-option-text">YouTube</span>
+              </div>
+            </div>
+            <input type="hidden" id="filter-platform" value="">
+          </div>
+        </div>
+        <div class="filter-group">
+          <label>Chọn Danh Mục</label>
+          <div class="custom-dropdown" id="category-dropdown">
+            <button type="button" class="custom-dropdown-btn" id="category-dropdown-btn" disabled>
+              <span class="dropdown-selected-val">
+                <span class="category-option-icon"><i class="fa-solid fa-list"></i></span>
+                <span class="category-option-text">-- Chọn nền tảng trước --</span>
+              </span>
+              <span class="dropdown-chevron"><i class="fa-solid fa-chevron-down"></i></span>
+            </button>
+            <div class="custom-dropdown-menu" id="category-dropdown-menu">
+              <!-- Dynamically populated via JS -->
+            </div>
+            <input type="hidden" id="filter-category" value="">
+          </div>
+        </div>
+        <div class="filter-group">
+          <label>Tìm kiếm nhanh</label>
+          <input class="sk-input" type="text" id="search-keyword" placeholder="Nhập mã ID hoặc tên dịch vụ..." oninput="filterServices()">
+        </div>
+      </div>
+
+      <div class="sk-social-layout">
+        <!-- Services Table -->
+        <div class="sk-card" style="padding: 20px;">
+          <div id="table-container">Đang tải dữ liệu dịch vụ...</div>
+          <div class="pagination" id="pagination-wrapper" style="display: none;">
+            <button class="page-btn" id="btn-prev-page" onclick="changePage(-1)">Trang trước</button>
+            <span class="page-info" id="page-info-display">Trang 1 / 1</span>
+            <button class="page-btn" id="btn-next-page" onclick="changePage(1)">Trang sau</button>
+          </div>
+        </div>
+
+        <!-- Sticky Sidebar Wrapper -->
+        <div class="sk-social-sidebar">
+          <!-- Order Creation Panel -->
+          <div class="sk-card" id="orderPanel" style="padding: 20px; position: sticky; top: 92px;">
+            <h3 style="font-size: 16px; font-weight: 800; color: var(--text-bright); margin-bottom: 14px;"><i class="fa-solid fa-cart-arrow-down" style="color: var(--brand-light);"></i> Tạo Đơn Hàng Mới</h3>
+            
+            <div class="sk-field">
+              <label>Dịch vụ đã chọn</label>
+              <input class="sk-input" type="text" id="order-service-display" readonly value="Bấm chọn một dịch vụ từ bảng" style="font-weight: bold; color: var(--text-bright); background: rgba(255,255,255,0.02);" />
+              <input type="hidden" id="order-service-id" />
+              <input type="hidden" id="order-service-rate" />
+              <input type="hidden" id="order-service-type" />
+            </div>
+
+            <div class="meta-info-box">
+              <div class="meta-row"><span class="meta-label">Trạng thái:</span><span class="meta-value" id="meta-status" style="color: var(--success);">Hoạt động</span></div>
+              <div class="meta-row"><span class="meta-label">Cấu trúc đơn (Type):</span><span class="meta-value" id="meta-type" style="color: var(--brand-light);">--</span></div>
+              <div class="meta-row"><span class="meta-label">Hỗ trợ hủy đơn:</span><span class="meta-value" id="meta-cancel">--</span></div>
+              <div class="meta-row"><span class="meta-label">Bảo hành:</span><span class="meta-value" id="meta-refill">--</span></div>
+            </div>
+
+            <div class="sk-field">
+              <label>Liên Kết / UID Cần Tăng *</label>
+              <div class="tabs-container">
+                <button id="tab-one" class="tab-btn active" onclick="switchLinkMode('one')">Một link</button>
+                <button id="tab-many" class="tab-btn" onclick="switchLinkMode('many')">Nhiều link</button>
+              </div>
+              <div class="input-paste-group" style="margin-top: 8px;">
+                <div id="link-field-wrapper" style="flex: 1;"><input class="sk-input" type="text" id="order-link" placeholder="Nhập liên kết hoặc UID..." oninput="updateJsonPreview()"></div>
+                <button type="button" class="btn-paste" onclick="handlePasteClipboard('order-link')">Dán</button>
+              </div>
+            </div>
+
+            <div id="dynamic-fields-container"></div>
+
+            <div class="total-box">Thành tiền: <span id="order-total">0 đ</span></div>
+
+            <div class="sk-field">
+              <label style="color: var(--muted); font-size: 12px;">JSON Payload gửi đi:</label>
+              <div class="json-preview-box" id="json-preview">{}</div>
+            </div>
+
+            <button type="button" class="btn-submit-order" onclick="processOrderSubmit()">Tạo Đơn Hàng</button>
+
+            <!-- Auto-polling active tracker -->
+            <div class="live-track-section" id="live-track-container" style="display: none;">
+              <h4 style="margin: 0 0 10px 0; color: var(--text-bright); font-size: 13px; font-weight: 800;"><span class="pulse-dot"></span> Tự động theo dõi đơn</h4>
+              <div style="font-size: 12px; line-height: 1.6; color: var(--text);">
+                <div>Mã đơn: <strong id="track-order-id" style="color: var(--brand-light);">--</strong></div>
+                <div style="margin: 4px 0;">Trạng thái: <span id="track-order-status" class="badge-status" style="background:#6c757d">Đang kiểm tra...</span></div>
+                <div>Đã chạy: <strong id="track-order-start">0</strong> | Còn lại: <strong id="track-order-remains">0</strong></div>
+                <div>Cập nhật cuối: <span id="track-order-msg" style="color: var(--muted); font-style: italic; margin-top: 5px;">Hệ thống đang đồng bộ định kỳ...</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="sk-footer">
+      <div class="sk-footer-inner">
+        <div><b>DG Store ®</b><p>Cửa hàng tài khoản bản quyền, giao tự động và quản lý tập trung. © 2026 DG Store. Độc quyền sở hữu.</p></div>
+        <div><b>Hỗ trợ</b><p>Zalo, Telegram, Facebook.</p></div>
+        <div><b>Chính sách</b><p>Bảo hành, bảo mật, điều khoản.</p></div>
+        <div><b>Thanh toán</b><p>VietQR tự động 24/7.</p></div>
+      </div>
+    </footer>
+  </div>
+
+  <script src="assets/js/icons.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script src="assets/js/tuongtacmxh.js"></script>
+</body>
+</html>

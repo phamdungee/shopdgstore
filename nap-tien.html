@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nạp tiền tài khoản | DG Store</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
+  <link href="assets/css/common.css" rel="stylesheet" />
+  <link href="assets/css/icons.css" rel="stylesheet" />
+  <link href="assets/css/nap-tien.css" rel="stylesheet" />
+  <style>
+    #presetAmountsGrid .sk-btn-soft {
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text);
+      font-weight: 700;
+      padding: 8px 16px;
+      font-size: 13px;
+    }
+    #presetAmountsGrid .sk-btn-soft:hover,
+    #presetAmountsGrid .sk-btn-soft.active {
+      background: var(--brand-soft);
+      border-color: var(--brand);
+      color: var(--brand);
+    }
+    @keyframes pulse {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); }
+      70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(59, 130, 246, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+    }
+    @keyframes successPulse {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(5, 150, 105, 0.7); }
+      70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(5, 150, 105, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(5, 150, 105, 0); }
+    }
+    .status-completed-pulse {
+      animation: successPulse 1.5s infinite !important;
+      background: var(--success) !important;
+    }
+  </style>
+</head>
+<body>
+  <div id="preloader">
+    <div class="preloader-container">
+      <div class="preloader-logo">
+        <div class="preloader-bolt"><span class="dg-logo-text" style="font-size: 20px;">DG</span></div>
+        <div class="preloader-ring"></div>
+      </div>
+      <p class="preloader-text">DG Store</p>
+      <p class="preloader-subtext">Đang khởi tạo cổng nạp tiền...</p>
+      <div class="preloader-bar">
+        <div class="preloader-progress"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sk-toast-stack" id="toast-container"></div>
+
+  <div class="sk-shell">
+    <header class="sk-topbar">
+      <div class="sk-topbar-inner">
+        <a class="sk-brand" href="index.html">
+          <span class="sk-brand-mark dg-logo-mark">
+            <span class="dg-logo-text">DG</span>
+            <span class="dg-logo-ring"></span>
+          </span>
+          <span>
+            <span class="sk-brand-title">DG Store</span>
+            <span class="sk-brand-subtitle">Tài khoản bản quyền</span>
+          </span>
+        </a>
+        <div style="flex: 1 1 auto;"></div>
+        <div class="sk-actions">
+          <span class="sk-badge"><i class="fa-solid fa-wallet"></i> <span class="dynamic-sync-balance">0đ</span></span>
+          <a class="sk-btn sk-btn-soft" href="index.html"><i class="fa-solid fa-arrow-left"></i> <span class="btn-text">Quay lại</span></a>
+        </div>
+      </div>
+    </header>
+
+    <aside class="sk-sidebar-new">
+      <div class="sk-sidebar-new-nav">
+        <div class="sidebar-title">TỔNG QUAN</div>
+        <a href="index.html" class="nav-item">
+          <i class="fa-solid fa-house"></i>
+          <span class="nav-label">Trang chủ</span>
+        </a>
+        <a href="index.html#product" class="nav-item">
+          <i class="fa-solid fa-layer-group"></i>
+          <span class="nav-label">Sản phẩm</span>
+        </a>
+        <a href="index.html#shopee" class="nav-item">
+          <i class="fa-solid fa-bag-shopping"></i>
+          <span class="nav-label">Shopee</span>
+        </a>
+        <a href="tuongtacmxh.html" class="nav-item">
+          <i class="fa-solid fa-thumbs-up"></i>
+          <span class="nav-label">Tương tác MXH</span>
+        </a>
+        <a href="lichsudonmxh.html" class="nav-item nav-item-sub">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+          <span class="nav-label">Lịch sử đơn MXH</span>
+        </a>
+      </div>
+
+      <div class="sk-sidebar-new-nav">
+        <div class="sidebar-title">ĐƠN HÀNG</div>
+        <a href="index.html#orders" class="nav-item">
+          <i class="fa-solid fa-box"></i>
+          <span class="nav-label">Đơn hàng</span>
+        </a>
+        <a href="nap-tien.html" class="nav-item active">
+          <i class="fa-solid fa-credit-card"></i>
+          <span class="nav-label">Nạp tiền</span>
+        </a>
+      </div>
+
+      <div class="sk-sidebar-new-nav">
+        <div class="sidebar-title">TÀI KHOẢN</div>
+        <a href="profile.html" class="nav-item">
+          <i class="fa-solid fa-user"></i>
+          <span class="nav-label">Tài khoản</span>
+        </a>
+        <a href="profile.html#policy" class="nav-item">
+          <i class="fa-solid fa-file-contract"></i>
+          <span class="nav-label">Chính sách</span>
+        </a>
+        <a href="https://zalo.me/0774391888" target="_blank" class="nav-item">
+          <i class="fa-solid fa-ticket"></i>
+          <span class="nav-label">Hỗ trợ</span>
+        </a>
+      </div>
+    </aside>
+
+    <main class="sk-layout sk-deposit-page">
+      <aside class="sk-sidebar sk-deposit-sidebar">
+        <div class="sk-content">
+          <section class="sk-card">
+            <span class="sk-kicker">Phương thức</span>
+            <div class="sk-menu">
+              <button class="active" type="button"><i class="fa-solid fa-building-columns"></i> Hóa đơn chuyển khoản</button>
+            </div>
+          </section>
+
+                <section class="sk-card">
+                <span class="sk-kicker">Ngân hàng nhận</span>
+                <div class="sk-bank-badge" id="display-bank-name-badge">
+                  <img
+                    class="sk-bank-logo"
+                    src="assets/img/%E1%BA%A3nh%20s%E1%BA%A3n%20ph%E1%BA%A9m/Logo_MB_new.png"
+                    alt="MB Bank"
+                  />
+                  </div>
+              </section>
+
+          <section class="sk-card sk-deposit-memo-card" id="sidebarMemoSection">
+            <span class="sk-kicker">Mã nạp hóa đơn</span>
+            <div id="box-memo-left" class="sk-memo-display">------</div>
+            <button class="sk-btn sk-btn-accent copy-memo-btn" type="button" onclick="copyData('box-memo-left', 'Mội dung')">
+              <i class="fa-solid fa-copy"></i> Sao chép mã nạp
+            </button>
+            <p class="sk-memo-note">
+              Hãy sao chép và chuyển khoản chính xác nội dung này để hệ thống tự động cộng tiền trong 30 giây.
+            </p>
+          </section>
+        </div>
+      </aside>
+
+      <div class="sk-content sk-deposit-main">
+        <section class="sk-page-title sk-deposit-hero">
+          <div>
+            <span class="sk-badge sk-badge-accent"><i class="fa-solid fa-bolt"></i> Xác nhận tự động</span>
+            <h1 style="margin-top:12px">Cổng nạp tiền VietQR tự động</h1>
+            <p>Hệ thống hỗ trợ tạo hóa đơn nạp tiền động theo mệnh giá. Số tiền sẽ tự động cập nhật vào số dư ví của bạn sau khi quét mã thành công.</p>
+          </div>
+          <div class="sk-actions sk-deposit-hero-badges">
+            <span class="sk-badge"><i class="fa-solid fa-shield-halved"></i> Bảo mật</span>
+            <span class="sk-badge"><i class="fa-solid fa-clock"></i> 24/7</span>
+          </div>
+        </section>
+
+        <!-- Panel 1: Form nhập tiền -->
+        <section class="sk-card deposit-form-card" id="deposit-form-panel">
+          <div class="sk-section-head">
+            <div>
+              <span class="sk-kicker">Hạn mức</span>
+              <h2>Nhập số tiền nạp quỹ</h2>
+            </div>
+          </div>
+          
+          <div class="deposit-input-wrapper">
+            <label for="depositAmountInput">Số tiền nạp (VND) - Tối thiểu 10.000đ</label>
+            <input class="sk-input sk-deposit-amount-input" id="depositAmountInput" type="number" min="10000" step="10000" value="100000" placeholder="Ví dụ: 100000" />
+          </div>
+
+          <div class="deposit-presets-wrapper">
+            <span class="presets-title">Mệnh giá nạp nhanh</span>
+            <div id="presetAmountsGrid" class="preset-buttons-grid">
+              <button class="sk-btn sk-btn-soft" type="button" onclick="setPresetAmount(20000, this)">20.000đ</button>
+              <button class="sk-btn sk-btn-soft" type="button" onclick="setPresetAmount(50000, this)">50.000đ</button>
+              <button class="sk-btn sk-btn-soft active" type="button" onclick="setPresetAmount(100000, this)">100.000đ</button>
+              <button class="sk-btn sk-btn-soft" type="button" onclick="setPresetAmount(200000, this)">200.000đ</button>
+              <button class="sk-btn sk-btn-soft" type="button" onclick="setPresetAmount(500000, this)">500.000đ</button>
+            </div>
+          </div>
+
+          <button class="sk-btn sk-btn-accent create-bill-submit-btn" type="button" id="btnCreateDepositBill" onclick="createDepositBill()">
+            <i class="fa-solid fa-qrcode"></i> Tạo hóa đơn & mã QR thanh toán
+          </button>
+        </section>
+
+        <!-- Panel 2: Giao diện hóa đơn VietQR động -->
+        <section class="sk-card sk-deposit-panel sk-hidden" id="deposit-active-panel">
+          <div class="sk-section-head">
+            <div>
+              <span class="sk-kicker" id="activeBillKicker">Hóa đơn đang chờ thanh toán</span>
+              <h2>Quét QR hoặc chuyển khoản thủ công</h2>
+            </div>
+            <div class="deposit-bill-badges-group">
+              <span class="sk-badge sk-badge-accent id-countdown-timer-badge" id="billCountdownTimer">10:00</span>
+              <span class="sk-badge" id="display-bank-tag">---</span>
+            </div>
+          </div>
+
+          <!-- Live Status Bar -->
+          <div class="sk-deposit-live-status-bar" id="liveStatusBar">
+            <div class="status-info-wrapper">
+              <span class="pulse-status-dot" id="liveStatusPulse"></span>
+              <span class="status-status-text" id="liveStatusText">Đang chờ bạn quét QR hoặc chuyển khoản theo đúng thông tin bên dưới...</span>
+            </div>
+            <button class="sk-btn sk-btn-danger cancel-deposit-bill-btn" type="button" onclick="cancelCurrentBill()"><i class="fa-solid fa-trash-can"></i> Hủy hóa đơn</button>
+          </div>
+
+          <div class="sk-deposit-payment-grid">
+            <div class="sk-qr-box sk-qr-box-clean">
+              <div class="sk-qr-brand-line">
+                <b>Viet<span>QR</span></b>
+                <span class="sk-badge sk-badge-accent">napas 247</span>
+              </div>
+              <div class="sk-qr-frame">
+                <img alt="VietQR" id="img-vietqr" src="" />
+              </div>
+              <p>Mã QR đã chứa sẵn số tiền và nội dung chuyển khoản.</p>
+            </div>
+
+            <div class="sk-bank-transfer-card">
+              <div class="sk-transfer-head">
+                <div>
+                  <span class="sk-kicker">Chuyển khoản ngân hàng</span>
+                  <h3>Nhập đúng số tiền và nội dung</h3>
+                </div>
+                <span class="sk-badge sk-badge-accent"><i class="fa-solid fa-clock"></i> Tự động đối soát</span>
+              </div>
+
+              <div class="sk-transfer-highlight">
+                <span>Nội dung bắt buộc</span>
+                <strong id="record-memo">---</strong>
+                <button class="sk-btn sk-btn-accent" type="button" onclick="copyData('record-memo', 'Nội dung')" aria-label="Sao chép nội dung chuyển khoản">
+                  <i class="fa-solid fa-copy"></i> Sao chép nội dung
+                </button>
+              </div>
+
+              <div class="sk-record-list sk-transfer-grid">
+                <div class="sk-record sk-transfer-item">
+                  <span class="sk-record-icon"><i class="fa-solid fa-building-columns"></i></span>
+                  <div>
+                    <p>Ngân hàng nhận</p>
+                    <b id="record-bank">---</b>
+                  </div>
+                  <button class="sk-icon-btn" type="button" onclick="copyData('record-bank', 'Ngân hàng')" aria-label="Sao chép ngân hàng"><i class="fa-solid fa-copy"></i></button>
+                </div>
+
+                <div class="sk-record sk-transfer-item">
+                  <span class="sk-record-icon"><i class="fa-solid fa-user"></i></span>
+                  <div>
+                    <p>Chủ tài khoản</p>
+                    <b id="record-owner">---</b>
+                  </div>
+                  <button class="sk-icon-btn" type="button" onclick="copyData('record-owner', 'Chủ tài khoản')" aria-label="Sao chép chủ tài khoản"><i class="fa-solid fa-copy"></i></button>
+                </div>
+
+                <div class="sk-record sk-transfer-item">
+                  <span class="sk-record-icon is-success"><i class="fa-solid fa-credit-card"></i></span>
+                  <div>
+                    <p>Số tài khoản</p>
+                    <b id="record-account">---</b>
+                  </div>
+                  <button class="sk-icon-btn" type="button" onclick="copyData('record-account', 'Số tài khoản')" aria-label="Sao chép số tài khoản"><i class="fa-solid fa-copy"></i></button>
+                </div>
+
+                <div class="sk-record sk-transfer-item">
+                  <span class="sk-record-icon"><i class="fa-solid fa-coins"></i></span>
+                  <div>
+                    <p>Số tiền chuyển khoản</p>
+                    <b id="record-amount">0đ</b>
+                  </div>
+                  <button class="sk-icon-btn" type="button" onclick="copyData('record-amount', 'Số tiền')" aria-label="Sao chép số tiền"><i class="fa-solid fa-copy"></i></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script src="assets/js/icons.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script src="assets/js/nap-tien.js"></script>
+</body>
+</html>

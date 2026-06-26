@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Giỏ hàng | DG Store</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
+  <link href="assets/css/common.css" rel="stylesheet" />
+  <link href="assets/css/icons.css" rel="stylesheet" />
+  <link href="assets/css/cart.css" rel="stylesheet" />
+</head>
+<body>
+  <!-- PRELOADER -->
+  <div id="preloader" data-auto-hide="false">
+    <div class="preloader-container">
+      <div class="preloader-logo">
+        <div class="preloader-bolt"><span class="dg-logo-text" style="font-size: 20px;">DG</span></div>
+        <div class="preloader-ring"></div>
+      </div>
+      <p class="preloader-text">DG Store</p>
+      <p class="preloader-subtext">Đang tải giỏ hàng...</p>
+      <div class="preloader-bar">
+        <div class="preloader-progress"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sk-toast-stack" id="toast-container"></div>
+
+  <div class="sk-shell">
+    <header class="sk-topbar">
+      <div class="sk-topbar-inner">
+        <a class="sk-brand" href="index.html">
+          <span class="sk-brand-mark dg-logo-mark">
+            <span class="dg-logo-text">DG</span>
+            <span class="dg-logo-ring"></span>
+          </span>
+          <span>
+            <span class="sk-brand-title">DG Store</span>
+            <span class="sk-brand-subtitle">Tài khoản bản quyền</span>
+          </span>
+        </a>
+        <div style="flex: 1 1 auto;"></div>
+        <div class="sk-actions">
+          <a class="sk-icon-btn sk-cart-link sk-cart-active" href="cart.html" aria-label="Giỏ hàng">
+            <i class="fa-solid fa-cart-shopping"></i>
+            <span class="sk-cart-count" id="headerCartCount">0</span>
+          </a>
+          <div class="sk-auth-actions" id="headerAuthActions">
+            <a class="sk-btn sk-btn-primary" href="login.html" id="cartLoginLink"><i class="fa-solid fa-right-to-bracket"></i> <span class="btn-text">Login</span></a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <aside class="sk-sidebar-new">
+      <div class="sk-sidebar-new-nav">
+        <div class="sidebar-title">TỔNG QUAN</div>
+        <a href="index.html" class="nav-item">
+          <i class="fa-solid fa-house"></i>
+          <span class="nav-label">Trang chủ</span>
+        </a>
+        <a href="index.html#product" class="nav-item">
+          <i class="fa-solid fa-layer-group"></i>
+          <span class="nav-label">Sản phẩm</span>
+        </a>
+        <a href="index.html#shopee" class="nav-item">
+          <i class="fa-solid fa-bag-shopping"></i>
+          <span class="nav-label">Shopee</span>
+        </a>
+        <a href="tuongtacmxh.html" class="nav-item">
+          <i class="fa-solid fa-thumbs-up"></i>
+          <span class="nav-label">Tương tác MXH</span>
+        </a>
+        <a href="lichsudonmxh.html" class="nav-item nav-item-sub">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+          <span class="nav-label">Lịch sử đơn MXH</span>
+        </a>
+      </div>
+
+      <div class="sk-sidebar-new-nav">
+        <div class="sidebar-title">ĐƠN HÀNG</div>
+        <a href="index.html#orders" class="nav-item">
+          <i class="fa-solid fa-box"></i>
+          <span class="nav-label">Đơn hàng</span>
+        </a>
+        <a href="nap-tien.html" class="nav-item">
+          <i class="fa-solid fa-credit-card"></i>
+          <span class="nav-label">Nạp tiền</span>
+        </a>
+      </div>
+
+      <div class="sk-sidebar-new-nav">
+        <div class="sidebar-title">TÀI KHOẢN</div>
+        <a href="profile.html" class="nav-item">
+          <i class="fa-solid fa-user"></i>
+          <span class="nav-label">Tài khoản</span>
+        </a>
+        <a href="profile.html#policy" class="nav-item">
+          <i class="fa-solid fa-file-contract"></i>
+          <span class="nav-label">Chính sách</span>
+        </a>
+        <a href="https://zalo.me/0774391888" target="_blank" class="nav-item">
+          <i class="fa-solid fa-ticket"></i>
+          <span class="nav-label">Hỗ trợ</span>
+        </a>
+      </div>
+    </aside>
+
+  <main class="sk-layout sk-cart-page">
+    <section class="sk-page-title sk-cart-hero">
+      <div>
+        <span class="sk-badge sk-badge-accent"><i class="fa-solid fa-cart-shopping"></i> Giỏ hàng</span>
+        <h1 style="margin-top:12px">Kiểm tra đơn trước khi thanh toán</h1>
+        <p>Quản lý gói đã chọn, số lượng và tổng thanh toán. Đơn hàng sẽ được trừ trực tiếp từ số dư tài khoản.</p>
+      </div>
+      <div class="sk-cart-hero-actions">
+        <a class="sk-btn" href="index.html#product"><i class="fa-solid fa-plus"></i> Thêm sản phẩm</a>
+        <a class="sk-btn sk-btn-soft" href="nap-tien.html"><i class="fa-solid fa-wallet"></i> Nạp tiền</a>
+      </div>
+    </section>
+
+    <section class="sk-cart-layout">
+      <section class="sk-card sk-cart-items-panel">
+        <div class="sk-section-head">
+          <div>
+            <span class="sk-kicker">Danh sách</span>
+            <h2>Sản phẩm trong giỏ</h2>
+          </div>
+          <button class="sk-btn sk-btn-danger" type="button" onclick="clearCart()"><i class="fa-solid fa-trash"></i> Xóa giỏ</button>
+        </div>
+        <div class="sk-cart-list" id="cartList"></div>
+      </section>
+
+      <aside class="sk-cart-summary">
+        <section class="sk-card">
+          <div class="sk-section-head">
+            <div>
+              <span class="sk-kicker">Thanh toán</span>
+              <h2>Tóm tắt giỏ hàng</h2>
+            </div>
+          </div>
+          <div class="sk-cart-summary-list">
+            <div><span>Số sản phẩm</span><b id="summaryItems">0</b></div>
+            <div><span>Số lượng</span><b id="summaryQuantity">0</b></div>
+            <div><span>Tạm tính</span><b id="summarySubtotal">0đ</b></div>
+            <div><span>Phí xử lý</span><b>0đ</b></div>
+            <div class="sk-cart-total"><span>Tổng thanh toán</span><b id="summaryTotal">0đ</b></div>
+          </div>
+          <button class="sk-btn sk-btn-primary checkout-btn-pulse" id="btnCartCheckout" type="button" onclick="checkoutCart()" style="width:100%; margin-top:12px">
+            <i class="fa-solid fa-shield-halved"></i> Thanh toán bằng số dư
+          </button>
+          <p class="sk-cart-note">Nếu số dư không đủ, hãy nạp tiền trước rồi quay lại giỏ hàng để tiếp tục.</p>
+        </section>
+
+        <section class="sk-card sk-cart-help">
+          <span class="sk-kicker">Lưu ý</span>
+          <div class="sk-cart-help-row"><i class="fa-solid fa-bolt"></i><span>Đơn được ghi nhận tự động sau khi thanh toán.</span></div>
+          <div class="sk-cart-help-row"><i class="fa-solid fa-shield-halved"></i><span>Bảo hành theo chính sách từng sản phẩm.</span></div>
+          <div class="sk-cart-help-row"><i class="fa-solid fa-receipt"></i><span>Xem lại đơn trong trang hồ sơ.</span></div>
+        </section>
+      </aside>
+    </section>
+  </main>
+
+  <script src="assets/js/icons.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script src="assets/js/cart.js"></script>
+  </div>
+</body>
+</html>

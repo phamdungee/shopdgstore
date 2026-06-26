@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Theo dõi vận đơn | DG Store</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
+  <link href="assets/css/common.css" rel="stylesheet" />
+  <link href="assets/css/icons.css" rel="stylesheet" />
+  <style>
+    /* Custom Timeline & Tracking Styles */
+    .sk-carrier-pill {
+      padding: 8px 16px;
+      background: rgba(17, 24, 39, 0.5);
+      border: 1px solid rgba(99, 102, 241, 0.15);
+      border-radius: var(--radius-full);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all var(--transition);
+      user-select: none;
+    }
+    .sk-carrier-pill.active {
+      background: var(--brand-gradient);
+      color: #fff;
+      border-color: transparent;
+      box-shadow: 0 0 15px var(--brand-glow);
+    }
+    .sk-timeline {
+      padding-left: 14px;
+      margin-top: 10px;
+    }
+    .sk-timeline-row {
+      position: relative;
+      padding: 0 0 24px 32px;
+    }
+    .sk-timeline-row::before {
+      position: absolute;
+      top: 12px;
+      bottom: -16px;
+      left: 11px;
+      width: 2px;
+      background: rgba(99, 102, 241, 0.15);
+      content: "";
+    }
+    .sk-timeline-row:last-child {
+      padding-bottom: 0;
+    }
+    .sk-timeline-row:last-child::before {
+      display: none;
+    }
+    .sk-timeline-event {
+      position: relative;
+      transition: all var(--transition);
+    }
+    .sk-timeline-icon {
+      position: absolute;
+      left: -34px;
+      top: 0px;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: rgba(17, 24, 39, 0.8);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      border: 2px solid rgba(17, 24, 39, 0.9);
+      box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.2);
+      transition: all var(--transition);
+      z-index: 2;
+    }
+    .sk-timeline-icon.icon-ready_to_pick {
+      background: var(--muted-dark);
+      box-shadow: 0 0 0 1px var(--muted-dark);
+    }
+    .sk-timeline-icon.icon-picking,
+    .sk-timeline-icon.icon-picked,
+    .sk-timeline-icon.icon-picked_to_storing,
+    .sk-timeline-icon.icon-storing,
+    .sk-timeline-icon.icon-delivered {
+      background: var(--success);
+      box-shadow: 0 0 0 1px var(--success);
+    }
+    .sk-timeline-icon.icon-transporting,
+    .sk-timeline-icon.icon-delivering {
+      background: var(--warning);
+      box-shadow: 0 0 0 1px var(--warning);
+    }
+    .sk-timeline-icon.icon-return {
+      background: #7c3aed;
+      box-shadow: 0 0 0 1px #7c3aed;
+    }
+    .sk-timeline-icon.icon-cancel {
+      background: var(--danger);
+      box-shadow: 0 0 0 1px var(--danger);
+    }
+    .sk-timeline-time {
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 600;
+      display: block;
+      margin-bottom: 4px;
+    }
+    .sk-timeline-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-bright);
+      margin: 0 0 4px 0;
+    }
+    .sk-timeline-desc {
+      font-size: 13px;
+      color: var(--text);
+      margin: 0;
+    }
+    /* Style for the most recent timeline event */
+    .sk-timeline-row.latest {
+      padding-bottom: 28px;
+    }
+    .sk-timeline-row.latest .sk-timeline-event {
+      background: var(--brand-soft);
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      margin-left: -12px;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.05);
+    }
+    .sk-timeline-row.latest .sk-timeline-icon {
+      left: -37px;
+      top: 8px;
+      width: 32px;
+      height: 32px;
+      font-size: 13px;
+      background: var(--brand-gradient) !important;
+      box-shadow: 0 0 0 2px rgba(10, 14, 26, 0.9), 0 0 12px var(--brand-glow) !important;
+      border: none;
+    }
+    .sk-timeline-row.latest .sk-timeline-title {
+      font-size: 14px;
+      color: var(--brand-light);
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .sk-timeline-row.latest .sk-timeline-title::after {
+      content: "Mới nhất";
+      font-size: 9px;
+      font-weight: 800;
+      color: #fff;
+      background: var(--neon);
+      padding: 1px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .sk-timeline-row.latest .sk-timeline-desc {
+      color: var(--text-bright);
+      font-weight: 500;
+      font-size: 13.5px;
+    }
+    .sk-timeline-row.latest::before {
+      top: 24px;
+      left: 11px;
+    }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .sk-watch-row {
+      display: grid;
+      grid-template-columns: 80px minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+      padding: 12px;
+      background: rgba(17, 24, 39, 0.5);
+      border: 1px solid rgba(99, 102, 241, 0.15);
+      border-radius: var(--radius);
+      transition: all var(--transition);
+    }
+    .sk-watch-row:hover {
+      border-color: var(--brand-light);
+      background: var(--brand-soft);
+      box-shadow: 0 0 15px var(--brand-glow);
+    }
+    .sk-watch-code {
+      font-family: monospace;
+      font-weight: 700;
+      color: var(--text-bright);
+      overflow-wrap: anywhere;
+    }
+    .sk-watch-meta {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 4px;
+      line-height: 1.5;
+    }
+    .sk-badge.done {
+      color: var(--success);
+      background: var(--success-soft);
+      border: 1px solid rgba(5, 150, 105, 0.25);
+    }
+    .sk-badge.error {
+      color: var(--danger);
+      background: var(--danger-soft);
+      border: 1px solid rgba(220, 38, 38, 0.25);
+    }
+    @media (max-width: 768px) {
+      .sk-watch-row {
+        grid-template-columns: 1fr;
+      }
+      .sk-watch-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 8px;
+      }
+      #result {
+        grid-template-columns: 1fr !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="sk-shell">
+    <header class="sk-topbar">
+      <div class="sk-topbar-inner">
+        <a class="sk-brand" href="index.html">
+          <span class="sk-brand-mark dg-logo-mark">
+            <span class="dg-logo-text">DG</span>
+            <span class="dg-logo-ring"></span>
+          </span>
+          <span>
+            <span class="sk-brand-title">DG Store</span>
+            <span class="sk-brand-subtitle">Tài khoản bản quyền</span>
+          </span>
+        </a>
+
+        <div style="flex: 1 1 auto;"></div>
+
+        <div class="sk-actions">
+          <a class="sk-icon-btn sk-cart-link" href="cart.html" aria-label="Giỏ hàng">
+            <i class="fa-solid fa-cart-shopping"></i>
+            <span class="sk-cart-count" id="headerCartCount">0</span>
+          </a>
+          <div class="sk-auth-actions" id="headerAuthActions">
+            <a class="sk-btn sk-btn-primary" href="login.html"><i class="fa-solid fa-right-to-bracket"></i> <span class="btn-text">Login</span></a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <aside class="sk-sidebar-new">
+      <div class="sk-sidebar-new-nav">
+        <div class="sidebar-title">TỔNG QUAN</div>
+        <a href="index.html" class="nav-item">
+          <i class="fa-solid fa-house"></i>
+          <span class="nav-label">Trang chủ</span>
+        </a>
+        <a href="index.html#product" class="nav-item">
+          <i class="fa-solid fa-layer-group"></i>
+          <span class="nav-label">Sản phẩm</span>
+        </a>
+        <a href="index.html#shopee" class="nav-item">
+          <i class="fa-solid fa-bag-shopping"></i>
+          <span class="nav-label">Shopee</span>
+        </a>
+        <a href="tuongtacmxh.html" class="nav-item">
+          <i class="fa-solid fa-thumbs-up"></i>
+          <span class="nav-label">Tương tác MXH</span>
+        </a>
+        <a href="lichsudonmxh.html" class="nav-item nav-item-sub">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+          <span class="nav-label">Lịch sử đơn MXH</span>
+        </a>
+      </div>
+
+      <div class="sk-sidebar-new-nav">
+        <div class="sidebar-title">ĐƠN HÀNG</div>
+        <a href="index.html#orders" class="nav-item">
+          <i class="fa-solid fa-box"></i>
+          <span class="nav-label">Đơn hàng</span>
+        </a>
+        <a href="nap-tien.html" class="nav-item">
+          <i class="fa-solid fa-credit-card"></i>
+          <span class="nav-label">Nạp tiền</span>
+        </a>
+      </div>
+
+      <div class="sk-sidebar-new-nav">
+        <div class="sidebar-title">TÀI KHOẢN</div>
+        <a href="profile.html" class="nav-item">
+          <i class="fa-solid fa-user"></i>
+          <span class="nav-label">Tài khoản</span>
+        </a>
+        <a href="profile.html#policy" class="nav-item">
+          <i class="fa-solid fa-file-contract"></i>
+          <span class="nav-label">Chính sách</span>
+        </a>
+        <a href="https://zalo.me/0774391888" target="_blank" class="nav-item">
+          <i class="fa-solid fa-ticket"></i>
+          <span class="nav-label">Hỗ trợ</span>
+        </a>
+      </div>
+    </aside>
+
+    <main class="sk-layout">
+      <section class="sk-card" id="shopee-tracking" style="margin-top: 14px; width: 100%;">
+        <div class="sk-section-head" style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <span class="sk-kicker" style="color:#ee4d2d; font-weight: 800;">Waybills</span>
+            <h2>📦 THEO DÕI VẬN ĐƠN</h2>
+          </div>
+          <button id="refreshDashboardButton" class="sk-btn sk-btn-soft" type="button" style="height: 32px; font-size: 12px; padding: 0 12px; color: #ee4d2d; border-color: rgba(238, 77, 45, 0.2); background: rgba(238, 77, 45, 0.05);"><i class="fa-solid fa-sync"></i> Cập nhật stats</button>
+        </div>
+
+        <!-- Thống kê tự động -->
+        <div class="sk-grid sk-grid-4" style="margin-bottom: 20px;">
+          <div class="sk-stat" style="border-left: 4px solid #ee4d2d;">
+            <span class="sk-stat-icon" style="background: rgba(238, 77, 45, 0.08); color: #ee4d2d;"><i class="fa-solid fa-eye"></i></span>
+            <div><p>Đang theo dõi</p><b id="statTracking">0</b></div>
+          </div>
+          <div class="sk-stat" style="border-left: 4px solid #ee4d2d;">
+            <span class="sk-stat-icon" style="background: rgba(238, 77, 45, 0.08); color: #ee4d2d;"><i class="fa-solid fa-circle-check"></i></span>
+            <div><p>Giao hàng thành công</p><b id="statDelivered">0</b></div>
+          </div>
+          <div class="sk-stat" style="border-left: 4px solid #ee4d2d;">
+            <span class="sk-stat-icon" style="background: rgba(238, 77, 45, 0.08); color: #ee4d2d;"><i class="fa-solid fa-motorcycle"></i></span>
+            <div><p>Đang giao</p><b id="statDelivering">0</b></div>
+          </div>
+          <div class="sk-stat" style="border-left: 4px solid #ee4d2d;">
+            <span class="sk-stat-icon" style="background: rgba(238, 77, 45, 0.08); color: #ee4d2d;"><i class="fa-solid fa-truck-fast"></i></span>
+            <div><p>Trung chuyển</p><b id="statTransit">0</b></div>
+          </div>
+        </div>
+        
+        <div class="sk-grid sk-grid-2" style="align-items: start; gap: 20px;">
+          <!-- Cột trái: Tra cứu -->
+          <div class="sk-card" style="padding: 20px;">
+            <h3 style="font-size: 15px; font-weight: 700; margin: 0 0 12px 0; display: flex; align-items: center; gap: 8px;"><i class="fa-solid fa-magnifying-glass" style="color: #ee4d2d;"></i> Tra cứu nhanh</h3>
+            
+            <!-- Chọn Carrier pills -->
+            <div class="sk-carrier-selector" style="display: flex; gap: 8px; margin-bottom: 16px;">
+              <label class="sk-carrier-pill active" onclick="selectCarrierPill('auto', this)">
+                <input type="radio" name="carrier" value="auto" checked style="display:none;">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Tự động
+              </label>
+              <label class="sk-carrier-pill" onclick="selectCarrierPill('spx', this)">
+                <input type="radio" name="carrier" value="spx" style="display:none;">
+                <i class="fa-solid fa-truck"></i> SPX Express
+              </label>
+              <label class="sk-carrier-pill" onclick="selectCarrierPill('ghn', this)">
+                <input type="radio" name="carrier" value="ghn" style="display:none;">
+                <i class="fa-solid fa-truck-fast"></i> GHN Nhanh
+              </label>
+            </div>
+
+            <form id="trackForm" style="display: flex; gap: 8px; flex-direction: column;">
+              <div style="position: relative; width: 100%;">
+                <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted);"></i>
+                <input id="trackingInput" class="sk-input" type="text" autocomplete="off" spellcheck="false" placeholder="Nhập mã vận đơn (Ví dụ: SPXVN123456789)" style="padding-left: 42px; text-transform: uppercase;">
+              </div>
+              <div style="display: flex; gap: 8px; margin-top: 4px;">
+                <button id="trackButton" class="sk-btn sk-btn-primary" type="submit" style="flex: 1; background: #ee4d2d; border-color: #ee4d2d; height: 42px; font-weight: 700;"><i class="fa-solid fa-magnifying-glass"></i> Tra cứu</button>
+                <button id="watchButton" class="sk-btn sk-btn-soft" type="button" style="color: #ee4d2d; border-color: rgba(238, 77, 45, 0.2); background: rgba(238, 77, 45, 0.05); height: 42px; font-weight: 700;"><i class="fa-solid fa-bell"></i> Theo dõi</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Cột phải: Nhập hàng loạt -->
+          <div class="sk-card" style="padding: 20px;">
+            <h3 style="font-size: 15px; font-weight: 700; margin: 0 0 8px 0; display: flex; align-items: center; gap: 8px;"><i class="fa-solid fa-list-check" style="color: #ee4d2d;"></i> Giám sát hàng loạt</h3>
+            <p style="font-size: 12px; color: var(--muted); margin: 0 0 12px 0;">Mỗi dòng nhập một đơn: <b>MÃ_VẬN_ĐƠN | BÍ_DANH</b></p>
+            <textarea id="bulkTrackingInput" class="sk-input" rows="3" placeholder="Ví dụ:&#10;SPXVN060678551306 | Khách A mua áo&#10;GYKDVRKX | GHN Ninh Bình" style="resize: vertical; font-family: inherit; font-size: 13px; line-height: 1.5; margin-bottom: 8px;"></textarea>
+          </div>
+        </div>
+
+        <!-- Trạng thái trống -->
+        <div id="emptyState" class="sk-empty-state" style="margin-top: 24px; text-align: center; padding: 40px 20px; background: var(--surface-soft); border-radius: var(--radius); border: 1px dashed var(--line);">
+          <i class="fa-solid fa-box-open" style="font-size: 44px; color: var(--muted); margin-bottom: 12px; display: block;"></i>
+          <h4 style="font-size: 15px; margin: 0 0 6px 0; font-weight: 700;">Nhập mã vận đơn để bắt đầu</h4>
+          <p style="font-size: 13px; color: var(--muted); margin: 0;">Hỗ trợ tự động nhận diện SPX Express và Giao Hàng Nhanh.</p>
+        </div>
+
+        <!-- Trạng thái tải -->
+        <div id="loadingState" class="sk-empty-state sk-hidden" style="margin-top: 24px; text-align: center; padding: 40px 20px; background: var(--surface-soft); border-radius: var(--radius); border: 1px solid var(--line);">
+          <div class="sk-spinner" style="margin: 0 auto 12px auto; width: 36px; height: 36px; border: 4px solid var(--line); border-top-color: #ee4d2d; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+          <h4 style="font-size: 15px; margin: 0 0 6px 0; font-weight: 700;" id="loadingText">Đang tải hành trình...</h4>
+          <p style="font-size: 13px; color: var(--muted); margin: 0;">Quá trình lấy dữ liệu API có thể mất vài giây.</p>
+        </div>
+
+        <!-- Trạng thái lỗi -->
+        <div id="errorState" class="sk-empty-state sk-hidden" style="margin-top: 24px; text-align: center; padding: 40px 20px; background: rgba(220,38,38,0.04); border-radius: var(--radius); border: 1px solid rgba(220,38,38,0.15);">
+          <i class="fa-solid fa-circle-exclamation" style="font-size: 44px; color: var(--danger); margin-bottom: 12px; display: block;"></i>
+          <h4 style="font-size: 15px; margin: 0 0 6px 0; font-weight: 700; color: var(--danger);">Không lấy được thông tin hành trình</h4>
+          <p style="font-size: 13px; color: var(--muted); margin: 0;" id="errorText">Vui lòng kiểm tra lại mã vận đơn hoặc thử lại sau.</p>
+        </div>
+
+        <!-- Khối kết quả chi tiết -->
+        <div id="result" class="sk-hidden" style="margin-top: 24px; display: grid; grid-template-columns: 1.1fr 1.9fr; gap: 20px;">
+          <!-- Tóm tắt hành trình -->
+          <div class="sk-card" style="padding: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--line); padding-bottom: 12px; margin-bottom: 16px;">
+              <div>
+                <span style="font-size: 10px; text-transform: uppercase; font-weight: 700; color: var(--muted);">Mã vận đơn</span>
+                <h4 id="trackingNumber" style="font-size: 17px; font-weight: 950; margin: 4px 0 0 0; color: var(--text);"></h4>
+              </div>
+              <button id="copyButton" class="sk-icon-btn" type="button" title="Sao chép mã" style="width: 32px; height: 32px; border-radius: 6px; border: 1px solid var(--line); display: flex; align-items: center; justify-content: center;"><i class="fa-regular fa-copy"></i></button>
+            </div>
+            
+            <div id="statusBadge" style="display: inline-flex; align-items: center; padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: 800; background: var(--surface-soft); color: var(--text); margin-bottom: 16px;"></div>
+            
+            <div id="summaryList" style="display: grid; gap: 10px; margin-bottom: 16px;"></div>
+            
+            <details id="rawBlock" style="border-top: 1px dashed var(--line); padding-top: 12px; font-size: 12px;">
+              <summary style="cursor: pointer; color: var(--muted); font-weight: 700;">Dữ liệu JSON gốc</summary>
+              <pre id="rawJson" style="max-height: 200px; overflow: auto; background: var(--surface-soft); padding: 10px; border-radius: 6px; font-family: monospace; font-size: 11px; margin-top: 8px; white-space: pre-wrap; word-break: break-all;"></pre>
+            </details>
+          </div>
+
+          <!-- Dòng thời gian lịch trình -->
+          <div class="sk-card" style="padding: 20px;">
+            <h3 style="font-size: 15px; font-weight: 700; margin: 0 0 16px 0; border-bottom: 1px solid var(--line); padding-bottom: 12px; display: flex; align-items: center; gap: 8px;"><i class="fa-solid fa-route" style="color: #ee4d2d;"></i> Chi tiết lịch trình</h3>
+            <div class="sk-timeline">
+              <div id="timelineList" style="display: grid;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Danh sách đơn đang theo dõi -->
+        <div class="sk-card" style="padding: 20px; margin-top: 24px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <h3 style="font-size: 15px; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 8px;"><i class="fa-solid fa-clipboard-list" style="color: #ee4d2d;"></i> Danh sách đơn đang giám sát</h3>
+            <button id="refreshWatchButton" class="sk-btn sk-btn-soft" type="button" style="height: 32px; font-size: 12px; padding: 0 12px; color: #ee4d2d; border-color: rgba(238, 77, 45, 0.2); background: rgba(238, 77, 45, 0.05);"><i class="fa-solid fa-rotate"></i> Tải lại danh sách</button>
+          </div>
+          <div id="watchList" style="display: grid; gap: 12px;">
+            <div style="color: var(--muted); font-size: 13px; text-align: center; padding: 16px;">Đang tải danh sách theo dõi...</div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="sk-footer">
+      <div class="sk-footer-inner">
+        <div><b>DG Store ®</b><p>Cửa hàng tài khoản bản quyền, giao tự động và quản lý tập trung. © 2026 DG Store. Độc quyền sở hữu.</p></div>
+        <div><b>Hỗ trợ</b><p>Zalo, Telegram, Facebook.</p></div>
+        <div><b>Chính sách</b><p>Bảo hành, bảo mật, điều khoản.</p></div>
+        <div><b>Thanh toán</b><p>VietQR tự động 24/7.</p></div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    const API_BASE = window.DG_API_BASE || window.SKYNET_API_BASE || (window.location.protocol === 'file:' ? 'http://localhost:3000/api' : '/api');
+
+    function formatMoney(value) {
+      return `${Number(value || 0).toLocaleString('vi-VN')}đ`;
+    }
+
+    function getStoredUser() {
+      try {
+        return JSON.parse(localStorage.getItem('user') || 'null');
+      } catch {
+        return null;
+      }
+    }
+
+    function clearAuthSession() {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      localStorage.removeItem('isLoggedIn');
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    function renderHeaderLoggedOut() {
+      const target = document.getElementById('headerAuthActions');
+      if (!target) return;
+      target.innerHTML = '<a class="sk-btn sk-btn-primary" href="login.html"><i class="fa-solid fa-right-to-bracket"></i> Login</a>';
+    }
+
+    function renderHeaderUser(user) {
+      const target = document.getElementById('headerAuthActions');
+      if (!target || !user) return;
+      const displayName = user.fullName || user.username || 'User';
+      const initial = displayName.trim().charAt(0).toUpperCase() || 'U';
+      const safeName = escapeHtml(displayName);
+      const adminLink = user.role === 'admin'
+        ? '<a class="sk-btn sk-btn-accent" href="admin.html"><i class="fa-solid fa-gauge-high"></i> Admin</a>'
+        : '';
+      target.innerHTML = `
+        <a class="sk-user-chip" href="profile.html" title="Mở tài khoản">
+          <span class="sk-user-avatar">${escapeHtml(initial)}</span>
+          <span class="sk-user-meta">
+            <strong>${safeName}</strong>
+            <small>${formatMoney(user.balance)}</small>
+          </span>
+        </a>
+        ${adminLink}
+        <a class="sk-btn sk-btn-soft" href="nap-tien.html"><i class="fa-solid fa-wallet"></i> Nạp tiền</a>
+        <button class="sk-icon-btn sk-logout-btn" type="button" onclick="handleHeaderLogout()" aria-label="Đăng xuất">
+          <i class="fa-solid fa-right-from-bracket"></i>
+        </button>
+      `;
+    }
+
+    async function syncHeaderAuth() {
+      const token = localStorage.getItem('token');
+      const cachedUser = getStoredUser();
+
+      if (cachedUser) renderHeaderUser(cachedUser);
+      if (!token) {
+        if (!cachedUser) renderHeaderLoggedOut();
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_BASE}/me`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await res.json().catch(() => ({}));
+
+        if (!res.ok || data.ok === false || !data.user) {
+          clearAuthSession();
+          renderHeaderLoggedOut();
+          return;
+        }
+
+        localStorage.setItem('user', JSON.stringify(data.user));
+        localStorage.setItem('isLoggedIn', 'true');
+        renderHeaderUser(data.user);
+      } catch {
+        if (!cachedUser) renderHeaderLoggedOut();
+      }
+    }
+
+    function handleHeaderLogout() {
+      clearAuthSession();
+      renderHeaderLoggedOut();
+    }
+
+    function updateHeaderCartCount() {
+      const badge = document.getElementById('headerCartCount');
+      if (!badge) return;
+
+      let items = [];
+      try {
+        items = JSON.parse(localStorage.getItem('dgCart') || '[]');
+      } catch {
+        items = [];
+      }
+
+      const quantity = (Array.isArray(items) ? items : []).filter(item => item && item.productSlug).length;
+
+      badge.innerText = quantity > 99 ? '99+' : String(quantity);
+      badge.classList.toggle('is-visible', quantity > 0);
+    }
+
+    updateHeaderCartCount();
+    syncHeaderAuth();
+  </script>
+  <script src="assets/js/icons.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script src="assets/js/tracking.js"></script>
+</body>
+</html>

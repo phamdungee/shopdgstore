@@ -1,0 +1,445 @@
+/* ═══════════════════════════════════════════════════════
+   DG Store — Cyber Neon Glass Auth Styling Redesign
+   ═══════════════════════════════════════════════════════ */
+
+body.sk-auth-body {
+  background: #0a0e1a !important;
+  background-image: radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
+                    radial-gradient(circle at 90% 80%, rgba(236, 72, 153, 0.12) 0%, transparent 40%) !important;
+  position: relative;
+  overflow: hidden;
+  margin: 0;
+  display: grid;
+  place-items: center;
+  font-family: 'Outfit', sans-serif;
+  color: var(--text) !important;
+  min-height: 100vh;
+}
+
+/* Floating Particles (Animated Background Blobs) */
+body.sk-auth-body::before,
+body.sk-auth-body::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+body.sk-auth-body::before {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.25) 0%, rgba(139, 92, 246, 0.2) 70%, transparent 100%);
+  top: -10%;
+  left: -10%;
+  animation: floatBlob1 25s infinite alternate ease-in-out;
+}
+
+body.sk-auth-body::after {
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(236, 72, 153, 0.2) 0%, rgba(6, 182, 212, 0.15) 70%, transparent 100%);
+  bottom: -15%;
+  right: -10%;
+  animation: floatBlob2 30s infinite alternate ease-in-out;
+}
+
+@keyframes floatBlob1 {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(80px, 60px) scale(1.1); }
+}
+
+@keyframes floatBlob2 {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(-90px, -50px) scale(1.15); }
+}
+
+/* Loader Styling */
+#loader {
+  background: #0a0e1a !important;
+}
+
+/* Glassmorphism Back Button */
+.sk-auth-back.back-home-btn {
+  background: rgba(17, 24, 39, 0.6) !important;
+  border: 1px solid rgba(99, 102, 241, 0.2) !important;
+  color: var(--text-bright) !important;
+  backdrop-filter: blur(12px);
+  padding: 10px 16px !important;
+  border-radius: var(--radius) !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
+  transition: all var(--transition) !important;
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 10;
+}
+
+.sk-auth-back.back-home-btn:hover {
+  background: var(--brand-soft) !important;
+  border-color: var(--brand-light) !important;
+  transform: translateX(-3px) !important;
+  box-shadow: 0 0 20px var(--brand-glow) !important;
+}
+
+/* Glassmorphic Main Layout Card */
+.sk-auth-card.container {
+  z-index: 1;
+  background: rgba(17, 24, 39, 0.55) !important;
+  border: 1px solid rgba(99, 102, 241, 0.15) !important;
+  backdrop-filter: blur(25px);
+  box-shadow: var(--shadow), 0 0 40px rgba(99, 102, 241, 0.1) !important;
+  border-radius: var(--radius-xl) !important;
+  min-height: 580px !important;
+  width: 850px;
+  max-width: 90vw;
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  overflow: hidden;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+/* Copywriting Panel Left */
+.sk-auth-panel.sk-auth-copy {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(236, 72, 153, 0.05)) !important;
+  border-right: 1px solid rgba(99, 102, 241, 0.15) !important;
+  padding: 40px 32px !important;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  z-index: 2;
+}
+
+.sk-auth-copy h1 {
+  font-size: 26px !important;
+  font-weight: 900 !important;
+  line-height: 1.25 !important;
+  color: var(--text-bright) !important;
+  margin: 12px 0 !important;
+  background: linear-gradient(to right, #ffffff, var(--brand-light), var(--neon));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.sk-auth-copy p {
+  color: var(--muted) !important;
+  line-height: 1.7 !important;
+  font-size: 13.5px !important;
+}
+
+.sk-auth-copy .sk-badge {
+  background: var(--brand-soft) !important;
+  border-color: rgba(99, 102, 241, 0.3) !important;
+  color: var(--brand-light) !important;
+  width: fit-content;
+  box-shadow: 0 0 15px var(--brand-glow);
+}
+
+.sk-auth-copy .sk-hero-card {
+  background: rgba(17, 24, 39, 0.4) !important;
+  border: 1px solid rgba(99, 102, 241, 0.12) !important;
+  border-radius: var(--radius) !important;
+  padding: 18px !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+  transition: all 0.3s ease;
+}
+
+.sk-auth-copy .sk-hero-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(99, 102, 241, 0.3);
+  background: rgba(17, 24, 39, 0.6) !important;
+  box-shadow: 0 0 20px var(--brand-glow) !important;
+}
+
+.sk-auth-copy .sk-hero-card b {
+  font-size: 22px !important;
+  color: var(--text-bright) !important;
+  display: block;
+}
+
+.sk-auth-copy .sk-hero-card p {
+  margin: 4px 0 0 0 !important;
+  font-size: 12px !important;
+  color: var(--muted) !important;
+}
+
+/* Right Forms Area */
+.sk-auth-forms {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 2;
+  width: 100%;
+  padding: 20px 0;
+}
+
+.form-container {
+  padding: 30px 36px !important;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+}
+
+/* Tab selector */
+.sk-auth-selector {
+  display: flex;
+  background: rgba(17, 24, 39, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 99px;
+  padding: 4px;
+  margin-bottom: 24px;
+  width: 100%;
+}
+
+.sk-auth-selector .selector-btn {
+  flex: 1;
+  background: transparent;
+  border: none;
+  border-radius: 99px;
+  color: var(--muted);
+  font-size: 13.5px;
+  font-weight: 800;
+  padding: 10px;
+  cursor: pointer;
+  transition: all 0.3s var(--ease-smooth);
+}
+
+.sk-auth-selector .selector-btn.active {
+  background: var(--brand-gradient);
+  color: #ffffff;
+  box-shadow: 0 4px 15px var(--brand-glow);
+}
+
+.sk-auth-selector .selector-btn:hover:not(.active) {
+  color: var(--text-bright);
+}
+
+/* Display / Switch Logic using display block/none to prevent collapsing */
+.form-container.sign-in {
+  display: flex;
+  animation: authFormFadeIn 0.4s var(--ease-smooth) forwards;
+}
+
+.form-container.sign-up {
+  display: none;
+  animation: authFormFadeIn 0.4s var(--ease-smooth) forwards;
+}
+
+.sk-auth-card.container.active .form-container.sign-in {
+  display: none;
+}
+
+.sk-auth-card.container.active .form-container.sign-up {
+  display: flex;
+}
+
+@keyframes authFormFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.form-container h1 {
+  color: var(--text-bright) !important;
+  font-weight: 900 !important;
+  font-size: 26px !important;
+  margin-bottom: 6px !important;
+}
+
+.form-container .sk-kicker {
+  color: var(--neon) !important;
+  font-weight: 850;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: 11px;
+}
+
+.form-container samp {
+  color: var(--muted) !important;
+  font-size: 12.5px !important;
+  margin-bottom: 12px !important;
+  display: block;
+}
+
+/* Form inputs styling */
+.form-container input {
+  width: 100% !important;
+  min-height: 44px !important;
+  background: rgba(17, 24, 39, 0.5) !important;
+  border: 1px solid rgba(99, 102, 241, 0.15) !important;
+  color: var(--text-bright) !important;
+  border-radius: var(--radius) !important;
+  padding: 10px 14px !important;
+  font-size: 13.5px !important;
+  transition: all var(--transition) !important;
+  margin-bottom: 12px;
+}
+
+.form-container input::placeholder {
+  color: var(--muted-dark) !important;
+}
+
+.form-container input:focus {
+  background: rgba(17, 24, 39, 0.8) !important;
+  border-color: var(--brand) !important;
+  box-shadow: 0 0 0 3px var(--brand-soft), 0 0 20px var(--brand-glow) !important;
+  outline: none;
+}
+
+/* Password field wrapper to contain eye icon button */
+.form-container .sk-password-field {
+  display: flex;
+  align-items: center;
+  background: rgba(17, 24, 39, 0.5) !important;
+  border: 1px solid rgba(99, 102, 241, 0.15) !important;
+  border-radius: var(--radius) !important;
+  margin-bottom: 12px;
+  transition: all var(--transition) !important;
+  width: 100%;
+}
+
+.form-container .sk-password-field:focus-within {
+  border-color: var(--brand) !important;
+  box-shadow: 0 0 0 3px var(--brand-soft), 0 0 20px var(--brand-glow) !important;
+}
+
+.form-container .sk-password-field input {
+  border: 0 !important;
+  background: transparent !important;
+  margin-bottom: 0 !important;
+  box-shadow: none !important;
+  flex: 1;
+}
+
+.form-container .sk-password-field button {
+  border: 0 !important;
+  background: transparent !important;
+  color: var(--muted) !important;
+  width: 40px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.form-container .sk-password-field button:hover {
+  color: var(--brand-light) !important;
+}
+
+/* Forgot Password link */
+.form-container .fp {
+  color: var(--muted) !important;
+  text-align: right;
+  font-size: 12px !important;
+  margin-bottom: 12px !important;
+  transition: color 0.2s ease;
+  width: fit-content;
+  align-self: flex-end;
+}
+
+.form-container .fp:hover {
+  color: var(--brand-light) !important;
+}
+
+/* Submit Button Override */
+.form-container .sk-btn.sk-btn-primary.btn-solid {
+  background: var(--brand-gradient) !important;
+  border: none !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  border-radius: var(--radius) !important;
+  min-height: 44px !important;
+  box-shadow: 0 4px 16px var(--brand-glow) !important;
+  transition: all 0.3s ease !important;
+  margin-top: 10px;
+  width: 100%;
+  cursor: pointer;
+}
+
+.form-container .sk-btn.sk-btn-primary.btn-solid:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 24px var(--brand-glow) !important;
+  filter: brightness(1.1);
+}
+
+/* Social Login Icons */
+.social-icons {
+  margin: 10px 0 16px 0 !important;
+  display: flex;
+  gap: 12px;
+  justify-content: flex-start;
+}
+
+.social-icons .icon {
+  width: 44px !important;
+  height: 44px !important;
+  background: rgba(17, 24, 39, 0.6) !important;
+  border: 1px solid rgba(99, 102, 241, 0.15) !important;
+  border-radius: var(--radius) !important;
+  color: var(--muted) !important;
+  transition: all 0.3s ease !important;
+  display: grid;
+  place-items: center;
+}
+
+.social-icons .icon:hover {
+  background: var(--brand-soft) !important;
+  border-color: var(--brand) !important;
+  color: var(--text-bright) !important;
+  transform: rotate(6deg) scale(1.08) !important;
+  box-shadow: 0 0 15px var(--brand-glow) !important;
+}
+
+/* Switch Text */
+.mobile-switch-text {
+  color: var(--muted) !important;
+  text-align: center;
+  font-size: 13px !important;
+  margin-top: 20px !important;
+}
+
+.mobile-switch-text a {
+  color: var(--brand-light) !important;
+  font-weight: 700 !important;
+  transition: color 0.2s ease;
+}
+
+.mobile-switch-text a:hover {
+  color: var(--accent-light) !important;
+  text-decoration: underline;
+}
+
+/* Sliding Toggle Panels */
+.toggle-container {
+  display: none;
+}
+
+/* 6. Mobile Responsiveness */
+@media (max-width: 768px) {
+  .sk-auth-card.container {
+    grid-template-columns: 1fr !important;
+    min-height: auto !important;
+    width: 100% !important;
+  }
+
+  .sk-auth-panel.sk-auth-copy {
+    display: none !important; /* Hide copy panel on mobile */
+  }
+
+  .form-container {
+    padding: 24px 20px !important;
+  }
+}

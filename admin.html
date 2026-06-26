@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard | DG Store</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
+  <link href="assets/css/common.css" rel="stylesheet" />
+  <link href="assets/css/icons.css" rel="stylesheet" />
+  <style>
+    /* Custom admin panel styling for dark premium glass */
+    .admin-section {
+      transition: all 0.3s ease;
+    }
+    .sk-stat {
+      background: rgba(17, 24, 39, 0.6);
+      border: 1px solid rgba(99, 102, 241, 0.15);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      backdrop-filter: var(--glass-blur);
+      transition: transform 0.25s var(--ease-bounce), border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+    .sk-stat:hover {
+      transform: translateY(-3px);
+      border-color: rgba(99, 102, 241, 0.3);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 0 20px var(--brand-glow);
+    }
+    .sk-stat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--brand-soft);
+      color: var(--brand-light);
+      font-size: 20px;
+      box-shadow: 0 0 15px var(--brand-glow);
+    }
+    .sk-stat b {
+      font-size: 24px;
+      font-weight: 900;
+      color: var(--text-bright);
+    }
+    .sk-stat p {
+      margin: 0;
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .user-avatar-circle {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--brand-gradient);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 13px;
+      box-shadow: 0 0 10px var(--brand-glow);
+    }
+    .badge-status {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 10px;
+      border-radius: var(--radius-full);
+      font-size: 11px;
+      font-weight: 700;
+      border: 1px solid transparent;
+    }
+    .badge-status.active {
+      background: var(--success-soft);
+      color: var(--success);
+      border-color: rgba(16, 185, 129, 0.2);
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.15);
+    }
+    .badge-status.locked {
+      background: var(--danger-soft);
+      color: var(--danger);
+      border-color: rgba(239, 68, 68, 0.2);
+      box-shadow: 0 0 10px rgba(239, 68, 68, 0.15);
+    }
+    .badge-role {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 8px;
+      border-radius: var(--radius);
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      border: 1px solid transparent;
+    }
+    .badge-role.admin {
+      background: var(--neon-soft);
+      color: var(--neon);
+      border-color: rgba(236, 72, 153, 0.2);
+      box-shadow: 0 0 10px rgba(236, 72, 153, 0.15);
+    }
+    .badge-role.user {
+      background: var(--brand-soft);
+      color: var(--brand-light);
+      border-color: rgba(99, 102, 241, 0.2);
+    }
+    
+    /* Menu admin header & sticky rules */
+    .sk-admin-nav {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      margin: 0 20px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .sk-admin-nav::-webkit-scrollbar {
+      display: none;
+    }
+    .sk-admin-nav .sk-nav-link {
+      white-space: nowrap;
+      cursor: pointer;
+      font-weight: 700;
+    }
+    
+    /* Layout overrides */
+    .sk-layout {
+      display: block !important;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 20px 16px 40px !important;
+    }
+    .sk-content {
+      width: 100%;
+    }
+    
+    /* Dashboard 2-column layout */
+    .sk-dashboard-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 20px;
+      align-items: start;
+      margin-top: 24px;
+    }
+    
+    /* Premium variant badges */
+    .variant-badge {
+      display: inline-flex;
+      align-items: center;
+      background: rgba(17, 24, 39, 0.6);
+      border: 1px solid rgba(99, 102, 241, 0.15);
+      padding: 4px 12px;
+      border-radius: var(--radius-full);
+      font-size: 11px;
+      font-weight: 600;
+      margin: 3px;
+      color: var(--text);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+      transition: all 0.2s ease;
+      backdrop-filter: blur(5px);
+    }
+    .variant-badge:hover {
+      background: var(--brand-soft);
+      border-color: var(--brand-light);
+      transform: translateY(-1px);
+      box-shadow: 0 0 10px var(--brand-glow);
+    }
+    .variant-badge b {
+      color: var(--text-bright);
+      margin-right: 4px;
+    }
+    .variant-badge .price {
+      color: var(--accent-light);
+      font-weight: 800;
+      margin-left: 2px;
+    }
+    .variant-badge .api-id {
+      background: var(--brand-soft);
+      color: var(--brand-light);
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      border-radius: var(--radius-full);
+      padding: 1px 6px;
+      font-size: 9px;
+      font-weight: 800;
+      margin-left: 6px;
+    }
+    .product-form-card {
+      background: rgba(17, 24, 39, 0.4);
+      border: 1px solid rgba(99, 102, 241, 0.15);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      margin-bottom: 18px;
+    }
+    .product-form-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 14px;
+      color: var(--text-bright);
+      font-size: 14px;
+      font-weight: 800;
+    }
+    .product-form-grid-2,
+    .product-form-grid-3,
+    .product-form-grid-4 {
+      display: grid;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+    .product-form-grid-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .product-form-grid-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .product-form-grid-4 {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    .product-form-group label {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .product-form-group textarea {
+      height: auto;
+      padding: 10px;
+      resize: vertical;
+    }
+    .product-form-help {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.4;
+    }
+    .variant-row {
+      display: grid;
+      grid-template-columns: minmax(140px, 1.4fr) minmax(92px, .8fr) minmax(120px, 1fr) minmax(92px, .8fr) minmax(80px, .7fr) 34px;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .variant-row .sk-input {
+      padding: 7px 8px;
+      font-size: 12px;
+    }
+    
+    @media (max-width: 980px) {
+      .sk-admin-nav {
+        margin: 10px 0 0;
+        width: 100%;
+        justify-content: flex-start;
+      }
+      .sk-dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+      .product-form-grid-2,
+      .product-form-grid-3,
+      .product-form-grid-4,
+      .variant-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* --- NEW ADMIN PRODUCTS CARD LAYOUT --- */
+    .sk-products-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-top: 12px;
+    }
+    .sk-product-admin-card {
+      background: rgba(17, 24, 39, 0.45);
+      border: 1px solid rgba(99, 102, 241, 0.15);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      display: grid;
+      grid-template-columns: 50px 1.8fr 1.2fr 1.4fr 2fr auto;
+      align-items: center;
+      gap: 20px;
+      backdrop-filter: var(--glass-blur);
+      transition: transform 0.25s var(--ease-bounce), border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+    .sk-product-admin-card:hover {
+      border-color: rgba(99, 102, 241, 0.35);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35), 0 0 20px rgba(99, 102, 241, 0.15);
+      transform: translateY(-2px);
+    }
+    
+    .sk-prod-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+      object-fit: cover;
+      border: 1px solid var(--line);
+      background: var(--surface-soft);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      color: var(--brand-light);
+    }
+    
+    .sk-prod-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .sk-prod-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text-bright);
+      margin: 0;
+    }
+    .sk-prod-meta-badges {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+    }
+    .sk-prod-badge-code {
+      font-family: monospace;
+      font-size: 11px;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 1px 6px;
+      border-radius: 4px;
+      color: var(--text);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .sk-prod-badge-cat {
+      font-size: 9px;
+      font-weight: 800;
+      padding: 1px 6px;
+      text-transform: uppercase;
+      border-radius: var(--radius-sm);
+    }
+    .sk-prod-badge-cat.netflix { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.25); }
+    .sk-prod-badge-cat.ai { background: rgba(168, 85, 247, 0.15); color: #a855f7; border: 1px solid rgba(168, 85, 247, 0.25); }
+    .sk-prod-badge-cat.design { background: rgba(59, 130, 246, 0.15); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.25); }
+    .sk-prod-badge-cat.social { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.25); }
+    .sk-prod-badge-cat.shopee { background: rgba(249, 115, 22, 0.15); color: #f97316; border: 1px solid rgba(249, 115, 22, 0.25); }
+    
+    .sk-prod-pricing {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .sk-prod-price-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--muted);
+      border-bottom: 1px dashed rgba(255, 255, 255, 0.05);
+      padding-bottom: 3px;
+      gap: 8px;
+    }
+    .sk-prod-price-row:last-child {
+      border: 0;
+      padding: 0;
+    }
+    .sk-prod-price-row b {
+      color: var(--text-bright);
+    }
+    .sk-prod-margin-tag {
+      color: var(--success);
+      font-weight: 800;
+    }
+    
+    .sk-prod-vendor {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .sk-prod-vendor-item {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+      padding-bottom: 2px;
+      gap: 8px;
+    }
+    .sk-prod-vendor-item:last-child {
+      border: 0;
+      padding: 0;
+    }
+    .sk-prod-vendor-item b {
+      color: var(--text-bright);
+    }
+    
+    .sk-prod-variants-box {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      max-height: 90px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+    .sk-prod-variants-box::-webkit-scrollbar {
+      width: 4px;
+    }
+    .sk-prod-variants-box::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.1);
+      border-radius: var(--radius-full);
+    }
+    
+    .sk-prod-variant-pill {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(99, 102, 241, 0.15);
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-size: 11px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 110px;
+      transition: all 0.2s ease;
+      box-sizing: border-box;
+    }
+    .sk-prod-variant-pill:hover {
+      background: var(--brand-soft);
+      border-color: var(--brand-light);
+    }
+    .sk-prod-variant-pill .v-title {
+      font-weight: 800;
+      color: var(--text-bright);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .sk-prod-variant-pill .v-details {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      color: var(--muted);
+      gap: 6px;
+    }
+    
+    .sk-prod-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .sk-prod-actions .sk-btn {
+      padding: 6px 12px;
+      font-size: 11px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      width: 100%;
+    }
+    
+    @media (max-width: 1024px) {
+      .sk-product-admin-card {
+        grid-template-columns: 50px 1.5fr 1fr 1fr auto;
+        gap: 14px;
+      }
+      .sk-prod-variants-box {
+        grid-column: 1 / -1;
+        max-height: none;
+      }
+      .sk-prod-actions {
+        flex-direction: row;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .sk-product-admin-card {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        padding: 16px;
+      }
+      .sk-prod-avatar {
+        margin: 0 auto;
+      }
+      .sk-prod-info, .sk-prod-pricing, .sk-prod-vendor {
+        text-align: center;
+      }
+      .sk-prod-meta-badges {
+        justify-content: center;
+      }
+      .sk-prod-variants-box {
+        justify-content: center;
+      }
+      .sk-prod-actions {
+        justify-content: center;
+      }
+    }
+
+    /* --- Cyber Neon Glass Modal Overrides --- */
+    #productModal .sk-modal-card {
+      max-width: 980px;
+      width: 94%;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      backdrop-filter: blur(24px) saturate(180%);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6), 
+                  0 0 40px rgba(99, 102, 241, 0.2), 
+                  inset 0 1px 1px rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-xl);
+      padding: 28px;
+      color: var(--text);
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    
+    #productModal .sk-section-head {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 16px;
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    #productModal #modalTitle {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--text-bright);
+      background: var(--brand-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin: 0;
+      letter-spacing: -0.02em;
+    }
+    
+    #productModal .product-form-card {
+      background: rgba(30, 41, 59, 0.4);
+      border: 1px solid rgba(99, 102, 241, 0.15);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    
+    #productModal .product-form-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--brand-light);
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    
+    #productModal .product-form-group label {
+      color: var(--text);
+      font-weight: 600;
+      font-size: 12px;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    
+    #productModal .sk-input {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text-bright);
+      border-radius: var(--radius);
+      padding: 10px 14px;
+      height: 44px;
+      transition: all 0.25s ease;
+    }
+    
+    #productModal .sk-input:focus {
+      border-color: var(--brand-light);
+      background: rgba(15, 23, 42, 0.85);
+      box-shadow: 0 0 15px var(--brand-glow), 0 0 0 2px var(--brand-soft);
+    }
+    
+    #productModal textarea.sk-input {
+      height: auto;
+      padding: 12px 14px;
+    }
+
+    #productModal select.sk-input option {
+      background: #111827;
+      color: var(--text-bright);
+    }
+    
+    #productModal .product-form-help {
+      color: var(--muted);
+      font-size: 11px;
+      margin-top: 6px;
+    }
+    
+    #productModal .variant-row {
+      margin-bottom: 8px;
+    }
+    
+    #productModal div.variant-row:has(input) {
+      background: rgba(15, 23, 42, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: var(--radius);
+      padding: 8px;
+      transition: all 0.2s ease;
+    }
+    
+    #productModal div.variant-row:has(input):hover {
+      background: rgba(15, 23, 42, 0.5);
+      border-color: rgba(99, 102, 241, 0.2);
+    }
+
+    #productModal .variant-row .sk-input {
+      height: 38px;
+      padding: 6px 10px;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <div id="preloader" data-auto-hide="false">
+    <div class="preloader-container">
+      <div class="preloader-logo">
+        <div class="preloader-bolt"><span class="dg-logo-text" style="font-size: 20px;">DG</span></div>
+        <div class="preloader-ring"></div>
+      </div>
+      <p class="preloader-text">DG Admin</p>
+      <p class="preloader-subtext">Đang tải dashboard admin...</p>
+      <div class="preloader-bar">
+        <div class="preloader-progress"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sk-shell">
+    <header class="sk-topbar">
+      <div class="sk-topbar-inner">
+        <a class="sk-brand" href="admin.html">
+          <span class="sk-brand-mark dg-logo-mark">
+            <span class="dg-logo-text">DG</span>
+            <span class="dg-logo-ring"></span>
+          </span>
+          <span>
+            <span class="sk-brand-title">DG Admin</span>
+            <span class="sk-brand-subtitle">Control panel</span>
+          </span>
+        </a>
+        <nav class="sk-admin-nav">
+          <a class="sk-nav-link active" href="#overview"><i class="fa-solid fa-chart-pie"></i> Tổng quan</a>
+          <a class="sk-nav-link" href="#users"><i class="fa-solid fa-users"></i> Tài khoản</a>
+          <a class="sk-nav-link" href="#products"><i class="fa-solid fa-layer-group"></i> Sản phẩm & API</a>
+          <a class="sk-nav-link" href="#security"><i class="fa-solid fa-clock-rotate-left"></i> Nhật ký</a>
+          <a class="sk-nav-link" href="#announcement"><i class="fa-solid fa-bullhorn"></i> Thông báo</a>
+        </nav>
+        <div style="flex: 1 1 auto;"></div>
+        <div class="sk-actions">
+          <span class="sk-badge"><i class="fa-solid fa-user-shield"></i> <span id="adminName">Admin</span></span>
+          <button class="sk-btn sk-btn-danger" type="button" onclick="adminLogout()"><i class="fa-solid fa-right-from-bracket"></i> <span class="btn-text">Đăng xuất</span></button>
+        </div>
+      </div>
+    </header>
+
+    <aside class="sk-sidebar-new">
+      <div class="sk-sidebar-new-nav">
+        <div class="sidebar-title">ADMIN</div>
+        <a href="admin.html" class="nav-item">
+          <i class="fa-solid fa-gauge-high"></i>
+          <span class="nav-label">Dashboard</span>
+        </a>
+      </div>
+      <div class="sk-sidebar-new-nav">
+        <div class="sidebar-title">TỔNG QUAN</div>
+        <a href="index.html" class="nav-item">
+          <i class="fa-solid fa-house"></i>
+          <span class="nav-label">Trang chủ</span>
+        </a>
+        <a href="index.html#product" class="nav-item">
+          <i class="fa-solid fa-layer-group"></i>
+          <span class="nav-label">Sản phẩm</span>
+        </a>
+        <a href="index.html#shopee" class="nav-item">
+          <i class="fa-solid fa-bag-shopping"></i>
+          <span class="nav-label">Shopee</span>
+        </a>
+        <a href="tuongtacmxh.html" class="nav-item">
+          <i class="fa-solid fa-thumbs-up"></i>
+          <span class="nav-label">Tương tác MXH</span>
+        </a>
+        <a href="lichsudonmxh.html" class="nav-item nav-item-sub">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+          <span class="nav-label">Lịch sử đơn MXH</span>
+        </a>
+      </div>
+
+      <div class="sk-sidebar-new-nav">
+        <div class="sidebar-title">ĐƠN HÀNG</div>
+        <a href="index.html#orders" class="nav-item">
+          <i class="fa-solid fa-box"></i>
+          <span class="nav-label">Đơn hàng</span>
+        </a>
+        <a href="nap-tien.html" class="nav-item">
+          <i class="fa-solid fa-credit-card"></i>
+          <span class="nav-label">Nạp tiền</span>
+        </a>
+      </div>
+
+      <div class="sk-sidebar-new-nav">
+        <div class="sidebar-title">TÀI KHOẢN</div>
+        <a href="profile.html" class="nav-item">
+          <i class="fa-solid fa-user"></i>
+          <span class="nav-label">Tài khoản</span>
+        </a>
+        <a href="profile.html#policy" class="nav-item">
+          <i class="fa-solid fa-file-contract"></i>
+          <span class="nav-label">Chính sách</span>
+        </a>
+        <a href="https://zalo.me/0774391888" target="_blank" class="nav-item">
+          <i class="fa-solid fa-ticket"></i>
+          <span class="nav-label">Hỗ trợ</span>
+        </a>
+      </div>
+    </aside>
+
+  <main class="sk-layout">
+    <section class="sk-content">
+      
+      <!-- TAB 1: TỔNG QUAN -->
+      <div id="overview-section" class="admin-section">
+        <section class="sk-page-title">
+          <div>
+            <span class="sk-badge sk-badge-accent"><i class="fa-solid fa-bolt"></i> Live data</span>
+            <h1 style="margin-top:12px">Dashboard quản trị</h1>
+            <p>Theo dõi tài khoản, số dư người dùng và nhật ký đăng nhập từ database Supabase.</p>
+          </div>
+          <button class="sk-btn sk-btn-accent" type="button" onclick="loadAdminDashboard()"><i class="fa-solid fa-rotate"></i> Tải lại</button>
+        </section>
+
+        <section class="sk-grid sk-grid-4">
+          <div class="sk-stat"><span class="sk-stat-icon"><i class="fa-solid fa-users"></i></span><div><p>Tổng user</p><b id="statTotalUsers">0</b></div></div>
+          <div class="sk-stat"><span class="sk-stat-icon"><i class="fa-solid fa-circle-check"></i></span><div><p>Đang active</p><b id="statActiveUsers">0</b></div></div>
+          <div class="sk-stat"><span class="sk-stat-icon"><i class="fa-solid fa-user-shield"></i></span><div><p>Admin</p><b id="statAdminUsers">0</b></div></div>
+          <div class="sk-stat"><span class="sk-stat-icon"><i class="fa-solid fa-wallet"></i></span><div><p>Tổng số dư</p><b id="statTotalBalance">0đ</b></div></div>
+        </section>
+
+        <!-- Lưới Dashboard: Thành viên thực tế + Nhật ký bảo mật -->
+        <div class="sk-dashboard-grid">
+          <!-- Cột 1: Thành viên mới gần đây -->
+          <section class="sk-card">
+            <div class="sk-section-head">
+              <div>
+                <span class="sk-kicker">New members</span>
+                <h2 style="margin-top: 4px;">Thành viên mới gần đây</h2>
+              </div>
+              <button class="sk-btn sk-btn-soft" onclick="switchAdminTab('users')">Xem tất cả</button>
+            </div>
+            <div class="sk-table-wrap">
+              <table class="sk-table">
+                <thead>
+                  <tr>
+                    <th>User</th>
+                    <th>Quyền hạn</th>
+                    <th>Trạng thái</th>
+                    <th>Số dư ví</th>
+                  </tr>
+                </thead>
+                <tbody id="overviewUsersTable">
+                  <tr><td colspan="4">Đang tải...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- Cột 2: Nhật ký đăng nhập -->
+          <section class="sk-card">
+            <div class="sk-section-head">
+              <div>
+                <span class="sk-kicker">Security logs</span>
+                <h2 style="margin-top: 4px;">Nhật ký đăng nhập</h2>
+              </div>
+              <button class="sk-btn sk-btn-soft" onclick="switchAdminTab('security')">Xem tất cả</button>
+            </div>
+            <div class="sk-table-wrap">
+              <table class="sk-table">
+                <thead>
+                  <tr>
+                    <th>Tài khoản</th>
+                    <th>IP</th>
+                    <th>Kết quả</th>
+                    <th>Thời gian</th>
+                  </tr>
+                </thead>
+                <tbody id="overviewLoginLogsTable">
+                  <tr><td colspan="4">Đang tải...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <!-- TAB 2: TÀI KHOẢN -->
+      <div id="users-section" class="admin-section" style="display: none;">
+        <section class="sk-page-title">
+          <div>
+            <h1>Quản lý người dùng</h1>
+            <p>Danh sách tài khoản khách hàng đăng ký trên hệ thống thực tế từ database.</p>
+          </div>
+        </section>
+        <section class="sk-card">
+          <div class="sk-section-head">
+            <div>
+              <span class="sk-kicker">User database</span>
+              <h2>Danh sách người dùng</h2>
+            </div>
+            <input class="sk-input" id="adminUserSearch" placeholder="Tìm username/email..." style="max-width:280px" oninput="renderAdminUsers()" />
+          </div>
+          <div class="sk-table-wrap">
+            <table class="sk-table">
+              <thead>
+                <tr>
+                  <th>User / Họ tên</th>
+                  <th>Email</th>
+                  <th>Quyền hạn</th>
+                  <th>Trạng thái</th>
+                  <th>Số dư ví</th>
+                  <th>Ngày tạo tài khoản</th>
+                  <th>Đăng nhập gần nhất</th>
+                </tr>
+              </thead>
+              <tbody id="adminUsersTable">
+                <tr><td colspan="7">Đang tải...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+      <!-- TAB 3: SẢN PHẨM & API -->
+      <div id="products-section" class="admin-section" style="display: none;">
+        <section class="sk-page-title">
+          <div>
+            <h1>Sản phẩm & API Liên kết</h1>
+            <p>Cấu hình sản phẩm, quản lý gói dịch vụ và cài đặt ID API đối tác để tự động hóa giao hàng.</p>
+          </div>
+          <button class="sk-btn sk-btn-primary" type="button" onclick="openProductModal()"><i class="fa-solid fa-plus"></i> Thêm sản phẩm</button>
+        </section>
+
+        <!-- Dynamic summary stats row -->
+        <section class="sk-grid sk-grid-4" id="products-stats-row" style="margin-bottom: 24px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
+          <div class="sk-stat">
+            <span class="sk-stat-icon"><i class="fa-solid fa-boxes-stacked"></i></span>
+            <div>
+              <p>Tổng sản phẩm</p>
+              <b id="prodStatTotal">0</b>
+            </div>
+          </div>
+          <div class="sk-stat">
+            <span class="sk-stat-icon"><i class="fa-solid fa-code-merge"></i></span>
+            <div>
+              <p>Liên kết API</p>
+              <b id="prodStatApi">0</b>
+            </div>
+          </div>
+          <div class="sk-stat">
+            <span class="sk-stat-icon"><i class="fa-solid fa-triangle-exclamation"></i></span>
+            <div>
+              <p>Hết hàng / Hết kho</p>
+              <b id="prodStatOutOfStock">0</b>
+            </div>
+          </div>
+          <div class="sk-stat">
+            <span class="sk-stat-icon"><i class="fa-solid fa-hand-holding-dollar"></i></span>
+            <div>
+              <p>Lợi nhuận gộp TB</p>
+              <b id="prodStatMargin">0%</b>
+            </div>
+          </div>
+        </section>
+
+        <section class="sk-card">
+          <div class="sk-section-head">
+            <div>
+              <span class="sk-kicker">Product inventory</span>
+              <h2>Danh sách sản phẩm & API đối tác</h2>
+            </div>
+            <input class="sk-input" id="adminProductSearch" placeholder="Tìm sản phẩm..." style="max-width:280px" oninput="renderAdminProducts()" />
+          </div>
+          <div id="adminProductsTable" class="sk-products-list">
+            <div style="text-align: center; padding: 24px; color: var(--muted);"><i class="fa-solid fa-spinner fa-spin"></i> Đang tải danh sách sản phẩm...</div>
+          </div>
+        </section>
+      </div>
+
+      <!-- TAB 4: NHẬT KÝ ĐẦY ĐỦ -->
+      <div id="security-section" class="admin-section" style="display: none;">
+        <section class="sk-page-title">
+          <div>
+            <h1>Nhật ký bảo mật</h1>
+            <p>Danh sách toàn bộ các lượt thử đăng nhập của người dùng để giám sát bảo mật hệ thống.</p>
+          </div>
+        </section>
+        <section class="sk-card">
+          <div class="sk-section-head">
+            <div>
+              <span class="sk-kicker">Security logs</span>
+              <h2>Nhật ký đăng nhập chi tiết</h2>
+            </div>
+          </div>
+          <div class="sk-table-wrap">
+            <table class="sk-table">
+              <thead>
+                <tr>
+                  <th>Tài khoản</th>
+                  <th>IP Address</th>
+                  <th>Kết quả</th>
+                  <th>Lý do</th>
+                  <th>Thời gian ghi nhận</th>
+                </tr>
+              </thead>
+              <tbody id="adminLoginLogsTable">
+                <tr><td colspan="5">Đang tải...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+      <!-- TAB 5: CẤU HÌNH THÔNG BÁO -->
+      <div id="announcement-section" class="admin-section" style="display: none;">
+        <section class="sk-page-title">
+          <div>
+            <span class="sk-badge sk-badge-accent"><i class="fa-solid fa-bullhorn"></i> Announcement</span>
+            <h1 style="margin-top:12px">Cấu hình thông báo toàn trang</h1>
+            <p>Thông báo này sẽ hiển thị dưới dạng popup glassmorphism cho người dùng khi họ truy cập vào cửa hàng.</p>
+          </div>
+        </section>
+        
+        <section class="sk-card" style="max-width: 600px; margin-top: 20px;">
+          <div class="product-form-card" style="margin-bottom: 0;">
+            <h3 class="product-form-title"><i class="fa-solid fa-gear"></i> Thiết lập thông báo</h3>
+            
+            <div class="product-form-group" style="margin-bottom: 16px;">
+              <label for="announceTitle">Tiêu đề thông báo</label>
+              <input class="sk-input" id="announceTitle" placeholder="Ví dụ: 🔥 KHUYẾN MÃI LỚN..." style="width: 100%;" />
+            </div>
+            
+            <div class="product-form-group" style="margin-bottom: 16px;">
+              <label for="announceContent">Nội dung thông báo</label>
+              <textarea class="sk-input" id="announceContent" rows="6" style="width: 100%; height: 160px; resize: vertical;" placeholder="Nhập nội dung thông báo hiển thị cho khách hàng..."></textarea>
+            </div>
+            
+            <div class="product-form-group" style="margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+              <input type="checkbox" id="announceActive" style="width: 18px; height: 18px; cursor: pointer;" />
+              <label for="announceActive" style="margin: 0; cursor: pointer; text-transform: none; font-size: 13px; font-weight: 700;">Hiển thị thông báo này trên trang chủ</label>
+            </div>
+            
+            <button class="sk-btn sk-btn-accent" type="button" onclick="saveAnnouncement()" style="width: 100%; justify-content: center; height: 40px; font-weight: 700;"><i class="fa-solid fa-floppy-disk"></i> Lưu thông báo</button>
+          </div>
+        </section>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- Modal Thêm/Sửa Sản Phẩm -->
+  <div id="productModal" class="sk-modal opacity-0 pointer-events-none">
+    <div class="sk-modal-card">
+      <div class="sk-section-head">
+        <h2 id="modalTitle">Thêm sản phẩm mới</h2>
+        <button class="sk-icon-btn" type="button" onclick="closeProductModal()" aria-label="Đóng"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      
+      <form id="productForm" onsubmit="saveProduct(event)">
+        <input type="hidden" id="prodId" />
+        
+        <div class="product-form-card">
+          <h3 class="product-form-title"><i class="fa-solid fa-box"></i> Thông tin sản phẩm</h3>
+
+          <div class="product-form-grid-2">
+            <div class="product-form-group">
+              <label for="prodName">Tên sản phẩm *</label>
+              <input class="sk-input" id="prodName" required placeholder="Ví dụ: Netflix Premium" style="width: 100%;" />
+            </div>
+            <div class="product-form-group">
+              <label for="prodSlug">Slug duy nhất *</label>
+              <input class="sk-input" id="prodSlug" required placeholder="Ví dụ: netflix-premium" style="width: 100%;" />
+            </div>
+          </div>
+
+          <div class="product-form-grid-3">
+            <div class="product-form-group">
+              <label for="prodCat">Danh mục *</label>
+              <select class="sk-input" id="prodCat" required style="width: 100%;"></select>
+            </div>
+            <div class="product-form-group">
+              <label for="prodIcon">FontAwesome Icon</label>
+              <input class="sk-input" id="prodIcon" placeholder="Ví dụ: fa-tv" value="fa-box" style="width: 100%;" />
+            </div>
+            <div class="product-form-group">
+              <label for="prodRate">Đánh giá mẫu</label>
+              <input class="sk-input" id="prodRate" type="number" min="0" max="5" step="0.1" placeholder="Ví dụ: 4.8" value="5.0" style="width: 100%;" />
+            </div>
+          </div>
+
+          <div class="product-form-grid-2">
+            <div class="product-form-group">
+              <label for="prodImageSelect">Chọn ảnh từ thư viện</label>
+              <select class="sk-input" id="prodImageSelect" onchange="onImageSelectChange()" style="width: 100%;">
+                <option value="">-- Chọn ảnh sẵn có --</option>
+              </select>
+            </div>
+            <div class="product-form-group">
+              <label for="prodImage">Đường dẫn ảnh sản phẩm</label>
+              <input class="sk-input" id="prodImage" placeholder="Ví dụ: assets/img/ảnh sản phẩm/netflix.png" style="width: 100%;" />
+            </div>
+          </div>
+
+          <div class="product-form-group" style="margin-bottom: 14px;">
+            <label for="prodPrice">Giá bán (VND)</label>
+            <input class="sk-input" id="prodPrice" type="number" min="0" step="1" placeholder="Ví dụ: 65000" style="width: 100%;" />
+          </div>
+
+          <div class="product-form-group" style="margin-bottom: 14px;">
+            <label for="prodDesc">Mô tả ngắn</label>
+            <textarea class="sk-input" id="prodDesc" rows="2" style="width: 100%;" placeholder="Mô tả tóm tắt tính năng sản phẩm..."></textarea>
+          </div>
+
+          <div class="product-form-group">
+            <label for="prodLongDesc">Mô tả chi tiết / Hướng dẫn</label>
+            <textarea class="sk-input" id="prodLongDesc" rows="4" style="width: 100%;" placeholder="Hướng dẫn sử dụng, bảo hành..."></textarea>
+          </div>
+        </div>
+
+        <div class="product-form-card">
+          <h3 class="product-form-title"><i class="fa-solid fa-network-wired"></i> API, giá vốn & tồn kho</h3>
+          <div class="product-form-grid-4" style="margin-bottom: 0;">
+            <div class="product-form-group">
+              <label for="prodVendorId">vendor_id</label>
+              <input class="sk-input" id="prodVendorId" type="number" min="1" step="1" placeholder="Ví dụ: 1" style="width: 100%;" />
+              <span class="product-form-help">ID trong bảng vendors.</span>
+            </div>
+            <div class="product-form-group">
+              <label for="prodVendorProductCode">vendor_product_code</label>
+              <input class="sk-input" id="prodVendorProductCode" placeholder="Mã API/sản phẩm NCC" style="width: 100%;" />
+              <span class="product-form-help">Dùng khi gói không có mã riêng.</span>
+            </div>
+            <div class="product-form-group">
+              <label for="prodCostPrice">cost_price</label>
+              <input class="sk-input" id="prodCostPrice" type="number" min="0" step="1" placeholder="Giá vốn" style="width: 100%;" />
+            </div>
+            <div class="product-form-group">
+              <label for="prodStock">stock</label>
+              <input class="sk-input" id="prodStock" type="number" min="0" step="1" placeholder="Bỏ trống = không giới hạn" style="width: 100%;" />
+            </div>
+          </div>
+        </div>
+
+        <!-- QUẢN LÝ BIẾN THỂ (VARIANTS) VÀ API ĐỐI TÁC -->
+        <div class="product-form-card" style="background: rgba(99, 102, 241, 0.06); border-color: rgba(99, 102, 241, 0.2); margin-bottom: 24px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <h3 style="margin: 0; font-size: 13px; font-weight: 800;"><i class="fa-solid fa-tags"></i> Phân loại gói & Liên kết API</h3>
+            <button type="button" class="sk-btn sk-btn-soft" style="padding: 4px 10px; font-size: 11px;" onclick="addVariantRow()"><i class="fa-solid fa-plus"></i> Thêm gói</button>
+          </div>
+          <div class="variant-row" style="margin-bottom: 6px; color: var(--muted); font-size: 10px; font-weight: 900; text-transform: uppercase;">
+            <span>Tên gói</span>
+            <span>Giá bán</span>
+            <span>Mã API</span>
+            <span>Giá vốn</span>
+            <span>Kho</span>
+            <span></span>
+          </div>
+          <div id="variantsContainer" style="display: grid; gap: 10px;">
+            <!-- Dòng variant mẫu -->
+          </div>
+        </div>
+
+        <div class="sk-actions" style="margin: 0; display: flex; justify-content: flex-end; gap: 10px;">
+          <button type="button" class="sk-btn sk-btn-soft" onclick="closeProductModal()">Hủy</button>
+          <button type="submit" class="sk-btn sk-btn-primary">Lưu sản phẩm</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="assets/js/icons.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script src="assets/js/admin.js"></script>
+  </div>
+</body>
+</html>

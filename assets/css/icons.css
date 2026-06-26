@@ -1,0 +1,114 @@
+/* ═══════════════════════════════════════════════════════
+   DG Store — Custom SVG Icon Stylesheet
+   Glow effects and premium micro-animations
+   ═══════════════════════════════════════════════════════ */
+
+.sk-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  transition: all var(--transition, 0.25s cubic-bezier(0.4, 0, 0.2, 1));
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.sk-icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  transition: all var(--transition, 0.25s cubic-bezier(0.4, 0, 0.2, 1));
+}
+
+/* Size Tokens */
+.sk-icon.sm {
+  width: 14px;
+  height: 14px;
+}
+
+.sk-icon.md {
+  width: 20px;
+  height: 20px;
+}
+
+.sk-icon.lg {
+  width: 28px;
+  height: 28px;
+}
+
+.sk-icon.xl {
+  width: 48px;
+  height: 48px;
+}
+
+/* Glow Filter Definitions (handled via SVG feGaussianBlur or CSS drop-shadow) */
+.sk-icon svg filter {
+  color-interpolation-filters: sRGB;
+}
+
+/* Micro-animations per Icon Type / Class */
+
+/* 1. Spin / Rotate (e.g., Loaders, Settings gears) */
+.sk-icon-spin svg {
+  animation: sk-spin 2s linear infinite;
+}
+@keyframes sk-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* 2. Hover Bounce (e.g., Navigation links) */
+.sk-icon-bounce:hover svg,
+.nav-item:hover .sk-icon-bounce svg,
+.sk-nav-link:hover .sk-icon-bounce svg {
+  transform: translateY(-3px);
+  filter: drop-shadow(0 4px 8px currentColor);
+}
+
+/* 3. Hover Rotate (e.g., Logo, Action buttons) */
+.sk-icon-rotate:hover svg,
+.sk-brand:hover .sk-icon-rotate svg {
+  transform: rotate(360deg) scale(1.1);
+}
+
+/* 4. Pulse / Glow scale (e.g., Active indicators, Carts, Badges) */
+.sk-icon-pulse:hover svg,
+.sk-cart-link:hover .sk-icon-pulse svg,
+.sk-btn:hover .sk-icon-pulse svg {
+  transform: scale(1.15);
+  filter: drop-shadow(0 0 8px currentColor);
+}
+
+/* 5. Heartbeat / Elastic (e.g., Likes, Support) */
+.sk-icon-heartbeat:hover svg {
+  animation: sk-heartbeat 0.8s cubic-bezier(0.25, 0.8, 0.25, 1) infinite alternate;
+}
+@keyframes sk-heartbeat {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.2); }
+}
+
+/* 6. Scan effect (e.g., Card scan) */
+.sk-icon-scan {
+  position: relative;
+}
+.sk-icon-scan::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--accent-light, #22d3ee);
+  box-shadow: 0 0 8px var(--accent, #06b6d4);
+  animation: sk-scan 2s ease-in-out infinite;
+  pointer-events: none;
+  opacity: 0;
+}
+.sk-icon-scan:hover::after {
+  opacity: 1;
+}
+@keyframes sk-scan {
+  0%, 100% { top: 0%; }
+  50% { top: 100%; }
+}

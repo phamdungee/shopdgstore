@@ -1,0 +1,8 @@
+node_modules/
+.env
+*.log
+.gemini/
+.agents/
+CassoTemp/
+tmp/
+*.local
