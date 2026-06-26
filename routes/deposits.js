@@ -353,7 +353,7 @@ const processTransactionsList = async (transactionsList) => {
         .from('wallet_transactions')
         .select('*')
         .eq('type', 'deposit')
-        .eq('status', 'pending')
+        .in('status', ['pending', 'expired', 'cancelled'])
         .in('content', depositCodes)
         .order('created_at', { ascending: true })
         .limit(1);
@@ -444,7 +444,7 @@ const processTransactionsList = async (transactionsList) => {
         })
         .eq('id', pendingTx.id)
         .is('external_ref', null)
-        .eq('status', 'pending')
+        .in('status', ['pending', 'expired', 'cancelled'])
         .select('*')
         .single();
 

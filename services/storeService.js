@@ -197,6 +197,12 @@ function writeDepositWebhookLog(entry) {
     ...entry
   };
 
+  const isVercel = process.env.VERCEL === '1';
+  if (isVercel) {
+    console.log('[Webhook Log]', JSON.stringify(payload));
+    return;
+  }
+
   try {
     const fs = require('fs');
     const logDir = path.join(__dirname, '..', 'logs');
