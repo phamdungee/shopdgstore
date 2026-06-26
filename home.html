@@ -743,25 +743,35 @@
 
     /* Header Responsive Optimizations */
     @media (max-width: 768px) {
-      .btn-login .btn-text {
+      .btn-login .btn-text,
+      .sk-btn .btn-text {
         display: none !important;
       }
       .btn-login {
         padding: 9px 12px !important;
       }
-      .nav-uinfo {
+      .nav-uinfo,
+      .sk-user-meta {
         display: none !important;
       }
-      .nav-user {
-        padding: 4px !important;
+      .nav-user,
+      .sk-user-chip {
+        padding: 0 !important;
         background: transparent !important;
         border: none !important;
         box-shadow: none !important;
       }
-      .btn-nav-a span {
+      .sk-user-avatar {
+        width: 36px !important;
+        height: 36px !important;
+        font-size: 13px !important;
+      }
+      .btn-nav-a span,
+      .sk-btn span {
         display: none !important;
       }
-      .btn-nav-a {
+      .btn-nav-a,
+      .sk-btn {
         padding: 8px !important;
         width: 36px !important;
         height: 36px !important;
@@ -1794,6 +1804,153 @@
       50% {
         opacity: 1;
       }
+    }
+
+    /* ── USER LOGGED IN CHIP & ACTIONS ON HOME ── */
+    #headerAuthActions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .sk-user-chip {
+      min-height: 38px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 4px 14px 4px 4px;
+      color: var(--text);
+      background: var(--glass-bg);
+      border: 1px solid var(--line);
+      border-radius: var(--r-full);
+      transition: var(--tr);
+      text-decoration: none;
+    }
+    .sk-user-chip:hover {
+      border-color: var(--brand-light);
+      background: rgba(255, 255, 255, 0.05);
+      box-shadow: var(--glow-brand);
+      transform: translateY(-1px);
+    }
+    body.light-mode .sk-user-chip {
+      background: rgba(15, 23, 42, 0.02);
+      border-color: var(--line);
+    }
+    body.light-mode .sk-user-chip:hover {
+      background: rgba(15, 23, 42, 0.05);
+    }
+    .sk-user-avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--brand-grad);
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 800;
+      box-shadow: 0 0 10px rgba(99, 102, 241, 0.4);
+    }
+    .sk-user-meta {
+      display: grid;
+      gap: 1px;
+      line-height: 1.2;
+      text-align: left;
+    }
+    .sk-user-meta strong {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .sk-user-meta small {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--accent);
+    }
+    body.light-mode .sk-user-meta small {
+      color: var(--brand);
+    }
+    .sk-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      height: 38px;
+      padding: 0 16px;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 10px;
+      background: var(--glass-bg);
+      border: 1px solid var(--line);
+      color: var(--text);
+      transition: var(--tr);
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .sk-btn:hover {
+      border-color: var(--brand-light);
+      background: rgba(255, 255, 255, 0.05);
+      transform: translateY(-2px);
+      box-shadow: var(--glow-brand);
+    }
+    body.light-mode .sk-btn {
+      background: rgba(15, 23, 42, 0.02);
+    }
+    body.light-mode .sk-btn:hover {
+      background: rgba(15, 23, 42, 0.05);
+    }
+    .sk-btn-accent {
+      background: var(--accent-grad);
+      border-color: transparent;
+      color: #111;
+      font-weight: 700;
+      box-shadow: 0 0 15px rgba(34, 211, 238, 0.3);
+    }
+    .sk-btn-accent:hover {
+      box-shadow: 0 0 25px rgba(34, 211, 238, 0.5);
+      filter: brightness(1.1);
+      border-color: transparent;
+    }
+    .sk-btn-soft {
+      background: var(--glass-bg);
+      border-color: var(--line);
+      color: var(--brand-light);
+    }
+    .sk-btn-soft:hover {
+      background: rgba(99, 102, 241, 0.1);
+      border-color: rgba(99, 102, 241, 0.3);
+    }
+    .sk-icon-btn {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      background: var(--glass-bg);
+      border: 1px solid var(--line);
+      color: var(--text-sub);
+      font-size: 14px;
+      transition: var(--tr);
+      cursor: pointer;
+    }
+    .sk-icon-btn:hover {
+      color: var(--brand-light);
+      border-color: var(--brand);
+      background: rgba(99, 102, 241, 0.08);
+      box-shadow: var(--glow-brand);
+    }
+    body.light-mode .sk-icon-btn {
+      background: rgba(15, 23, 42, 0.02);
+    }
+    body.light-mode .sk-icon-btn:hover {
+      background: rgba(15, 23, 42, 0.05);
+    }
+    .sk-logout-btn {
+      color: var(--danger) !important;
+    }
+    .sk-logout-btn:hover {
+      background: rgba(248, 113, 113, 0.1) !important;
+      border-color: var(--danger) !important;
+      box-shadow: 0 0 15px rgba(248, 113, 113, 0.3) !important;
     }
   </style>
 </head>
