@@ -189,9 +189,13 @@
       const adminLink = user.role === 'admin'
         ? '<a class="sk-btn sk-btn-accent" href="/admin.html"><i class="fa-solid fa-gauge-high"></i> <span class="btn-text">Admin</span></a>'
         : '';
+      const avatarHtml = user.avatarUrl
+        ? `<img class="sk-user-avatar" src="${escapeHtml(user.avatarUrl)}" alt="Avatar" style="object-fit: cover;" />`
+        : `<span class="sk-user-avatar">${escapeHtml(initial)}</span>`;
+
       container.innerHTML = `
         <a class="sk-user-chip" href="/profile.html" title="Mở tài khoản">
-          <span class="sk-user-avatar">${escapeHtml(initial)}</span>
+          ${avatarHtml}
           <span class="sk-user-meta">
             <strong>${safeName}</strong>
             <small>${formatMoney(user.balance)}</small>

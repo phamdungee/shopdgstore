@@ -148,6 +148,16 @@ function applyUserToProfile(user) {
     el.innerText = formatMoney(user.balance);
   });
 
+  // Render sidebar avatar
+  const sidebarAvatar = document.querySelector('.sk-user-mini .sk-avatar');
+  if (sidebarAvatar) {
+    if (user.avatarUrl) {
+      sidebarAvatar.innerHTML = `<img src="${escapeHtml(user.avatarUrl)}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" />`;
+    } else {
+      sidebarAvatar.innerHTML = `<i class="fa-solid fa-user"></i>`;
+    }
+  }
+
   setInfoCell(0, user.username || 'user');
   setInfoCell(1, user.email || 'Chưa cập nhật');
   setInfoCell(2, user.phone || 'Chưa cập nhật');
@@ -323,6 +333,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   const passwordForm = document.getElementById('current-password')?.closest('form');
   if (passwordForm) passwordForm.onsubmit = changePassword;
 
+  const fileInput = document.getElementById('input-avatar-file');
+  if (fileInput) {
+    fileInput.addEventListener('change', handleAvatarFileSelect);
+  }
+
   // Sync tab based on URL hash on page load
   handleHashChange();
 
@@ -366,6 +381,124 @@ function togglePasswordVisibility(inputId, button) {
     : '<i class="fa-solid fa-eye"></i>';
 }
 
+let tempAvatarUrl = null;
+
+function updateModalAvatarPreview(url) {
+  const previewContainer = document.getElementById('modal-avatar-preview');
+  if (!previewContainer) return;
+  
+  if (url) {
+    previewContainer.innerHTML = `<img src="${escapeHtml(url)}" alt="Preview Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" />`;
+  } else {
+    const displayName = currentUser?.fullName || currentUser?.username || 'U';
+    const initial = displayName.trim().charAt(0).toUpperCase();
+    previewContainer.innerHTML = `<span>${escapeHtml(initial)}</span>`;
+  }
+}
+
+window.selectPresetAvatar = function(src) {
+  let relativeSrc = src;
+  if (src.includes('assets/img/')) {
+    relativeSrc = src.substring(src.indexOf('assets/img/'));
+  }
+  
+  tempAvatarUrl = relativeSrc;
+  updateModalAvatarPreview(tempAvatarUrl);
+  
+  document.querySelectorAll('.preset-avatar-item').forEach(img => {
+    let imgRelative = img.getAttribute('src');
+    if (imgRelative === relativeSrc) {
+      img.classList.add('active');
+    } else {
+      img.classList.remove('active');
+    }
+  });
+};
+
+function handleAvatarFileSelect(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  if (!file.type.startsWith('image/')) {
+    alert('Vui lòng chọn tệp hình ảnh hợp lệ.');
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const img = new Image();
+    img.onload = function() {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const maxDim = 150;
+      
+      let width = img.width;
+      let height = img.height;
+      
+      if (width > height) {
+        if (width > maxDim) {
+          height = Math.round((height * maxDim) / width);
+          width = maxDim;
+        }
+      } else {
+        if (height > maxDim) {
+          width = Math.round((width * maxDim) / height);
+          height = maxDim;
+        }
+      }
+      
+      canvas.width = width;
+      canvas.height = height;
+      ctx.drawImage(img, 0, 0, width, height);
+      
+      const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+      
+      tempAvatarUrl = compressedDataUrl;
+      updateModalAvatarPreview(tempAvatarUrl);
+      
+      document.querySelectorAll('.preset-avatar-item').forEach(el => el.classList.remove('active'));
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+const modal = document.getElementById('edit-profile-modal');
+const inner = modal ? modal.querySelector('div') : null;
+
+function openEditModal() {
+  if (!modal || !inner) return;
+  modal.classList.remove('opacity-0', 'pointer-events-none');
+  inner.classList.remove('scale-95');
+  
+  const inputPhone = document.getElementById('input-phone');
+  if (inputPhone) inputPhone.value = currentUser?.phone || '';
+  
+  const inputFullname = document.getElementById('input-fullname');
+  if (inputFullname) inputFullname.value = currentUser?.fullName || currentUser?.username || '';
+
+  tempAvatarUrl = currentUser?.avatarUrl || null;
+  updateModalAvatarPreview(tempAvatarUrl);
+  
+  document.querySelectorAll('.preset-avatar-item').forEach(img => {
+    let imgRelative = img.getAttribute('src');
+    if (tempAvatarUrl && tempAvatarUrl === imgRelative) {
+      img.classList.add('active');
+    } else {
+      img.classList.remove('active');
+    }
+  });
+
+  const fileInput = document.getElementById('input-avatar-file');
+  if (fileInput) fileInput.value = '';
+}
+
+function closeEditModal() {
+  if (!modal || !inner) return;
+  modal.classList.add('opacity-0', 'pointer-events-none');
+  inner.classList.add('scale-95');
+}
+
 async function saveProfileChanges() {
   const phone = document.getElementById('input-phone')?.value.trim() || '';
   const fullName = document.getElementById('input-fullname')?.value.trim() || '';
@@ -373,7 +506,7 @@ async function saveProfileChanges() {
   try {
     const data = await authorizedFetch('/profile', {
       method: 'PATCH',
-      body: JSON.stringify({ phone, fullName })
+      body: JSON.stringify({ phone, fullName, avatarUrl: tempAvatarUrl })
     });
 
     currentUser = data.user;

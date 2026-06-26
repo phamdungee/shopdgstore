@@ -61,6 +61,7 @@ router.patch('/profile', authMiddleware, async (req, res) => {
   try {
     const fullName = normalizeString(req.body.fullName);
     const phone = normalizeString(req.body.phone);
+    const avatarUrl = req.body.avatarUrl !== undefined ? String(req.body.avatarUrl || '').trim() : undefined;
 
     if (fullName && fullName.length > 100) {
       return res.status(400).json({ ok: false, message: 'Họ tên không được vượt quá 100 ký tự' });
@@ -74,6 +75,10 @@ router.patch('/profile', authMiddleware, async (req, res) => {
       full_name: fullName || null,
       phone: phone || null
     };
+
+    if (avatarUrl !== undefined) {
+      updateData.avatar_url = avatarUrl || null;
+    }
 
     const { data: user, error } = await supabase
       .from('users')

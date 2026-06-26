@@ -106,9 +106,10 @@
   <main class="sk-layout sk-profile-page">
     <aside class="sk-sidebar sk-profile-sidebar">
       <div class="sk-user-mini">
-        <div class="avatar-glow-container">
+        <div class="avatar-glow-container" onclick="openEditModal()" style="cursor: pointer;" title="Đổi ảnh đại diện">
           <div class="avatar-glow-ring"></div>
           <div class="sk-avatar"><i class="fa-solid fa-user"></i></div>
+          <div class="avatar-hover-overlay"><i class="fa-solid fa-camera"></i></div>
         </div>
         <div>
           <b class="dynamic-sync-username">user</b>
@@ -266,15 +267,41 @@
   </main>
 
   <div class="sk-modal opacity-0 pointer-events-none" id="edit-profile-modal">
-    <div class="sk-modal-card">
+    <div class="sk-modal-card" style="width: min(520px, 95vw);">
       <div class="sk-section-head">
         <h2>Chỉnh sửa hồ sơ</h2>
         <button class="sk-icon-btn" type="button" onclick="closeEditModal()" aria-label="Đóng"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div class="sk-content">
+        <!-- Avatar Edit Section -->
+        <div class="sk-avatar-edit-container">
+          <div class="modal-avatar-preview-wrapper">
+            <div class="avatar-glow-ring" style="inset: -3px;"></div>
+            <div id="modal-avatar-preview" class="sk-avatar">
+              <i class="fa-solid fa-user"></i>
+            </div>
+          </div>
+          
+          <button class="sk-btn sk-btn-soft" type="button" onclick="document.getElementById('input-avatar-file').click();" style="height: 34px; padding: 0 14px; font-size: 12.5px;">
+            <i class="fa-solid fa-cloud-arrow-up"></i> Tải ảnh từ thiết bị
+          </button>
+          <input type="file" id="input-avatar-file" accept="image/*" style="display:none;" />
+          
+          <div class="presets-section">
+            <label>Hoặc chọn ảnh đại diện có sẵn</label>
+            <div class="avatar-presets-grid">
+              <img class="preset-avatar-item" src="assets/img/nguoi-dan-ong-chau-a-deo-kinh-va-co-rau-dung-thu-gian-hinh-minh-hoa-avatar-vector-2d-khuon-mat-nhan-vat-hoat-hinh-nam-truong-thanh-vui-ve-chup-anh-chan-dung-tu-t.avif" alt="Preset 1" onclick="selectPresetAvatar(this.src)" />
+              <img class="preset-avatar-item" src="assets/img/images.jpg" alt="Preset 2" onclick="selectPresetAvatar(this.src)" />
+              <img class="preset-avatar-item" src="assets/img/images (1).jpg" alt="Preset 3" onclick="selectPresetAvatar(this.src)" />
+              <img class="preset-avatar-item" src="assets/img/anh-ho-so-nguoi-dan-ong_24908-81754.avif" alt="Preset 4" onclick="selectPresetAvatar(this.src)" />
+              <img class="preset-avatar-item" src="assets/img/anh-dai-dien-zalo-30.jpg" alt="Preset 5" onclick="selectPresetAvatar(this.src)" />
+            </div>
+          </div>
+        </div>
+
         <div class="sk-field"><label>Số điện thoại</label><input id="input-phone" type="text" value="" /></div>
         <div class="sk-field"><label>Họ và tên</label><input id="input-fullname" type="text" value="" /></div>
-        <div class="sk-actions" style="justify-content:flex-end">
+        <div class="sk-actions" style="justify-content:flex-end; margin-top: 24px;">
           <button class="sk-btn" type="button" onclick="closeEditModal()">Đóng</button>
           <button class="sk-btn sk-btn-primary" type="button" onclick="saveProfileChanges()">Lưu thay đổi</button>
         </div>
