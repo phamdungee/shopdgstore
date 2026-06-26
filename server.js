@@ -68,17 +68,25 @@ app.use(express.static(path.join(__dirname), {
 
 registerRoutes(app);
 
-try {
-  startBotScheduler();
-  console.log('Waybill tracking scheduler started.');
-  startTelegramPolling();
-  console.log('Telegram polling started.');
-} catch (err) {
-  console.error('Cannot start tracking background jobs:', err.message);
+const isVercel = process.env.VERCEL === '1';
+
+if (!isVercel) {
+  try {
+    startBotScheduler();
+    console.log('Waybill tracking scheduler started.');
+    startTelegramPolling();
+    console.log('Telegram polling started.');
+  } catch (err) {
+    console.error('Cannot start tracking background jobs:', err.message);
+  }
+
+  app.listen(PORT, () => {
+    console.log(`Server running at: http://localhost:${PORT}`);
+    console.log(`Login page: http://localhost:${PORT}/login.html`);
+    startCassoAutoPolling();
+  });
+} else {
+  console.log('Running server in Vercel Serverless environment.');
 }
 
-app.listen(PORT, () => {
-  console.log(`Server running at: http://localhost:${PORT}`);
-  console.log(`Login page: http://localhost:${PORT}/login.html`);
-  startCassoAutoPolling();
-});
+module.exports = app;

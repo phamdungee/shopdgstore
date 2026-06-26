@@ -1,0 +1,76 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "server.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "server.js"
+    },
+    {
+      "src": "/webhook/(.*)",
+      "dest": "server.js"
+    },
+    {
+      "src": "/register-webhook",
+      "dest": "server.js"
+    },
+    {
+      "src": "/product/sanpham/(.*)",
+      "dest": "server.js"
+    },
+    {
+      "src": "/assets/(.*)",
+      "dest": "/assets/$1"
+    },
+    {
+      "src": "/login",
+      "dest": "/login.html"
+    },
+    {
+      "src": "/lichsudonmxh",
+      "dest": "/lichsudonmxh.html"
+    },
+    {
+      "src": "/nap-tien",
+      "dest": "/nap-tien.html"
+    },
+    {
+      "src": "/cart",
+      "dest": "/cart.html"
+    },
+    {
+      "src": "/profile",
+      "dest": "/profile.html"
+    },
+    {
+      "src": "/tracking",
+      "dest": "/tracking.html"
+    },
+    {
+      "src": "/tuongtacmxh",
+      "dest": "/tuongtacmxh.html"
+    },
+    {
+      "src": "/admin",
+      "dest": "/admin.html"
+    },
+    {
+      "src": "/index",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/home",
+      "dest": "/home.html"
+    },
+    {
+      "src": "/$",
+      "dest": "server.js"
+    }
+  ],
+  "cleanUrls": true
+}
