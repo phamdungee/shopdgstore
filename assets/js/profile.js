@@ -463,9 +463,6 @@ function handleAvatarFileSelect(event) {
   reader.readAsDataURL(file);
 }
 
-const modal = document.getElementById('edit-profile-modal');
-const inner = modal ? modal.querySelector('div') : null;
-
 function openEditModal() {
   if (!modal || !inner) return;
   modal.classList.remove('opacity-0', 'pointer-events-none');
