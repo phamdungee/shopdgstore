@@ -1,15 +1,22 @@
 {
   "version": 2,
-  "cleanUrls": true,
   "builds": [
-    { "src": "api/index.js", "use": "@vercel/node" }
+    {
+      "src": "server.js",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": [
+          "*.html",
+          "assets/**",
+          "product/**",
+          "config/*.json",
+          "bottracking/*.json",
+          "bottracking/*.html"
+        ]
+      }
+    }
   ],
   "routes": [
-    { "handle": "filesystem" },
-    { "src": "/api/(.*)", "dest": "/api/index.js" },
-    { "src": "/webhook/(.*)", "dest": "/api/index.js" },
-    { "src": "/register-webhook", "dest": "/api/index.js" },
-    { "src": "/product/sanpham/(.*)", "dest": "/api/index.js" },
-    { "src": "/", "dest": "/api/index.js" }
+    { "src": "/(.*)", "dest": "server.js" }
   ]
 }
