@@ -35,6 +35,8 @@ const {
 const processedCassoIds = new Set();
 const MAX_PROCESSED_CASSO_IDS = 2000;
 let depositsTableAvailable = true;
+const isVercel = process.env.VERCEL === '1';
+const lastCheckMap = new Map();
 
 function getCassoTransactionId(item = {}) {
   return normalizeString(
@@ -160,8 +162,10 @@ router.post('/create', authMiddleware, async (req, res) => {
 
     const qrUrl = depositQrUrl(amount, memo);
 
-    // Kích hoạt tiến trình tự động quét giao dịch nền
-    startCassoAutoPolling();
+    // Kích hoạt tiến trình tự động quét giao dịch nền nếu không phải Vercel
+    if (!isVercel) {
+      startCassoAutoPolling();
+    }
 
     return res.status(201).json({
       ok: true,
@@ -213,9 +217,27 @@ router.get('/status/:id', authMiddleware, async (req, res) => {
       if (expiredTx) transaction.status = expiredTx.status;
     }
 
-    // Tự động kích hoạt lại tiến trình quét Casso nếu hóa đơn đang kiểm tra vẫn pending
+    // Kiểm tra trạng thái nạp tiền tự động
     if (transaction.status === 'pending') {
-      startCassoAutoPolling();
+      if (isVercel) {
+        // Trên Vercel, do không hỗ trợ tiến trình chạy ngầm (setInterval), chúng ta chạy đồng bộ trực tiếp khi người dùng check status
+        await checkCassoSyncOnVercel(userId, id);
+        // Lấy lại thông tin hóa đơn mới nhất sau khi quét trực tiếp
+        const { data: updatedTx } = await supabase
+          .from('wallet_transactions')
+          .select('id, transaction_code, status, amount, balance_after, created_at')
+          .eq('id', id)
+          .eq('user_id', userId)
+          .single();
+
+        if (updatedTx) {
+          transaction.status = updatedTx.status;
+          transaction.balance_after = updatedTx.balance_after;
+        }
+      } else {
+        // Ở môi trường local/VPS thông thường, chạy quét nền như cũ
+        startCassoAutoPolling();
+      }
     }
 
     const { data: user } = await supabase
@@ -627,10 +649,58 @@ const processTransactionsList = async (transactionsList) => {
   return processedCount;
 };
 
+async function checkCassoSyncOnVercel(userId, transactionId) {
+  const now = Date.now();
+  const lastCheck = lastCheckMap.get(transactionId) || 0;
+  
+  if (now - lastCheck < 15000) {
+    console.log(`[Vercel Sync] Skip checking Casso for tx ${transactionId} (rate-limited, last check was ${Math.round((now - lastCheck) / 1000)}s ago)`);
+    return;
+  }
+  lastCheckMap.set(transactionId, now);
+
+  if (!CASSO_API_KEY) {
+    console.warn('[Vercel Sync] CASSO_API_KEY is not configured');
+    return;
+  }
+  const accountNumber = DEPOSIT_BANK.account;
+
+  console.log(`[Vercel Sync] Triggering casso sync for account ${accountNumber}...`);
+  try {
+    try {
+      await cassoClient.post('/sync', {
+        bank_acc_id: accountNumber
+      });
+    } catch (syncErr) {
+      console.warn('[Vercel Sync] Casso immediate sync API trigger failed (rate limits likely):', syncErr.message);
+    }
+
+    // Chờ 1.5 giây để ngân hàng đồng bộ dữ liệu tới Casso
+    await new Promise(resolve => setTimeout(resolve, 1500));
+
+    console.log('[Vercel Sync] Fetching recent transactions from Casso...');
+    const cassoRes = await cassoClient.get('/transactions', {
+      params: cassoTransactionParams()
+    });
+
+    const records = getCassoRecords(cassoRes.data).slice(0, 10);
+    console.log(`[Vercel Sync] Fetched ${records.length} records. Processing...`);
+    if (records.length > 0) {
+      const processedCount = await processTransactionsList(records);
+      if (processedCount > 0) {
+        console.log(`[Vercel Sync] Processed and matched ${processedCount} transactions.`);
+      }
+    }
+  } catch (err) {
+    console.error('[Vercel Sync] Error in synchronous check:', err.message);
+  }
+}
+
 // Tiến trình tự động quét giao dịch nền Casso khi có hóa đơn đang chờ
 let cassoPollInterval = null;
 
 const startCassoAutoPolling = () => {
+  if (isVercel) return;
   if (cassoPollInterval) return;
 
   console.log('🤖 Khởi chạy tiến trình tự động quét giao dịch Casso (15s/lần)...');
