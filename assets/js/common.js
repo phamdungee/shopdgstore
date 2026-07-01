@@ -126,7 +126,7 @@
       toast.style.transform = 'translateX(40px)';
       toast.style.transition = 'all 0.3s var(--ease-smooth)';
       setTimeout(() => toast.remove(), 300);
-    }, 3500);
+    }, 3000);
   }
 
   function getAbsoluteImageUrl(url) {
@@ -284,4 +284,18 @@
     syncHeaderAuth();
     hideGenericPreloader();
   }
+
+  window.downloadDeliveryResult = function() {
+    const text = document.getElementById('deliveryResultText').value;
+    if (!text) return;
+    const blob = new Blob([text], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'Thong_tin_tai_khoan.txt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
 })();

@@ -10,10 +10,19 @@ function plainStatus(value) {
     .replace(/[\u0300-\u036f]/g, '');
 }
 
-function successStatus(payload) {
+function successStatus(payload, action) {
   if (Array.isArray(payload)) return true;
   if (!payload || typeof payload !== 'object') return false;
   if (payload.status === true || payload.success === true) return true;
+  if (payload.error || payload.err) return false;
+
+  if (action === 'balance') {
+    return payload.balance !== undefined || payload.sodu !== undefined || payload.amount !== undefined
+      || (payload.data && payload.data.money !== undefined);
+  }
+  if (action === 'services') {
+    return Array.isArray(payload) || payload.products !== undefined || payload.categories !== undefined || payload.data !== undefined;
+  }
 
   const status = plainStatus(payload.status || payload.success || payload.message || payload.msg);
   return status === 'true' || status === 'success' || status.includes('thanh cong');
@@ -47,7 +56,30 @@ function normalizeProductItem(item) {
 
 function balanceFrom(payload) {
   if (!payload || typeof payload !== 'object' || Array.isArray(payload)) return 0;
-  return parseMoney(payload.balance ?? payload.sodu ?? payload.soduWeb ?? payload.money ?? payload.credit ?? payload.amount);
+  // Check top-level keys first, then nested data object (e.g. CloneNPA: { data: { money: "8060.00" } })
+  const topLevel = payload.balance ?? payload.sodu ?? payload.soduWeb ?? payload.money ?? payload.credit ?? payload.amount;
+  if (topLevel !== undefined && topLevel !== null) return parseMoney(topLevel);
+  if (payload.data && typeof payload.data === 'object') {
+    return parseMoney(payload.data.money ?? payload.data.balance ?? payload.data.sodu ?? payload.data.credit ?? payload.data.amount);
+  }
+  return 0;
+}
+
+function resolveUrl(api_url, path) {
+  const base = String(api_url || '').replace(/\/+$/, '');
+  const cleanPath = String(path || '').replace(/^\/+/, '');
+  
+  if (!cleanPath) return base;
+  
+  const lowerBase = base.toLowerCase();
+  const lowerPath = cleanPath.toLowerCase();
+  
+  if (lowerPath.startsWith('api/') && (lowerBase.endsWith('/api') || lowerBase.includes('/api/'))) {
+    const pathWithoutApi = cleanPath.substring(4);
+    return base + (pathWithoutApi ? '/' + pathWithoutApi : '');
+  }
+  
+  return base + '/' + cleanPath;
 }
 
 function createCloneNpaAdapter(vendor) {
@@ -55,7 +87,6 @@ function createCloneNpaAdapter(vendor) {
   const apiKey = vendor.api_key;
   
   const client = axios.create({
-    baseURL,
     timeout: REQUEST_TIMEOUT_MS,
     headers: {
       Accept: 'application/json'
@@ -66,20 +97,20 @@ function createCloneNpaAdapter(vendor) {
     async buy(productCode, quantity) {
       const buyQuantity = parseStock(quantity) || 1;
       
-      // Submit as form data (x-www-form-urlencoded) for compatibility with clone site APIs
       const params = new URLSearchParams();
       params.append('action', 'buyProduct');
       params.append('id', String(productCode));
       params.append('amount', String(buyQuantity));
       params.append('api_key', apiKey);
 
-      const response = await client.post('/api/buy_product', params, {
+      const url = resolveUrl(baseURL, '/api/buy_product');
+      const response = await client.post(url, params, {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
         }
       });
 
-      const ok = successStatus(response.data);
+      const ok = successStatus(response.data, 'buy');
       const accounts = ok && response.data ? (response.data.data || response.data.accounts || response.data.result) : null;
 
       return {
@@ -90,7 +121,7 @@ function createCloneNpaAdapter(vendor) {
         httpStatus: response.status,
         requestPayload: {
           method: 'POST',
-          endpoint: '/api/buy_product',
+          endpoint: url,
           action: 'buyProduct',
           id: productCode,
           amount: buyQuantity
@@ -99,10 +130,11 @@ function createCloneNpaAdapter(vendor) {
     },
 
     async getBalance() {
-      const response = await client.get('/api/profile.php', {
+      const url = resolveUrl(baseURL, '/api/profile.php');
+      const response = await client.get(url, {
         params: { api_key: apiKey }
       });
-      const ok = successStatus(response.data);
+      const ok = successStatus(response.data, 'balance');
 
       return {
         success: ok,
@@ -112,16 +144,17 @@ function createCloneNpaAdapter(vendor) {
         httpStatus: response.status,
         requestPayload: {
           method: 'GET',
-          endpoint: '/api/profile.php'
+          endpoint: url
         }
       };
     },
 
     async getList() {
-      const response = await client.get('/api/products.php', {
+      const url = resolveUrl(baseURL, '/api/products.php');
+      const response = await client.get(url, {
         params: { api_key: apiKey }
       });
-      const ok = successStatus(response.data);
+      const ok = successStatus(response.data, 'services');
       
       let list = [];
       if (ok && response.data) {
@@ -173,7 +206,7 @@ function createCloneNpaAdapter(vendor) {
         httpStatus: response.status,
         requestPayload: {
           method: 'GET',
-          endpoint: '/api/products.php'
+          endpoint: url
         }
       };
     }

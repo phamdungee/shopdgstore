@@ -488,7 +488,7 @@ async function findUserByUsernameOrEmail(usernameOrEmail) {
   const { data, error } = await supabase
     .from('users')
     .select('id, username, email, phone, full_name, password_hash, role, balance, status, email_verified, avatar_url, created_at, last_login_at')
-    .or(`username.eq.${value},email.eq.${value}`)
+    .or(`username.ilike.${value},email.ilike.${value}`)
     .limit(1);
 
   if (error) throw error;

@@ -10,11 +10,18 @@ function plainStatus(value) {
     .replace(/[\u0300-\u036f]/g, '');
 }
 
-function successStatus(payload) {
+function successStatus(payload, action) {
   if (Array.isArray(payload)) return true;
   if (!payload || typeof payload !== 'object') return false;
-  if (payload.status === true || payload.success === true || payload.order) return true;
+  if (payload.status === true || payload.success === true || payload.order || payload.order_id) return true;
   if (payload.error) return false;
+
+  if (action === 'balance') {
+    return payload.balance !== undefined || payload.sodu !== undefined || payload.soduWeb !== undefined;
+  }
+  if (action === 'services') {
+    return Array.isArray(payload) || (typeof payload === 'object' && !payload.error);
+  }
 
   const status = plainStatus(payload.status || payload.success || payload.message || payload.msg);
   return status === 'true' || status === 'success' || status.includes('thanh cong');
@@ -51,12 +58,28 @@ function balanceFrom(payload) {
   return parseMoney(payload.balance ?? payload.sodu ?? payload.soduWeb ?? payload.money ?? payload.credit);
 }
 
+function resolveUrl(api_url, path) {
+  const base = String(api_url || '').replace(/\/+$/, '');
+  const cleanPath = String(path || '').replace(/^\/+/, '');
+  
+  if (!cleanPath) return base;
+  
+  const lowerBase = base.toLowerCase();
+  const lowerPath = cleanPath.toLowerCase();
+  
+  if (lowerPath.startsWith('api/') && (lowerBase.endsWith('/api') || lowerBase.includes('/api/'))) {
+    const pathWithoutApi = cleanPath.substring(4);
+    return base + (pathWithoutApi ? '/' + pathWithoutApi : '');
+  }
+  
+  return base + '/' + cleanPath;
+}
+
 function createTramMmoAdapter(vendor) {
   const baseURL = String(vendor.api_url || 'https://trammmo.com/api/v2').replace(/\/+$/, '');
   const apiKey = vendor.api_key;
   
   const client = axios.create({
-    baseURL,
     timeout: REQUEST_TIMEOUT_MS,
     headers: {
       Accept: 'application/json'
@@ -74,13 +97,14 @@ function createTramMmoAdapter(vendor) {
       params.append('quantity', String(buyQuantity));
       params.append('link', 'https://dgstore.local/order'); // safe fallback/placeholder link for SMM API
 
-      const response = await client.post('', params, {
+      const url = resolveUrl(baseURL, '');
+      const response = await client.post(url, params, {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
         }
       });
 
-      const ok = successStatus(response.data);
+      const ok = successStatus(response.data, 'buy');
       const orderId = ok && response.data ? (response.data.order || response.data.order_id) : null;
 
       return {
@@ -91,7 +115,7 @@ function createTramMmoAdapter(vendor) {
         httpStatus: response.status,
         requestPayload: {
           method: 'POST',
-          endpoint: '/',
+          endpoint: url,
           action: 'add',
           service: productCode,
           quantity: buyQuantity,
@@ -105,12 +129,13 @@ function createTramMmoAdapter(vendor) {
       params.append('key', apiKey);
       params.append('action', 'balance');
 
-      const response = await client.post('', params, {
+      const url = resolveUrl(baseURL, '');
+      const response = await client.post(url, params, {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
         }
       });
-      const ok = successStatus(response.data);
+      const ok = successStatus(response.data, 'balance');
 
       return {
         success: ok,
@@ -120,7 +145,7 @@ function createTramMmoAdapter(vendor) {
         httpStatus: response.status,
         requestPayload: {
           method: 'POST',
-          endpoint: '/',
+          endpoint: url,
           action: 'balance'
         }
       };
@@ -131,13 +156,14 @@ function createTramMmoAdapter(vendor) {
       params.append('key', apiKey);
       params.append('action', 'services');
 
-      const response = await client.post('', params, {
+      const url = resolveUrl(baseURL, '');
+      const response = await client.post(url, params, {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
         }
       });
       
-      const ok = successStatus(response.data);
+      const ok = successStatus(response.data, 'services');
       let list = [];
       if (ok && response.data) {
         list = Array.isArray(response.data) ? response.data : Object.values(response.data);
@@ -151,7 +177,7 @@ function createTramMmoAdapter(vendor) {
         httpStatus: response.status,
         requestPayload: {
           method: 'POST',
-          endpoint: '/',
+          endpoint: url,
           action: 'services'
         }
       };

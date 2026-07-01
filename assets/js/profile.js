@@ -47,7 +47,11 @@ function roleLabel(role) {
 }
 
 function showProfileMessage(message) {
-  alert(message);
+  if (window.showToast) {
+    window.showToast(message, true);
+  } else {
+    alert(message);
+  }
 }
 
 function hidePreloader() {
@@ -277,8 +281,21 @@ function switchProfileTab(tabTarget) {
     document.getElementById(`menu-${id}`)?.classList.remove('is-active');
   });
 
-  document.getElementById(`tab-content-${tabTarget}`)?.classList.remove('hidden');
+  const targetEl = document.getElementById(`tab-content-${tabTarget}`);
+  if (targetEl) {
+    targetEl.classList.remove('hidden');
+    // On mobile screens, scroll down to the content so user knows it changed
+    if (window.innerWidth <= 992) {
+      targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+
   document.getElementById(`menu-${tabTarget}`)?.classList.add('is-active');
+  if (window.location.hash !== `#${tabTarget}`) {
+    window.history.replaceState(null, null, `#${tabTarget}`);
+  }
 }
 
 function updateGlobalSidebarActive() {
@@ -510,7 +527,7 @@ async function saveProfileChanges() {
     localStorage.setItem('user', JSON.stringify(data.user));
     applyUserToProfile(data.user);
     closeEditModal();
-    showProfileMessage('Đã cập nhật hồ sơ và đồng bộ với database.');
+    showProfileMessage('Đã cập nhật ảnh hồ sơ');
   } catch (err) {
     console.error(err);
     showProfileMessage(err.message || 'Không cập nhật được hồ sơ.');

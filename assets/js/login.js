@@ -22,34 +22,34 @@ function showMessage(message, isError = true) {
 
   const toast = document.createElement('div');
   toast.id = 'auth-toast';
-  toast.style.cssText = `
-    position: fixed;
-    top: 24px;
-    right: 24px;
-    z-index: 99999;
-    max-width: 360px;
-    padding: 14px 18px;
-    border-radius: 12px;
-    font-size: 13.5px;
-    font-weight: 700;
-    font-family: 'Outfit', sans-serif;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 15px ${isError ? 'rgba(239, 68, 68, 0.25)' : 'rgba(16, 185, 129, 0.25)'};
-    background: rgba(17, 24, 39, 0.85);
-    backdrop-filter: blur(12px);
-    color: ${isError ? '#ef4444' : '#10b981'};
-    border: 1px solid ${isError ? 'rgba(239, 68, 68, 0.25)' : 'rgba(16, 185, 129, 0.25)'};
-    border-left: 4px solid ${isError ? '#ef4444' : '#10b981'};
-    transition: all 0.3s ease;
+  toast.className = isError ? 'error' : 'success';
+  
+  const iconClass = isError ? 'fa-solid fa-circle-xmark' : 'fa-solid fa-circle-check';
+  
+  toast.innerHTML = `
+    <div class="toast-icon">
+      <i class="${iconClass}"></i>
+    </div>
+    <div class="toast-message" style="flex: 1;">
+      ${message}
+    </div>
   `;
   
-  // Add icon
-  const iconHtml = isError 
-    ? '<span class="sk-icon sm" style="margin-right:8px; color:#ef4444;"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" fill="currentColor"/></svg></span>'
-    : '<span class="sk-icon sm" style="margin-right:8px; color:#10b981;"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="currentColor"/></svg></span>';
-    
-  toast.innerHTML = `<div style="display:flex; align-items:center;">${iconHtml}<span>${message}</span></div>`;
   document.body.appendChild(toast);
-  setTimeout(() => toast.remove(), 3500);
+  
+  // Trigger slide-in animation
+  requestAnimationFrame(() => {
+    toast.classList.add('show');
+  });
+
+  // Slide-out and remove after 3.5s
+  setTimeout(() => {
+    toast.classList.remove('show');
+    toast.classList.add('hide');
+    setTimeout(() => {
+      toast.remove();
+    }, 400);
+  }, 3500);
 }
 
 function setButtonLoading(button, loadingText) {
@@ -109,6 +109,9 @@ if (mobileToLogin && container) {
   });
 }
 
+let signupTurnstileWidgetId = null;
+let signinTurnstileWidgetId = null;
+
 const formSignUp = document.getElementById('form-signup');
 if (formSignUp) {
   formSignUp.addEventListener('submit', async event => {
@@ -136,15 +139,24 @@ if (formSignUp) {
       return;
     }
 
+    const turnstileToken = signupTurnstileWidgetId !== null ? turnstile.getResponse(signupTurnstileWidgetId) : '';
+    if (signupTurnstileWidgetId !== null && !turnstileToken) {
+      showMessage('Vui lòng hoàn thành xác thực chống bot (Turnstile).');
+      return;
+    }
+
     const restoreButton = setButtonLoading(formSignUp.querySelector('button[type="submit"]'), 'Đang tạo tài khoản...');
 
     try {
-      await apiPost('/register', { username, fullName, email, password });
+      await apiPost('/register', { username, fullName, email, password, 'cf-turnstile-response': turnstileToken });
       showMessage('Đăng ký thành công! Hãy đăng nhập.', false);
       formSignUp.reset();
+      if (signupTurnstileWidgetId !== null) turnstile.reset(signupTurnstileWidgetId);
+      if (signinTurnstileWidgetId !== null) turnstile.reset(signinTurnstileWidgetId);
       if (container) container.classList.remove('active');
     } catch (err) {
       showMessage(err.message);
+      if (signupTurnstileWidgetId !== null) turnstile.reset(signupTurnstileWidgetId);
     } finally {
       restoreButton();
     }
@@ -164,10 +176,16 @@ if (formSignIn) {
       return;
     }
 
+    const turnstileToken = signinTurnstileWidgetId !== null ? turnstile.getResponse(signinTurnstileWidgetId) : '';
+    if (signinTurnstileWidgetId !== null && !turnstileToken) {
+      showMessage('Vui lòng hoàn thành xác thực chống bot (Turnstile).');
+      return;
+    }
+
     const restoreButton = setButtonLoading(formSignIn.querySelector('button[type="submit"]'), 'Đang xác thực...');
 
     try {
-      const data = await apiPost('/login', { usernameOrEmail, password });
+      const data = await apiPost('/login', { usernameOrEmail, password, 'cf-turnstile-response': turnstileToken });
       saveAuthSession(data);
       showMessage(`Đăng nhập thành công! Chào ${data.user.fullName || data.user.username}`, false);
       const nextPage = data.user?.role === 'admin' ? 'admin.html' : HOME_PAGE_URL;
@@ -176,6 +194,7 @@ if (formSignIn) {
       }, 600);
     } catch (err) {
       showMessage(err.message);
+      if (signinTurnstileWidgetId !== null) turnstile.reset(signinTurnstileWidgetId);
     } finally {
       restoreButton();
     }
@@ -184,6 +203,22 @@ if (formSignIn) {
 
 // Password strength bar listener
 document.addEventListener('DOMContentLoaded', () => {
+  // Bind eye icons programmatically to avoid inline onclick ReferenceErrors
+  document.querySelectorAll('.sk-password-field button').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const input = btn.previousElementSibling;
+      if (input && (input.tagName === 'INPUT' || input.tagName === 'input')) {
+        const showPassword = input.type === 'password';
+        input.type = showPassword ? 'text' : 'password';
+        btn.setAttribute('aria-label', showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu');
+        btn.innerHTML = showPassword
+          ? '<i class="fa-solid fa-eye-slash"></i>'
+          : '<i class="fa-solid fa-eye"></i>';
+      }
+    });
+  });
+
   const signupPass = document.getElementById('signup-password');
   if (signupPass) {
     signupPass.addEventListener('input', () => {
@@ -224,5 +259,194 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+
+  // Real-time password match validator
+  const signupConfirmPass = document.getElementById('signup-confirm-password');
+  const matchText = document.getElementById('password-match-text');
+
+  if (signupPass && signupConfirmPass && matchText) {
+    const checkMatch = () => {
+      const p1 = signupPass.value;
+      const p2 = signupConfirmPass.value;
+      
+      if (p2.length === 0) {
+        matchText.innerText = '';
+        signupConfirmPass.style.border = '';
+      } else if (p1 === p2) {
+        matchText.innerText = '✓ Mật khẩu trùng khớp';
+        matchText.style.color = 'var(--success)';
+        signupConfirmPass.style.border = '1px solid var(--success)';
+      } else {
+        matchText.innerText = '✗ Mật khẩu xác nhận chưa khớp';
+        matchText.style.color = 'var(--danger)';
+        signupConfirmPass.style.border = '1px solid var(--danger)';
+      }
+    };
+
+    signupPass.addEventListener('input', checkMatch);
+    signupConfirmPass.addEventListener('input', checkMatch);
+  }
 });
 
+
+let tokenClient;
+let githubClientId = '';
+
+window.handleGoogleCustomLogin = function() {
+  if (tokenClient) {
+    tokenClient.requestAccessToken();
+  } else {
+    showMessage('Chưa tải xong cấu hình Google, vui lòng thử lại sau.');
+  }
+};
+
+window.handleGithubCustomLogin = function() {
+  if (githubClientId) {
+    const redirectUri = encodeURIComponent(`${window.location.origin}/login.html`);
+    window.location.href = `https://github.com/login/oauth/authorize?client_id=${githubClientId}&redirect_uri=${redirectUri}&scope=user:email`;
+  } else {
+    showMessage('Chưa cấu hình GitHub Client ID trên server.');
+  }
+};
+
+async function handleGithubOAuthLogin(code) {
+  try {
+    const res = await fetch(`${API_BASE}/auth/github`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code })
+    });
+    
+    const data = await res.json();
+    if (!res.ok || data.ok === false) {
+      console.error('GitHub login error response:', data);
+      showMessage(data.message || 'Lỗi đăng nhập GitHub');
+      return;
+    }
+
+    saveLoginSession(data);
+  } catch (err) {
+    console.error(err);
+    showMessage('Lỗi kết nối khi xác thực GitHub');
+  }
+}
+
+function saveLoginSession(data) {
+  localStorage.setItem('token', data.token);
+  localStorage.setItem('user', JSON.stringify(data.user));
+  localStorage.setItem('isLoggedIn', 'true');
+  
+  showMessage('Đăng nhập thành công, đang chuyển hướng...', false);
+  setTimeout(() => {
+    window.location.href = 'index.html';
+  }, 1000);
+}
+
+// Initialize OAuth configs
+async function initOAuth() {
+  console.log('initOAuth: Fetching configurations...');
+  try {
+    const res = await fetch(`${API_BASE}/auth/config`);
+    const data = await res.json();
+    console.log('initOAuth: Server config loaded:', data);
+    
+    if (data.ok) {
+      githubClientId = data.githubClientId;
+
+      // Render Cloudflare Turnstile with async ready check (polling)
+      if (data.cloudflareTurnstileSiteKey) {
+        const renderWhenReady = () => {
+          if (window.turnstile) {
+            if (document.getElementById('signup-turnstile')) {
+              signupTurnstileWidgetId = turnstile.render('#signup-turnstile', {
+                sitekey: data.cloudflareTurnstileSiteKey,
+                theme: 'dark'
+              });
+            }
+            if (document.getElementById('signin-turnstile')) {
+              signinTurnstileWidgetId = turnstile.render('#signin-turnstile', {
+                sitekey: data.cloudflareTurnstileSiteKey,
+                theme: 'dark'
+              });
+            }
+          } else {
+            setTimeout(renderWhenReady, 100);
+          }
+        };
+        renderWhenReady();
+      }
+
+      // Initialize Google Client
+      if (data.googleClientId) {
+        console.log('initOAuth: Google Client ID present. Waiting for google library...');
+        const checkGoogle = setInterval(() => {
+          if (window.google && window.google.accounts && window.google.accounts.oauth2) {
+            console.log('initOAuth: Google GSI library loaded. Initializing tokenClient...');
+            clearInterval(checkGoogle);
+            tokenClient = google.accounts.oauth2.initTokenClient({
+              client_id: data.googleClientId,
+              scope: 'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email',
+              callback: async (tokenResponse) => {
+                if (tokenResponse && tokenResponse.access_token) {
+                  const accessToken = tokenResponse.access_token;
+                  try {
+                    const res2 = await fetch(`${API_BASE}/auth/google`, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ accessToken })
+                    });
+                    
+                    const data2 = await res2.json();
+                    if (!res2.ok || data2.ok === false) {
+                      console.error('Google login error response:', data2);
+                      showMessage((data2.message || 'Lỗi đăng nhập Google') + (data2.error ? `: ${data2.error}` : ''));
+                      return;
+                    }
+
+                    saveLoginSession(data2);
+                  } catch (err) {
+                    console.error(err);
+                    showMessage('Lỗi kết nối khi xác thực Google');
+                  }
+                }
+              }
+            });
+          }
+        }, 100);
+      } else {
+        console.warn('initOAuth: No googleClientId returned from server.');
+      }
+    }
+  } catch (e) {
+    console.error('Failed to load OAuth configurations', e);
+  }
+
+  // Bind custom OAuth buttons
+  document.querySelectorAll('.btn-google-login-custom').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      handleGoogleCustomLogin();
+    });
+  });
+
+  document.querySelectorAll('.btn-github-login-custom').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      handleGithubCustomLogin();
+    });
+  });
+}
+
+// Detect GitHub callback
+const urlParams = new URLSearchParams(window.location.search);
+const githubCode = urlParams.get('code');
+if (githubCode) {
+  window.history.replaceState({}, document.title, window.location.pathname);
+  handleGithubOAuthLogin(githubCode);
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initOAuth);
+} else {
+  initOAuth();
+}

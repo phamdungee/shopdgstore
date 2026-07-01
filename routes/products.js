@@ -5,6 +5,7 @@ const { JWT_SECRET } = require('../config/env');
 const supabase = require('../config/supabase');
 const { authMiddleware, adminMiddleware } = require('../middlewares/authMiddleware');
 const { normalizeString } = require('../services/storeService');
+const verifyTurnstile = require('../middlewares/turnstileMiddleware');
 
 const PRODUCT_TEXT_FIELDS = [
   'cat',
@@ -14,7 +15,9 @@ const PRODUCT_TEXT_FIELDS = [
   'desc',
   'long_desc',
   'image',
-  'vendor_product_code'
+  'vendor_product_code',
+  'delivery_type',
+  'fallback_mode'
 ];
 
 function hasOwn(object, key) {
@@ -69,7 +72,9 @@ function normalizeVariants(value) {
       price: parseNumericField(item.price, 'variants.price') || 0,
       vendor_product_code: String(item.vendor_product_code || item.provider_service_id || '').trim(),
       cost_price: parseNumericField(item.cost_price, 'variants.cost_price') || 0,
-      stock: parseIntField(item.stock, 'variants.stock') || 0
+      stock: parseIntField(item.stock, 'variants.stock') || 0,
+      delivery_type: String(item.delivery_type || item.deliveryType || 'hybrid').trim(),
+      fallback_mode: String(item.fallback_mode || item.fallbackMode || 'api_when_out_of_stock').trim()
     }))
     .filter(item => item.name);
 }
@@ -86,7 +91,7 @@ function productUpdatePayload(body) {
   if (hasOwn(body, 'price')) payload.price = parseNumericField(body.price, 'price');
   if (hasOwn(body, 'cost_price')) payload.cost_price = parseNumericField(body.cost_price, 'cost_price');
   if (hasOwn(body, 'rate')) payload.rate = parseNumericField(body.rate, 'rate');
-  if (hasOwn(body, 'stock')) payload.stock = parseIntField(body.stock, 'stock');
+  if (hasOwn(body, 'stock')) payload.stock_cache = parseIntField(body.stock, 'stock');
   if (hasOwn(body, 'vendor_id')) payload.vendor_id = parseIntField(body.vendor_id, 'vendor_id');
   if (hasOwn(body, 'variants')) payload.variants = normalizeVariants(body.variants);
 
@@ -97,7 +102,7 @@ router.get('/', async (req, res) => {
   try {
     const { data: products, error } = await supabase
       .from('products')
-      .select('*')
+      .select('*, product_variants(*)')
       .order('created_at', { ascending: true });
 
     if (error) {
@@ -105,7 +110,23 @@ router.get('/', async (req, res) => {
       return res.status(500).json({ ok: false, message: 'Không lấy được danh sách sản phẩm' });
     }
 
-    return res.json({ ok: true, products: products || [] });
+    const formattedProducts = (products || []).map(p => ({
+      ...p,
+      variants: (p.product_variants || []).map(v => ({
+        id: v.id,
+        name: v.name,
+        price: v.price,
+        cost_price: v.cost_price,
+        stock: v.stock_cache,
+        vendor_product_code: v.vendor_product_code,
+        vendor_id: v.vendor_id,
+        delivery_type: v.delivery_type,
+        fallback_mode: v.fallback_mode
+      })),
+      stock: p.stock_cache
+    }));
+
+    return res.json({ ok: true, products: formattedProducts });
   } catch (err) {
     console.error('Products fetch error:', err);
     return res.status(500).json({ ok: false, message: 'Lỗi server khi lấy danh sách sản phẩm' });
@@ -117,13 +138,11 @@ router.put('/:id', authMiddleware, adminMiddleware, async (req, res) => {
   try {
     const id = normalizeString(req.params.id);
     const payload = productUpdatePayload(req.body || {});
+    const variants = payload.variants;
+    delete payload.variants;
 
     if (!id) {
       return res.status(400).json({ ok: false, message: 'Thiếu ID sản phẩm' });
-    }
-
-    if (Object.keys(payload).length === 0) {
-      return res.status(400).json({ ok: false, message: 'Không có dữ liệu cập nhật sản phẩm' });
     }
 
     const { data: product, error } = await supabase
@@ -138,7 +157,57 @@ router.put('/:id', authMiddleware, adminMiddleware, async (req, res) => {
       return res.status(500).json({ ok: false, message: 'Không cập nhật được sản phẩm' });
     }
 
-    return res.json({ ok: true, product });
+    if (variants !== undefined) {
+      // Delete old variants
+      await supabase
+        .from('product_variants')
+        .delete()
+        .eq('product_id', id);
+
+      // Insert new variants
+      if (variants.length > 0) {
+        const { error: variantsErr } = await supabase
+          .from('product_variants')
+          .insert(variants.map(v => ({
+            product_id: id,
+            name: v.name,
+            price: v.price,
+            cost_price: v.cost_price || 0,
+            vendor_product_code: v.vendor_product_code || null,
+            vendor_id: v.vendor_id || null,
+            delivery_type: v.delivery_type || product.delivery_type || 'hybrid',
+            fallback_mode: v.fallback_mode || product.fallback_mode || 'api_when_out_of_stock'
+          })));
+        if (variantsErr) {
+          console.error('Update variants error:', variantsErr.message);
+        }
+      }
+    }
+
+    // Fetch product with variants
+    const { data: freshProduct } = await supabase
+      .from('products')
+      .select('*, product_variants(*)')
+      .eq('id', id)
+      .single();
+
+    const formatted = {
+      ...freshProduct,
+      variants: (freshProduct.product_variants || []).map(v => ({
+        id: v.id,
+        name: v.name,
+        price: v.price,
+        cost_price: v.cost_price,
+        stock: v.stock_cache,
+        vendor_product_code: v.vendor_product_code,
+        vendor_id: v.vendor_id,
+        delivery_type: v.delivery_type,
+        fallback_mode: v.fallback_mode
+      })),
+      stock: freshProduct.stock_cache
+    };
+
+    return res.json({ ok: true, product: formatted });
   } catch (err) {
     console.error('Product update error:', err);
     return res.status(err.statusCode || 500).json({
@@ -153,7 +222,7 @@ router.get('/:slug', async (req, res) => {
     const slug = normalizeString(req.params.slug);
     const { data: product, error } = await supabase
       .from('products')
-      .select('*')
+      .select('*, product_variants(*)')
       .eq('slug', slug)
       .single();
 
@@ -162,7 +231,23 @@ router.get('/:slug', async (req, res) => {
       return res.status(404).json({ ok: false, message: 'Không tìm thấy sản phẩm' });
     }
 
-    return res.json({ ok: true, product });
+    const formatted = {
+      ...product,
+      variants: (product.product_variants || []).map(v => ({
+        id: v.id,
+        name: v.name,
+        price: v.price,
+        cost_price: v.cost_price,
+        stock: v.stock_cache,
+        vendor_product_code: v.vendor_product_code,
+        vendor_id: v.vendor_id,
+        delivery_type: v.delivery_type,
+        fallback_mode: v.fallback_mode
+      })),
+      stock: product.stock_cache
+    };
+
+    return res.json({ ok: true, product: formatted });
   } catch (err) {
     console.error('Product detail error:', err);
     return res.status(500).json({ ok: false, message: 'Lỗi server khi lấy chi tiết sản phẩm' });
@@ -253,7 +338,7 @@ router.get('/:slug/reviews', async (req, res) => {
 });
 
 // POST /api/products/:slug/reviews - Submit a review (Auth required)
-router.post('/:slug/reviews', authMiddleware, async (req, res) => {
+router.post('/:slug/reviews', authMiddleware, verifyTurnstile, async (req, res) => {
   try {
     const slug = normalizeString(req.params.slug);
     const { rating, comment } = req.body;

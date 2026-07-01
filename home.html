@@ -475,11 +475,11 @@
       font-weight: 900;
       font-size: 14px;
       letter-spacing: -0.5px;
-      background: linear-gradient(135deg, #ffffff 35%, #a5b4fc 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      background: linear-gradient(135deg, #ffffff 20%, var(--brand-light) 65%, var(--accent) 100%) !important;
+      -webkit-background-clip: text !important;
+      -webkit-text-fill-color: transparent !important;
       z-index: 2;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+      text-shadow: 0 0 10px rgba(99, 102, 241, 0.5) !important;
       line-height: 1 !important;
     }
 
@@ -532,12 +532,11 @@
 
     .nav-brand-txt {
       font-size: 18px;
-      font-weight: 750;
+      font-weight: 850;
       letter-spacing: -0.5px;
-      background: var(--brand-grad);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      color: #ffffff !important;
+      -webkit-text-fill-color: #ffffff !important;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.25) !important;
     }
 
     .nav-links {
@@ -551,26 +550,36 @@
       padding: 8px 16px;
       border-radius: 10px;
       font-size: 13.5px;
-      font-weight: 500;
-      color: var(--text-sub);
+      font-weight: 700 !important;
+      color: var(--text-sub) !important;
       display: flex;
       align-items: center;
       gap: 8px;
-      transition: var(--tr);
+      border: 1px solid transparent !important;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
     .nav-lk i {
       font-size: 13px;
       opacity: 0.8;
+      transition: transform 0.2s ease;
     }
 
     .nav-lk:hover {
-      color: var(--text);
-      background: rgba(255, 255, 255, 0.04);
+      color: var(--brand-light) !important;
+      background: rgba(99, 102, 241, 0.1) !important;
+      border-color: rgba(99, 102, 241, 0.2) !important;
+      box-shadow: 0 0 15px rgba(99, 102, 241, 0.1) !important;
+      transform: translateY(-2px) scale(1.05);
+    }
+
+    .nav-lk:hover i {
+      transform: scale(1.2) rotate(-5deg);
+      color: var(--brand-light) !important;
     }
 
     body.light-mode .nav-lk:hover {
-      background: rgba(15, 23, 42, 0.04);
+      background: rgba(99, 102, 241, 0.08) !important;
     }
 
     .nav-acts {
@@ -611,66 +620,77 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      padding: 4px 14px 4px 4px;
+      padding: 6px 14px 6px 6px !important;
       border-radius: var(--r-full);
-      border: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(99, 102, 241, 0.25) !important;
+      background: rgba(255, 255, 255, 0.04) !important;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
       transition: var(--tr);
       cursor: pointer;
     }
 
     body.light-mode .nav-user {
-      background: rgba(15, 23, 42, 0.02);
+      background: rgba(15, 23, 42, 0.02) !important;
     }
 
     .nav-user:hover {
-      border-color: var(--brand-light);
-      background: rgba(255, 255, 255, 0.05);
-      box-shadow: var(--glow-brand);
+      border-color: var(--brand-light) !important;
+      background: rgba(99, 102, 241, 0.1) !important;
+      box-shadow: 0 0 20px rgba(99, 102, 241, 0.25) !important;
+      transform: translateY(-1px);
     }
 
     .nav-av {
-      width: 30px;
-      height: 30px;
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
-      background: var(--brand-grad);
-      color: #fff;
+      background: linear-gradient(135deg, #00f2fe, #4facfe) !important;
+      color: #fff !important;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: 700;
-      font-size: 12.5px;
+      font-weight: 900 !important;
+      font-size: 13px !important;
+      text-shadow: 0 0 5px rgba(255, 255, 255, 0.5) !important;
+      box-shadow: 0 0 10px rgba(0, 242, 254, 0.4) !important;
     }
 
     .nav-uinfo strong {
       display: block;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text);
+      font-size: 12.5px !important;
+      font-weight: 800 !important;
+      color: #ffffff !important;
       line-height: 1.2;
     }
 
     .nav-uinfo small {
       display: block;
-      font-size: 10px;
-      color: var(--text-muted);
+      font-size: 11px !important;
+      font-weight: 800 !important;
+      color: #34d399 !important;
+      text-shadow: 0 0 10px rgba(52, 211, 153, 0.4) !important;
     }
 
     .btn-nav-a {
       padding: 8px 16px;
       border-radius: 10px;
       font-size: 12.5px;
-      font-weight: 600;
-      background: linear-gradient(135deg, var(--warning), #d97706);
-      color: #111;
+      font-weight: 800 !important;
+      background: linear-gradient(135deg, #ee4d2d, #ff0055) !important;
+      color: #ffffff !important;
       display: inline-flex;
       align-items: center;
       gap: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border: 1px solid rgba(255, 255, 255, 0.1) !important;
+      box-shadow: 0 0 15px rgba(238, 77, 45, 0.4) !important;
+      transition: all 0.3s ease;
     }
 
     .btn-nav-a:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(251, 191, 36, 0.3);
+      transform: translateY(-2px) scale(1.05);
+      box-shadow: 0 0 25px rgba(238, 77, 45, 0.7), 0 8px 20px rgba(238, 77, 45, 0.3) !important;
     }
 
     .btn-out {
@@ -2177,33 +2197,9 @@
   </section>
 
   <!-- ═══ FOOTER ═══ -->
-  <footer class="footer">
-    <div class="footer-in">
-      <div class="ft-col">
-        <div class="ft-brand">
-          <div class="ft-brand-ic dg-logo-mark">
-            <span class="dg-logo-text">DG</span>
-            <span class="dg-logo-ring"></span>
-          </div>
-          <span class="ft-brand-txt">DG Store</span>
-        </div>
-        <p>Hệ sinh thái phân phối tài khoản bản quyền, xử lý giao dịch tự động 24/7 hàng đầu Việt Nam.</p>
-      </div>
-      <div class="ft-col">
-        <b>Hỗ trợ khách hàng</b>
-        <p>Hỗ trợ trực tuyến 24/7 qua Zalo, Telegram và Facebook Messenger.</p>
-      </div>
-      <div class="ft-col">
-        <b>Chính sách dịch vụ</b>
-        <p>Chính sách bảo hành 1 đổi 1. Bảo mật dữ liệu người dùng tối đa.</p>
-      </div>
-      <div class="ft-col">
-        <b>Giao dịch nạp tiền</b>
-        <p>Tương thích VietQR tự động cộng ví tức thì 24/7 nhanh chóng.</p>
-      </div>
-    </div>
-    <div class="ft-btm">
-      <p>© 2026 DG Store. All rights reserved. Designed for ultimate digital automation.</p>
+  <footer class="footer" style="padding: 30px 0; border-top: 1px solid rgba(255, 255, 255, 0.05); margin-top: 60px;">
+    <div style="text-align: center; max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+      <p style="margin: 0; color: var(--text-sub); font-size: 13.5px; opacity: 0.85;">© 2026 DG Store. All rights reserved. Designed for ultimate digital automation.</p>
     </div>
   </footer>
 

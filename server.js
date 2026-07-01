@@ -10,6 +10,7 @@ const { startCassoAutoPolling } = require('./routes/deposits');
 const { startBotScheduler, startTelegramPolling } = require('./routes/tracking');
 
 const app = express();
+app.set('trust proxy', 1);
 
 const allowedOrigins = new Set([
   ...CORS_ALLOWED_ORIGINS,
@@ -43,11 +44,12 @@ app.use((req, res, next) => {
     'Content-Security-Policy',
     [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.tailwindcss.com",
-      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com",
+      "script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.tailwindcss.com https://accounts.google.com https://apis.google.com https://connect.facebook.net https://challenges.cloudflare.com",
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://accounts.google.com https://challenges.cloudflare.com",
       "font-src 'self' data: https://fonts.gstatic.com https://cdnjs.cloudflare.com",
       "img-src 'self' data: https:",
-      "connect-src 'self' http://localhost:* http://127.0.0.1:* https:",
+      "connect-src 'self' http://localhost:* http://127.0.0.1:* https: https://challenges.cloudflare.com",
+      "frame-src 'self' https://accounts.google.com https://connect.facebook.net https://www.facebook.com https://challenges.cloudflare.com",
       "frame-ancestors 'self'",
       "base-uri 'self'",
       "form-action 'self'"
@@ -57,10 +59,7 @@ app.use((req, res, next) => {
 });
 
 app.use(cors({
-  origin(origin, callback) {
-    if (isAllowedOrigin(origin)) return callback(null, true);
-    return callback(new Error('CORS origin is not allowed'));
-  },
+  origin: true,
   credentials: true
 }));
 app.use(express.json({ limit: '1mb' }));
@@ -69,7 +68,6 @@ app.use(express.static(path.join(__dirname), {
   index: false,
   extensions: ['html']
 }));
-
 registerRoutes(app);
 
 const isVercel = process.env.VERCEL === '1';
@@ -80,6 +78,22 @@ if (!isVercel) {
     console.log('Waybill tracking scheduler started.');
     startTelegramPolling();
     console.log('Telegram polling started.');
+
+    // Fallback Background Cron Scheduler: release expired inventory reservations
+    const supabase = require('./config/supabase');
+    setInterval(async () => {
+      try {
+        const { data: count, error } = await supabase.rpc('release_expired_reservations');
+        if (error) {
+          console.error('[Scheduler] Error cleaning up expired reservations:', error.message);
+        } else if (count > 0) {
+          console.log(`[Scheduler] Cleaned up ${count} expired reservations successfully.`);
+        }
+      } catch (err) {
+        console.error('[Scheduler] Exception cleaning up expired reservations:', err.message);
+      }
+    }, 300000); // Check every 5 minutes
+    console.log('Reservation cleanup scheduler started (5m interval).');
   } catch (err) {
     console.error('Cannot start tracking background jobs:', err.message);
   }
@@ -87,7 +101,7 @@ if (!isVercel) {
   app.listen(PORT, () => {
     console.log(`Server running at: http://localhost:${PORT}`);
     console.log(`Login page: http://localhost:${PORT}/login.html`);
-    startCassoAutoPolling();
+    // startCassoAutoPolling(); // Đã tắt tiến trình tự động quét giao dịch Casso
   });
 } else {
   console.log('Running server in Vercel Serverless environment.');

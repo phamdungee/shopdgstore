@@ -12,10 +12,15 @@ function plainStatus(value) {
     .replace(/[\u0300-\u036f]/g, '');
 }
 
-function successStatus(payload) {
+function successStatus(payload, action) {
   if (Array.isArray(payload)) return true;
   if (!payload || typeof payload !== 'object') return false;
   if (payload.status === true || payload.ket_qua === true || payload.success === true) return true;
+  if (payload.error || payload.err) return false;
+
+  if (action === 'balance' || action === 'services') {
+    return payload.balance !== undefined || Array.isArray(payload.data) || Array.isArray(payload);
+  }
 
   const status = plainStatus(payload.status || payload.ket_qua || payload.success || payload.message || payload.msg);
   return status === 'true' || status === 'success' || status.includes('thanh cong');
@@ -62,11 +67,28 @@ function balanceFrom(payload) {
   return parseMoney(payload.balance ?? payload.sodu ?? payload.soduWeb ?? payload.money ?? payload.credit);
 }
 
+function resolveUrl(api_url, path) {
+  const base = String(api_url || '').replace(/\/+$/, '');
+  const cleanPath = String(path || '').replace(/^\/+/, '');
+  
+  if (!cleanPath) return base;
+  
+  const lowerBase = base.toLowerCase();
+  const lowerPath = cleanPath.toLowerCase();
+  
+  if (lowerPath.startsWith('api/') && (lowerBase.endsWith('/api') || lowerBase.includes('/api/'))) {
+    const pathWithoutApi = cleanPath.substring(4);
+    return base + (pathWithoutApi ? '/' + pathWithoutApi : '');
+  }
+  
+  return base + '/' + cleanPath;
+}
+
 function createBotMmoAdapter(vendor) {
   const baseURL = String(vendor.api_url || '').replace(/\/+$/, '');
   const apiKey = vendor.api_key;
+  
   const client = axios.create({
-    baseURL,
     timeout: REQUEST_TIMEOUT_MS,
     headers: {
       Accept: 'application/json',
@@ -83,8 +105,10 @@ function createBotMmoAdapter(vendor) {
         account_type_id: accountTypeId,
         quantity: buyQuantity
       };
-      const response = await client.post(PURCHASE_ENDPOINT, requestPayload);
-      const ok = successStatus(response.data);
+      
+      const url = resolveUrl(baseURL, PURCHASE_ENDPOINT);
+      const response = await client.post(url, requestPayload);
+      const ok = successStatus(response.data, 'buy');
 
       return {
         success: ok,
@@ -94,7 +118,7 @@ function createBotMmoAdapter(vendor) {
         httpStatus: response.status,
         requestPayload: {
           method: 'POST',
-          endpoint: PURCHASE_ENDPOINT,
+          endpoint: url,
           account_type_id: accountTypeId,
           quantity: buyQuantity
         }
@@ -103,8 +127,9 @@ function createBotMmoAdapter(vendor) {
 
     async getBalance() {
       const requestPayload = { api_key: apiKey };
-      const response = await client.get(QUANTITIES_ENDPOINT, { params: requestPayload });
-      const ok = successStatus(response.data);
+      const url = resolveUrl(baseURL, QUANTITIES_ENDPOINT);
+      const response = await client.get(url, { params: requestPayload });
+      const ok = successStatus(response.data, 'balance');
 
       return {
         success: ok,
@@ -114,15 +139,16 @@ function createBotMmoAdapter(vendor) {
         httpStatus: response.status,
         requestPayload: {
           method: 'GET',
-          endpoint: QUANTITIES_ENDPOINT
+          endpoint: url
         }
       };
     },
 
     async getList() {
       const requestPayload = { api_key: apiKey };
-      const response = await client.get(QUANTITIES_ENDPOINT, { params: requestPayload });
-      const ok = successStatus(response.data);
+      const url = resolveUrl(baseURL, QUANTITIES_ENDPOINT);
+      const response = await client.get(url, { params: requestPayload });
+      const ok = successStatus(response.data, 'services');
       const list = Array.isArray(response.data)
         ? response.data
         : firstArray(response.data && response.data.data, response.data && response.data.items, response.data && response.data.result);
@@ -135,7 +161,7 @@ function createBotMmoAdapter(vendor) {
         httpStatus: response.status,
         requestPayload: {
           method: 'GET',
-          endpoint: QUANTITIES_ENDPOINT
+          endpoint: url
         }
       };
     }

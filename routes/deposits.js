@@ -1,10 +1,27 @@
 
 const express = require('express');
+const crypto = require('crypto');
 const router = express.Router();
 const cassoRouter = express.Router();
 const supabase = require('../config/supabase');
 const cassoClient = require('../config/casso');
 const { authMiddleware } = require('../middlewares/authMiddleware');
+// Lưu trữ danh sách kết nối SSE đang hoạt động
+const sseClients = new Map();
+
+function broadcastDepositUpdate(transactionId, data) {
+  const clients = sseClients.get(transactionId);
+  if (clients && clients.size > 0) {
+    const payload = `data: ${JSON.stringify({ ok: true, ...data })}\n\n`;
+    for (const res of clients) {
+      try {
+        res.write(payload);
+      } catch (err) {
+        console.error('Lỗi khi ghi dữ liệu SSE xuống client:', err.message);
+      }
+    }
+  }
+}
 const {
   CASSO_API_KEY,
   CASSO_SECURE_TOKEN,
@@ -217,28 +234,8 @@ router.get('/status/:id', authMiddleware, async (req, res) => {
       if (expiredTx) transaction.status = expiredTx.status;
     }
 
-    // Kiểm tra trạng thái nạp tiền tự động
-    if (transaction.status === 'pending') {
-      if (isVercel) {
-        // Trên Vercel, do không hỗ trợ tiến trình chạy ngầm (setInterval), chúng ta chạy đồng bộ trực tiếp khi người dùng check status
-        await checkCassoSyncOnVercel(userId, id);
-        // Lấy lại thông tin hóa đơn mới nhất sau khi quét trực tiếp
-        const { data: updatedTx } = await supabase
-          .from('wallet_transactions')
-          .select('id, transaction_code, status, amount, balance_after, created_at')
-          .eq('id', id)
-          .eq('user_id', userId)
-          .single();
-
-        if (updatedTx) {
-          transaction.status = updatedTx.status;
-          transaction.balance_after = updatedTx.balance_after;
-        }
-      } else {
-        // Ở môi trường local/VPS thông thường, chạy quét nền như cũ
-        startCassoAutoPolling();
-      }
-    }
+    // Không thực hiện quét đồng bộ ở đây nữa để tránh gây tải. 
+    // Trạng thái hóa đơn đã được cập nhật tự động qua Webhook hoặc đồng bộ thủ công.
 
     const { data: user } = await supabase
       .from('users')
@@ -257,6 +254,80 @@ router.get('/status/:id', authMiddleware, async (req, res) => {
   } catch (err) {
     console.error('Get deposit status error:', err);
     return res.status(500).json({ ok: false, message: 'Lỗi server khi kiểm tra hóa đơn' });
+  }
+});
+
+router.get('/status/:id/live', async (req, res) => {
+  const id = req.params.id;
+  const token = req.query.token;
+
+  if (!token) {
+    return res.status(401).json({ ok: false, message: 'Missing token' });
+  }
+
+  let userId;
+  try {
+    const jwt = require('jsonwebtoken');
+    const { JWT_SECRET } = require('../config/env');
+    const decoded = jwt.verify(token, JWT_SECRET);
+    userId = decoded.userId;
+  } catch (err) {
+    return res.status(401).json({ ok: false, message: 'Invalid token' });
+  }
+
+  try {
+    const { data: transaction, error } = await supabase
+      .from('wallet_transactions')
+      .select('id, status, amount, balance_after, transaction_code')
+      .eq('id', id)
+      .eq('user_id', userId)
+      .single();
+
+    if (error || !transaction) {
+      return res.status(404).json({ ok: false, message: 'Không tìm thấy hóa đơn' });
+    }
+
+    res.writeHead(200, {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      'Connection': 'keep-alive',
+      'X-Accel-Buffering': 'no'
+    });
+
+    // Gửi trạng thái hiện tại ngay khi mở kết nối
+    res.write(`data: ${JSON.stringify({
+      ok: true,
+      status: transaction.status,
+      transactionId: transaction.id,
+      amount: transaction.amount,
+      newBalance: transaction.balance_after,
+      transactionCode: transaction.transaction_code
+    })}\n\n`);
+
+    // Lưu kết nối vào Map
+    if (!sseClients.has(id)) {
+      sseClients.set(id, new Set());
+    }
+    sseClients.get(id).add(res);
+
+    // Gửi heartbeat/ping định kỳ để giữ kết nối sống (Nginx, Cloudflare)
+    const keepAliveTimer = setInterval(() => {
+      res.write(': keep-alive\n\n');
+    }, 25000);
+
+    req.on('close', () => {
+      clearInterval(keepAliveTimer);
+      const clients = sseClients.get(id);
+      if (clients) {
+        clients.delete(res);
+        if (clients.size === 0) {
+          sseClients.delete(id);
+        }
+      }
+    });
+  } catch (err) {
+    console.error('SSE live status error:', err);
+    res.end();
   }
 });
 
@@ -297,6 +368,12 @@ router.post('/cancel/:id', authMiddleware, async (req, res) => {
       return res.status(500).json({ ok: false, message: 'Không thể cập nhật trạng thái hủy hóa đơn' });
     }
 
+    // Thông báo cho client qua SSE
+    broadcastDepositUpdate(id, {
+      status: 'cancelled',
+      transactionId: id
+    });
+
     return res.json({
       ok: true,
       message: 'Hủy hóa đơn thành công'
@@ -331,8 +408,9 @@ const processTransactionsList = async (transactionsList) => {
       continue;
     }
 
-    // Extract candidate 10-character deposit codes from Casso description.
-    const depositCodes = extractDepositCodes(content);
+    // Extract candidate 10-character deposit codes from Casso description, reference, or ref.
+    const textToSearch = `${content} ${normalizeString(item.reference || item.ref || item.transactionId || '')}`;
+    const depositCodes = extractDepositCodes(textToSearch);
 
     if (!depositCodes.length) {
       writeDepositWebhookLog({
@@ -572,6 +650,16 @@ const processTransactionsList = async (transactionsList) => {
       });
       processedCount++;
       rememberCassoId(cassoCacheKey);
+      
+      // Bắn event để thông báo realtime qua SSE
+      broadcastDepositUpdate(pendingTx.id, {
+        status: 'paid',
+        transactionId: pendingTx.id,
+        amount: actualAmount,
+        newBalance: balanceAfter,
+        transactionCode: externalRef
+      });
+
       console.log(`✅ Successfully processed dynamic deposit bill of ${actualAmount}đ for User ${user.username}`);
     } else {
       writeDepositWebhookLog({
@@ -700,66 +788,147 @@ async function checkCassoSyncOnVercel(userId, transactionId) {
 let cassoPollInterval = null;
 
 const startCassoAutoPolling = () => {
-  if (isVercel) return;
-  if (cassoPollInterval) return;
-
-  console.log('🤖 Khởi chạy tiến trình tự động quét giao dịch Casso (15s/lần)...');
-  const pollOnce = async () => {
-    try {
-      // Tự động hết hạn các hóa đơn pending quá 10 phút (600 giây)
-      try {
-        await expireOldPendingDeposits();
-      } catch (expErr) {
-        console.error('Error auto-expiring old deposits:', expErr.message);
-      }
-
-      const hasPending = await hasPendingDepositInvoices();
-      if (!hasPending) {
-        clearInterval(cassoPollInterval);
-        cassoPollInterval = null;
-        return;
-      }
-
-      if (!CASSO_API_KEY) return;
-
-      const accountNumber = DEPOSIT_BANK.account;
-
-      // Gửi yêu cầu đồng bộ tức thì
-      try {
-        await cassoClient.post('/sync', {
-          bank_acc_id: accountNumber
-        });
-      } catch (syncErr) {
-        // Bỏ qua nếu bị giới hạn tần suất gọi đồng bộ của Casso
-      }
-
-      // Đợi 1.5 giây để ngân hàng đồng bộ về cự ly Casso
-      await new Promise(resolve => setTimeout(resolve, 1500));
-
-      const cassoRes = await cassoClient.get('/transactions', {
-        params: cassoTransactionParams()
-      });
-
-      const records = getCassoRecords(cassoRes.data).slice(0, 10);
-      if (records.length > 0) {
-        const processedCount = await processTransactionsList(records);
-        if (processedCount > 0) {
-          console.log(`✅ Quét tự động đã khớp và cộng tiền cho ${processedCount} giao dịch.`);
-        }
-      }
-    } catch (err) {
-      console.error('Casso auto-polling error:', err.message);
-    }
-  };
-
-  pollOnce().catch((err) => console.error('Casso auto-polling error:', err.message));
-  cassoPollInterval = setInterval(pollOnce, 15000); // Scan every 15 seconds
+  // Đã vô hiệu hóa tiến trình tự động quét giao dịch Casso (15s/lần) theo yêu cầu.
+  // Hệ thống sẽ dựa trên Casso Webhook hoặc người dùng kích hoạt đồng bộ thủ công qua API.
 };
 
+const SECURITY_CONFIG = {
+  // Chỉ bypass khi có flag rõ ràng
+  bypassLocal: process.env.BYPASS_WEBHOOK_SECURITY === 'true' && process.env.NODE_ENV === 'development',
+  
+  // Casso IP ranges (cần cập nhật IP thực tế)
+  allowedIPs: process.env.CASSO_ALLOWED_IPS ? process.env.CASSO_ALLOWED_IPS.split(',').map(ip => ip.trim()) : [],
+  
+  // Thời gian cho phép chênh lệch (giây)
+  timestampTolerance: 300,
+  
+  // Thời gian sống của nonce (ms)
+  nonceTTL: 86400000
+};
+
+const usedNonces = new Set();
+const nonceTimestamps = new Map();
+
+function validateNonce(nonce) {
+  if (!nonce) return false;
+  
+  // Kiểm tra nonce đã được sử dụng chưa
+  if (usedNonces.has(nonce)) return false;
+  
+  // Lưu nonce với timestamp
+  usedNonces.add(nonce);
+  nonceTimestamps.set(nonce, Date.now());
+  
+  // Cleanup mỗi 100 lần cập nhật
+  if (nonceTimestamps.size % 100 === 0) {
+    const now = Date.now();
+    for (const [key, timestamp] of nonceTimestamps) {
+      if (now - timestamp > SECURITY_CONFIG.nonceTTL) {
+        usedNonces.delete(key);
+        nonceTimestamps.delete(key);
+      }
+    }
+  }
+  
+  return true;
+}
+
+function validateWebhookTimestamp(req) {
+  const timestamp = req.headers['x-casso-timestamp'] || req.headers['casso-timestamp'] || req.header('x-casso-timestamp') || req.header('casso-timestamp');
+  if (!timestamp) return true; // Không có timestamp = không kiểm tra
+  
+  const now = Date.now();
+  const diff = Math.abs(now - parseInt(timestamp, 10));
+  return diff < (SECURITY_CONFIG.timestampTolerance * 1000);
+}
+
+function verifyWebhookSignature(req, body) {
+  const signature = req.headers['x-casso-signature'] || req.headers['casso-signature'] || req.header('x-casso-signature') || req.header('casso-signature');
+  if (!signature) return false;
+  
+  const expected = crypto
+    .createHmac('sha256', CASSO_SECURE_TOKEN)
+    .update(JSON.stringify(body))
+    .digest('hex');
+  
+  try {
+    const signatureBuffer = Buffer.from(signature, 'utf8');
+    const expectedBuffer = Buffer.from(expected, 'utf8');
+    if (signatureBuffer.length !== expectedBuffer.length) {
+      return false;
+    }
+    return crypto.timingSafeEqual(signatureBuffer, expectedBuffer);
+  } catch (err) {
+    return false;
+  }
+}
+
+// Hàm kiểm tra tổng hợp
+function validateWebhookRequest(req, body) {
+  const isDevelopment = SECURITY_CONFIG.bypassLocal;
+  
+  // 1. Kiểm tra secure-token (bắt buộc)
+  const token = req.headers['secure-token'] || req.headers['x-api-key'] || req.header('secure-token') || req.header('x-api-key');
+  if (!token || token !== CASSO_SECURE_TOKEN) {
+    if (isDevelopment) {
+      console.warn('⚠️ Bypassing secure-token check in development');
+    } else {
+      return { valid: false, reason: 'invalid_token' };
+    }
+  }
+
+  // 2. Kiểm tra các header tùy chọn (không bắt buộc vì Casso có thể không gửi)
+  const signature = req.headers['x-casso-signature'] || req.headers['casso-signature'] || req.header('x-casso-signature') || req.header('casso-signature');
+  if (signature && !verifyWebhookSignature(req, body)) {
+    return { valid: false, reason: 'invalid_signature' };
+  }
+
+  const timestamp = req.headers['x-casso-timestamp'] || req.headers['casso-timestamp'] || req.header('x-casso-timestamp') || req.header('casso-timestamp');
+  if (timestamp && !validateWebhookTimestamp(req)) {
+    return { valid: false, reason: 'invalid_timestamp' };
+  }
+
+  const nonce = req.headers['x-casso-nonce'] || req.headers['casso-nonce'] || req.header('x-casso-nonce') || req.header('casso-nonce');
+  if (nonce && !validateNonce(nonce)) {
+    return { valid: false, reason: 'invalid_nonce' };
+  }
+
+  // 3. Kiểm tra IP (nếu có cấu hình)
+  if (SECURITY_CONFIG.allowedIPs.length > 0) {
+    const ip = req.ip || req.connection.remoteAddress;
+    if (!SECURITY_CONFIG.allowedIPs.includes(ip)) {
+      if (isDevelopment) {
+        console.warn(`⚠️ Bypassing IP check in development: ${ip}`);
+      } else {
+        return { valid: false, reason: 'invalid_ip' };
+      }
+    }
+  }
+
+  return { valid: true };
+}
+
+// Webhook handler với idempotency
+const processedWebhooks = new Set();
 const handleCassoWebhook = async (req, res) => {
+  const requestId = crypto.randomUUID();
+  const webhookId = req.headers['x-casso-webhook-id'] || req.headers['casso-webhook-id'] || req.header('x-casso-webhook-id') || req.header('casso-webhook-id') || requestId;
+  console.log(`[Webhook ${requestId}] Received`);
+  
+  // Kiểm tra webhook đã được xử lý chưa
+  if (processedWebhooks.has(webhookId)) {
+    console.log(`[Webhook ${requestId}] ⚠️ Duplicate webhook: ${webhookId}`);
+    return res.status(200).json({
+      code: 200,
+      message: 'already_processed',
+      data: { webhookId }
+    });
+  }
+  
   try {
     if (!CASSO_SECURE_TOKEN) {
       writeDepositWebhookLog({
+        requestId,
         status: 'rejected',
         reason: 'missing_casso_secure_token',
         source: 'casso'
@@ -770,17 +939,34 @@ const handleCassoWebhook = async (req, res) => {
       });
     }
 
-    const incomingToken = req.header('secure-token') || req.headers['secure-token'];
-    if (!incomingToken || incomingToken !== CASSO_SECURE_TOKEN) {
+    // Log request info (ẩn sensitive data)
+    console.log(`[Webhook ${requestId}] Headers:`, {
+      'secure-token': (req.headers['secure-token'] || req.header('secure-token')) ? 'present' : 'missing',
+      'user-agent': req.headers['user-agent'] || req.header('user-agent'),
+      ip: req.ip || req.connection.remoteAddress
+    });
+
+    // Kiểm tra bảo mật
+    const isDevelopment = SECURITY_CONFIG.bypassLocal;
+    const securityCheck = validateWebhookRequest(req, req.body);
+    
+    if (!securityCheck.valid && !isDevelopment) {
       writeDepositWebhookLog({
+        requestId,
         status: 'rejected',
-        reason: 'invalid_secure_token',
-        source: 'casso'
+        reason: securityCheck.reason,
+        source: 'casso',
+        ip: req.ip || req.connection.remoteAddress
       });
+      
       return res.status(401).json({
         code: 401,
-        message: 'Missing secure-token or wrong secure-token'
+        message: `Webhook validation failed: ${securityCheck.reason}`
       });
+    }
+
+    if (!securityCheck.valid && isDevelopment) {
+      console.warn(`[Webhook ${requestId}] ⚠️ Bypassing security check (${securityCheck.reason}) in development mode`);
     }
 
     let transactionsList = getCassoRecords(req.body);
@@ -794,13 +980,20 @@ const handleCassoWebhook = async (req, res) => {
 
     const processedCount = await processTransactionsList(transactionsList);
 
+    // Đánh dấu đã xử lý
+    processedWebhooks.add(webhookId);
+    
+    // Cleanup sau 24h
+    setTimeout(() => processedWebhooks.delete(webhookId), 86400000);
+
+    console.log(`[Webhook ${requestId}] ✅ Processed successfully: ${processedCount} transactions`);
     return res.status(200).json({
       code: 200,
       message: 'success',
-      data: { processedCount }
+      data: { processedCount, webhookId }
     });
   } catch (error) {
-    console.error('❌ Casso Webhook server error:', error);
+    console.error(`[Webhook ${requestId}] ❌ Error:`, error);
     return res.status(500).json({
       code: 500,
       error: 'Something went wrong, please try again!'
@@ -811,6 +1004,7 @@ const handleCassoWebhook = async (req, res) => {
 // Đăng ký webhook và các route tích hợp
 cassoRouter.post('/api/webhooks/casso', handleCassoWebhook);
 cassoRouter.post('/webhook/handler-bank-transfer', handleCassoWebhook);
+cassoRouter.post('/webhook', handleCassoWebhook);
 router.post('/webhook', handleCassoWebhook);
 
 cassoRouter.post('/register-webhook', async (req, res, next) => {
@@ -960,5 +1154,10 @@ module.exports = {
   cassoRouter,
   startCassoAutoPolling,
   handleCassoWebhook,
-  processTransactionsList
+  processTransactionsList,
+  verifyWebhookSignature,
+  validateWebhookTimestamp,
+  validateNonce,
+  validateWebhookRequest,
+  SECURITY_CONFIG
 };

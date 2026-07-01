@@ -10,7 +10,36 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
   <link href="/assets/css/common.css" rel="stylesheet" />
   <link href="/assets/css/icons.css" rel="stylesheet" />
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
   <style>
+    /* ═══════════════════════════════════════════════════════
+       THEMES
+       ═══════════════════════════════════════════════════════ */
+    body.theme-shopee {
+      --brand: #ee4d2d !important;
+      --brand-light: #ff683b !important;
+      --brand-soft: rgba(238, 77, 45, 0.15) !important;
+      --brand-glow: rgba(238, 77, 45, 0.5) !important;
+      --accent: #ffb800 !important;
+      --accent-light: #ffce54 !important;
+      --accent-glow: rgba(255, 184, 0, 0.4) !important;
+    }
+    body.theme-shopee .sk-trust-strip {
+      background: linear-gradient(135deg, var(--surface), #ee4d2d) !important;
+      box-shadow: 0 4px 15px rgba(238, 77, 45, 0.3) !important;
+    }
+    body.theme-shopee .sk-buy-layout {
+      gap: 20px;
+    }
+    body.theme-shopee .sk-product-banner-actions .sk-btn-accent {
+      background: linear-gradient(45deg, #ee4d2d, #ff683b) !important;
+      border-color: #ff683b !important;
+      box-shadow: 0 0 15px rgba(238, 77, 45, 0.5) !important;
+    }
+    body.theme-shopee .sk-btn-accent:hover {
+      box-shadow: 0 0 25px rgba(238, 77, 45, 0.8) !important;
+    }
+
     /* ═══════════════════════════════════════════════════════
        CHECKOUT FLOW MODAL — Premium Neon Glass Redesign
        ═══════════════════════════════════════════════════════ */
@@ -1435,12 +1464,12 @@
         </span>
       </a>
       <div style="flex: 1 1 auto;"></div>
-      <div class="sk-actions" id="headerAuthActions">
+      <div class="sk-actions">
         <a class="sk-icon-btn sk-cart-link" href="/cart.html" aria-label="Giỏ hàng">
           <i class="fa-solid fa-cart-shopping"></i>
           <span class="sk-cart-count" id="headerCartCount">0</span>
         </a>
-        <span id="authActionsContainer">
+        <span class="sk-auth-actions" id="authActionsContainer">
           <a class="sk-btn sk-btn-primary" href="/login.html"><i class="fa-solid fa-right-to-bracket"></i> <span class="btn-text">Login</span></a>
         </span>
       </div>
@@ -1766,7 +1795,11 @@
       return (product.variants || []).map(v => ({
         name: v.name,
         price: formatVnd(v.price),
-        rawPrice: Number(v.price)
+        rawPrice: Number(v.price),
+        stock: v.stock,
+        delivery_type: v.delivery_type,
+        fallback_mode: v.fallback_mode,
+        vendor_product_code: v.vendor_product_code
       }));
     }
 
@@ -1781,6 +1814,7 @@
         document.getElementById('selectedVariantName').innerText = selectedVariant.name;
       }
       updateTotalPrice();
+      syncProductAvailability();
     }
 
     function formatVnd(value) {
@@ -1815,7 +1849,17 @@
     }
 
     function isProductUnavailable() {
-      return product && (product.is_active === false || product.active === false || Number(product.stock) === 0);
+      if (!product || product.is_active === false || product.active === false) return true;
+      
+      const v = selectedVariant || {};
+      const fallbackMode = v.fallback_mode || product.fallback_mode || 'api_when_out_of_stock';
+      const deliveryType = v.delivery_type || product.delivery_type || 'hybrid';
+      
+      if (deliveryType === 'api') return false;
+      if (fallbackMode === 'api_when_out_of_stock' && (v.vendor_product_code || product.vendor_product_code || product.provider_service_id)) return false;
+      
+      const currentStock = v.stock !== undefined ? v.stock : product.stock;
+      return Number(currentStock) === 0;
     }
 
     function guardProductAvailable() {
@@ -2125,7 +2169,7 @@
       document.getElementById('nodeServer').className = 'sk-flow-node is-success';
       document.getElementById('nodeProvider').className = 'sk-flow-node is-active';
       document.getElementById('stageRow2').className = 'sk-flow-stage-row is-success';
-      document.getElementById('stageDesc2').innerText = `Hoàn thành — ${flow.stage2.message || 'Kết nối API đối tác thành công.'}`;
+      document.getElementById('stageDesc2').innerText = `Hoàn thành — ${(flow.stage2 && flow.stage2.message) || 'Kết nối API đối tác thành công.'}`;
       const time2 = document.getElementById('stageTime2');
       if (time2) time2.innerText = getTimeNow();
 
@@ -2141,7 +2185,7 @@
       document.getElementById('lineClientServer').className = 'sk-flow-line';
       document.getElementById('lineServerProvider').className = 'sk-flow-line';
       document.getElementById('stageRow3').className = 'sk-flow-stage-row is-success';
-      document.getElementById('stageDesc3').innerText = `Hoàn thành — ${flow.stage3.message || 'CSDL cập nhật thành công. Đơn hàng kích hoạt!'}`;
+      document.getElementById('stageDesc3').innerText = `Hoàn thành — ${(flow.stage3 && flow.stage3.message) || orderResponse.message || 'CSDL cập nhật thành công. Đơn hàng kích hoạt!'}`;
       const time3 = document.getElementById('stageTime3');
       if (time3) time3.innerText = getTimeNow();
 
@@ -2210,6 +2254,25 @@
     // ── INTERACTIVE REVIEW SYSTEM ──
     let selectedReviewRating = 5;
     let hoveredReviewRating = 0;
+    let reviewTurnstileWidgetId = null;
+    let reviewTurnstileSiteKey = null;
+
+    async function loadReviewTurnstileConfig() {
+      try {
+        const res = await fetch(`${API_BASE}/auth/config`);
+        const data = await res.json();
+        if (data.ok && data.cloudflareTurnstileSiteKey) {
+          reviewTurnstileSiteKey = data.cloudflareTurnstileSiteKey;
+          // Render form again if slug is loaded
+          if (typeof currentSlug !== 'undefined' && currentSlug) {
+            renderReviewForm(currentSlug);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load Turnstile config:', err);
+      }
+    }
+    loadReviewTurnstileConfig();
 
     function renderReviewForm(slug, hasPurchased = false) {
       const container = document.getElementById('reviewFormContainer');
@@ -2230,6 +2293,8 @@
               </div>
               <div class="sk-review-input-group">
                 <textarea class="sk-review-textarea" id="reviewCommentText" placeholder="Nhập bình luận đánh giá sản phẩm tại đây..."></textarea>
+                <!-- Turnstile Container -->
+                <div id="review-turnstile" style="margin-bottom: 10px; width: 100%; display: flex; justify-content: flex-start;"></div>
                 <button class="sk-btn sk-btn-primary sk-review-submit-btn" id="btnSubmitReview" onclick="submitProductReview('${escapeHtml(slug)}')"><i class="fa-solid fa-paper-plane"></i> Gửi đánh giá</button>
               </div>
             </div>
@@ -2247,10 +2312,35 @@
               </div>
               <div class="sk-review-input-group">
                 <textarea class="sk-review-textarea" id="reviewCommentText" placeholder="Chỉ khách hàng đã mua sản phẩm mới được viết bình luận." disabled style="cursor: not-allowed; opacity: 0.65;"></textarea>
+                <!-- Turnstile Container -->
+                <div id="review-turnstile" style="margin-bottom: 10px; width: 100%; display: flex; justify-content: flex-start;"></div>
                 <button class="sk-btn sk-btn-primary sk-review-submit-btn" id="btnSubmitReview" onclick="submitProductReview('${escapeHtml(slug)}')"><i class="fa-solid fa-paper-plane"></i> Đánh giá sao</button>
               </div>
             </div>
           `;
+        }
+
+        // Render Turnstile widget
+        const tContainer = document.getElementById('review-turnstile');
+        if (tContainer) {
+          tContainer.innerHTML = '';
+          if (reviewTurnstileSiteKey) {
+            const renderWhenReady = () => {
+              if (window.turnstile) {
+                const placeholder = document.createElement('div');
+                tContainer.appendChild(placeholder);
+                reviewTurnstileWidgetId = turnstile.render(placeholder, {
+                  sitekey: reviewTurnstileSiteKey,
+                  theme: 'dark'
+                });
+              } else {
+                setTimeout(renderWhenReady, 100);
+              }
+            };
+            renderWhenReady();
+          } else {
+            reviewTurnstileWidgetId = null;
+          }
         }
         selectedReviewRating = 5; // default to 5
         hoveredReviewRating = 0;
@@ -2304,6 +2394,16 @@
         return;
       }
 
+      const turnstileToken = reviewTurnstileWidgetId !== null ? turnstile.getResponse(reviewTurnstileWidgetId) : '';
+      if (reviewTurnstileWidgetId !== null && !turnstileToken) {
+        if (window.showToast) {
+          window.showToast('Vui lòng hoàn thành xác thực chống bot (Turnstile).', false);
+        } else {
+          alert('Vui lòng hoàn thành xác thực chống bot (Turnstile).');
+        }
+        return;
+      }
+
       submitBtn.disabled = true;
       submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang gửi...';
       if (window.replaceIcons) window.replaceIcons(submitBtn);
@@ -2318,7 +2418,8 @@
           },
           body: JSON.stringify({
             rating: selectedReviewRating,
-            comment
+            comment,
+            'cf-turnstile-response': turnstileToken
           })
         });
 
@@ -2332,8 +2433,18 @@
         }
         commentInput.value = '';
         setSelectRating(5);
+        if (reviewTurnstileWidgetId !== null) {
+          try {
+            turnstile.reset(reviewTurnstileWidgetId);
+          } catch (te) {}
+        }
         loadProductReviews(slug);
       } catch (err) {
+        if (reviewTurnstileWidgetId !== null) {
+          try {
+            turnstile.reset(reviewTurnstileWidgetId);
+          } catch (te) {}
+        }
         if (window.showToast) {
           window.showToast(err.message, false);
         } else {
@@ -2483,6 +2594,13 @@
 
       if (!product) {
         product = products.find(p => p.slug === currentSlug) || products[0] || { name: 'Sản phẩm lỗi', desc: 'Không tải được thông tin', price: '0đ', rate: '5.0', slug: 'error' };
+      }
+
+      // ── APPLY THEME DYNAMICALLY ──
+      if (currentSlug.includes('shopee') || product.name.toLowerCase().includes('shopee')) {
+        document.body.classList.add('theme-shopee');
+      } else {
+        document.body.classList.remove('theme-shopee');
       }
 
       document.title = `${product.name} | DG Store`;
@@ -2649,7 +2767,8 @@
           <p class="sk-delivery-subtitle">Sao chép thông tin tài khoản hoặc mã dịch vụ bên dưới:</p>
           <textarea class="sk-delivery-textarea" id="deliveryResultText" readonly></textarea>
           <div class="sk-delivery-actions">
-            <button class="sk-btn sk-btn-accent" style="box-shadow: 0 0 20px var(--accent-glow);" type="button" onclick="copyDeliveryResult()"><i class="fa-solid fa-copy"></i> Sao chép tài khoản</button>
+            <button class="sk-btn sk-btn-accent" style="box-shadow: 0 0 20px var(--accent-glow);" type="button" onclick="copyDeliveryResult()"><i class="fa-solid fa-copy"></i> Sao chép</button>
+            <button class="sk-btn sk-btn-soft" type="button" onclick="downloadDeliveryResult()"><i class="fa-solid fa-download"></i> Xuất file TXT</button>
             <a class="sk-btn" href="/index.html#orders"><i class="fa-solid fa-clock-rotate-left"></i> Lịch sử đơn hàng</a>
           </div>
         </div>

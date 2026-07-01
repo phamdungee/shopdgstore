@@ -2,6 +2,21 @@ const CART_KEY = 'dgCart';
 const API_BASE = window.DG_API_BASE || window.SKYNET_API_BASE || (window.location.protocol === 'file:' ? 'http://localhost:3000/api' : '/api');
 
 let cart = [];
+let checkoutTurnstileWidgetId = null;
+let turnstileSiteKey = null;
+
+async function loadTurnstileConfig() {
+  try {
+    const res = await fetch(`${API_BASE}/auth/config`);
+    const data = await res.json();
+    if (data.ok && data.cloudflareTurnstileSiteKey) {
+      turnstileSiteKey = data.cloudflareTurnstileSiteKey;
+    }
+  } catch (err) {
+    console.error('Failed to load Turnstile config:', err);
+  }
+}
+loadTurnstileConfig();
 
 function escapeHtml(value) {
   return String(value ?? '')
@@ -175,7 +190,7 @@ function clearCart() {
   showToast('Đã xóa giỏ hàng');
 }
 
-async function createOrder(item) {
+async function createOrder(item, turnstileToken) {
   const token = localStorage.getItem('token');
   if (!token) {
     window.location.href = 'login.html';
@@ -193,7 +208,8 @@ async function createOrder(item) {
       productName: item.productName,
       variantName: item.variantName,
       quantity: item.quantity,
-      unitPrice: item.unitPrice
+      unitPrice: item.unitPrice,
+      'cf-turnstile-response': turnstileToken
     })
   });
 
@@ -214,6 +230,135 @@ async function createOrder(item) {
   return data.order;
 }
 
+function closeCheckoutModal() {
+  document.getElementById('checkoutFlowModalBackdrop').classList.remove('is-visible');
+}
+
+function resetModalFlow(item) {
+  const totals = item.unitPrice * item.quantity;
+  
+  document.getElementById('modalProductTitle').innerText = item.productName;
+  document.getElementById('modalVariantTitle').innerText = `${item.variantName} (x${item.quantity})`;
+  document.getElementById('modalTotalPrice').innerText = formatVnd(totals);
+
+  // Buttons
+  const btnConfirm = document.getElementById('btnConfirmCheckout');
+  const btnCancel = document.getElementById('btnCancelCheckout');
+  btnConfirm.disabled = false;
+  btnConfirm.style.display = 'inline-flex';
+  btnConfirm.innerHTML = '<i class="fa-solid fa-shield-halved"></i> Xác nhận & Thanh toán';
+  btnCancel.disabled = false;
+  btnCancel.innerText = 'Hủy bỏ';
+  document.getElementById('modalFooterActions').style.display = 'flex';
+
+  // Nodes
+  document.getElementById('nodeClient').className = 'sk-flow-node is-active';
+  document.getElementById('nodeServer').className = 'sk-flow-node';
+  document.getElementById('nodeProvider').className = 'sk-flow-node';
+  document.getElementById('providerNodeLabel').innerText = 'Nhà cung cấp';
+
+  // Lines
+  document.getElementById('lineFill1').style.width = '0%';
+  document.getElementById('lineFill1').className = 'sk-flow-line-fill';
+  document.getElementById('lineClientServer').className = 'sk-flow-line';
+
+  document.getElementById('lineFill2').style.width = '0%';
+  document.getElementById('lineFill2').className = 'sk-flow-line-fill';
+  document.getElementById('lineServerProvider').className = 'sk-flow-line';
+
+  // Stage rows
+  document.getElementById('stageRow1').className = 'sk-flow-stage-row is-active';
+  document.getElementById('stageDesc1').innerText = 'Chuẩn bị gửi yêu cầu đặt hàng lên server trung gian...';
+  document.getElementById('stageTime1').innerText = '';
+
+  document.getElementById('stageRow2').className = 'sk-flow-stage-row';
+  document.getElementById('stageDesc2').innerText = 'Đang chờ xử lý yêu cầu...';
+  document.getElementById('stageTime2').innerText = '';
+
+  document.getElementById('stageRow3').className = 'sk-flow-stage-row';
+  document.getElementById('stageDesc3').innerText = 'Chờ giai đoạn trước hoàn thành...';
+  document.getElementById('stageTime3').innerText = '';
+
+  // Result boxes
+  document.getElementById('deliveryResultBox').style.display = 'none';
+  document.getElementById('deliveryResultText').value = '';
+  document.getElementById('errorResultBox').style.display = 'none';
+  document.getElementById('errorDetailText').innerText = '';
+
+  // Reset and render Turnstile widget
+  const container = document.getElementById('checkout-turnstile');
+  if (container) {
+    container.innerHTML = ''; // Clear previous widget
+    if (turnstileSiteKey) {
+      const renderWhenReady = () => {
+        if (window.turnstile) {
+          const placeholder = document.createElement('div');
+          container.appendChild(placeholder);
+          checkoutTurnstileWidgetId = turnstile.render(placeholder, {
+            sitekey: turnstileSiteKey,
+            theme: 'dark'
+          });
+        } else {
+          setTimeout(renderWhenReady, 100);
+        }
+      };
+      renderWhenReady();
+    } else {
+      checkoutTurnstileWidgetId = null;
+    }
+  }
+
+  if (window.replaceIcons) window.replaceIcons(document.getElementById('checkoutFlowModalBackdrop'));
+}
+
+function getTimeNow() {
+  return new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+}
+
+function copyDeliveryResult() {
+  const text = document.getElementById('deliveryResultText').value;
+  if (!text) return;
+  const btn = event?.target?.closest?.('button') || document.querySelector('#deliveryResultBox button');
+  navigator.clipboard.writeText(text).then(() => {
+    if (btn) {
+      const oldHTML = btn.innerHTML;
+      btn.innerHTML = '<i class="fa-solid fa-check"></i> Đã sao chép!';
+      if (window.replaceIcons) window.replaceIcons(btn);
+      setTimeout(() => { btn.innerHTML = oldHTML; if (window.replaceIcons) window.replaceIcons(btn); }, 2000);
+    }
+  });
+}
+
+function triggerConfetti() {
+  const container = document.getElementById('checkoutFlowModalBackdrop');
+  if (!container) return;
+
+  const emojis = ['🎉', '✨', '⚡', '💎', '🔥', '🎊', '💜'];
+  for (let i = 0; i < 40; i++) {
+    const particle = document.createElement('div');
+    particle.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+    particle.style.cssText = `
+      position:absolute; left:50%; top:45%;
+      font-size:${Math.random() * 18 + 14}px;
+      pointer-events:none; z-index:3000;
+      transition: all ${0.6 + Math.random() * 0.5}s cubic-bezier(0.25, 1, 0.5, 1);
+      transform: translate(-50%, -50%);
+    `;
+    container.appendChild(particle);
+
+    const angle = Math.random() * Math.PI * 2;
+    const velocity = Math.random() * 280 + 80;
+    const x = Math.cos(angle) * velocity;
+    const y = Math.sin(angle) * velocity - 50;
+
+    requestAnimationFrame(() => {
+      particle.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px)) scale(0) rotate(${Math.random() * 360}deg)`;
+      particle.style.opacity = '0';
+      setTimeout(() => particle.remove(), 1200);
+    });
+  }
+}
+
 async function checkoutCart() {
   const token = localStorage.getItem('token');
   if (!token) {
@@ -229,19 +374,176 @@ async function checkoutCart() {
   if (!confirm(`Thanh toán ${totals.quantity} sản phẩm với tổng ${formatVnd(totals.subtotal)}?`)) return;
 
   const checkoutItems = [...cart];
-  try {
-    for (const item of checkoutItems) {
-      await createOrder(item);
+  cart = [];
+  saveCart();
+  renderCart();
+
+  let currentIndex = 0;
+
+  async function processNextItem() {
+    if (currentIndex >= checkoutItems.length) {
+      showToast('Hoàn tất toàn bộ giỏ hàng!');
+      return;
     }
 
-    cart = [];
-    saveCart();
-    renderCart();
-    showToast('Thanh toán giỏ hàng thành công');
-    showCheckoutSuccessNotice(totals.subtotal);
-  } catch (err) {
-    showToast(err.message || 'Không thanh toán được giỏ hàng', false);
+    const item = checkoutItems[currentIndex];
+    resetModalFlow(item);
+    document.getElementById('checkoutFlowModalBackdrop').classList.add('is-visible');
+
+    const btnConfirm = document.getElementById('btnConfirmCheckout');
+    const btnCancel = document.getElementById('btnCancelCheckout');
+
+    btnConfirm.onclick = async () => {
+      btnConfirm.disabled = true;
+      btnCancel.disabled = true;
+      btnConfirm.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang xử lý...';
+      if (window.replaceIcons) window.replaceIcons(btnConfirm);
+
+      const turnstileToken = checkoutTurnstileWidgetId !== null ? turnstile.getResponse(checkoutTurnstileWidgetId) : '';
+      if (checkoutTurnstileWidgetId !== null && !turnstileToken) {
+        showToast('Vui lòng hoàn thành xác thực chống bot (Turnstile).', false);
+        btnConfirm.disabled = false;
+        btnCancel.disabled = false;
+        btnConfirm.innerHTML = '<i class="fa-solid fa-shield-halved"></i> Xác nhận & Thanh toán';
+        if (window.replaceIcons) window.replaceIcons(btnConfirm);
+        return;
+      }
+
+      // --- STAGE 1: CLIENT SEND REQUEST ---
+      document.getElementById('stageDesc1').innerText = 'Đang gửi yêu cầu và thanh toán bằng số dư ví...';
+      document.getElementById('lineClientServer').classList.add('is-active');
+      document.getElementById('lineFill1').style.width = '100%';
+
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      document.getElementById('nodeClient').className = 'sk-flow-node is-success';
+      document.getElementById('nodeServer').className = 'sk-flow-node is-active';
+      document.getElementById('stageRow1').className = 'sk-flow-stage-row is-success';
+      document.getElementById('stageDesc1').innerText = 'Hoàn thành — Đã gửi request đặt hàng từ Web/Client.';
+      document.getElementById('stageTime1').innerText = getTimeNow();
+
+      // --- STAGE 2: SERVER PROCESSING ---
+      document.getElementById('stageRow2').className = 'sk-flow-stage-row is-active';
+      document.getElementById('stageDesc2').innerText = 'Server đang phân tích gói hàng, trừ số dư và kiểm tra kho...';
+
+      let orderResponse = null;
+      let orderError = null;
+
+      try {
+        orderResponse = await createOrder(item, turnstileToken);
+      } catch (err) {
+        orderError = err;
+      }
+
+      // Pulse flow line between Server and Provider
+      document.getElementById('lineServerProvider').classList.add('is-active');
+      document.getElementById('lineFill2').style.width = '100%';
+
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      if (orderError) {
+        if (checkoutTurnstileWidgetId !== null) {
+          try {
+            turnstile.reset(checkoutTurnstileWidgetId);
+          } catch (te) {}
+        }
+        // ── ERROR HANDLING ──
+        document.getElementById('nodeServer').className = 'sk-flow-node is-error';
+        document.getElementById('lineFill1').className = 'sk-flow-line-fill is-error';
+        document.getElementById('lineFill2').className = 'sk-flow-line-fill is-error';
+        document.getElementById('lineClientServer').className = 'sk-flow-line';
+        document.getElementById('lineServerProvider').className = 'sk-flow-line';
+        document.getElementById('stageRow2').className = 'sk-flow-stage-row is-error';
+        document.getElementById('stageDesc2').innerText = 'Thất bại — Không thể xử lý đơn hàng tại server.';
+        document.getElementById('stageTime2').innerText = getTimeNow();
+
+        document.getElementById('nodeProvider').className = 'sk-flow-node is-skipped';
+        document.getElementById('stageRow3').className = 'sk-flow-stage-row is-skipped';
+        document.getElementById('stageDesc3').innerText = 'Bỏ qua — Giai đoạn trước thất bại.';
+
+        const errorBox = document.getElementById('errorResultBox');
+        const errorDetail = document.getElementById('errorDetailText');
+        if (errorDetail) errorDetail.innerText = orderError.message || 'Lỗi không xác định';
+        if (errorBox) errorBox.style.display = 'block';
+
+        document.getElementById('modalFooterActions').style.display = 'none';
+
+        const closeBtn = errorBox.querySelector('.sk-error-actions button');
+        if (closeBtn) {
+          if (currentIndex < checkoutItems.length - 1) {
+            closeBtn.innerHTML = '<i class="fa-solid fa-forward"></i> Tiếp tục sản phẩm tiếp theo';
+            closeBtn.className = 'sk-btn sk-btn-primary';
+            closeBtn.onclick = () => {
+              closeCheckoutModal();
+              currentIndex++;
+              processNextItem();
+            };
+          } else {
+            closeBtn.innerHTML = '<i class="fa-solid fa-xmark"></i> Đóng';
+            closeBtn.className = 'sk-btn';
+            closeBtn.onclick = () => {
+              closeCheckoutModal();
+            };
+          }
+        }
+        if (window.replaceIcons) window.replaceIcons(document.getElementById('checkoutFlowModalBackdrop'));
+        return;
+      }
+
+      // ── SUCCESS FLOW ──
+      const deliveryText = orderResponse.deliveryText || orderResponse.delivery_text || 'Đơn hàng hoàn tất.';
+
+      document.getElementById('nodeServer').className = 'sk-flow-node is-success';
+      document.getElementById('nodeProvider').className = 'sk-flow-node is-active';
+      document.getElementById('stageRow2').className = 'sk-flow-stage-row is-success';
+      document.getElementById('stageDesc2').innerText = 'Hoàn thành — Kết nối API đối tác/kho hàng thành công.';
+      document.getElementById('stageTime2').innerText = getTimeNow();
+
+      // --- STAGE 3: DATABASE SAVE & DELIVER ---
+      document.getElementById('stageRow3').className = 'sk-flow-stage-row is-active';
+      document.getElementById('stageDesc3').innerText = 'Đang cập nhật CSDL, lưu vết ví và kích hoạt trả hàng tự động...';
+
+      await new Promise(resolve => setTimeout(resolve, 800));
+
+      document.getElementById('nodeProvider').className = 'sk-flow-node is-success';
+      document.getElementById('lineFill1').className = 'sk-flow-line-fill is-success';
+      document.getElementById('lineFill2').className = 'sk-flow-line-fill is-success';
+      document.getElementById('lineClientServer').className = 'sk-flow-line';
+      document.getElementById('lineServerProvider').className = 'sk-flow-line';
+      document.getElementById('stageRow3').className = 'sk-flow-stage-row is-success';
+      document.getElementById('stageDesc3').innerText = 'Hoàn thành — CSDL cập nhật thành công. Đơn hàng kích hoạt!';
+      document.getElementById('stageTime3').innerText = getTimeNow();
+
+      // Render Result
+      document.getElementById('deliveryResultText').value = deliveryText;
+      const successBox = document.getElementById('deliveryResultBox');
+      successBox.style.display = 'block';
+
+      const historyLink = successBox.querySelector('.sk-delivery-actions a');
+      if (historyLink) {
+        if (currentIndex < checkoutItems.length - 1) {
+          historyLink.innerHTML = '<i class="fa-solid fa-forward"></i> Tiếp theo';
+          historyLink.href = 'javascript:void(0);';
+          historyLink.onclick = () => {
+            closeCheckoutModal();
+            currentIndex++;
+            processNextItem();
+          };
+        } else {
+          historyLink.innerHTML = '<i class="fa-solid fa-clock-rotate-left"></i> Lịch sử đơn hàng';
+          historyLink.href = '/index.html#orders';
+          historyLink.onclick = null;
+        }
+      }
+
+      document.getElementById('modalFooterActions').style.display = 'none';
+
+      triggerConfetti();
+      if (window.replaceIcons) window.replaceIcons(document.getElementById('checkoutFlowModalBackdrop'));
+    };
   }
+
+  processNextItem();
 }
 
 function syncCartCheckoutButton() {

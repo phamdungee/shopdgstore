@@ -16,6 +16,7 @@ const PAYMENT_SUCCESS_CONFIG = {
 };
 
 let activePollingInterval = null;
+let activeEventSource = null;
 let activeCountdownInterval = null;
 let activeBillId = null;
 let activeBillSnapshot = null;
@@ -167,8 +168,8 @@ function showPaymentSuccessNotice(details = {}) {
         </div>
 
         <div class="ps-actions">
-          <a class="ps-primary-action" href="/">Về trang chủ</a>
-          <button class="ps-copy-action" type="button" data-transaction-code="${escapeAttribute(transactionCode)}">Sao chép mã</button>
+          <a class="ps-primary-action" href="index.html"><i class="fa-solid fa-house" style="margin-right: 6px;"></i>Về trang chủ</a>
+          <button class="ps-copy-action" type="button" data-transaction-code="${escapeAttribute(transactionCode)}"><i class="fa-solid fa-copy" style="margin-right: 6px;"></i><span class="btn-text">Sao chép mã</span></button>
         </div>
       </div>
     </article>
@@ -186,13 +187,17 @@ function showPaymentSuccessNotice(details = {}) {
 
   const copyButton = notice.querySelector('.ps-copy-action');
   if (copyButton) {
+    const btnText = copyButton.querySelector('.btn-text');
+    const btnIcon = copyButton.querySelector('i');
     copyButton.addEventListener('click', async () => {
       try {
         await navigator.clipboard.writeText(copyButton.dataset.transactionCode || transactionCode);
-        copyButton.textContent = 'Đã sao chép';
+        if (btnText) btnText.textContent = 'Đã sao chép';
+        if (btnIcon) btnIcon.className = 'fa-solid fa-check';
         copyButton.classList.add('is-copied');
         setTimeout(() => {
-          copyButton.textContent = 'Sao chép mã';
+          if (btnText) btnText.textContent = 'Sao chép mã';
+          if (btnIcon) btnIcon.className = 'fa-solid fa-copy';
           copyButton.classList.remove('is-copied');
         }, 1400);
       } catch {
@@ -377,12 +382,12 @@ function injectPaymentSuccessStyles() {
       letter-spacing: .04em;
     }
     .ps-amount-box strong {
-      color: var(--success);
+      color: #10b981;
       font-size: clamp(32px, 8vw, 46px);
       line-height: 1;
       font-weight: 950;
-      letter-spacing: 0;
-      text-shadow: 0 0 15px var(--success-glow);
+      letter-spacing: -0.02em;
+      text-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
     }
     .ps-ticket-divider {
       position: relative;
@@ -841,6 +846,10 @@ function stopBillProcesses() {
     clearInterval(activePollingInterval);
     activePollingInterval = null;
   }
+  if (activeEventSource) {
+    activeEventSource.close();
+    activeEventSource = null;
+  }
   if (activeCountdownInterval) {
     clearInterval(activeCountdownInterval);
     activeCountdownInterval = null;
@@ -880,10 +889,14 @@ function startBillCountdown(seconds) {
 function handleBillExpired() {
   clearStoredBill();
 
-  // Dừng polling
+  // Dừng polling/events
   if (activePollingInterval) {
     clearInterval(activePollingInterval);
     activePollingInterval = null;
+  }
+  if (activeEventSource) {
+    activeEventSource.close();
+    activeEventSource = null;
   }
   if (activeCountdownInterval) {
     clearInterval(activeCountdownInterval);
@@ -907,54 +920,108 @@ function handleBillExpired() {
   showToast('Hóa đơn nạp tiền đã hết hạn!', false);
 }
 
-// 3. Polling kiểm tra trạng thái thanh toán tự động
+// 3. Nhận thông báo trạng thái thanh toán tự động (Realtime qua Webhook -> SSE)
 function startPaymentPolling(billId) {
-  if (activePollingInterval) clearInterval(activePollingInterval);
+  if (activePollingInterval) {
+    clearInterval(activePollingInterval);
+    activePollingInterval = null;
+  }
+  if (activeEventSource) {
+    activeEventSource.close();
+    activeEventSource = null;
+  }
 
   const token = getNapToken();
   if (!token) return;
 
-  activePollingInterval = setInterval(async () => {
-    if (activeBillId !== billId) {
-      clearInterval(activePollingInterval);
-      return;
-    }
+  // Sử dụng Server-Sent Events (SSE) để nhận cập nhật tức thì khi Webhook bắn về
+  if (typeof EventSource !== 'undefined') {
+    const url = `${NAP_API_BASE}/deposits/status/${billId}/live?token=${encodeURIComponent(token)}`;
+    activeEventSource = new EventSource(url);
 
-    try {
-      const res = await fetch(`${NAP_API_BASE}/deposits/status/${billId}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      const data = await res.json().catch(() => ({}));
+    activeEventSource.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.ok && ['paid', 'completed'].includes(data.status)) {
+          if (activeEventSource) {
+            activeEventSource.close();
+            activeEventSource = null;
+          }
+          if (activeCountdownInterval) {
+            clearInterval(activeCountdownInterval);
+            activeCountdownInterval = null;
+          }
 
-      if (res.ok && data.ok && ['paid', 'completed'].includes(data.status)) {
-        // Nạp tiền thành công!
-        clearInterval(activePollingInterval);
-        activePollingInterval = null;
-        if (activeCountdownInterval) {
-          clearInterval(activeCountdownInterval);
-          activeCountdownInterval = null;
+          handlePaymentSuccess({
+            id: billId,
+            transactionCode: data.transactionCode,
+            amount: data.amount,
+            newBalance: data.newBalance,
+            paidAt: new Date()
+          });
+        } else if (data.ok && ['expired', 'cancelled'].includes(data.status)) {
+          if (activeEventSource) {
+            activeEventSource.close();
+            activeEventSource = null;
+          }
+          if (activeCountdownInterval) {
+            clearInterval(activeCountdownInterval);
+            activeCountdownInterval = null;
+          }
+          handleBillExpired();
         }
-
-        handlePaymentSuccess({
-          id: billId,
-          transactionCode: data.transactionCode,
-          amount: data.amount,
-          newBalance: data.newBalance,
-          paidAt: new Date()
-        });
-      } else if (res.ok && data.ok && ['expired', 'cancelled'].includes(data.status)) {
-        clearInterval(activePollingInterval);
-        activePollingInterval = null;
-        if (activeCountdownInterval) {
-          clearInterval(activeCountdownInterval);
-          activeCountdownInterval = null;
-        }
-        handleBillExpired();
+      } catch (err) {
+        console.error('Lỗi phân tích dữ liệu Live Status:', err);
       }
-    } catch (err) {
-      console.log('Error polling bill status:', err);
-    }
-  }, 3000); // Polling mỗi 3 giây
+    };
+
+    activeEventSource.onerror = (err) => {
+      console.warn('Kết nối EventSource bị ngắt, đang tự động kết nối lại...', err);
+    };
+  } else {
+    // Fallback sang Polling truyền thống mỗi 3 giây nếu trình duyệt không hỗ trợ SSE (cực kỳ hiếm)
+    console.log('Fallback to polling mode');
+    activePollingInterval = setInterval(async () => {
+      if (activeBillId !== billId) {
+        clearInterval(activePollingInterval);
+        return;
+      }
+
+      try {
+        const res = await fetch(`${NAP_API_BASE}/deposits/status/${billId}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await res.json().catch(() => ({}));
+
+        if (res.ok && data.ok && ['paid', 'completed'].includes(data.status)) {
+          clearInterval(activePollingInterval);
+          activePollingInterval = null;
+          if (activeCountdownInterval) {
+            clearInterval(activeCountdownInterval);
+            activeCountdownInterval = null;
+          }
+
+          handlePaymentSuccess({
+            id: billId,
+            transactionCode: data.transactionCode,
+            amount: data.amount,
+            newBalance: data.newBalance,
+            paidAt: new Date()
+          });
+        } else if (res.ok && data.ok && ['expired', 'cancelled'].includes(data.status)) {
+          clearInterval(activePollingInterval);
+          activePollingInterval = null;
+          if (activeCountdownInterval) {
+            clearInterval(activeCountdownInterval);
+            activeCountdownInterval = null;
+          }
+          handleBillExpired();
+        }
+      } catch (err) {
+        console.log('Error polling bill status:', err);
+      }
+    }, 3000);
+  }
 }
 
 function handlePaymentSuccess(details = {}) {

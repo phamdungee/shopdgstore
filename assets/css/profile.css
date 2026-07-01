@@ -88,7 +88,7 @@
   100% { transform: rotate(360deg); }
 }
 
-.sk-profile-hero .sk-avatar {
+.avatar-glow-container .sk-avatar {
   position: relative;
   z-index: 2;
   width: 76px;

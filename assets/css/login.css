@@ -2,6 +2,15 @@
    DG Store — Cyber Neon Glass Auth Styling Redesign
    ═══════════════════════════════════════════════════════ */
 
+body.sk-auth-body, input, button, select, textarea, samp {
+  font-family: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif !important;
+}
+
+/* Prevent FontAwesome icons from being overridden by text font-family */
+.fa, .fas, .far, .fab, .fa-solid, .fa-regular, .fa-brands {
+  font-family: "Font Awesome 6 Free", "Font Awesome 6 Brands" !important;
+}
+
 body.sk-auth-body {
   background: #0a0e1a !important;
   background-image: radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
@@ -85,13 +94,23 @@ body.sk-auth-body::after {
   box-shadow: 0 0 20px var(--brand-glow) !important;
 }
 
+@property --gradient-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes rotateLED {
+  0% { --gradient-angle: 0deg; }
+  100% { --gradient-angle: 360deg; }
+}
+
 /* Glassmorphic Main Layout Card */
 .sk-auth-card.container {
   z-index: 1;
   background: rgba(17, 24, 39, 0.55) !important;
-  border: 1px solid rgba(99, 102, 241, 0.15) !important;
   backdrop-filter: blur(25px);
-  box-shadow: var(--shadow), 0 0 40px rgba(99, 102, 241, 0.1) !important;
+  box-shadow: var(--shadow), 0 0 50px rgba(99, 102, 241, 0.25) !important;
   border-radius: var(--radius-xl) !important;
   min-height: 580px !important;
   width: 850px;
@@ -101,6 +120,26 @@ body.sk-auth-body::after {
   overflow: hidden;
   position: relative;
   transition: all 0.3s ease;
+}
+
+/* LED border animation that only runs on the border with NO bleed-through */
+.sk-auth-card.container::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 2px; /* Border thickness */
+  background: conic-gradient(from var(--gradient-angle), 
+    #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000
+  );
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  animation: rotateLED 5s linear infinite;
+  z-index: 5; /* Sit on top of background but behind contents if needed, pointer-events: none ensures clickability */
 }
 
 /* Copywriting Panel Left */
@@ -252,18 +291,49 @@ body.sk-auth-body::after {
 }
 
 .form-container h1 {
-  color: var(--text-bright) !important;
   font-weight: 900 !important;
-  font-size: 26px !important;
-  margin-bottom: 6px !important;
+  font-size: 28px !important;
+  margin-bottom: 8px !important;
+  text-align: center;
+  background: linear-gradient(135deg, #ffffff 30%, var(--brand-light) 75%, var(--neon) 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  text-shadow: 0 0 30px rgba(99, 102, 241, 0.1);
+  display: block;
+  width: 100%;
+}
+
+@keyframes kickerIntro {
+  0% {
+    opacity: 0;
+    letter-spacing: -0.05em;
+    transform: translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    letter-spacing: 0.15em;
+    transform: translateY(0);
+  }
 }
 
 .form-container .sk-kicker {
-  color: var(--neon) !important;
+  color: var(--brand-light) !important;
   font-weight: 850;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
-  font-size: 11px;
+  font-size: 14px !important;
+  display: block;
+  text-align: center;
+  width: 100%;
+  margin-bottom: 24px !important;
+  text-shadow: 0 0 12px rgba(99, 102, 241, 0.4);
+  opacity: 0; /* Let animation handle opacity */
+}
+
+/* Trigger kicker animation on load and when active state changes */
+#container.active .sign-up .sk-kicker,
+#container:not(.active) .sign-in .sk-kicker {
+  animation: kickerIntro 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
 }
 
 .form-container samp {
@@ -320,19 +390,22 @@ body.sk-auth-body::after {
   background: transparent !important;
   margin-bottom: 0 !important;
   box-shadow: none !important;
-  flex: 1;
+  flex: 1 !important;
+  width: auto !important;
+  min-width: 0 !important;
 }
 
 .form-container .sk-password-field button {
   border: 0 !important;
   background: transparent !important;
   color: var(--muted) !important;
-  width: 40px;
-  height: 44px;
-  display: grid;
-  place-items: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  width: 40px !important;
+  height: 44px !important;
+  display: grid !important;
+  place-items: center !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  flex-shrink: 0 !important;
 }
 
 .form-container .sk-password-field button:hover {
@@ -403,6 +476,8 @@ body.sk-auth-body::after {
   box-shadow: 0 0 15px var(--brand-glow) !important;
 }
 
+
+
 /* Switch Text */
 .mobile-switch-text {
   color: var(--muted) !important;
@@ -441,5 +516,95 @@ body.sk-auth-body::after {
 
   .form-container {
     padding: 24px 20px !important;
+  }
+}
+
+/* Premium Glassmorphic Toast Notification */
+#auth-toast {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 999999;
+  max-width: 380px;
+  min-width: 300px;
+  background: rgba(15, 23, 42, 0.85) !important;
+  backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 16px !important;
+  padding: 16px 20px !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5) !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  color: #f8fafc !important;
+  font-family: 'Outfit', sans-serif !important;
+  font-size: 13.5px !important;
+  font-weight: 500 !important;
+  line-height: 1.4 !important;
+  transform: translateX(120%);
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease !important;
+  opacity: 0;
+  overflow: hidden;
+}
+
+#auth-toast.show {
+  transform: translateX(0) !important;
+  opacity: 1 !important;
+}
+
+#auth-toast.hide {
+  transform: translateX(120%) scale(0.9) !important;
+  opacity: 0 !important;
+}
+
+#auth-toast .toast-icon {
+  font-size: 20px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+}
+
+#auth-toast.success {
+  border-left: 4px solid #10b981 !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 20px rgba(16, 185, 129, 0.15) !important;
+}
+
+#auth-toast.success .toast-icon {
+  color: #10b981 !important;
+}
+
+#auth-toast.error {
+  border-left: 4px solid #f43f5e !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 20px rgba(244, 63, 94, 0.15) !important;
+}
+
+#auth-toast.error .toast-icon {
+  color: #f43f5e !important;
+}
+
+/* Toast Progress Bar */
+#auth-toast::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  width: 100%;
+  transform-origin: left;
+  animation: toastProgress 3.5s linear forwards;
+}
+
+#auth-toast.success::after {
+  background: linear-gradient(90deg, #10b981, #34d399) !important;
+}
+
+#auth-toast.error::after {
+  background: linear-gradient(90deg, #f43f5e, #fb7185) !important;
+}
+
+@keyframes toastProgress {
+  to {
+    transform: scaleX(0);
   }
 }

@@ -2,6 +2,10 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const supabase = require('../config/supabase');
+const { googleLogin, githubLogin } = require('../controllers/authController');
+const { loginLimiter, registerLimiter } = require('../middlewares/rateLimitMiddleware');
+const verifyTurnstile = require('../middlewares/turnstileMiddleware');
+
 const {
   normalizeString,
   safeUser,
@@ -44,7 +48,7 @@ function clearAuthRateLimit(req, scope, identity = '') {
   authAttempts.delete(authLimitKey(req, scope, identity));
 }
 
-router.post('/register', async (req, res) => {
+router.post('/register', registerLimiter, verifyTurnstile, async (req, res) => {
   try {
     const username = normalizeString(req.body.username || req.body.uid);
     const email = normalizeString(req.body.email).toLowerCase();
@@ -124,7 +128,7 @@ router.post('/register', async (req, res) => {
   }
 });
 
-router.post('/login', async (req, res) => {
+router.post('/login', loginLimiter, verifyTurnstile, async (req, res) => {
   const usernameOrEmail = normalizeString(req.body.usernameOrEmail || req.body.username || req.body.uid);
   const password = String(req.body.password || '');
 
@@ -249,5 +253,17 @@ router.post('/setup-admin', async (req, res) => {
 router.post('/logout', (req, res) => {
   return res.json({ ok: true, message: 'Đăng xuất thành công' });
 });
+
+router.get('/auth/config', (req, res) => {
+  return res.json({
+    ok: true,
+    googleClientId: process.env.GOOGLE_CLIENT_ID || '',
+    githubClientId: process.env.GITHUB_CLIENT_ID || '',
+    cloudflareTurnstileSiteKey: process.env.CLOUDFLARE_TURNSTILE_SITE_KEY || '1x00000000000000000000AA'
+  });
+});
+
+router.post('/auth/google', googleLogin);
+router.post('/auth/github', githubLogin);
 
 module.exports = router;

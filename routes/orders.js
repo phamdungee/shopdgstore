@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const supabase = require('../config/supabase');
 const { authMiddleware } = require('../middlewares/authMiddleware');
-const { fulfillOrder } = require('../fulfillment/vendorRouter');
+const { fulfillOrder, isCircuitOpen } = require('../fulfillment/vendorRouter');
 const {
   normalizeString,
   safeUser,
@@ -15,9 +15,10 @@ const {
   purchaseCostSnapshot,
   notifyPurchaseFailure
 } = require('../services/storeService');
+const { checkoutLimiter } = require('../middlewares/rateLimitMiddleware');
+const verifyTurnstile = require('../middlewares/turnstileMiddleware');
 
-router.post('/orders', authMiddleware, async (req, res) => {
-  let deducted = null;
+router.post('/orders', authMiddleware, checkoutLimiter, verifyTurnstile, async (req, res) => {
   let order = null;
   let product = null;
   let variant = null;
@@ -27,6 +28,7 @@ router.post('/orders', authMiddleware, async (req, res) => {
     const productSlug = normalizeString(req.body.productSlug);
     const variantName = normalizeString(req.body.variantName);
     const quantity = Math.max(1, Math.floor(Number(req.body.quantity || 1)));
+    const idempotencyKey = req.headers['idempotency-key'] || req.headers['idempotency_key'] || req.body.idempotency_key || null;
 
     if (!productSlug || !variantName) {
       return res.status(400).json({ ok: false, message: 'Thông tin đơn hàng không hợp lệ' });
@@ -34,7 +36,7 @@ router.post('/orders', authMiddleware, async (req, res) => {
 
     const { data: foundProduct, error: productErr } = await supabase
       .from('products')
-      .select('*')
+      .select('*, product_variants(*)')
       .eq('slug', productSlug)
       .single();
 
@@ -44,11 +46,9 @@ router.post('/orders', authMiddleware, async (req, res) => {
     }
 
     product = foundProduct;
-    if (product.is_active === false || product.active === false || Number(product.stock) === 0) {
-      return res.status(400).json({ ok: false, message: 'Sản phẩm tạm hết hàng' });
-    }
+    product.stock = product.stock_cache; // Fallback mapping
 
-    variant = (Array.isArray(product.variants) ? product.variants : []).find(item => item.name === variantName);
+    variant = (product.product_variants || []).find(item => item.name === variantName);
     if (!variant) {
       return res.status(400).json({ ok: false, message: 'Gói sản phẩm không hợp lệ' });
     }
@@ -59,70 +59,118 @@ router.post('/orders', authMiddleware, async (req, res) => {
       return res.status(400).json({ ok: false, message: 'Giá sản phẩm không hợp lệ' });
     }
 
+    // 1. Pre-validation of fulfillment availability based on delivery type and mappings
+    const deliveryType = variant.delivery_type || product.delivery_type || 'hybrid';
+    const fallbackMode = variant.fallback_mode || product.fallback_mode || 'api_when_out_of_stock';
+    const currentStock = Number(variant.stock_cache || 0);
+
+    let isAvailable = false;
+    let availabilityError = '';
+
+    if (deliveryType === 'inventory') {
+      if (currentStock >= quantity) {
+        isAvailable = true;
+      } else {
+        availabilityError = 'Kho hàng không đủ số lượng để giao';
+      }
+    } else if (deliveryType === 'api') {
+      const { data: mappings } = await supabase
+        .from('vendor_products')
+        .select('*, vendors(status)')
+        .eq('product_id', product.id)
+        .eq('variant_id', variant.id)
+        .eq('enabled', true);
+
+      const activeMappings = (mappings || []).filter(m => m.vendors?.status === 'active' && !isCircuitOpen(m.vendor_id));
+      const hasDefaultVendor = variant.vendor_id || product.vendor_id;
+
+      if (activeMappings.length > 0 || hasDefaultVendor) {
+        isAvailable = true;
+      } else {
+        availabilityError = 'Nhà cung cấp đang bảo trì hoặc tạm thời dừng bán';
+      }
+    } else if (deliveryType === 'hybrid') {
+      if (currentStock >= quantity) {
+        isAvailable = true;
+      } else {
+        if (fallbackMode === 'fail_when_out_of_stock') {
+          availabilityError = 'Sản phẩm tạm hết hàng';
+        } else {
+          const { data: mappings } = await supabase
+            .from('vendor_products')
+            .select('*, vendors(status)')
+            .eq('product_id', product.id)
+            .eq('variant_id', variant.id)
+            .eq('enabled', true);
+
+          const activeMappings = (mappings || []).filter(m => m.vendors?.status === 'active' && !isCircuitOpen(m.vendor_id));
+          const hasDefaultVendor = variant.vendor_id || product.vendor_id;
+
+          if (activeMappings.length > 0 || hasDefaultVendor) {
+            isAvailable = true;
+          } else {
+            availabilityError = 'Kho hàng đã hết và các nhà cung cấp dự phòng hiện không hoạt động';
+          }
+        }
+      }
+    }
+
+    if (!isAvailable) {
+      return res.status(400).json({ ok: false, message: availabilityError || 'Sản phẩm tạm hết hàng' });
+    }
+
     const costSnapshot = purchaseCostSnapshot(product, variant, quantity, totalPrice);
     const orderCode = makePublicCode('DG');
     const purchaseTransactionCode = makePublicCode('BUY');
 
-    deducted = await deductUserBalance(userId, totalPrice);
-
+    // 2. Execute transactional balance update & pending order creation inside DB stored procedure (RPC)
     const { data: newOrder, error: orderError } = await supabase
-      .from('store_orders')
-      .insert({
-        user_id: userId,
-        order_code: orderCode,
-        product_slug: productSlug,
-        product_name: product.name,
-        variant_name: variantName,
-        quantity,
-        unit_price: unitPrice,
-        total_price: totalPrice,
-        cost_amount: costSnapshot.costAmount,
-        profit: costSnapshot.profit,
-        status: 'processing',
-        delivery_text: `Đơn ${orderCode} đang được xử lý tự động.`,
-        response_data: {
-          source: 'processing',
-          vendor_id: variant.vendor_id || product.vendor_id || null,
-          vendor_product_code: variant.vendor_product_code || product.vendor_product_code || variant.provider_service_id || null,
-          unit_cost: costSnapshot.unitCost
-        }
-      })
-      .select(ORDER_PUBLIC_SELECT)
-      .single();
-
-    if (orderError || !newOrder) {
-      console.error('Create processing order error:', orderError);
-      const refunded = await addUserBalance(userId, totalPrice);
-      await writeWalletTransaction({
-        user_id: userId,
-        transaction_code: makePublicCode('REF'),
-        type: 'refund',
-        amount: totalPrice,
-        balance_before: refunded.balanceBefore,
-        balance_after: refunded.balanceAfter,
-        content: `Hoàn tiền do không tạo được đơn ${orderCode}`,
-        status: 'paid'
+      .rpc('create_store_order_with_balance', {
+        p_user_id: userId,
+        p_product_slug: productSlug,
+        p_product_name: product.name,
+        p_variant_name: variantName,
+        p_quantity: quantity,
+        p_unit_price: unitPrice,
+        p_total_price: totalPrice,
+        p_cost_amount: costSnapshot.costAmount,
+        p_profit: costSnapshot.profit,
+        p_idempotency_key: idempotencyKey,
+        p_order_code: orderCode,
+        p_buy_transaction_code: purchaseTransactionCode
       });
-      return res.status(500).json({
-        ok: false,
-        message: 'Không lưu được đơn hàng, số dư đã được hoàn lại',
-        user: safeUser(refunded.user)
+
+    if (orderError) {
+      console.error('Transactional order creation error:', orderError);
+      return res.status(500).json({ ok: false, message: orderError.message || 'Không hoàn thành giao dịch thanh toán' });
+    }
+
+    if (!newOrder || (Array.isArray(newOrder) && newOrder.length === 0)) {
+      return res.status(500).json({ ok: false, message: 'Lỗi khởi tạo đơn hàng thanh toán' });
+    }
+
+    order = Array.isArray(newOrder) ? newOrder[0] : newOrder;
+
+    // Check if the order is already processed (Idempotency skip!)
+    if (order.status === 'completed' || order.status === 'failed') {
+      console.log(`[Idempotency] Returning cached response for order code ${order.order_code}`);
+      return res.json({
+        ok: true,
+        message: order.status === 'completed' ? 'Thanh toán thành công (idempotent)' : 'Thanh toán thất bại (idempotent)',
+        order: safeOrder(order)
       });
     }
 
-    order = newOrder;
-    await writeWalletTransaction({
-      user_id: userId,
-      transaction_code: purchaseTransactionCode,
-      type: 'purchase',
-      amount: -totalPrice,
-      balance_before: deducted.balanceBefore,
-      balance_after: deducted.balanceAfter,
-      content: `Mua ${product.name} - ${variantName} x${quantity} (${orderCode})`,
-      related_order_id: order.id,
-      status: 'paid'
+    // Log audit event: Order Created
+    await supabase.from('order_events').insert({
+      order_id: order.id,
+      event: 'Order Created',
+      payload: { idempotency_key: idempotencyKey }
     });
 
+    const { data: dbUser } = await supabase.from('users').select('*').eq('id', userId).single();
+
+    // 3. Trigger actual delivery fulfillment (local stock or API routing)
     const fulfillment = await fulfillOrder({
       supabase,
       product,
@@ -132,215 +180,99 @@ router.post('/orders', authMiddleware, async (req, res) => {
       quantity,
       orderCode,
       orderId: order.id,
-      user: deducted.user
+      user: dbUser
     });
 
     if (!fulfillment.ok) {
-      const refunded = await addUserBalance(userId, totalPrice);
-      const refundMessage = `Nguồn hàng lỗi hoặc hết hàng. Hệ thống đã hoàn ${totalPrice.toLocaleString('vi-VN')}đ vào ví của bạn.`;
-
-      const { data: refundedOrder, error: refundOrderError } = await supabase
-        .from('store_orders')
-        .update({
-          status: 'refunded',
-          delivery_text: refundMessage,
-          response_data: {
-            source: 'refund',
-            reason: fulfillment.message,
-            vendor_response: fulfillment.responseData || null,
-            fallback: fulfillment.fallback || null
-          }
-        })
-        .eq('id', order.id)
-        .select(ORDER_PUBLIC_SELECT)
-        .single();
-
-      if (refundOrderError) {
-        console.error('Update refunded order warning:', refundOrderError);
+      // Release inventory items if reserved
+      if (Array.isArray(fulfillment.stockIds) && fulfillment.stockIds.length > 0) {
+        await supabase.rpc('release_inventory_items', {
+          p_item_ids: fulfillment.stockIds
+        });
       }
 
-      await writeWalletTransaction({
-        user_id: userId,
-        transaction_code: makePublicCode('REF'),
-        type: 'refund',
-        amount: totalPrice,
-        balance_before: refunded.balanceBefore,
-        balance_after: refunded.balanceAfter,
-        content: `Hoàn tiền ${product.name} - ${variantName} x${quantity} (${orderCode})`,
-        related_order_id: order.id,
-        status: 'paid'
+      // Log event: Fulfillment Failed
+      await supabase.from('order_events').insert({
+        order_id: order.id,
+        event: 'Fulfillment Failed',
+        payload: { error: fulfillment.message, code: fulfillment.code }
       });
 
-      await notifyPurchaseFailure({
-        user: deducted.user,
+      // Rollback money and set order status to failed atomically
+      const refundTransactionCode = makePublicCode('REF');
+      const refundMessage = `Nguồn hàng lỗi hoặc hết hàng. Hệ thống đã hoàn ${totalPrice.toLocaleString('vi-VN')}đ vào ví của bạn.`;
+      
+      const { data: refundOk, error: refundErr } = await supabase.rpc('refund_store_order_with_balance', {
+        p_order_id: order.id,
+        p_refund_reason: refundMessage,
+        p_refund_transaction_code: refundTransactionCode
+      });
+
+      if (refundErr) {
+        console.error('Transactional refund error:', refundErr);
+      }
+
+      const { data: failedOrder } = await supabase
+        .from('store_orders')
+        .select(ORDER_PUBLIC_SELECT)
+        .eq('id', order.id)
+        .single();
+
+      notifyPurchaseFailure({
+        user: dbUser,
         product,
         variantName,
         quantity,
-        order,
+        order: failedOrder || order,
         reason: fulfillment.message,
-        responseData: fulfillment.responseData || fulfillment
+        responseData: fulfillment
       });
 
-      return res.status(502).json({
+      return res.status(400).json({
         ok: false,
-        message: refundMessage,
-        user: safeUser(refunded.user),
-        order: safeOrder(refundedOrder || { ...order, status: 'refunded', delivery_text: refundMessage }),
-        flow: {
-          stage1: { status: 'success', message: 'Đã trừ số dư và tạo đơn processing.', timestamp: new Date().toISOString() },
-          stage2: { status: 'failed', message: fulfillment.message, responseData: fulfillment.responseData || null, timestamp: new Date().toISOString() },
-          stage3: { status: 'refunded', message: 'Đã hoàn tiền nội bộ cho khách.', timestamp: new Date().toISOString() }
-        }
+        message: fulfillment.message || 'Giao hàng thất bại, ví đã được hoàn tiền',
+        order: failedOrder ? safeOrder(failedOrder) : null
       });
     }
 
-    if (Array.isArray(fulfillment.stockIds) && fulfillment.stockIds.length > 0) {
-      const { data: claimedStocks, error: claimStockError } = await supabase
-        .from('product_stocks')
-        .update({
-          is_sold: true,
-          sold_at: new Date().toISOString(),
-          related_order_id: order.id
-        })
-        .in('id', fulfillment.stockIds)
-        .eq('is_sold', false)
-        .select('id');
-
-      if (claimStockError || !claimedStocks || claimedStocks.length < quantity) {
-        if (claimedStocks && claimedStocks.length > 0) {
-          await supabase
-            .from('product_stocks')
-            .update({
-              is_sold: false,
-              sold_at: null,
-              related_order_id: null
-            })
-            .in('id', claimedStocks.map(item => item.id))
-            .eq('related_order_id', order.id);
-        }
-
-        const refunded = await addUserBalance(userId, totalPrice);
-        const refundMessage = `Kho vừa thay đổi, hệ thống đã hoàn ${totalPrice.toLocaleString('vi-VN')}đ vào ví của bạn.`;
-
-        const { data: refundedOrder } = await supabase
-          .from('store_orders')
-          .update({
-            status: 'refunded',
-            delivery_text: refundMessage,
-            response_data: {
-              source: 'refund',
-              reason: claimStockError ? claimStockError.message : 'Không claim đủ kho nội bộ',
-              requested: quantity,
-              claimed: claimedStocks ? claimedStocks.length : 0
-            }
-          })
-          .eq('id', order.id)
-          .select(ORDER_PUBLIC_SELECT)
-          .single();
-
-        await writeWalletTransaction({
-          user_id: userId,
-          transaction_code: makePublicCode('REF'),
-          type: 'refund',
-          amount: totalPrice,
-          balance_before: refunded.balanceBefore,
-          balance_after: refunded.balanceAfter,
-          content: `Hoàn tiền do kho thay đổi ${product.name} - ${variantName} (${orderCode})`,
-          related_order_id: order.id,
-          status: 'paid'
-        });
-
-        await notifyPurchaseFailure({
-          user: deducted.user,
-          product,
-          variantName,
-          quantity,
-          order,
-          reason: claimStockError ? claimStockError.message : 'Không claim đủ kho nội bộ',
-          responseData: { requested: quantity, claimed: claimedStocks ? claimedStocks.length : 0 }
-        });
-
-        return res.status(409).json({
-          ok: false,
-          message: refundMessage,
-          user: safeUser(refunded.user),
-          order: safeOrder(refundedOrder || { ...order, status: 'refunded', delivery_text: refundMessage })
-        });
-      }
-    }
-
+    // 4. Update order state to completed upon success
+    const finalCost = fulfillment.totalCost !== undefined ? fulfillment.totalCost : costSnapshot.costAmount;
     const { data: completedOrder, error: completeError } = await supabase
       .from('store_orders')
       .update({
-        status: 'completed',
+        status: fulfillment.orderStatus || 'completed',
         delivery_text: fulfillment.deliveryText,
-        response_data: fulfillment.responseData || null
+        delivery_json: fulfillment.deliveryJson || null,
+        cost_amount: finalCost,
+        profit: totalPrice - finalCost,
+        response_data: {
+          source: fulfillment.deliveryMethod,
+          vendor: fulfillment.vendor || null,
+          details: fulfillment.responseData || null
+        }
       })
       .eq('id', order.id)
       .select(ORDER_PUBLIC_SELECT)
       .single();
 
-    if (completeError || !completedOrder) {
-      console.error('Complete order update error:', completeError);
-      const refunded = await addUserBalance(userId, totalPrice);
-      await writeWalletTransaction({
-        user_id: userId,
-        transaction_code: makePublicCode('REF'),
-        type: 'refund',
-        amount: totalPrice,
-        balance_before: refunded.balanceBefore,
-        balance_after: refunded.balanceAfter,
-        content: `Hoàn tiền do không cập nhật được đơn ${orderCode}`,
-        related_order_id: order.id,
-        status: 'paid'
-      });
-      await supabase
-        .from('store_orders')
-        .update({
-          status: 'refunded',
-          delivery_text: 'Không cập nhật được trạng thái giao hàng, hệ thống đã hoàn tiền.',
-          response_data: {
-            source: 'refund',
-            reason: completeError ? completeError.message : 'Complete order update failed'
-          }
-        })
-        .eq('id', order.id);
-
-      return res.status(500).json({
-        ok: false,
-        message: 'Không cập nhật được trạng thái giao hàng, số dư đã được hoàn lại',
-        user: safeUser(refunded.user)
-      });
+    if (completeError) {
+      console.error('Complete order status update error:', completeError);
     }
+
+    // Log event: Completed or Processing
+    await supabase.from('order_events').insert({
+      order_id: order.id,
+      event: fulfillment.orderStatus === 'processing' ? 'Processing (Manual)' : 'Completed',
+      payload: { source: fulfillment.deliveryMethod }
+    });
 
     return res.status(201).json({
       ok: true,
-      message: 'Mua hàng và giao hàng tự động thành công!',
-      user: safeUser(deducted.user),
-      order: safeOrder(completedOrder),
-      flow: {
-        stage1: { status: 'success', message: 'Đã trừ số dư và tạo đơn processing.', timestamp: new Date().toISOString() },
-        stage2: { status: 'success', message: `Fulfillment thành công qua ${fulfillment.vendor}.`, responseData: fulfillment.responseData || null, timestamp: new Date().toISOString() },
-        stage3: { status: 'completed', message: 'Đơn đã hoàn thành và hàng đã được giao.', timestamp: new Date().toISOString() }
-      }
+      message: fulfillment.orderStatus === 'processing' ? 'Đơn hàng đã được ghi nhận và đang chờ xử lý thủ công.' : 'Mua hàng và giao hàng tự động thành công!',
+      order: completedOrder ? safeOrder(completedOrder) : safeOrder(order)
     });
   } catch (err) {
     console.error('Create order server error:', err);
-
-    if (deducted && !order && product && variant) {
-      try {
-        const totalPrice = Number(variant.price || 0) * Math.max(1, Math.floor(Number(req.body.quantity || 1)));
-        const refunded = await addUserBalance(req.user.userId, totalPrice);
-        return res.status(500).json({
-          ok: false,
-          message: 'Lỗi server khi tạo đơn hàng, số dư đã được hoàn lại',
-          user: safeUser(refunded.user)
-        });
-      } catch (refundErr) {
-        console.error('Emergency refund failed:', refundErr);
-      }
-    }
-
     return res.status(err.statusCode || 500).json({
       ok: false,
       message: err.message || 'Lỗi server khi tạo đơn hàng'
