@@ -2022,16 +2022,57 @@
       document.getElementById('checkoutFlowModalBackdrop').classList.remove('is-visible');
     }
 
+    let productCheckoutTurnstileWidgetId = null;
+
     function resetModalFlow() {
       // Buttons
       const btnConfirm = document.getElementById('btnConfirmCheckout');
       const btnCancel = document.getElementById('btnCancelCheckout');
-      btnConfirm.disabled = false;
+      
       btnConfirm.style.display = 'inline-flex';
       btnConfirm.innerHTML = '<i class="fa-solid fa-shield-halved"></i> Xác nhận & Thanh toán';
       btnCancel.disabled = false;
       btnCancel.innerText = 'Hủy bỏ';
       document.getElementById('modalFooterActions').style.display = 'flex';
+
+      // Render Turnstile
+      const tContainer = document.getElementById('product-checkout-turnstile');
+      if (tContainer) {
+        tContainer.innerHTML = '';
+        if (typeof reviewTurnstileSiteKey !== 'undefined' && reviewTurnstileSiteKey) {
+          btnConfirm.disabled = true;
+          const renderWhenReady = () => {
+            if (window.turnstile) {
+              const placeholder = document.createElement('div');
+              tContainer.appendChild(placeholder);
+              productCheckoutTurnstileWidgetId = turnstile.render(placeholder, {
+                sitekey: reviewTurnstileSiteKey,
+                theme: 'dark',
+                callback: function() {
+                  const btn = document.getElementById('btnConfirmCheckout');
+                  if (btn) btn.disabled = false;
+                },
+                'expired-callback': function() {
+                  const btn = document.getElementById('btnConfirmCheckout');
+                  if (btn) btn.disabled = true;
+                },
+                'error-callback': function() {
+                  const btn = document.getElementById('btnConfirmCheckout');
+                  if (btn) btn.disabled = true;
+                }
+              });
+            } else {
+              setTimeout(renderWhenReady, 100);
+            }
+          };
+          renderWhenReady();
+        } else {
+          productCheckoutTurnstileWidgetId = null;
+          btnConfirm.disabled = false;
+        }
+      } else {
+        btnConfirm.disabled = false;
+      }
 
       // Nodes
       document.getElementById('nodeClient').className = 'sk-flow-node is-active';
@@ -2080,6 +2121,20 @@
       btnConfirm.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang xử lý...';
       if (window.replaceIcons) window.replaceIcons(btnConfirm);
 
+      const turnstileToken = productCheckoutTurnstileWidgetId !== null ? turnstile.getResponse(productCheckoutTurnstileWidgetId) : '';
+      if (typeof reviewTurnstileSiteKey !== 'undefined' && reviewTurnstileSiteKey && !turnstileToken) {
+        if (window.showToast) {
+          window.showToast('Vui lòng hoàn thành xác thực chống bot (Turnstile).', false);
+        } else {
+          alert('Vui lòng hoàn thành xác thực chống bot (Turnstile).');
+        }
+        btnConfirm.disabled = true; // Wait for them to solve it
+        btnCancel.disabled = false;
+        btnConfirm.innerHTML = '<i class="fa-solid fa-shield-halved"></i> Xác nhận & Thanh toán';
+        if (window.replaceIcons) window.replaceIcons(btnConfirm);
+        return;
+      }
+
       // --- STAGE 1: CLIENT SEND REQUEST ---
       document.getElementById('stageDesc1').innerText = 'Đang gửi yêu cầu và thanh toán bằng số dư ví...';
       document.getElementById('lineClientServer').classList.add('is-active');
@@ -2113,7 +2168,8 @@
           body: JSON.stringify({
             productSlug: product.slug,
             variantName: selectedVariant.name,
-            quantity: totals.quantity
+            quantity: totals.quantity,
+            'cf-turnstile-response': turnstileToken
           })
         });
       } catch (err) {
@@ -2127,6 +2183,11 @@
       await new Promise(resolve => setTimeout(resolve, 1000));
 
       if (orderError) {
+        if (productCheckoutTurnstileWidgetId !== null) {
+          try {
+            turnstile.reset(productCheckoutTurnstileWidgetId);
+          } catch (te) {}
+        }
         // ── ERROR HANDLING ──
         // Mark stage 2 as error
         document.getElementById('nodeServer').className = 'sk-flow-node is-error';
@@ -2792,7 +2853,9 @@
           </div>
         </div>
       </div>
-      <footer class="sk-modal-footer" id="modalFooterActions">
+      <footer class="sk-modal-footer" id="modalFooterActions" style="align-items: center; flex-wrap: wrap;">
+        <!-- Turnstile Container -->
+        <div id="product-checkout-turnstile" style="margin-right: auto;"></div>
         <button class="sk-btn" type="button" onclick="closeCheckoutModal()" id="btnCancelCheckout">Hủy bỏ</button>
         <button class="sk-btn sk-btn-primary" type="button" onclick="confirmCheckout()" id="btnConfirmCheckout"><i class="fa-solid fa-shield-halved"></i> Xác nhận &amp; Thanh toán</button>
       </footer>
