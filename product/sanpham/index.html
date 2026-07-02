@@ -2331,13 +2331,27 @@
                 tContainer.appendChild(placeholder);
                 reviewTurnstileWidgetId = turnstile.render(placeholder, {
                   sitekey: reviewTurnstileSiteKey,
-                  theme: 'dark'
+                  theme: 'dark',
+                  callback: function() {
+                    const btn = document.getElementById('btnSubmitReview');
+                    if (btn) btn.disabled = false;
+                  },
+                  'expired-callback': function() {
+                    const btn = document.getElementById('btnSubmitReview');
+                    if (btn) btn.disabled = true;
+                  },
+                  'error-callback': function() {
+                    const btn = document.getElementById('btnSubmitReview');
+                    if (btn) btn.disabled = true;
+                  }
                 });
               } else {
                 setTimeout(renderWhenReady, 100);
               }
             };
             renderWhenReady();
+            const btn = document.getElementById('btnSubmitReview');
+            if (btn) btn.disabled = true;
           } else {
             reviewTurnstileWidgetId = null;
           }
@@ -2395,12 +2409,13 @@
       }
 
       const turnstileToken = reviewTurnstileWidgetId !== null ? turnstile.getResponse(reviewTurnstileWidgetId) : '';
-      if (reviewTurnstileWidgetId !== null && !turnstileToken) {
+      if (reviewTurnstileSiteKey && !turnstileToken) {
         if (window.showToast) {
           window.showToast('Vui lòng hoàn thành xác thực chống bot (Turnstile).', false);
         } else {
           alert('Vui lòng hoàn thành xác thực chống bot (Turnstile).');
         }
+        submitBtn.disabled = true; // Wait for them to solve it
         return;
       }
 
