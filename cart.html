@@ -259,9 +259,6 @@
           </div>
         </div>
 
-        <!-- Turnstile Container -->
-        <div id="checkout-turnstile" style="margin-top: 15px; margin-bottom: 5px; width: 100%; display: flex; justify-content: center;"></div>
-
 
         <!-- ── ERROR RESULT CARD ── -->
         <div class="sk-error-result" id="errorResultBox">
@@ -296,7 +293,9 @@
           </div>
         </div>
       </div>
-      <footer class="sk-modal-footer" id="modalFooterActions">
+      <footer class="sk-modal-footer" id="modalFooterActions" style="align-items: center; flex-wrap: wrap;">
+        <!-- Turnstile Container -->
+        <div id="checkout-turnstile" style="margin-right: auto;"></div>
         <button class="sk-btn" type="button" onclick="closeCheckoutModal()" id="btnCancelCheckout">Hủy bỏ</button>
         <button class="sk-btn sk-btn-primary" type="button" id="btnConfirmCheckout"><i class="fa-solid fa-shield-halved"></i> Xác nhận &amp; Thanh toán</button>
       </footer>

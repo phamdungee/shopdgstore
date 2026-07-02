@@ -244,7 +244,13 @@ function resetModalFlow(item) {
   // Buttons
   const btnConfirm = document.getElementById('btnConfirmCheckout');
   const btnCancel = document.getElementById('btnCancelCheckout');
-  btnConfirm.disabled = false;
+  
+  if (turnstileSiteKey) {
+    btnConfirm.disabled = true; // Wait for Turnstile to verify
+  } else {
+    btnConfirm.disabled = false;
+  }
+  
   btnConfirm.style.display = 'inline-flex';
   btnConfirm.innerHTML = '<i class="fa-solid fa-shield-halved"></i> Xác nhận & Thanh toán';
   btnCancel.disabled = false;
@@ -296,7 +302,19 @@ function resetModalFlow(item) {
           container.appendChild(placeholder);
           checkoutTurnstileWidgetId = turnstile.render(placeholder, {
             sitekey: turnstileSiteKey,
-            theme: 'dark'
+            theme: 'dark',
+            callback: function() {
+              const btnConfirm = document.getElementById('btnConfirmCheckout');
+              if (btnConfirm) btnConfirm.disabled = false;
+            },
+            'expired-callback': function() {
+              const btnConfirm = document.getElementById('btnConfirmCheckout');
+              if (btnConfirm) btnConfirm.disabled = true;
+            },
+            'error-callback': function() {
+              const btnConfirm = document.getElementById('btnConfirmCheckout');
+              if (btnConfirm) btnConfirm.disabled = true;
+            }
           });
         } else {
           setTimeout(renderWhenReady, 100);
@@ -400,9 +418,9 @@ async function checkoutCart() {
       if (window.replaceIcons) window.replaceIcons(btnConfirm);
 
       const turnstileToken = checkoutTurnstileWidgetId !== null ? turnstile.getResponse(checkoutTurnstileWidgetId) : '';
-      if (checkoutTurnstileWidgetId !== null && !turnstileToken) {
+      if (turnstileSiteKey && !turnstileToken) {
         showToast('Vui lòng hoàn thành xác thực chống bot (Turnstile).', false);
-        btnConfirm.disabled = false;
+        btnConfirm.disabled = true; // Wait for them to solve it
         btnCancel.disabled = false;
         btnConfirm.innerHTML = '<i class="fa-solid fa-shield-halved"></i> Xác nhận & Thanh toán';
         if (window.replaceIcons) window.replaceIcons(btnConfirm);
