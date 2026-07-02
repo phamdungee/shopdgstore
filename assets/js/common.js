@@ -189,8 +189,12 @@
       const adminLink = user.role === 'admin'
         ? '<a class="sk-btn sk-btn-accent" href="/admin.html"><i class="fa-solid fa-gauge-high"></i> <span class="btn-text">Admin</span></a>'
         : '';
-      const avatarHtml = user.avatarUrl
-        ? `<img class="sk-user-avatar" src="${escapeHtml(user.avatarUrl)}" alt="Avatar" style="object-fit: cover;" />`
+      let finalAvatarUrl = user.avatarUrl;
+      if (finalAvatarUrl && !finalAvatarUrl.startsWith('http') && !finalAvatarUrl.startsWith('/')) {
+        finalAvatarUrl = '/' + finalAvatarUrl;
+      }
+      const avatarHtml = finalAvatarUrl
+        ? `<img class="sk-user-avatar" src="${escapeHtml(finalAvatarUrl)}" alt="Avatar" style="object-fit: cover;" />`
         : `<span class="sk-user-avatar">${escapeHtml(initial)}</span>`;
 
       container.innerHTML = `
