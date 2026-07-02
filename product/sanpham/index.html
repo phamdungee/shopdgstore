@@ -2315,7 +2315,6 @@
     // ── INTERACTIVE REVIEW SYSTEM ──
     let selectedReviewRating = 5;
     let hoveredReviewRating = 0;
-    let reviewTurnstileWidgetId = null;
     let reviewTurnstileSiteKey = null;
 
     async function loadReviewTurnstileConfig() {
@@ -2354,11 +2353,7 @@
               </div>
               <div class="sk-review-input-group">
                 <textarea class="sk-review-textarea" id="reviewCommentText" placeholder="Nhập bình luận đánh giá sản phẩm tại đây..."></textarea>
-                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-top: 10px; width: 100%;">
-                  <!-- Turnstile Container -->
-                  <div id="review-turnstile"></div>
-                  <button class="sk-btn sk-btn-primary sk-review-submit-btn" id="btnSubmitReview" onclick="submitProductReview('${escapeHtml(slug)}')"><i class="fa-solid fa-paper-plane"></i> Gửi đánh giá</button>
-                </div>
+                <button class="sk-btn sk-btn-primary sk-review-submit-btn" id="btnSubmitReview" style="margin-top: 10px;" onclick="submitProductReview('${escapeHtml(slug)}')"><i class="fa-solid fa-paper-plane"></i> Gửi đánh giá</button>
               </div>
             </div>
           `;
@@ -2375,52 +2370,13 @@
               </div>
               <div class="sk-review-input-group">
                 <textarea class="sk-review-textarea" id="reviewCommentText" placeholder="Chỉ khách hàng đã mua sản phẩm mới được viết bình luận." disabled style="cursor: not-allowed; opacity: 0.65;"></textarea>
-                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-top: 10px; width: 100%;">
-                  <!-- Turnstile Container -->
-                  <div id="review-turnstile"></div>
-                  <button class="sk-btn sk-btn-primary sk-review-submit-btn" id="btnSubmitReview" onclick="submitProductReview('${escapeHtml(slug)}')"><i class="fa-solid fa-paper-plane"></i> Đánh giá sao</button>
-                </div>
+                <button class="sk-btn sk-btn-primary sk-review-submit-btn" id="btnSubmitReview" style="margin-top: 10px;" onclick="submitProductReview('${escapeHtml(slug)}')"><i class="fa-solid fa-paper-plane"></i> Đánh giá sao</button>
               </div>
             </div>
           `;
         }
 
-        // Render Turnstile widget
-        const tContainer = document.getElementById('review-turnstile');
-        if (tContainer) {
-          tContainer.innerHTML = '';
-          if (reviewTurnstileSiteKey) {
-            const renderWhenReady = () => {
-              if (window.turnstile) {
-                const placeholder = document.createElement('div');
-                tContainer.appendChild(placeholder);
-                reviewTurnstileWidgetId = turnstile.render(placeholder, {
-                  sitekey: reviewTurnstileSiteKey,
-                  theme: 'dark',
-                  callback: function() {
-                    const btn = document.getElementById('btnSubmitReview');
-                    if (btn) btn.disabled = false;
-                  },
-                  'expired-callback': function() {
-                    const btn = document.getElementById('btnSubmitReview');
-                    if (btn) btn.disabled = true;
-                  },
-                  'error-callback': function() {
-                    const btn = document.getElementById('btnSubmitReview');
-                    if (btn) btn.disabled = true;
-                  }
-                });
-              } else {
-                setTimeout(renderWhenReady, 100);
-              }
-            };
-            renderWhenReady();
-            const btn = document.getElementById('btnSubmitReview');
-            if (btn) btn.disabled = true;
-          } else {
-            reviewTurnstileWidgetId = null;
-          }
-        }
+
         selectedReviewRating = 5; // default to 5
         hoveredReviewRating = 0;
       } else {
@@ -2473,16 +2429,7 @@
         return;
       }
 
-      const turnstileToken = reviewTurnstileWidgetId !== null ? turnstile.getResponse(reviewTurnstileWidgetId) : '';
-      if (reviewTurnstileSiteKey && !turnstileToken) {
-        if (window.showToast) {
-          window.showToast('Vui lòng hoàn thành xác thực chống bot (Turnstile).', false);
-        } else {
-          alert('Vui lòng hoàn thành xác thực chống bot (Turnstile).');
-        }
-        submitBtn.disabled = true; // Wait for them to solve it
-        return;
-      }
+
 
       submitBtn.disabled = true;
       submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang gửi...';
@@ -2498,8 +2445,7 @@
           },
           body: JSON.stringify({
             rating: selectedReviewRating,
-            comment,
-            'cf-turnstile-response': turnstileToken
+            comment
           })
         });
 
@@ -2513,11 +2459,7 @@
         }
         commentInput.value = '';
         setSelectRating(5);
-        if (reviewTurnstileWidgetId !== null) {
-          try {
-            turnstile.reset(reviewTurnstileWidgetId);
-          } catch (te) {}
-        }
+
         loadProductReviews(slug);
       } catch (err) {
         if (reviewTurnstileWidgetId !== null) {

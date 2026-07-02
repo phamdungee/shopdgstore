@@ -338,7 +338,7 @@ router.get('/:slug/reviews', async (req, res) => {
 });
 
 // POST /api/products/:slug/reviews - Submit a review (Auth required)
-router.post('/:slug/reviews', authMiddleware, verifyTurnstile, async (req, res) => {
+router.post('/:slug/reviews', authMiddleware, async (req, res) => {
   try {
     const slug = normalizeString(req.params.slug);
     const { rating, comment } = req.body;
