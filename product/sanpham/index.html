@@ -2293,9 +2293,11 @@
               </div>
               <div class="sk-review-input-group">
                 <textarea class="sk-review-textarea" id="reviewCommentText" placeholder="Nhập bình luận đánh giá sản phẩm tại đây..."></textarea>
-                <!-- Turnstile Container -->
-                <div id="review-turnstile" style="margin-bottom: 10px; width: 100%; display: flex; justify-content: flex-start;"></div>
-                <button class="sk-btn sk-btn-primary sk-review-submit-btn" id="btnSubmitReview" onclick="submitProductReview('${escapeHtml(slug)}')"><i class="fa-solid fa-paper-plane"></i> Gửi đánh giá</button>
+                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-top: 10px; width: 100%;">
+                  <!-- Turnstile Container -->
+                  <div id="review-turnstile"></div>
+                  <button class="sk-btn sk-btn-primary sk-review-submit-btn" id="btnSubmitReview" onclick="submitProductReview('${escapeHtml(slug)}')"><i class="fa-solid fa-paper-plane"></i> Gửi đánh giá</button>
+                </div>
               </div>
             </div>
           `;
@@ -2312,9 +2314,11 @@
               </div>
               <div class="sk-review-input-group">
                 <textarea class="sk-review-textarea" id="reviewCommentText" placeholder="Chỉ khách hàng đã mua sản phẩm mới được viết bình luận." disabled style="cursor: not-allowed; opacity: 0.65;"></textarea>
-                <!-- Turnstile Container -->
-                <div id="review-turnstile" style="margin-bottom: 10px; width: 100%; display: flex; justify-content: flex-start;"></div>
-                <button class="sk-btn sk-btn-primary sk-review-submit-btn" id="btnSubmitReview" onclick="submitProductReview('${escapeHtml(slug)}')"><i class="fa-solid fa-paper-plane"></i> Đánh giá sao</button>
+                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-top: 10px; width: 100%;">
+                  <!-- Turnstile Container -->
+                  <div id="review-turnstile"></div>
+                  <button class="sk-btn sk-btn-primary sk-review-submit-btn" id="btnSubmitReview" onclick="submitProductReview('${escapeHtml(slug)}')"><i class="fa-solid fa-paper-plane"></i> Đánh giá sao</button>
+                </div>
               </div>
             </div>
           `;
