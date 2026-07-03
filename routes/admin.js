@@ -284,28 +284,83 @@ router.put('/products/:id', authMiddleware, adminMiddleware, async (req, res) =>
 
     // Update variants if passed
     if (variants !== undefined) {
-      // Delete old variants
-      await supabase
+      // Fetch existing variants to avoid deleting those that are just updated
+      const { data: existingVariants, error: fetchErr } = await supabase
         .from('product_variants')
-        .delete()
+        .select('*')
         .eq('product_id', id);
 
-      // Insert new variants
-      if (variants.length > 0) {
-        const { error: variantsErr } = await supabase
-          .from('product_variants')
-          .insert(variants.map(v => ({
-            product_id: id,
-            name: v.name,
-            price: v.price,
-            cost_price: v.cost_price || 0,
-            vendor_product_code: v.vendor_product_code || null,
-            vendor_id: v.vendor_id || null,
-            delivery_type: v.delivery_type || updatedProduct.delivery_type || 'hybrid',
-            fallback_mode: v.fallback_mode || updatedProduct.fallback_mode || 'api_when_out_of_stock'
-          })));
-        if (variantsErr) {
-          console.error('Update variants error:', variantsErr.message);
+      if (fetchErr) {
+        console.error('Fetch existing variants error:', fetchErr.message);
+      } else {
+        const existingMap = new Map((existingVariants || []).map(v => [v.name.trim().toLowerCase(), v]));
+        const keptIds = new Set();
+        const inserts = [];
+        const updates = [];
+
+        for (const v of variants) {
+          const lowerName = v.name.trim().toLowerCase();
+          const existing = existingMap.get(lowerName);
+          if (existing) {
+            keptIds.add(existing.id);
+            updates.push({
+              id: existing.id,
+              product_id: id,
+              name: v.name,
+              price: v.price,
+              cost_price: v.cost_price || 0,
+              vendor_product_code: v.vendor_product_code || null,
+              vendor_id: v.vendor_id || null,
+              delivery_type: v.delivery_type || updatedProduct.delivery_type || 'hybrid',
+              fallback_mode: v.fallback_mode || updatedProduct.fallback_mode || 'api_when_out_of_stock'
+            });
+          } else {
+            inserts.push({
+              product_id: id,
+              name: v.name,
+              price: v.price,
+              cost_price: v.cost_price || 0,
+              vendor_product_code: v.vendor_product_code || null,
+              vendor_id: v.vendor_id || null,
+              delivery_type: v.delivery_type || updatedProduct.delivery_type || 'hybrid',
+              fallback_mode: v.fallback_mode || updatedProduct.fallback_mode || 'api_when_out_of_stock'
+            });
+          }
+        }
+
+        // Delete old variants that are not present in the new set
+        const idsToDelete = (existingVariants || [])
+          .filter(v => !keptIds.has(v.id))
+          .map(v => v.id);
+
+        if (idsToDelete.length > 0) {
+          const { error: delErr } = await supabase
+            .from('product_variants')
+            .delete()
+            .in('id', idsToDelete);
+          if (delErr) {
+            console.error('Delete variants error:', delErr.message);
+          }
+        }
+
+        // Execute updates (using upsert or individual updates)
+        if (updates.length > 0) {
+          const { error: upsertErr } = await supabase
+            .from('product_variants')
+            .upsert(updates, { onConflict: 'id' });
+          if (upsertErr) {
+            console.error('Upsert variants error:', upsertErr.message);
+          }
+        }
+
+        // Execute inserts
+        if (inserts.length > 0) {
+          const { error: insertErr } = await supabase
+            .from('product_variants')
+            .insert(inserts);
+          if (insertErr) {
+            console.error('Insert variants error:', insertErr.message);
+          }
         }
       }
     }
