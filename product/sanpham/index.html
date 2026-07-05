@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sản phẩm | DG Store</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
   <link href="/assets/css/common.css" rel="stylesheet" />
   <link href="/assets/css/icons.css" rel="stylesheet" />
@@ -24,18 +26,22 @@
       --accent-light: #ffce54 !important;
       --accent-glow: rgba(255, 184, 0, 0.4) !important;
     }
+
     body.theme-shopee .sk-trust-strip {
       background: linear-gradient(135deg, var(--surface), #ee4d2d) !important;
       box-shadow: 0 4px 15px rgba(238, 77, 45, 0.3) !important;
     }
+
     body.theme-shopee .sk-buy-layout {
       gap: 20px;
     }
+
     body.theme-shopee .sk-product-banner-actions .sk-btn-accent {
       background: linear-gradient(45deg, #ee4d2d, #ff683b) !important;
       border-color: #ff683b !important;
       box-shadow: 0 0 15px rgba(238, 77, 45, 0.5) !important;
     }
+
     body.theme-shopee .sk-btn-accent:hover {
       box-shadow: 0 0 25px rgba(238, 77, 45, 0.8) !important;
     }
@@ -60,6 +66,7 @@
       visibility: hidden;
       transition: opacity 0.35s ease, visibility 0.35s ease;
     }
+
     .sk-modal-backdrop.is-visible {
       opacity: 1;
       visibility: visible;
@@ -86,6 +93,7 @@
       opacity: 0;
       position: relative;
     }
+
     .sk-flow-modal::before {
       content: '';
       position: absolute;
@@ -96,15 +104,25 @@
       background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.5), rgba(236, 72, 153, 0.3), transparent);
       border-radius: 1px;
     }
+
     .sk-modal-backdrop.is-visible .sk-flow-modal {
       transform: translateY(0) scale(1);
       opacity: 1;
     }
 
     /* Scrollbar inside modal */
-    .sk-flow-modal::-webkit-scrollbar { width: 4px; }
-    .sk-flow-modal::-webkit-scrollbar-track { background: transparent; }
-    .sk-flow-modal::-webkit-scrollbar-thumb { background: rgba(99, 102, 241, 0.25); border-radius: 4px; }
+    .sk-flow-modal::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .sk-flow-modal::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .sk-flow-modal::-webkit-scrollbar-thumb {
+      background: rgba(99, 102, 241, 0.25);
+      border-radius: 4px;
+    }
 
     /* ── HEADER ── */
     .sk-modal-header {
@@ -116,6 +134,7 @@
       background: rgba(17, 24, 39, 0.3);
       position: relative;
     }
+
     .sk-modal-header::after {
       content: '';
       position: absolute;
@@ -125,6 +144,7 @@
       height: 1px;
       background: linear-gradient(90deg, transparent, var(--brand-glow), transparent);
     }
+
     .sk-modal-header h3 {
       margin: 0;
       font-size: 17px;
@@ -135,6 +155,7 @@
       color: var(--text-bright);
       letter-spacing: -0.01em;
     }
+
     .sk-modal-header h3 i,
     .sk-modal-header h3 .sk-icon {
       background: var(--brand-gradient);
@@ -142,6 +163,7 @@
       -webkit-text-fill-color: transparent;
       filter: drop-shadow(0 0 8px var(--brand-glow));
     }
+
     .sk-modal-close-btn {
       width: 34px;
       height: 34px;
@@ -155,6 +177,7 @@
       cursor: pointer;
       transition: all 0.2s ease;
     }
+
     .sk-modal-close-btn:hover {
       background: var(--danger-soft);
       color: var(--danger);
@@ -176,6 +199,7 @@
       position: relative;
       overflow: hidden;
     }
+
     .sk-order-summary-box::before {
       content: '';
       position: absolute;
@@ -185,16 +209,19 @@
       height: 1px;
       background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.35), transparent);
     }
+
     .sk-order-summary-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 16px;
       text-align: center;
     }
+
     .sk-summary-item {
       position: relative;
     }
-    .sk-summary-item + .sk-summary-item::before {
+
+    .sk-summary-item+.sk-summary-item::before {
       content: '';
       position: absolute;
       left: -8px;
@@ -203,6 +230,7 @@
       width: 1px;
       background: rgba(99, 102, 241, 0.15);
     }
+
     .sk-summary-item p {
       margin: 0;
       font-size: 10px;
@@ -211,6 +239,7 @@
       font-weight: 800;
       letter-spacing: 0.1em;
     }
+
     .sk-summary-item b {
       font-size: 15px;
       font-weight: 800;
@@ -229,6 +258,7 @@
       margin-bottom: 24px;
       overflow: hidden;
     }
+
     /* Ambient glow inside container */
     .sk-data-flow-container::before {
       content: '';
@@ -240,6 +270,7 @@
       background: radial-gradient(ellipse, rgba(99, 102, 241, 0.06) 0%, transparent 70%);
       pointer-events: none;
     }
+
     .sk-data-flow-container::after {
       content: '';
       position: absolute;
@@ -279,6 +310,7 @@
       transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     }
+
     /* Outer ring animation */
     .sk-flow-node::before {
       content: '';
@@ -297,6 +329,7 @@
       box-shadow: 0 0 24px var(--brand-glow), 0 0 48px rgba(99, 102, 241, 0.15);
       animation: nodeActivePulse 2s ease-in-out infinite;
     }
+
     .sk-flow-node.is-active::before {
       border-color: var(--brand-light);
       opacity: 0.4;
@@ -310,6 +343,7 @@
       box-shadow: 0 0 24px var(--success-glow), 0 0 48px rgba(16, 185, 129, 0.15);
       animation: none;
     }
+
     .sk-flow-node.is-success::before {
       border-color: var(--success);
       opacity: 0.3;
@@ -323,6 +357,7 @@
       box-shadow: 0 0 24px var(--danger-glow), 0 0 48px rgba(239, 68, 68, 0.15);
       animation: nodeErrorShake 0.5s ease;
     }
+
     .sk-flow-node.is-error::before {
       border-color: var(--danger);
       opacity: 0.3;
@@ -337,20 +372,53 @@
     }
 
     @keyframes nodeActivePulse {
-      0%, 100% { box-shadow: 0 0 20px var(--brand-glow), 0 0 40px rgba(99, 102, 241, 0.1); }
-      50% { box-shadow: 0 0 30px var(--brand-glow), 0 0 60px rgba(99, 102, 241, 0.2); }
+
+      0%,
+      100% {
+        box-shadow: 0 0 20px var(--brand-glow), 0 0 40px rgba(99, 102, 241, 0.1);
+      }
+
+      50% {
+        box-shadow: 0 0 30px var(--brand-glow), 0 0 60px rgba(99, 102, 241, 0.2);
+      }
     }
+
     @keyframes nodeRingSpin {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
+      from {
+        transform: rotate(0deg);
+      }
+
+      to {
+        transform: rotate(360deg);
+      }
     }
+
     @keyframes nodeErrorShake {
-      0%, 100% { transform: translateX(0); }
-      15% { transform: translateX(-6px); }
-      30% { transform: translateX(5px); }
-      45% { transform: translateX(-4px); }
-      60% { transform: translateX(3px); }
-      75% { transform: translateX(-1px); }
+
+      0%,
+      100% {
+        transform: translateX(0);
+      }
+
+      15% {
+        transform: translateX(-6px);
+      }
+
+      30% {
+        transform: translateX(5px);
+      }
+
+      45% {
+        transform: translateX(-4px);
+      }
+
+      60% {
+        transform: translateX(3px);
+      }
+
+      75% {
+        transform: translateX(-1px);
+      }
     }
 
     .sk-flow-node-label {
@@ -366,17 +434,21 @@
       letter-spacing: 0.08em;
       transition: all 0.5s ease;
     }
+
     .sk-flow-node.is-active .sk-flow-node-label {
       color: var(--brand-light);
       text-shadow: 0 0 10px var(--brand-glow);
     }
+
     .sk-flow-node.is-success .sk-flow-node-label {
       color: var(--success);
       text-shadow: 0 0 10px var(--success-glow);
     }
+
     .sk-flow-node.is-error .sk-flow-node-label {
       color: var(--danger);
     }
+
     .sk-flow-node.is-skipped .sk-flow-node-label {
       color: rgba(100, 116, 139, 0.3);
     }
@@ -392,6 +464,7 @@
       border-radius: 3px;
       overflow: hidden;
     }
+
     .sk-flow-line-fill {
       position: absolute;
       left: 0;
@@ -402,12 +475,15 @@
       transition: width 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
       border-radius: 3px;
     }
+
     .sk-flow-line-fill.is-success {
       background: linear-gradient(90deg, var(--success), #34d399);
     }
+
     .sk-flow-line-fill.is-error {
       background: linear-gradient(90deg, var(--danger), #f87171);
     }
+
     .sk-flow-pulse {
       position: absolute;
       width: 40px;
@@ -419,13 +495,19 @@
       display: none;
       border-radius: 3px;
     }
+
     .sk-flow-line.is-active .sk-flow-pulse {
       display: block;
     }
 
     @keyframes flowPulseAnim {
-      0% { left: -40px; }
-      100% { left: calc(100% + 10px); }
+      0% {
+        left: -40px;
+      }
+
+      100% {
+        left: calc(100% + 10px);
+      }
     }
 
     /* ── STAGE LIST (Timeline) ── */
@@ -447,6 +529,7 @@
       transition: all 0.4s ease;
       position: relative;
     }
+
     /* Vertical connecting line between stages */
     .sk-flow-stage-row:not(:last-child)::after {
       content: '';
@@ -458,9 +541,11 @@
       background: rgba(99, 102, 241, 0.08);
       transition: background 0.4s ease;
     }
+
     .sk-flow-stage-row.is-success:not(:last-child)::after {
       background: rgba(16, 185, 129, 0.25);
     }
+
     .sk-flow-stage-row.is-error:not(:last-child)::after {
       background: rgba(239, 68, 68, 0.2);
     }
@@ -468,12 +553,15 @@
     .sk-flow-stage-row.is-active {
       opacity: 1;
     }
+
     .sk-flow-stage-row.is-success {
       opacity: 1;
     }
+
     .sk-flow-stage-row.is-error {
       opacity: 1;
     }
+
     .sk-flow-stage-row.is-skipped {
       opacity: 0.25;
     }
@@ -495,6 +583,7 @@
       position: relative;
       z-index: 1;
     }
+
     .sk-flow-stage-row.is-active .sk-stage-num {
       border-color: var(--brand);
       color: var(--brand-light);
@@ -502,6 +591,7 @@
       box-shadow: 0 0 12px var(--brand-glow);
       animation: stageNumPulse 2s ease-in-out infinite;
     }
+
     .sk-flow-stage-row.is-success .sk-stage-num {
       background: linear-gradient(135deg, #10b981, #059669);
       border-color: var(--success);
@@ -509,29 +599,35 @@
       box-shadow: 0 0 14px var(--success-glow);
       animation: none;
     }
+
     /* Checkmark replaces number on success */
     .sk-flow-stage-row.is-success .sk-stage-num::after {
       content: '✓';
       font-size: 13px;
       font-weight: 900;
     }
+
     .sk-flow-stage-row.is-success .sk-stage-num-text {
       display: none;
     }
+
     .sk-flow-stage-row.is-error .sk-stage-num {
       background: linear-gradient(135deg, #ef4444, #dc2626);
       border-color: var(--danger);
       color: #fff;
       box-shadow: 0 0 14px var(--danger-glow);
     }
+
     .sk-flow-stage-row.is-error .sk-stage-num::after {
       content: '✕';
       font-size: 12px;
       font-weight: 900;
     }
+
     .sk-flow-stage-row.is-error .sk-stage-num-text {
       display: none;
     }
+
     .sk-flow-stage-row.is-skipped .sk-stage-num {
       background: rgba(17, 24, 39, 0.3);
       border-color: rgba(100, 116, 139, 0.1);
@@ -539,8 +635,15 @@
     }
 
     @keyframes stageNumPulse {
-      0%, 100% { box-shadow: 0 0 10px var(--brand-glow); }
-      50% { box-shadow: 0 0 18px var(--brand-glow); }
+
+      0%,
+      100% {
+        box-shadow: 0 0 10px var(--brand-glow);
+      }
+
+      50% {
+        box-shadow: 0 0 18px var(--brand-glow);
+      }
     }
 
     /* ── STAGE CONTENT ── */
@@ -548,6 +651,7 @@
       flex-grow: 1;
       min-width: 0;
     }
+
     .sk-stage-content h4 {
       margin: 0;
       font-weight: 700;
@@ -555,25 +659,31 @@
       font-size: 13px;
       line-height: 1.4;
     }
+
     .sk-flow-stage-row.is-skipped .sk-stage-content h4 {
       color: rgba(100, 116, 139, 0.4);
     }
+
     .sk-stage-content p {
       margin: 4px 0 0;
       color: var(--muted);
       font-size: 11.5px;
       line-height: 1.5;
     }
+
     .sk-flow-stage-row.is-active .sk-stage-content p {
       color: var(--text);
     }
+
     .sk-flow-stage-row.is-success .sk-stage-content p {
       color: var(--success);
     }
+
     .sk-flow-stage-row.is-error .sk-stage-content p {
       color: var(--danger);
       font-weight: 600;
     }
+
     .sk-flow-stage-row.is-skipped .sk-stage-content p {
       color: rgba(100, 116, 139, 0.3);
     }
@@ -589,6 +699,7 @@
       flex-shrink: 0;
       align-self: center;
     }
+
     .sk-flow-stage-row.is-success .sk-stage-time {
       color: var(--success);
     }
@@ -606,6 +717,7 @@
       position: relative;
       overflow: hidden;
     }
+
     .sk-error-result::before {
       content: '';
       position: absolute;
@@ -615,10 +727,19 @@
       height: 3px;
       background: linear-gradient(90deg, var(--danger), #f87171, var(--danger));
     }
+
     @keyframes errorSlideIn {
-      from { opacity: 0; transform: translateY(-12px) scale(0.97); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
+      from {
+        opacity: 0;
+        transform: translateY(-12px) scale(0.97);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
     }
+
     .sk-error-result-icon {
       width: 52px;
       height: 52px;
@@ -632,10 +753,19 @@
       color: var(--danger);
       animation: errorIconPulse 2s ease-in-out infinite;
     }
+
     @keyframes errorIconPulse {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.15); }
-      50% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+
+      0%,
+      100% {
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.15);
+      }
+
+      50% {
+        box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+      }
     }
+
     .sk-error-result h4 {
       margin: 0 0 8px;
       color: var(--danger);
@@ -644,6 +774,7 @@
       text-align: center;
       letter-spacing: -0.01em;
     }
+
     .sk-error-result p {
       margin: 0;
       color: var(--muted);
@@ -651,9 +782,11 @@
       line-height: 1.6;
       text-align: center;
     }
+
     .sk-error-result p b {
       color: var(--text-bright);
     }
+
     .sk-error-detail-box {
       margin-top: 16px;
       padding: 12px 14px;
@@ -667,6 +800,7 @@
       align-items: flex-start;
       gap: 10px;
     }
+
     .sk-error-detail-box i,
     .sk-error-detail-box .sk-icon {
       color: var(--danger);
@@ -674,6 +808,7 @@
       margin-top: 1px;
       flex-shrink: 0;
     }
+
     .sk-error-actions {
       display: flex;
       gap: 10px;
@@ -694,6 +829,7 @@
       position: relative;
       overflow: hidden;
     }
+
     .sk-delivery-result::before {
       content: '';
       position: absolute;
@@ -703,10 +839,19 @@
       height: 3px;
       background: linear-gradient(90deg, var(--success), #34d399, var(--success));
     }
+
     @keyframes successSlideIn {
-      from { opacity: 0; transform: translateY(-12px) scale(0.97); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
+      from {
+        opacity: 0;
+        transform: translateY(-12px) scale(0.97);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
     }
+
     .sk-delivery-result-icon {
       width: 56px;
       height: 56px;
@@ -720,10 +865,19 @@
       color: var(--success);
       animation: successIconGlow 2s ease-in-out infinite;
     }
+
     @keyframes successIconGlow {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.2); }
-      50% { box-shadow: 0 0 0 12px rgba(16, 185, 129, 0); }
+
+      0%,
+      100% {
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.2);
+      }
+
+      50% {
+        box-shadow: 0 0 0 12px rgba(16, 185, 129, 0);
+      }
     }
+
     .sk-delivery-result h4 {
       margin: 0 0 4px;
       color: var(--success);
@@ -735,12 +889,14 @@
       gap: 8px;
       letter-spacing: -0.01em;
     }
+
     .sk-delivery-result .sk-delivery-subtitle {
       text-align: center;
       color: var(--muted);
       font-size: 12px;
       margin: 0 0 16px;
     }
+
     .sk-delivery-textarea {
       width: 100%;
       height: 110px;
@@ -759,10 +915,12 @@
       box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.4);
       transition: border-color 0.25s ease, box-shadow 0.25s ease;
     }
+
     .sk-delivery-textarea:focus {
       border-color: var(--success);
       box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.4), 0 0 15px rgba(16, 185, 129, 0.15);
     }
+
     .sk-delivery-actions {
       display: flex;
       gap: 10px;
@@ -784,25 +942,62 @@
       display: inline-block;
       animation: processingDots 1.4s steps(3, end) infinite;
     }
+
     .sk-processing-dot::after {
       content: '...';
     }
+
     @keyframes processingDots {
-      0% { content: '.'; }
-      33% { content: '..'; }
-      66% { content: '...'; }
+      0% {
+        content: '.';
+      }
+
+      33% {
+        content: '..';
+      }
+
+      66% {
+        content: '...';
+      }
     }
 
     /* ── RESPONSIVE ── */
     @media (max-width: 500px) {
-      .sk-modal-body { padding: 20px; }
-      .sk-modal-header { padding: 18px 20px; }
-      .sk-modal-footer { padding: 14px 20px; }
-      .sk-order-summary-grid { grid-template-columns: 1fr; gap: 12px; }
-      .sk-summary-item + .sk-summary-item::before { display: none; }
-      .sk-flow-node { width: 44px; height: 44px; font-size: 15px; }
-      .sk-flow-node-label { top: 52px; font-size: 8px; }
-      .sk-data-flow-container { padding: 20px 16px; }
+      .sk-modal-body {
+        padding: 20px;
+      }
+
+      .sk-modal-header {
+        padding: 18px 20px;
+      }
+
+      .sk-modal-footer {
+        padding: 14px 20px;
+      }
+
+      .sk-order-summary-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .sk-summary-item+.sk-summary-item::before {
+        display: none;
+      }
+
+      .sk-flow-node {
+        width: 44px;
+        height: 44px;
+        font-size: 15px;
+      }
+
+      .sk-flow-node-label {
+        top: 52px;
+        font-size: 8px;
+      }
+
+      .sk-data-flow-container {
+        padding: 20px 16px;
+      }
     }
 
     .sk-product-order-panel {
@@ -1204,6 +1399,7 @@
       flex-direction: column;
       gap: 16px;
     }
+
     .sk-review-summary {
       display: flex;
       align-items: center;
@@ -1213,6 +1409,7 @@
       border: 1px solid var(--line);
       border-radius: var(--radius);
     }
+
     .sk-review-summary-score {
       font-size: 42px;
       font-weight: 900;
@@ -1220,23 +1417,26 @@
       text-shadow: 0 0 12px rgba(251, 191, 36, 0.35);
       line-height: 1;
     }
+
     .sk-review-summary-meta {
       display: flex;
       flex-direction: column;
       gap: 4px;
     }
+
     .sk-review-summary-stars {
       color: #fbbf24;
       font-size: 16px;
       display: flex;
       gap: 3px;
     }
+
     .sk-review-summary-count {
       font-size: 12px;
       font-weight: 800;
       color: var(--muted);
     }
-    
+
     .sk-reviews-list {
       display: flex;
       flex-direction: column;
@@ -1245,16 +1445,20 @@
       overflow-y: auto;
       padding-right: 4px;
     }
+
     .sk-reviews-list::-webkit-scrollbar {
       width: 4px;
     }
+
     .sk-reviews-list::-webkit-scrollbar-track {
       background: transparent;
     }
+
     .sk-reviews-list::-webkit-scrollbar-thumb {
       background: var(--line);
       border-radius: 4px;
     }
+
     .sk-review-item {
       display: flex;
       gap: 12px;
@@ -1264,9 +1468,11 @@
       border-radius: var(--radius);
       transition: background var(--transition);
     }
+
     .sk-review-item:hover {
       background: rgba(255, 255, 255, 0.04);
     }
+
     .sk-review-avatar {
       width: 36px;
       height: 36px;
@@ -1281,34 +1487,40 @@
       flex-shrink: 0;
       box-shadow: 0 2px 8px var(--brand-glow);
     }
+
     .sk-review-content {
       flex: 1;
       display: flex;
       flex-direction: column;
       gap: 4px;
     }
+
     .sk-review-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 8px;
     }
+
     .sk-review-username {
       font-size: 13px;
       font-weight: 800;
       color: var(--text-bright);
     }
+
     .sk-review-date {
       font-size: 11px;
       color: var(--muted);
       font-weight: 600;
     }
+
     .sk-review-stars {
       color: #fbbf24;
       font-size: 11px;
       display: flex;
       gap: 2px;
     }
+
     .sk-review-text {
       font-size: 13px;
       color: var(--text);
@@ -1316,7 +1528,7 @@
       margin: 4px 0 0 0;
       word-break: break-word;
     }
-    
+
     .sk-review-form-box {
       border-top: 1px solid var(--line);
       padding-top: 16px;
@@ -1325,47 +1537,62 @@
       flex-direction: column;
       gap: 12px;
     }
+
     .sk-review-form-title {
       font-size: 14px;
       font-weight: 800;
       color: var(--text-bright);
     }
+
     .sk-review-stars-select {
       display: flex;
       gap: 6px;
       font-size: 20px;
       color: var(--muted);
     }
+
     .sk-review-star-btn {
       cursor: pointer;
       display: inline-block;
       transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
-                  color 0.25s ease,
-                  text-shadow 0.25s ease;
+        color 0.25s ease,
+        text-shadow 0.25s ease;
     }
+
     .sk-review-star-btn:hover {
       transform: scale(1.25);
       color: #fcd34d;
       text-shadow: 0 0 15px rgba(251, 191, 36, 0.9);
     }
+
     .sk-review-star-btn.is-selected {
       color: #fbbf24;
       text-shadow: 0 0 12px rgba(251, 191, 36, 0.75),
-                   0 0 24px rgba(251, 191, 36, 0.35);
+        0 0 24px rgba(251, 191, 36, 0.35);
       animation: starPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
     }
-    
+
     @keyframes starPop {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.35); }
-      100% { transform: scale(1.15); }
+      0% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.35);
+      }
+
+      100% {
+        transform: scale(1.15);
+      }
     }
+
     .sk-review-input-group {
       position: relative;
       display: flex;
       flex-direction: column;
       gap: 8px;
     }
+
     .sk-review-textarea {
       width: 100%;
       min-height: 64px;
@@ -1380,15 +1607,18 @@
       resize: vertical;
       transition: border-color var(--transition);
     }
+
     .sk-review-textarea:focus {
       border-color: var(--brand-light);
     }
+
     .sk-review-submit-btn {
       align-self: flex-end;
       min-height: 36px;
       padding: 0 16px;
       font-size: 13px;
     }
+
     .sk-review-login-prompt {
       padding: 16px;
       background: rgba(255, 255, 255, 0.02);
@@ -1402,11 +1632,13 @@
       align-items: center;
       gap: 10px;
     }
+
     .sk-review-login-prompt .sk-btn {
       font-size: 12px;
       padding: 6px 14px;
       min-height: 30px;
     }
+
     .sk-review-empty {
       padding: 24px;
       text-align: center;
@@ -1450,6 +1682,7 @@
     }
   </style>
 </head>
+
 <body class="sk-product-detail-body">
   <header class="sk-topbar">
     <div class="sk-topbar-inner">
@@ -1470,7 +1703,8 @@
           <span class="sk-cart-count" id="headerCartCount">0</span>
         </a>
         <span class="sk-auth-actions" id="authActionsContainer">
-          <a class="sk-btn sk-btn-primary" href="/login.html"><i class="fa-solid fa-right-to-bracket"></i> <span class="btn-text">Đăng nhập / Đăng ký</span></a>
+          <a class="sk-btn sk-btn-primary" href="/login.html"><i class="fa-solid fa-right-to-bracket"></i> <span
+              class="btn-text">Đăng nhập / Đăng ký</span></a>
         </span>
       </div>
     </div>
@@ -1488,7 +1722,8 @@
         <span class="nav-label">Sản phẩm</span>
       </a>
       <a href="/index.html#shopee" class="nav-item">
-        <img src="/assets/img/ảnh sản phẩm/png-clipartonline-food-app-logo-shopee-food-gofood-icon-for-shopee-users3692115-thumbnail.webp" alt="Shopee">
+        <img src="/assets/img/ảnh sản phẩm/logo-shopee-inkythuatso-2-01-24-14-52-10.jpg
+        " alt="Shopee">
         <span class="nav-label">Shopee</span>
       </a>
       <a href="/tuongtacmxh.html" class="nav-item">
@@ -1546,7 +1781,8 @@
           <h1 id="productTitle">Đang tải sản phẩm...</h1>
           <p id="productDesc">Thông tin sản phẩm đang được cập nhật.</p>
           <div class="sk-rating-line">
-            <span><i class="fa-solid fa-star" style="color:var(--accent)"></i> <span id="productRate">4.8</span> / 5</span>
+            <span><i class="fa-solid fa-star" style="color:var(--accent)"></i> <span id="productRate">4.8</span> /
+              5</span>
             <span class="sk-badge"><i class="fa-solid fa-bolt"></i> Giao tự động</span>
             <span class="sk-badge"><i class="fa-solid fa-shield-halved"></i> Bảo hành</span>
           </div>
@@ -1557,8 +1793,11 @@
             <span class="sk-badge"><i class="fa-solid fa-clock"></i> Giao trong vài phút</span>
           </div>
           <div class="sk-product-banner-actions">
-            <button class="sk-btn sk-btn-accent" type="button" onclick="document.getElementById('orderPanel')?.scrollIntoView({behavior:'smooth', block:'start'})"><i class="fa-solid fa-bolt"></i> Mua nhanh</button>
-            <a class="sk-btn" href="/profile.html#policy"><i class="fa-solid fa-shield-halved"></i> Chính sách bảo hành</a>
+            <button class="sk-btn sk-btn-accent" type="button"
+              onclick="document.getElementById('orderPanel')?.scrollIntoView({behavior:'smooth', block:'start'})"><i
+                class="fa-solid fa-bolt"></i> Mua nhanh</button>
+            <a class="sk-btn" href="/profile.html#policy"><i class="fa-solid fa-shield-halved"></i> Chính sách bảo
+              hành</a>
           </div>
         </div>
         <div class="sk-detail-media" id="productMedia"></div>
@@ -1600,9 +1839,12 @@
           <div class="sk-field">
             <label for="orderQuantity">Số lượng</label>
             <div class="sk-quantity-selector">
-              <button type="button" onclick="changeQuantity(-1)" aria-label="Giảm số lượng"><i class="fa-solid fa-minus"></i></button>
-              <input id="orderQuantity" min="1" step="1" type="number" value="1" inputmode="numeric" oninput="updateTotalPrice()" />
-              <button type="button" onclick="changeQuantity(1)" aria-label="Tăng số lượng"><i class="fa-solid fa-plus"></i></button>
+              <button type="button" onclick="changeQuantity(-1)" aria-label="Giảm số lượng"><i
+                  class="fa-solid fa-minus"></i></button>
+              <input id="orderQuantity" min="1" step="1" type="number" value="1" inputmode="numeric"
+                oninput="updateTotalPrice()" />
+              <button type="button" onclick="changeQuantity(1)" aria-label="Tăng số lượng"><i
+                  class="fa-solid fa-plus"></i></button>
             </div>
           </div>
 
@@ -1634,8 +1876,10 @@
           </div>
 
           <div class="sk-order-actions" aria-label="ActionButtons">
-            <button class="sk-btn sk-btn-accent" id="btnBuyNow" type="button" onclick="buySelectedVariant()"><i class="fa-solid fa-bolt"></i> Đặt hàng ngay</button>
-            <button class="sk-btn" id="btnAddCart" type="button" onclick="addSelectedVariantToCart()"><i class="fa-solid fa-cart-plus"></i> Giỏ hàng</button>
+            <button class="sk-btn sk-btn-accent" id="btnBuyNow" type="button" onclick="buySelectedVariant()"><i
+                class="fa-solid fa-bolt"></i> Đặt hàng ngay</button>
+            <button class="sk-btn" id="btnAddCart" type="button" onclick="addSelectedVariantToCart()"><i
+                class="fa-solid fa-cart-plus"></i> Giỏ hàng</button>
           </div>
         </section>
       </aside>
@@ -1662,8 +1906,10 @@
             </div>
           </div>
           <div class="sk-faq-list">
-            <div class="sk-faq-item"><b>Giao hàng trong bao lâu?</b><span>Hệ thống xử lý tự động sau khi thanh toán thành công.</span></div>
-            <div class="sk-faq-item"><b>Lỗi có được bảo hành không?</b><span>Có, sản phẩm lỗi do hệ thống sẽ được hỗ trợ đổi mới theo chính sách.</span></div>
+            <div class="sk-faq-item"><b>Giao hàng trong bao lâu?</b><span>Hệ thống xử lý tự động sau khi thanh toán
+                thành công.</span></div>
+            <div class="sk-faq-item"><b>Lỗi có được bảo hành không?</b><span>Có, sản phẩm lỗi do hệ thống sẽ được hỗ trợ
+                đổi mới theo chính sách.</span></div>
           </div>
         </section>
       </div>
@@ -1680,7 +1926,12 @@
           <div class="sk-grid sk-grid-2">
             <div class="sk-info-cell"><span>Giao hàng</span><span>Tự động sau thanh toán</span></div>
             <div class="sk-info-cell"><span>Bảo hành</span><span>1 đổi 1 khi lỗi</span></div>
-            <div class="sk-info-cell" onclick="buySelectedVariant()" style="cursor: pointer; transition: background 0.2s, transform 0.2s; background: var(--surface-soft);" onmouseover="this.style.background='var(--brand-soft)'; this.style.transform='translateY(-2px)';" onmouseout="this.style.background='var(--surface-soft)'; this.style.transform='translateY(0)';"><span>Thanh toán</span><span>Số dư tài khoản <i class="fa-solid fa-chevron-right" style="font-size: 10px; margin-left: 4px; color: var(--accent-light);"></i></span></div>
+            <div class="sk-info-cell" onclick="buySelectedVariant()"
+              style="cursor: pointer; transition: background 0.2s, transform 0.2s; background: var(--surface-soft);"
+              onmouseover="this.style.background='var(--brand-soft)'; this.style.transform='translateY(-2px)';"
+              onmouseout="this.style.background='var(--surface-soft)'; this.style.transform='translateY(0)';">
+              <span>Thanh toán</span><span>Số dư tài khoản <i class="fa-solid fa-chevron-right"
+                  style="font-size: 10px; margin-left: 4px; color: var(--accent-light);"></i></span></div>
             <div class="sk-info-cell"><span>Hỗ trợ</span><span>24/7 theo đơn hàng</span></div>
           </div>
         </section>
@@ -1723,7 +1974,7 @@
     let product = null;
     let selectedVariant = null;
     let selectedUnitPrice = 0;
-     const API_BASE = window.DG_API_BASE || window.SKYNET_API_BASE || '/api';
+    const API_BASE = window.DG_API_BASE || window.SKYNET_API_BASE || '/api';
 
     function getAuthToken() {
       return localStorage.getItem('token');
@@ -1850,14 +2101,14 @@
 
     function isProductUnavailable() {
       if (!product || product.is_active === false || product.active === false) return true;
-      
+
       const v = selectedVariant || {};
       const fallbackMode = v.fallback_mode || product.fallback_mode || 'api_when_out_of_stock';
       const deliveryType = v.delivery_type || product.delivery_type || 'hybrid';
-      
+
       if (deliveryType === 'api') return false;
       if (fallbackMode === 'api_when_out_of_stock' && (v.vendor_product_code || product.vendor_product_code || product.provider_service_id)) return false;
-      
+
       const currentStock = v.stock !== undefined ? v.stock : product.stock;
       return Number(currentStock) === 0;
     }
@@ -1975,7 +2226,7 @@
 
       let items = [];
       try {
-         items = JSON.parse(localStorage.getItem('dgCart') || '[]');
+        items = JSON.parse(localStorage.getItem('dgCart') || '[]');
       } catch {
         items = [];
       }
@@ -2007,7 +2258,7 @@
     function openCheckoutModal() {
       if (!product || !selectedVariant) return;
       if (!guardProductAvailable()) return;
-      
+
       const token = getAuthToken();
       if (!token) {
         window.location.href = '/login.html';
@@ -2044,7 +2295,7 @@
       // Buttons
       const btnConfirm = document.getElementById('btnConfirmCheckout');
       const btnCancel = document.getElementById('btnCancelCheckout');
-      
+
       btnConfirm.style.display = 'inline-flex';
       btnConfirm.innerHTML = '<i class="fa-solid fa-shield-halved"></i> Xác nhận & Thanh toán';
       btnCancel.disabled = false;
@@ -2064,15 +2315,15 @@
               productCheckoutTurnstileWidgetId = turnstile.render(placeholder, {
                 sitekey: reviewTurnstileSiteKey,
                 theme: 'dark',
-                callback: function() {
+                callback: function () {
                   const btn = document.getElementById('btnConfirmCheckout');
                   if (btn) btn.disabled = false;
                 },
-                'expired-callback': function() {
+                'expired-callback': function () {
                   const btn = document.getElementById('btnConfirmCheckout');
                   if (btn) btn.disabled = true;
                 },
-                'error-callback': function() {
+                'error-callback': function () {
                   const btn = document.getElementById('btnConfirmCheckout');
                   if (btn) btn.disabled = true;
                 }
@@ -2131,7 +2382,7 @@
     async function confirmCheckout() {
       const btnConfirm = document.getElementById('btnConfirmCheckout');
       const btnCancel = document.getElementById('btnCancelCheckout');
-      
+
       btnConfirm.disabled = true;
       btnCancel.disabled = true;
       btnConfirm.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang xử lý...';
@@ -2202,7 +2453,7 @@
         if (productCheckoutTurnstileWidgetId !== null) {
           try {
             turnstile.reset(productCheckoutTurnstileWidgetId);
-          } catch (te) {}
+          } catch (te) { }
         }
         // ── ERROR HANDLING ──
         // Mark stage 2 as error
@@ -2237,7 +2488,7 @@
       // ── SUCCESS FLOW ──
       const flow = orderResponse.flow || {};
       const order = orderResponse.order || {};
-      
+
       // Update Provider Node details
       const providerName = (flow.stage2 && flow.stage2.provider) ? flow.stage2.provider : 'Nhà cung cấp';
       document.getElementById('providerNodeLabel').innerText = providerName;
@@ -2270,7 +2521,7 @@
       document.getElementById('deliveryResultText').value = order.deliveryText || '';
       document.getElementById('deliveryResultBox').style.display = 'block';
       if (window.replaceIcons) window.replaceIcons(document.getElementById('deliveryResultBox'));
-      
+
       // Hide footer actions
       document.getElementById('modalFooterActions').style.display = 'none';
 
@@ -2481,7 +2732,7 @@
         if (reviewTurnstileWidgetId !== null) {
           try {
             turnstile.reset(reviewTurnstileWidgetId);
-          } catch (te) {}
+          } catch (te) { }
         }
         if (window.showToast) {
           window.showToast(err.message, false);
@@ -2549,7 +2800,7 @@
         } else {
           listContainer.innerHTML = reviews.map(r => {
             const initial = (r.username || 'U').charAt(0).toUpperCase();
-            
+
             // Build stars for item
             let itemStars = '';
             for (let i = 1; i <= 5; i++) {
@@ -2644,34 +2895,34 @@
       document.title = `${product.name} | DG Store`;
       const breadcrumb = document.getElementById('breadcrumbProduct');
       if (breadcrumb) breadcrumb.innerText = product.name;
-      
+
       const title = document.getElementById('productTitle');
       if (title) title.innerText = product.name;
-      
+
       const desc = document.getElementById('productDesc');
       if (desc) desc.innerText = product.desc || '';
-      
+
       const pkg = document.getElementById('productPackage');
       if (pkg) pkg.innerText = product.name;
-      
+
       const rate = document.getElementById('productRate');
       if (rate) rate.innerText = product.rate || '5.0';
-      
+
       const price = document.getElementById('productPrice');
       if (price) price.innerText = formatProductPrice(product.price);
-      
+
       const media = document.getElementById('productMedia');
       if (media) media.innerHTML = productMedia(product);
-      
+
       const descTitle = document.getElementById('descriptionTitle');
       if (descTitle) descTitle.innerText = product.name;
-      
+
       const longDesc = document.getElementById('productLongDesc');
       if (longDesc) longDesc.innerText = product.long_desc || product.desc || '';
-      
+
       renderReviewForm(currentSlug);
       loadProductReviews(currentSlug);
-      
+
       renderVariants(product);
       syncProductAvailability();
       updateHeaderCartCount();
@@ -2691,7 +2942,8 @@
     initProductPage();
   </script>
   <!-- ═══ CHECKOUT FLOW MODAL — Redesigned ═══ -->
-  <div class="sk-modal-backdrop" id="checkoutFlowModalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="sk-modal-backdrop" id="checkoutFlowModalBackdrop" role="dialog" aria-modal="true"
+    aria-labelledby="modalTitle">
     <div class="sk-flow-modal">
       <header class="sk-modal-header">
         <h3 id="modalTitle"><i class="fa-solid fa-bolt"></i> Thanh toán tự động 3 giai đoạn</h3>
@@ -2784,15 +3036,19 @@
             <i class="fa-solid fa-triangle-exclamation"></i>
           </div>
           <h4>Thanh toán thất bại</h4>
-          <p>Đơn hàng không thể hoàn tất do sản phẩm <b>hết hàng</b> hoặc <b>nguồn hàng lỗi</b>.<br>Số dư đã được hoàn lại vào ví của bạn.</p>
+          <p>Đơn hàng không thể hoàn tất do sản phẩm <b>hết hàng</b> hoặc <b>nguồn hàng lỗi</b>.<br>Số dư đã được hoàn
+            lại vào ví của bạn.</p>
           <div class="sk-error-detail-box">
             <i class="fa-solid fa-circle-info"></i>
             <span id="errorDetailText">Chi tiết lỗi sẽ hiển thị ở đây.</span>
           </div>
-          <p style="margin-top:14px; font-size:11.5px;">Vui lòng chờ <b>Admin cập nhật nguồn hàng</b> hoặc liên hệ hỗ trợ qua Zalo.</p>
+          <p style="margin-top:14px; font-size:11.5px;">Vui lòng chờ <b>Admin cập nhật nguồn hàng</b> hoặc liên hệ hỗ
+            trợ qua Zalo.</p>
           <div class="sk-error-actions">
-            <button class="sk-btn" type="button" onclick="closeCheckoutModal()"><i class="fa-solid fa-xmark"></i> Đóng</button>
-            <a class="sk-btn sk-btn-soft" href="https://zalo.me/0774391888" target="_blank"><i class="fa-solid fa-headset"></i> Liên hệ hỗ trợ</a>
+            <button class="sk-btn" type="button" onclick="closeCheckoutModal()"><i class="fa-solid fa-xmark"></i>
+              Đóng</button>
+            <a class="sk-btn sk-btn-soft" href="https://zalo.me/0774391888" target="_blank"><i
+                class="fa-solid fa-headset"></i> Liên hệ hỗ trợ</a>
           </div>
         </div>
 
@@ -2805,9 +3061,12 @@
           <p class="sk-delivery-subtitle">Sao chép thông tin tài khoản hoặc mã dịch vụ bên dưới:</p>
           <textarea class="sk-delivery-textarea" id="deliveryResultText" readonly></textarea>
           <div class="sk-delivery-actions">
-            <button class="sk-btn sk-btn-accent" style="box-shadow: 0 0 20px var(--accent-glow);" type="button" onclick="copyDeliveryResult()"><i class="fa-solid fa-copy"></i> Sao chép</button>
-            <button class="sk-btn sk-btn-soft" type="button" onclick="downloadDeliveryResult()"><i class="fa-solid fa-download"></i> Xuất file TXT</button>
-            <a class="sk-btn" href="/index.html#orders"><i class="fa-solid fa-clock-rotate-left"></i> Lịch sử đơn hàng</a>
+            <button class="sk-btn sk-btn-accent" style="box-shadow: 0 0 20px var(--accent-glow);" type="button"
+              onclick="copyDeliveryResult()"><i class="fa-solid fa-copy"></i> Sao chép</button>
+            <button class="sk-btn sk-btn-soft" type="button" onclick="downloadDeliveryResult()"><i
+                class="fa-solid fa-download"></i> Xuất file TXT</button>
+            <a class="sk-btn" href="/index.html#orders"><i class="fa-solid fa-clock-rotate-left"></i> Lịch sử đơn
+              hàng</a>
           </div>
         </div>
       </div>
@@ -2815,7 +3074,8 @@
         <!-- Turnstile Container -->
         <div id="product-checkout-turnstile" style="margin-right: auto;"></div>
         <button class="sk-btn" type="button" onclick="closeCheckoutModal()" id="btnCancelCheckout">Hủy bỏ</button>
-        <button class="sk-btn sk-btn-primary" type="button" onclick="confirmCheckout()" id="btnConfirmCheckout"><i class="fa-solid fa-shield-halved"></i> Xác nhận &amp; Thanh toán</button>
+        <button class="sk-btn sk-btn-primary" type="button" onclick="confirmCheckout()" id="btnConfirmCheckout"><i
+            class="fa-solid fa-shield-halved"></i> Xác nhận &amp; Thanh toán</button>
       </footer>
     </div>
   </div>
@@ -2823,4 +3083,5 @@
   <script src="/assets/js/icons.js"></script>
   <script src="/assets/js/common.js"></script>
 </body>
+
 </html>
