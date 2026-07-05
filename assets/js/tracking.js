@@ -199,8 +199,12 @@
   }
 
   async function fetchLocal(endpoint, code) {
+    const token = localStorage.getItem('token');
     const response = await fetch(`${API_BASE}${endpoint}?code=${encodeURIComponent(code)}`, {
-      headers: { accept: "application/json" },
+      headers: {
+        accept: "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {})
+      },
     });
     const payload = await response.json().catch(() => null);
     if (!response.ok || !payload || !payload.ok) {
@@ -210,11 +214,13 @@
   }
 
   async function requestJson(url, options = {}) {
+    const token = localStorage.getItem('token');
     const response = await fetch(`${API_BASE}${url}`, {
       ...options,
       headers: {
         accept: "application/json",
         "content-type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
         ...(options.headers || {}),
       },
     });
@@ -276,38 +282,231 @@
     }
   }
 
+  let currentWatchViewMode = localStorage.getItem('watchViewMode') || 'card';
+
+  function switchWatchListViewMode(mode) {
+    currentWatchViewMode = mode;
+    localStorage.setItem('watchViewMode', mode);
+    
+    const cardBtn = document.getElementById('viewModeCardBtn');
+    const tableBtn = document.getElementById('viewModeTableBtn');
+    if (cardBtn && tableBtn) {
+      cardBtn.classList.toggle('active', mode === 'card');
+      tableBtn.classList.toggle('active', mode === 'table');
+    }
+    
+    loadWatchList();
+  }
+  window.switchWatchListViewMode = switchWatchListViewMode;
+
+  function renderProgressTracker(category, carrier) {
+    const stages = [
+      { key: "ready", label: "Chuẩn bị", icon: "fa-box-open" },
+      { key: "transit", label: "Vận chuyển", icon: "fa-truck-fast" },
+      { key: "delivering", label: "Đang giao", icon: "fa-motorcycle" },
+      { key: "delivered", label: "Đã nhận", icon: "fa-circle-check" }
+    ];
+    
+    let currentStageIndex = 0;
+    const cat = String(category || "").toLowerCase();
+    if (cat.includes("ready") || cat.includes("pick")) {
+      currentStageIndex = 0;
+    } else if (cat.includes("transit") || cat.includes("transport") || cat.includes("store") || cat.includes("hub") || cat.includes("receive")) {
+      currentStageIndex = 1;
+    } else if (cat.includes("deliver") && !cat.includes("delivered")) {
+      currentStageIndex = 2;
+    } else if (cat.includes("deliver") || cat.includes("success") || cat.includes("done")) {
+      currentStageIndex = 3;
+    } else if (cat.includes("cancel") || cat.includes("fail")) {
+      currentStageIndex = -1;
+    }
+    
+    const activeColor = carrier === "SPX" ? "#ee4d2d" : "#0ea5e9";
+    const activeBg = carrier === "SPX" ? "rgba(238, 77, 45, 0.1)" : "rgba(14, 165, 233, 0.1)";
+    
+    if (currentStageIndex === -1) {
+      const isCancel = cat.includes("cancel");
+      const errColor = "#ef4444";
+      return `
+        <div style="display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px; background: rgba(239, 68, 68, 0.05); border: 1px dashed rgba(239, 68, 68, 0.2); border-radius: 8px; margin: 12px 0;">
+          <i class="fa-solid ${isCancel ? 'fa-ban' : 'fa-circle-exclamation'}" style="color: ${errColor}; font-size: 14px;"></i>
+          <span style="font-size: 11.5px; font-weight: 700; color: ${errColor};">${isCancel ? 'ĐƠN HÀNG ĐÃ BỊ HỦY' : 'GIAO HÀNG THẤT BẠI'}</span>
+        </div>
+      `;
+    }
+
+    const linePercent = currentStageIndex * 33.33;
+    let nodesHtml = stages.map((stage, idx) => {
+      const isActive = idx <= currentStageIndex;
+      const isCurrent = idx === currentStageIndex;
+      
+      const nodeColor = isActive ? activeColor : "var(--muted)";
+      const nodeBg = isActive ? activeBg : "rgba(255,255,255,0.02)";
+      const nodeBorder = isActive ? `1.5px solid ${activeColor}` : "1.5px solid var(--line)";
+      const glowStyle = isCurrent ? `box-shadow: 0 0 10px ${activeColor}40;` : '';
+      const textWeight = isCurrent ? '800' : '500';
+      const textColor = isCurrent ? 'var(--text-bright)' : 'var(--muted)';
+      
+      return `
+        <div style="display: flex; flex-direction: column; align-items: center; flex: 1; position: relative; z-index: 2;">
+          <div style="width: 32px; height: 32px; border-radius: 50%; background: ${nodeBg}; border: ${nodeBorder}; display: flex; align-items: center; justify-content: center; color: ${nodeColor}; ${glowStyle} transition: all 0.3s;">
+            <i class="fa-solid ${stage.icon}" style="font-size: 13px;"></i>
+          </div>
+          <span style="font-size: 10px; font-weight: ${textWeight}; color: ${textColor}; margin-top: 6px; text-align: center;">${stage.label}</span>
+        </div>
+      `;
+    }).join('');
+
+    return `
+      <div style="position: relative; display: flex; justify-content: space-between; align-items: center; padding: 10px 0; margin: 12px 0; background: rgba(0,0,0,0.15); border-radius: 10px; border: 1px solid var(--line);">
+        <div style="position: absolute; left: 16%; right: 16%; top: 26px; height: 2px; background: var(--line); z-index: 1;"></div>
+        <div style="position: absolute; left: 16%; width: ${linePercent * 0.68}%; top: 26px; height: 2px; background: ${activeColor}; z-index: 1; transition: width 0.5s ease;"></div>
+        ${nodesHtml}
+      </div>
+    `;
+  }
+
+  function renderWatchListCards(items) {
+    trackingEls.watchList.innerHTML = `<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; width: 100%;"></div>`;
+    const grid = trackingEls.watchList.firstElementChild;
+
+    items.forEach((item) => {
+      const activeText = item.active ? `Check sau: ${minutesUntil(item.nextCheckAt)}` : "Đã dừng";
+      const statusTextVal = item.paused ? "Tạm dừng" : (item.lastStatusText || "Chưa có trạng thái");
+      const carrierColor = item.carrier === "SPX" ? "#ee4d2d" : "#0ea5e9";
+      const carrierBg = item.carrier === "SPX" ? "rgba(238, 77, 45, 0.15)" : "rgba(14, 165, 233, 0.15)";
+      
+      const badgeHtml = badgeClass(item.lastStatusText || item.lastStatus);
+      const progressTrackerHtml = renderProgressTracker(item.category || item.lastStatusText || item.lastStatus, item.carrier);
+
+      const card = document.createElement("div");
+      card.className = "shopee-side-box";
+      card.style = "padding: 16px; margin: 0; display: flex; flex-direction: column; justify-content: space-between; border-top: 2px solid " + carrierColor + " !important;";
+      card.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <span style="font-size: 11px; font-weight: 800; background: ${carrierBg}; color: ${carrierColor}; padding: 3px 8px; border-radius: 4px; text-transform: uppercase;">
+            <i class="fa-solid ${item.carrier === 'SPX' ? 'fa-truck' : 'fa-truck-fast'}"></i> ${escapeHtml(item.carrier)}
+          </span>
+          <span class="${badgeHtml}" style="font-size: 11px; font-weight: 700; padding: 2px 6px;">
+            ${escapeHtml(statusTextVal)}
+          </span>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 8px; flex-grow: 1;">
+          <div>
+            <div style="font-size: 10px; color: var(--muted); text-transform: uppercase; font-weight: 700; margin-bottom: 2px;">Mã vận đơn</div>
+            <div style="font-family: monospace; font-size: 15px; font-weight: 900; color: var(--text-bright); display: flex; align-items: center; gap: 8px;">
+              <span>${escapeHtml(item.code || "-")}</span>
+              <button onclick="navigator.clipboard.writeText('${escapeHtml(item.code)}'); alert('Đã sao chép')" style="background: transparent; border: none; color: var(--muted); cursor: pointer; padding: 0;"><i class="fa-regular fa-copy" style="font-size: 12px;"></i></button>
+            </div>
+          </div>
+
+          ${item.label ? `
+          <div>
+            <div style="font-size: 10px; color: var(--muted); text-transform: uppercase; font-weight: 700; margin-bottom: 2px;">Bí danh đơn</div>
+            <div style="font-size: 12.5px; font-weight: 600; color: var(--text);">${escapeHtml(item.label)}</div>
+          </div>` : ''}
+
+          ${progressTrackerHtml}
+
+          <div style="border-top: 1px dashed var(--line); padding-top: 8px; margin-top: auto; display: flex; flex-direction: column; gap: 4px; font-size: 11px; color: var(--muted);">
+            <div><i class="fa-regular fa-clock" style="margin-right: 4px;"></i> ${escapeHtml(activeText)}</div>
+            <div><i class="fa-solid fa-arrows-rotate" style="margin-right: 4px;"></i> Cập nhật: ${escapeHtml(formatBotDate(item.lastEventTime || item.lastCheckedAt))}</div>
+            ${item.lastError ? `<div style="color: var(--danger); font-weight: 500;"><i class="fa-solid fa-triangle-exclamation"></i> ${escapeHtml(item.lastError)}</div>` : ""}
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 8px; margin-top: 14px; border-top: 1px solid var(--line); padding-top: 12px;">
+          <button class="sk-btn sk-btn-soft" data-action="check" data-id="${escapeHtml(item.id)}" style="flex: 1; height: 32px; font-size: 12px; padding: 0;"><i class="fa-solid fa-sync"></i> Kiểm tra</button>
+          <button class="sk-btn sk-btn-soft" data-action="delete" data-id="${escapeHtml(item.id)}" style="height: 32px; font-size: 12px; padding: 0 12px; color: var(--danger); border-color: rgba(220,38,38,0.2); background: rgba(220,38,38,0.05);"><i class="fa-solid fa-trash"></i> Xóa</button>
+        </div>
+      `;
+      grid.append(card);
+    });
+  }
+
+  function renderWatchListTable(items) {
+    let rowsHtml = items.map((item) => {
+      const activeText = item.active ? `Check sau: ${minutesUntil(item.nextCheckAt)}` : "Đã dừng";
+      const statusTextVal = item.paused ? "Tạm dừng" : (item.lastStatusText || "Chưa có trạng thái");
+      const carrierColor = item.carrier === "SPX" ? "#ee4d2d" : "#0ea5e9";
+      const badgeHtml = badgeClass(item.lastStatusText || item.lastStatus);
+      
+      return `
+        <tr style="border-bottom: 1px solid var(--line); transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
+          <td style="padding: 12px 16px;">
+            <span style="font-weight: 800; color: ${carrierColor}; text-transform: uppercase;">${escapeHtml(item.carrier)}</span>
+          </td>
+          <td style="padding: 12px 16px;">
+            <span style="font-family: monospace; font-weight: 700; color: var(--text-bright);">${escapeHtml(item.code)}</span>
+          </td>
+          <td style="padding: 12px 16px;">
+            <span style="font-weight: 600; color: var(--text);">${escapeHtml(item.label || "-")}</span>
+          </td>
+          <td style="padding: 12px 16px;">
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+              <span class="${badgeHtml}" style="align-self: flex-start; font-size: 11px; font-weight: 700; padding: 1px 6px;">
+                ${escapeHtml(statusTextVal)}
+              </span>
+              ${item.lastError ? `<small style="color: var(--danger); font-size: 11px;">${escapeHtml(item.lastError)}</small>` : ""}
+            </div>
+          </td>
+          <td style="padding: 12px 16px; color: var(--muted); font-size: 12px;">
+            <div style="font-weight: 600; color: var(--text-sub);">${escapeHtml(formatBotDate(item.lastEventTime || item.lastCheckedAt))}</div>
+            <div><small>${escapeHtml(activeText)}</small></div>
+          </td>
+          <td style="padding: 12px 16px; text-align: right;">
+            <div style="display: inline-flex; gap: 6px;">
+              <button class="sk-btn sk-btn-soft" data-action="check" data-id="${escapeHtml(item.id)}" style="height: 28px; font-size: 11px; padding: 0 8px;"><i class="fa-solid fa-sync"></i> Kiểm tra</button>
+              <button class="sk-btn sk-btn-soft" data-action="delete" data-id="${escapeHtml(item.id)}" style="height: 28px; font-size: 11px; padding: 0 8px; color: var(--danger); border-color: rgba(220,38,38,0.2); background: rgba(220,38,38,0.05);"><i class="fa-solid fa-trash"></i> Xóa</button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join('');
+
+    trackingEls.watchList.innerHTML = `
+      <div style="overflow-x: auto; width: 100%; background: rgba(10, 14, 26, 0.2); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 4px 24px rgba(0,0,0,0.15);">
+        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;">
+          <thead>
+            <tr style="border-bottom: 2px solid var(--line); background: rgba(255, 255, 255, 0.02); color: var(--text-bright);">
+              <th style="padding: 12px 16px; font-weight: 800;">Nhà xe</th>
+              <th style="padding: 12px 16px; font-weight: 800;">Mã vận đơn</th>
+              <th style="padding: 12px 16px; font-weight: 800;">Bí danh</th>
+              <th style="padding: 12px 16px; font-weight: 800;">Trạng thái mới nhất</th>
+              <th style="padding: 12px 16px; font-weight: 800;">Cập nhật cuối</th>
+              <th style="padding: 12px 16px; font-weight: 800; text-align: right;">Hành động</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rowsHtml || `<tr><td colspan="6" style="text-align: center; padding: 24px; color: var(--muted);">Chưa có đơn hàng nào đang theo dõi.</td></tr>`}
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
+
   function renderWatchList(items) {
     if (!trackingEls.watchList) return;
-    trackingEls.watchList.innerHTML = "";
+    
+    const cardBtn = document.getElementById('viewModeCardBtn');
+    const tableBtn = document.getElementById('viewModeTableBtn');
+    if (cardBtn && tableBtn) {
+      cardBtn.classList.toggle('active', currentWatchViewMode === 'card');
+      tableBtn.classList.toggle('active', currentWatchViewMode === 'table');
+    }
+
     if (!Array.isArray(items) || items.length === 0) {
       trackingEls.watchList.innerHTML = '<div style="color: var(--muted); font-size: 13px; text-align: center; padding: 16px;">Chưa có đơn hàng nào đang theo dõi.</div>';
       return;
     }
 
-    items.forEach((item) => {
-      const activeText = item.active ? `Kiểm tra sau: ${minutesUntil(item.nextCheckAt)}` : "Đã ngừng theo dõi";
-      const statusTextVal = item.paused ? "Đã tạm dừng" : (item.lastStatusText || "Chưa có trạng thái");
-      const row = document.createElement("div");
-      row.className = "sk-watch-row";
-      row.innerHTML = `
-        <div><span class="sk-watch-code" style="color: #ee4d2d; font-weight: 800;">${escapeHtml(String(item.carrier || "").toUpperCase())}</span></div>
-        <div>
-          <div class="sk-watch-code">${escapeHtml(item.code || "-")}</div>
-          ${item.label ? `<div class="sk-watch-meta">Bí danh: <b>${escapeHtml(item.label)}</b></div>` : ""}
-          <div class="sk-watch-meta">
-            ${escapeHtml(statusTextVal)} •
-            ${escapeHtml(activeText)} •
-            Cập nhật: ${escapeHtml(formatBotDate(item.lastEventTime || item.lastCheckedAt))}
-          </div>
-          ${item.lastError ? `<div class="sk-watch-meta" style="color: var(--danger); font-weight: 500;">${escapeHtml(item.lastError)}</div>` : ""}
-        </div>
-        <div class="sk-watch-actions" style="display: flex; gap: 8px;">
-          <button class="sk-btn sk-btn-soft" data-action="check" data-id="${escapeHtml(item.id)}" style="height: 32px; font-size: 12px; padding: 0 10px;"><i class="fa-solid fa-sync"></i> Kiểm tra</button>
-          <button class="sk-btn sk-btn-soft" data-action="delete" data-id="${escapeHtml(item.id)}" style="height: 32px; font-size: 12px; padding: 0 10px; color: var(--danger); border-color: rgba(220,38,38,0.2); background: rgba(220,38,38,0.05);"><i class="fa-solid fa-trash"></i> Xóa</button>
-        </div>
-      `;
-      trackingEls.watchList.append(row);
-    });
+    if (currentWatchViewMode === 'table') {
+      renderWatchListTable(items);
+    } else {
+      renderWatchListCards(items);
+    }
+
     if (window.replaceIcons) window.replaceIcons(trackingEls.watchList);
   }
 
@@ -719,6 +918,29 @@
 
   function setupTrackingListeners() {
     initTrackingEls();
+    
+    // Yêu cầu đăng nhập trước khi hiển thị tra cứu
+    const token = localStorage.getItem('token');
+    const container = document.getElementById('shopee-tracking');
+    if (!token) {
+      if (container) {
+        container.innerHTML = `
+          <div class="sk-card" style="padding: 48px 24px; text-align: center; max-width: 500px; margin: 40px auto; border-top: 4px solid #ee4d2d; background: rgba(15, 23, 42, 0.45); box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.05); border-radius: 20px; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-left: 1px solid rgba(255,255,255,0.02); border-right: 1px solid rgba(255,255,255,0.02); border-bottom: 1px solid rgba(255,255,255,0.02);">
+            
+            <div style="width: 80px; height: 80px; border-radius: 50%; background: rgba(238, 77, 45, 0.08); border: 2px dashed rgba(238, 77, 45, 0.3); display: flex; align-items: center; justify-content: center; margin: 0 auto 24px auto; box-shadow: 0 0 20px rgba(238, 77, 45, 0.15);">
+              <i class="fa-solid fa-shield-halved" style="font-size: 32px; color: #ee4d2d; filter: drop-shadow(0 0 8px rgba(238,77,45,0.4));"></i>
+            </div>
+            
+            <h2 style="font-size: 19px; font-weight: 900; color: var(--text-bright); margin-bottom: 12px; font-family: 'Inter', sans-serif !important; letter-spacing: -0.01em;">ĐĂNG NHẬP ĐỂ TRA CỨU VẬN ĐƠN</h2>
+            <p style="color: var(--text-sub); font-size: 13.5px; line-height: 1.6; margin-bottom: 28px; max-width: 400px; margin-left: auto; margin-right: auto;">Bạn cần đăng nhập tài khoản DG Store để tra hành trình vận đơn SPX Express, Giao Hàng Nhanh và tự động theo dõi trạng thái đơn hàng.</p>
+            
+            <a href="login.html?redirect=tracking.html" class="sk-btn" style="height: 44px; font-weight: 800; width: 100%; justify-content: center; display: inline-flex; text-decoration: none; border-radius: 10px; align-items: center; gap: 8px; font-size: 13.5px; background: linear-gradient(135deg, #ee4d2d, #ff683b); color: #ffffff; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 4px 15px rgba(238, 77, 45, 0.35); transition: all 0.3s; cursor: pointer;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(238, 77, 45, 0.5)';" onmouseout="this.style.transform='none'; this.style.boxShadow='0 4px 15px rgba(238, 77, 45, 0.35)';"><i class="fa-solid fa-right-to-bracket"></i> ĐĂNG NHẬP NGAY</a>
+          </div>
+        `;
+      }
+      return;
+    }
+
     if (!trackingEls.form) return;
     
     // Remove duplicate event listener registrations if any

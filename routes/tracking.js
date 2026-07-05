@@ -4,6 +4,7 @@ const router = express.Router();
 const path = require('path');
 const crypto = require('crypto');
 const axios = require('axios');
+const { authMiddleware } = require('../middlewares/authMiddleware');
 
 // --- WAYBILL TRACKING BOT INTEGRATION ---
 const fs = require('fs');
@@ -925,7 +926,13 @@ async function upsertWatchItem(inputItem, options = {}) {
   }
 
   const items = loadWatchlist();
-  const existing = items.find((item) => item.code === code && item.carrier === carrier);
+  const userId = inputItem.userId || "";
+  const chatId = inputItem.chatId || "";
+  const existing = items.find((item) => 
+    item.code === code && 
+    item.carrier === carrier && 
+    (userId ? item.userId === userId : item.chatId === chatId)
+  );
   const base = existing || {
     id: crypto.randomUUID(),
     createdAt: nowIso(),
@@ -947,6 +954,7 @@ async function upsertWatchItem(inputItem, options = {}) {
     code,
     label: inputItem.label || base.label || "",
     chatId: inputItem.chatId || base.chatId || "",
+    userId: inputItem.userId || base.userId || "",
     active: true,
     paused: false,
     updatedAt: nowIso(),
@@ -1344,7 +1352,7 @@ function publicWatchItem(item) {
 }
 
 // REST API Endpoints for Tracking Dashboard
-router.get('/spx-track', async (req, res) => {
+router.get('/spx-track', authMiddleware, async (req, res) => {
   try {
     const trackingNumber = normalizeTrackingNumber(req.query.code);
     if (!trackingNumber) {
@@ -1358,7 +1366,7 @@ router.get('/spx-track', async (req, res) => {
   }
 });
 
-router.get('/ghn-track', async (req, res) => {
+router.get('/ghn-track', authMiddleware, async (req, res) => {
   try {
     const orderCode = normalizeTrackingNumber(req.query.code);
     if (!orderCode) {
@@ -1372,16 +1380,18 @@ router.get('/ghn-track', async (req, res) => {
   }
 });
 
-router.get('/watch', (req, res) => {
+router.get('/watch', authMiddleware, (req, res) => {
   try {
-    const list = loadWatchlist().map(publicWatchItem);
+    const list = loadWatchlist()
+      .filter(item => item.userId === req.user.userId)
+      .map(publicWatchItem);
     return res.json({ ok: true, data: list });
   } catch (error) {
     return res.status(500).json({ ok: false, message: error.message || "Lỗi tải watchlist." });
   }
 });
 
-router.post('/watch', async (req, res) => {
+router.post('/watch', authMiddleware, async (req, res) => {
   try {
     const body = req.body;
     const entries = Array.isArray(body.items) && body.items.length
@@ -1390,12 +1400,14 @@ router.post('/watch', async (req, res) => {
           carrier: item.carrier || body.carrier || "auto",
           label: item.label || "",
           chatId: item.chatId || body.chatId || "",
+          userId: req.user.userId
         }))
       : parseWatchEntries(body.code || "").map((item) => ({
           ...item,
           carrier: body.carrier || item.carrier || "auto",
           label: body.label || item.label || "",
           chatId: body.chatId || "",
+          userId: req.user.userId
         }));
 
     if (!entries.length && body.code) {
@@ -1404,6 +1416,7 @@ router.post('/watch', async (req, res) => {
         carrier: body.carrier || "auto",
         label: body.label || "",
         chatId: body.chatId || "",
+        userId: req.user.userId
       });
     }
 
@@ -1440,8 +1453,6 @@ router.post('/watch', async (req, res) => {
     return res.status(500).json({ ok: false, message: error.message || "Lỗi thêm đơn theo dõi." });
   }
 });
-
-const { authMiddleware } = require('../middlewares/authMiddleware');
 
 router.post('/telegram/alert', authMiddleware, async (req, res) => {
   try {
@@ -1502,16 +1513,21 @@ router.get('/trammmo/key', authMiddleware, async (req, res) => {
   }
 });
 
-router.delete('/watch/:id', (req, res) => {
+router.delete('/watch/:id', authMiddleware, (req, res) => {
   try {
     const id = req.params.id;
     const items = loadWatchlist();
-    const nextItems = items.filter((item) => item.id !== id);
+    const existing = items.find((item) => item.id === id);
 
-    if (nextItems.length === items.length) {
+    if (!existing) {
       return res.status(404).json({ ok: false, message: "Khong tim thay don theo doi." });
     }
 
+    if (existing.userId !== req.user.userId) {
+      return res.status(403).json({ ok: false, message: "Ban khong co quyen xoa don nay." });
+    }
+
+    const nextItems = items.filter((item) => item.id !== id);
     saveWatchlist(nextItems);
     return res.json({ ok: true });
   } catch (error) {
@@ -1519,7 +1535,7 @@ router.delete('/watch/:id', (req, res) => {
   }
 });
 
-router.post('/watch/:id/check', async (req, res) => {
+router.post('/watch/:id/check', authMiddleware, async (req, res) => {
   try {
     const id = req.params.id;
     const items = loadWatchlist();
@@ -1527,6 +1543,10 @@ router.post('/watch/:id/check', async (req, res) => {
 
     if (index < 0) {
       return res.status(404).json({ ok: false, message: "Khong tim thay don theo doi." });
+    }
+
+    if (items[index].userId !== req.user.userId) {
+      return res.status(403).json({ ok: false, message: "Ban khong co quyen kiem tra don nay." });
     }
 
     items[index] = await checkWatchItem(items[index]);

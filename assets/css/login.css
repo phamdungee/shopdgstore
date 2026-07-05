@@ -429,23 +429,29 @@ body.sk-auth-body::after {
 
 /* Submit Button Override */
 .form-container .sk-btn.sk-btn-primary.btn-solid {
-  background: var(--brand-gradient) !important;
-  border: none !important;
+  background: linear-gradient(135deg, #6366f1, #a855f7) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
   color: #ffffff !important;
   font-weight: 800 !important;
-  border-radius: var(--radius) !important;
+  border-radius: 10px !important;
   min-height: 44px !important;
-  box-shadow: 0 4px 16px var(--brand-glow) !important;
-  transition: all 0.3s ease !important;
-  margin-top: 10px;
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.35) !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  margin-top: 12px;
   width: 100%;
   cursor: pointer;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .form-container .sk-btn.sk-btn-primary.btn-solid:hover {
-  transform: translateY(-2px) !important;
-  box-shadow: 0 6px 24px var(--brand-glow) !important;
-  filter: brightness(1.1);
+  transform: translateY(-2.5px) scale(1.01) !important;
+  box-shadow: 0 8px 30px rgba(139, 92, 246, 0.55), 0 0 15px rgba(99, 102, 241, 0.3) !important;
+  background: linear-gradient(135deg, #6c6ff5, #b262fa) !important;
 }
 
 /* Social Login Icons */

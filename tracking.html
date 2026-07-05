@@ -6,7 +6,7 @@
   <title>Theo dõi vận đơn | DG Store</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
   <link href="assets/css/common.css" rel="stylesheet" />
   <link href="assets/css/icons.css" rel="stylesheet" />
@@ -213,6 +213,39 @@
       background: var(--danger-soft);
       border: 1px solid rgba(220, 38, 38, 0.25);
     }
+    .sk-view-toggle {
+      display: flex;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 3px;
+      gap: 3px;
+    }
+    .sk-view-toggle .sk-btn {
+      height: 28px;
+      font-size: 11.5px;
+      font-weight: 600;
+      padding: 0 12px;
+      border-radius: 6px;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+    .sk-view-toggle .sk-btn.active {
+      background: linear-gradient(135deg, #ee4d2d, #ff683b) !important;
+      color: #ffffff !important;
+      box-shadow: 0 4px 10px rgba(238, 77, 45, 0.25);
+    }
+    .sk-view-toggle .sk-btn:hover:not(.active) {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-bright);
+    }
+
     @media (max-width: 768px) {
       .sk-watch-row {
         grid-template-columns: 1fr;
@@ -436,8 +469,15 @@
 
         <!-- Danh sách đơn đang theo dõi -->
         <div class="sk-card" style="padding: 20px; margin-top: 24px;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
             <h3 style="font-size: 15px; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 8px;"><i class="fa-solid fa-clipboard-list" style="color: #ee4d2d;"></i> Danh sách đơn đang giám sát</h3>
+            
+            <!-- Toggle View Mode -->
+            <div class="sk-view-toggle">
+              <button id="viewModeCardBtn" class="sk-btn active" onclick="switchWatchListViewMode('card')"><i class="fa-solid fa-address-card"></i> Dạng thẻ</button>
+              <button id="viewModeTableBtn" class="sk-btn" onclick="switchWatchListViewMode('table')"><i class="fa-solid fa-table"></i> Dạng bảng</button>
+            </div>
+
             <button id="refreshWatchButton" class="sk-btn sk-btn-soft" type="button" style="height: 32px; font-size: 12px; padding: 0 12px; color: #ee4d2d; border-color: rgba(238, 77, 45, 0.2); background: rgba(238, 77, 45, 0.05);"><i class="fa-solid fa-rotate"></i> Tải lại danh sách</button>
           </div>
           <div id="watchList" style="display: grid; gap: 12px;">

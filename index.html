@@ -7,7 +7,7 @@
   <meta name="description" content="DG Store - Cửa hàng tài khoản bản quyền số, giao tự động 24/7. Netflix, ChatGPT, Spotify và hơn 120+ sản phẩm số." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
   <link href="assets/css/common.css" rel="stylesheet" />
   <link href="assets/css/icons.css" rel="stylesheet" />
@@ -442,6 +442,440 @@
         justify-content: center;
       }
     }
+
+    /* ── PREMIUM SHOPEE PAGE STYLES ── */
+    .shopee-hero {
+      background: radial-gradient(circle at 80% 20%, rgba(238, 77, 45, 0.12) 0%, rgba(255, 87, 34, 0.03) 50%, #04040a 100%) !important;
+      border: 1.5px solid rgba(238, 77, 45, 0.15) !important;
+      box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05), 0 12px 36px rgba(0, 0, 0, 0.5) !important;
+      border-radius: var(--radius-xl) !important;
+      padding: 32px 28px !important;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+
+    .shopee-hero::after {
+      content: '';
+      position: absolute;
+      top: -20%;
+      right: -10%;
+      width: 250px;
+      height: 250px;
+      background: radial-gradient(circle, rgba(238, 77, 45, 0.2) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 1;
+      filter: blur(20px);
+      animation: shopeeGlowPulse 8s ease-in-out infinite alternate;
+    }
+
+    @keyframes shopeeGlowPulse {
+      0% { transform: scale(1) translate(0, 0); opacity: 0.5; }
+      100% { transform: scale(1.25) translate(-25px, 25px); opacity: 0.8; }
+    }
+
+    .shopee-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(238, 77, 45, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(238, 77, 45, 0.03) 1px, transparent 1px);
+      background-size: 32px 32px;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.7;
+    }
+
+    .sk-badge-shopee {
+      height: 26px;
+      padding: 0 10px;
+      font-size: 11px;
+      font-weight: 800;
+      border-radius: 6px;
+      background: rgba(238, 77, 45, 0.15);
+      border: 1px solid rgba(238, 77, 45, 0.3);
+      color: #ff683b;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    #shopee .sk-hero-card {
+      background: rgba(238, 77, 45, 0.06) !important;
+      border: 1px solid rgba(238, 77, 45, 0.2) !important;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.05) !important;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+      border-radius: var(--radius-lg);
+      padding: 20px;
+    }
+
+    #shopee .sk-hero-card:hover {
+      transform: translateY(-3px) rotate(0.5deg) !important;
+      border-color: rgba(238, 77, 45, 0.3) !important;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45) !important;
+    }
+
+    .sk-btn-shopee-primary {
+      background: linear-gradient(135deg, #d33c1d, #e04a1f) !important;
+      border: 1px solid rgba(255, 255, 255, 0.15) !important;
+      color: #ffffff !important;
+      font-size: 13.5px !important;
+      font-weight: 800 !important;
+      letter-spacing: 0.04em !important;
+      text-transform: uppercase !important;
+      box-shadow: 0 4px 12px rgba(238, 77, 45, 0.2) !important;
+      height: 42px !important;
+      padding: 0 24px !important;
+      border-radius: 8px !important;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    }
+
+    .sk-btn-shopee-primary:hover {
+      transform: translateY(-2px) scale(1.02) !important;
+      box-shadow: 0 6px 16px rgba(238, 77, 45, 0.35) !important;
+    }
+
+    .sk-btn-shopee-outline {
+      background: rgba(255, 255, 255, 0.06) !important;
+      border: 1.2px solid rgba(255, 255, 255, 0.18) !important;
+      color: #ffffff !important;
+      font-size: 13px !important;
+      font-weight: 700 !important;
+      letter-spacing: 0.04em !important;
+      text-transform: uppercase !important;
+      box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05), 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+      height: 42px !important;
+      padding: 0 24px !important;
+      border-radius: 8px !important;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+      cursor: pointer;
+    }
+
+    .sk-btn-shopee-outline:hover {
+      background: rgba(255, 255, 255, 0.12) !important;
+      border-color: rgba(255, 255, 255, 0.6) !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+      transform: translateY(-2px) scale(1.01) !important;
+    }
+
+    .shopee-list-toolbar {
+      border-left: 3px solid #ee4d2d;
+      padding-left: 14px;
+      margin-bottom: 24px !important;
+    }
+
+    /* ── SHOPEE TWO COLUMN LAYOUT ── */
+    .shopee-layout {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 20px;
+      margin-top: 24px;
+      align-items: start;
+    }
+
+    .shopee-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .shopee-side-box {
+      background: rgba(10, 14, 26, 0.45) !important;
+      border: 1px solid rgba(255, 255, 255, 0.04) !important;
+      border-top: 2px solid rgba(238, 77, 45, 0.25) !important;
+      border-radius: 12px;
+      padding: 18px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.03) !important;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .shopee-box-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: #ff683b;
+      margin: 0 0 12px 0;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid rgba(238, 77, 45, 0.15);
+      padding-bottom: 8px;
+    }
+
+    .shopee-box-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .shopee-box-list li {
+      font-size: 12px;
+      color: var(--text-sub);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .shopee-box-list li i {
+      color: #34d399;
+      font-size: 13px;
+    }
+
+    .shopee-filter-menu {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .shopee-filter-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 9px 14px;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--text-sub);
+      background: rgba(255, 255, 255, 0.01) !important;
+      border: 1px solid transparent !important;
+      border-left: 2px solid transparent !important;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+      text-align: left;
+    }
+
+    .shopee-filter-btn:hover {
+      color: #ffffff !important;
+      background: rgba(238, 77, 45, 0.05) !important;
+      border-left-color: rgba(238, 77, 45, 0.4) !important;
+      transform: translateX(4px);
+    }
+
+    .shopee-filter-btn.active {
+      color: #ff683b !important;
+      background: rgba(238, 77, 45, 0.12) !important;
+      border-left-color: #ee4d2d !important;
+      font-weight: 800 !important;
+      box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05) !important;
+    }
+
+    /* Shopee product card style adjustments */
+    .shopee-product-card {
+      position: relative;
+      background: rgba(15, 23, 42, 0.5) !important;
+      border: 1px solid rgba(255, 255, 255, 0.05) !important;
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.02) !important;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .shopee-product-card:hover {
+      border-color: rgba(238, 77, 45, 0.4) !important;
+      transform: translateY(-4px) !important;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(238, 77, 45, 0.15) !important;
+    }
+
+    .shopee-product-card .shopee-card-inner-body {
+      background: transparent !important;
+    }
+
+    .shopee-main {
+      background: var(--glass-bg);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+    }
+
+    .shopee-search-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border: 1px solid rgba(238, 77, 45, 0.2) !important;
+      background: rgba(15, 23, 42, 0.45) !important;
+      border-radius: 8px !important;
+      padding: 0 14px !important;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+      width: 260px;
+      height: 38px !important;
+      margin-left: auto;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+    }
+
+    .shopee-search-bar:focus-within {
+      border-color: rgba(238, 77, 45, 0.6) !important;
+      box-shadow: inset 0 1px 1px rgba(0,0,0,0.2), 0 0 15px rgba(238, 77, 45, 0.15) !important;
+      background: rgba(15, 23, 42, 0.65) !important;
+    }
+
+    .shopee-search-bar i {
+      color: rgba(238, 77, 45, 0.6);
+      font-size: 13.5px;
+      transition: color 0.3s ease;
+    }
+
+    .shopee-search-bar:focus-within i {
+      color: #ff683b;
+    }
+
+    .shopee-search-input {
+      background: transparent !important;
+      border: none !important;
+      outline: none !important;
+      color: #ffffff !important;
+      font-family: 'Inter', sans-serif !important;
+      font-size: 13px !important;
+      font-weight: 500 !important;
+      width: 100% !important;
+      height: 100% !important;
+      padding: 0 !important;
+    }
+
+    .shopee-search-input::placeholder {
+      color: rgba(255, 255, 255, 0.3) !important;
+    }
+
+    /* ── RESPONSIVE STOREFRONT OPTIMIZATIONS ── */
+    @media (max-width: 980px) {
+      .sk-hero-band {
+        grid-template-columns: 1fr !important;
+        gap: 24px !important;
+      }
+      .sk-hero {
+        padding: 24px 20px !important;
+      }
+      .shopee-layout {
+        grid-template-columns: 1fr !important;
+      }
+      .shopee-sidebar {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 12px !important;
+      }
+      .shopee-search-bar {
+        width: 100% !important;
+        margin-left: 0 !important;
+        margin-top: 10px !important;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .shopee-sidebar {
+        grid-template-columns: 1fr !important;
+      }
+      .sk-hero-banners-column {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+      }
+      .sk-product-grid-vertical {
+        grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)) !important;
+        gap: 12px !important;
+        margin-top: 16px !important;
+      }
+      .sk-product-card-vertical > a {
+        padding: 12px !important;
+      }
+      .sk-product-card-vertical .card-info h3 {
+        font-size: 13.5px !important;
+      }
+      .sk-product-card-vertical .card-info p {
+        display: none !important; /* Hide long descriptions on mobile cards to stay clean and unified */
+      }
+      .sk-product-card-vertical .card-price {
+        font-size: 15px !important;
+      }
+      .sk-product-card-vertical:hover {
+        transform: none !important;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4) !important;
+      }
+      .sk-product-showcase-head {
+        justify-content: center !important;
+        width: 100% !important;
+      }
+      .sk-product-search {
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+
+      /* Shopee Custom Mobile Grid & Cards */
+      .shopee-products-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 10px !important;
+      }
+      .shopee-product-card {
+        border-radius: 10px !important;
+      }
+      .shopee-product-card > div:last-child {
+        padding: 10px !important;
+      }
+      .shopee-product-card h3 {
+        font-size: 12px !important;
+        min-height: 34px !important;
+        margin-bottom: 6px !important;
+      }
+      .shopee-product-card .sk-badge {
+        font-size: 9px !important;
+        padding: 2px 6px !important;
+      }
+      .shopee-product-card i.fa-solid.fa-cart-shopping {
+        font-size: 11px !important;
+      }
+      .shopee-product-card button {
+        width: 30px !important;
+        height: 30px !important;
+        border-radius: 8px !important;
+      }
+      .shopee-product-card div[style*="color: #fbbf24"] {
+        display: none !important; /* Hide stars */
+      }
+      .shopee-product-card div[style*="width: 1px"] {
+        display: none !important; /* Hide divider */
+      }
+      .shopee-product-card div[style*="Đã bán"] {
+        font-size: 9.5px !important;
+      }
+      .shopee-product-card div[style*="font-size: 17px"] {
+        font-size: 14.5px !important;
+      }
+      #shopee .sk-hero .sk-actions {
+        flex-direction: column !important;
+        align-items: stretch !important;
+      }
+      #shopee .sk-hero .sk-actions .sk-btn {
+        width: 100% !important;
+        justify-content: center !important;
+      }
+    }
   </style>
 </head>
 <body>
@@ -548,41 +982,41 @@
           <div class="sk-hero">
             <div class="sk-hero-band">
               <div>
-                <span class="sk-badge sk-badge-accent"><i class="fa-solid fa-fire"></i> Ưu đãi đang mở</span>
-                <h1 style="margin-top:12px">Tài khoản bản quyền, giao nhanh, quản lý tập trung.</h1>
-                <p>DG Store gom mua hàng, nạp tiền, đơn hàng và hồ sơ vào cùng một giao diện thống nhất. Người dùng có thể nạp qua VietQR và nhận sản phẩm ngay sau khi thanh toán.</p>
-                <div class="sk-actions" style="margin-top:16px; justify-content:flex-start; flex-wrap:wrap">
-                  <button class="sk-btn sk-btn-accent" type="button" onclick="showProductShowcase()"><i class="fa-solid fa-box-open"></i> Xem sản phẩm</button>
+                <span class="sk-badge sk-badge-accent" style="background: rgba(99, 102, 241, 0.15); border: 1px solid rgba(99, 102, 241, 0.30); color: #a78bfa; font-weight: 800; box-shadow: 0 0 12px rgba(99, 102, 241, 0.15);"><i class="fa-solid fa-fire"></i> Ưu đãi đang mở</span>
+                <h1 style="margin-top:12px; font-family: 'Inter', sans-serif; font-size: 32px; line-height: 1.35; font-weight: 900; letter-spacing: -0.02em; color: var(--text-bright);">Tài khoản <span style="background: linear-gradient(135deg, #a78bfa, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 0 20px rgba(99, 102, 241, 0.25);">bản quyền</span>, giao nhanh, quản lý tập trung.</h1>
+                <p style="font-size: 13.5px; color: var(--text-sub); line-height: 1.6; margin-top: 10px;">DG Store gom mua hàng, nạp tiền, đơn hàng và hồ sơ vào cùng một giao diện thống nhất. Người dùng có thể nạp qua <b style="color: var(--text-bright);">VietQR</b> và nhận sản phẩm ngay sau khi thanh toán.</p>
+                <div class="sk-actions" style="margin-top:20px; justify-content:flex-start; flex-wrap:wrap">
+                  <button class="sk-btn" type="button" onclick="showProductShowcase()" style="background: linear-gradient(135deg, #6366f1, #a855f7); border: 1px solid rgba(255,255,255,0.1); color: #ffffff; box-shadow: 0 4px 16px rgba(99, 102, 241, 0.35); font-weight: 800; padding: 0 24px; height: 42px; border-radius: 8px; transition: all 0.3s; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(99, 102, 241, 0.5)';" onmouseout="this.style.transform='none'; this.style.boxShadow='0 4px 16px rgba(99, 102, 241, 0.35)';"><i class="fa-solid fa-box-open"></i> Xem sản phẩm</button>
                 </div>
               </div>
               <div class="sk-hero-banners-column">
                 <!-- Banner lớn: Kho tài nguyên -->
                 <div class="banner-big">
                   <div class="banner-glow"></div>
-                  <span class="banner-tag">Premium Hub</span>
+                  <span class="banner-tag" style="background: rgba(99, 102, 241, 0.15); border: 1px solid rgba(99, 102, 241, 0.3); color: #a78bfa; font-weight: 800; font-size: 10px; text-transform: uppercase; padding: 3px 8px; border-radius: 6px; display: inline-block; margin-bottom: 8px; letter-spacing: 0.05em; margin-top: 4px;">Premium Hub</span>
                   <h3 style="font-size: 16px; font-weight: 900; color: var(--text-bright); margin-bottom: 6px; letter-spacing: 0.05em;">KHO TÀI NGUYÊN</h3>
                   <p style="font-size: 11.5px; color: var(--muted); margin-bottom: 12px; line-height: 1.5;">Hệ sinh thái hơn 120+ loại tài khoản bản quyền, ChatGPT Plus, Canva Pro, Netflix 4K và dịch vụ mạng xã hội.</p>
-                  <button class="sk-btn sk-btn-primary" type="button" onclick="showProductCategory('all')" style="align-self: flex-start; height: 32px; font-size: 12px; padding: 0 12px;"><i class="fa-solid fa-compass"></i> Khám phá ngay</button>
+                  <button class="sk-btn" type="button" onclick="showProductCategory('all')" style="align-self: flex-start; height: 34px; font-size: 12px; font-weight: 800; padding: 0 16px; border-radius: 6px; background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3); color: #a78bfa; transition: all 0.3s; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;" onmouseover="this.style.background='rgba(99, 102, 241, 0.2)'; this.style.transform='translateY(-1px)';" onmouseout="this.style.background='rgba(99, 102, 241, 0.1)'; this.style.transform='none';"><i class="fa-solid fa-compass"></i> Khám phá ngay</button>
                 </div>
 
                 <!-- Banner nhỏ: Nạp tiền nhanh -->
                 <div class="banner-small">
                   <div class="card-header-ic" style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
-                    <i class="fa-solid fa-wallet" style="color: var(--accent);"></i>
+                    <i class="fa-solid fa-wallet" style="color: #10b981;"></i>
                     <h4 style="font-size: 13.0px; font-weight: 800; color: var(--text-bright); margin: 0; letter-spacing: 0.04em;">NẠP TIỀN TỰ ĐỘNG</h4>
                   </div>
-                  <p style="font-size: 11.5px; color: var(--muted); line-height: 1.4; margin: 0 0 10px 0;">Cổng thanh toán VietQR tự động cộng tiền vào ví chỉ sau 30 giây hoạt động 24/7.</p>
-                  <a href="nap-tien.html" class="sk-btn sk-btn-accent" style="width: 100%; justify-content: center; height: 32px; font-size: 11.5px; padding: 0;"><i class="fa-solid fa-credit-card"></i> Nạp tiền ngay</a>
+                  <p style="font-size: 11.5px; color: var(--muted); line-height: 1.4; margin: 0 0 12px 0;">Cổng thanh toán VietQR tự động cộng tiền vào ví chỉ sau 30 giây hoạt động 24/7.</p>
+                  <a href="nap-tien.html" class="sk-btn" style="width: 100%; justify-content: center; height: 34px; font-size: 12px; font-weight: 800; border-radius: 6px; background: linear-gradient(135deg, #10b981, #059669); border: 1px solid rgba(255, 255, 255, 0.15); color: #ffffff; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2); transition: all 0.3s; display: inline-flex; align-items: center; gap: 6px; text-decoration: none;" onmouseover="this.style.transform='translateY(-1.5px)'; this.style.boxShadow='0 6px 16px rgba(16, 185, 129, 0.35)';" onmouseout="this.style.transform='none'; this.style.boxShadow='0 4px 12px rgba(16, 185, 129, 0.2)';"><i class="fa-solid fa-credit-card"></i> Nạp tiền ngay</a>
                 </div>
 
                 <!-- Banner nhỏ: Săn sale giờ vàng -->
                 <div class="banner-small">
                   <div class="card-header-ic" style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
-                    <i class="fa-solid fa-fire" style="color: var(--neon);"></i>
+                    <i class="fa-solid fa-bolt" style="color: #f97316;"></i>
                     <h4 style="font-size: 13.0px; font-weight: 800; color: var(--text-bright); margin: 0; letter-spacing: 0.04em;">SĂN SALE GIỜ VÀNG</h4>
                   </div>
-                  <p style="font-size: 11.5px; color: var(--muted); line-height: 1.4; margin: 0 0 10px 0;">Săn Deal hot giảm giá lên đến 50% cho các dịch vụ AI và làm việc.</p>
-                  <button class="sk-btn sk-btn-soft" style="width: 100%; justify-content: center; height: 32px; font-size: 11.5px; padding: 0;" onclick="showProductCategory('ai')"><i class="fa-solid fa-bolt"></i> Săn Deal AI</button>
+                  <p style="font-size: 11.5px; color: var(--muted); line-height: 1.4; margin: 0 0 12px 0;">Săn Deal hot giảm giá lên đến 50% cho các dịch vụ AI và làm việc.</p>
+                  <button class="sk-btn" style="width: 100%; justify-content: center; height: 34px; font-size: 12px; font-weight: 800; border-radius: 6px; background: linear-gradient(135deg, #f97316, #ea580c); border: 1px solid rgba(255, 255, 255, 0.15); color: #ffffff; box-shadow: 0 4px 12px rgba(249, 115, 22, 0.2); transition: all 0.3s; display: inline-flex; align-items: center; gap: 6px; cursor: pointer;" onclick="showProductCategory('ai')" onmouseover="this.style.transform='translateY(-1.5px)'; this.style.boxShadow='0 6px 16px rgba(249, 115, 22, 0.35)';" onmouseout="this.style.transform='none'; this.style.boxShadow='0 4px 12px rgba(249, 115, 22, 0.2)';"><i class="fa-solid fa-bolt"></i> Săn Deal AI</button>
                 </div>
               </div>
             </div>
@@ -907,42 +1341,74 @@
         <!-- ══════ SHOPEE PAGE ══════ -->
         <section id="shopee" class="page sk-hidden">
           <!-- Shopee Custom Hero -->
-          <div class="sk-hero" style="background: linear-gradient(135deg, #ee4d2d, #ff5722); border-radius: var(--radius-xl); overflow: hidden; margin-bottom: 16px;">
+          <div class="sk-hero shopee-hero">
             <div class="sk-hero-band" style="background: transparent;">
               <div>
-                <span class="sk-badge" style="background: rgba(255,255,255,0.15); color: #fff; border: 1px solid rgba(255,255,255,0.25); font-weight: 800;"><i class="fa-solid fa-cart-shopping"></i> Shopee Center</span>
-                <h1 style="margin-top:12px; color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.2);">MUA BÁN TÀI KHOẢN SHOPEE TỰ ĐỘNG</h1>
+                <span class="sk-badge-shopee"><i class="fa-solid fa-cart-shopping"></i> Shopee Center</span>
+                <h1 style="margin-top:12px; color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.2); font-family: 'Inter', sans-serif;">MUA BÁN TÀI KHOẢN SHOPEE TỰ ĐỘNG</h1>
                 <p style="color: rgba(255,255,255,0.9); font-weight: 500;">Kho tài khoản Shopee đa dạng - Giao hàng tự động 24/7</p>
                 <div class="sk-actions" style="margin-top:16px; justify-content:flex-start; flex-wrap:wrap; gap: 12px;">
-                  <button class="sk-btn" type="button" style="background: #ffffff; color: #ee4d2d; border-color: #ffffff; font-weight: 800; min-height: 40px; padding: 0 20px;" onclick="scrollToShopeeSection('shopee-cats')"><i class="fa-solid fa-store"></i> MUA NGAY</button>
-                  <a class="sk-btn" style="background: rgba(255,255,255,0.15); color: #ffffff; border-color: rgba(255,255,255,0.25); font-weight: 800; min-height: 40px; padding: 0 20px; display: inline-flex; align-items: center; justify-content: center; gap: 8px;" href="tracking.html"><i class="fa-solid fa-box"></i> THEO DÕI ĐƠN HÀNG</a>
+                  <button class="sk-btn sk-btn-shopee-primary" type="button" onclick="scrollToShopeeSection('shopee-cats')"><i class="fa-solid fa-store"></i> MUA NGAY</button>
+                  <a class="sk-btn sk-btn-shopee-outline" href="tracking.html"><i class="fa-solid fa-box"></i> THEO DÕI ĐƠN HÀNG</a>
                 </div>
               </div>
-              <div class="sk-hero-card" style="background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); border-radius: var(--radius-lg); padding: 16px;">
-                <span class="sk-kicker" style="color:rgba(255,255,255,.8); font-weight: 800;">Đại lý ủy quyền</span>
+              <div class="sk-hero-card">
+                <span class="sk-kicker" style="color:rgba(255, 255, 255, 0.6); font-weight: 800;">Đại lý ủy quyền</span>
                 <h2 style="margin:6px 0 3px; font-size:24px; color: #ffffff; font-weight: 800;">Shopee Partner</h2>
-                <p style="color: rgba(255,255,255,0.95); font-size: 13px; line-height: 1.5; margin: 0;">Cung cấp acc clone, acc cổ, ads, live, hỗ trợ tích hợp API.</p>
+                <p style="color: rgba(255,255,255,0.9); font-size: 13px; line-height: 1.5; margin: 0;">Cung cấp acc clone, acc cổ, ads, live, hỗ trợ tích hợp API.</p>
               </div>
             </div>
           </div>
 
-          <!-- Danh mục Shopee -->
-          <section class="sk-card" id="shopee-cats" style="margin-top: 16px;">
-            <div class="shopee-list-toolbar">
-              <div>
-                <span class="sk-kicker" style="color: #ee4d2d; font-weight: 800;">Shopee Center</span>
-                <h2 style="color:var(--text-bright)">DANH SÁCH SẢN PHẨM SHOPEE</h2>
+          <!-- Danh mục & Bộ lọc Shopee -->
+          <div class="shopee-layout">
+            <!-- Sidebar bộ lọc (Trái) -->
+            <aside class="shopee-sidebar">
+              <!-- Cam kết của shop -->
+              <div class="shopee-side-box">
+                <h3 class="shopee-box-title"><i class="fa-solid fa-shield-halved"></i> Cam kết đại lý</h3>
+                <ul class="shopee-box-list">
+                  <li><i class="fa-solid fa-circle-check"></i> Đổi trả 1-1 nếu acc lỗi</li>
+                  <li><i class="fa-solid fa-bolt"></i> Giao hàng tự động 24/7</li>
+                  <li><i class="fa-solid fa-lock"></i> Bảo mật lịch sử mua</li>
+                </ul>
               </div>
-              <p class="shopee-list-note">Bấm MUA NGAY để đưa sản phẩm vào giỏ hàng. Bạn sẽ được chuyển sang giỏ hàng để kiểm tra số lượng và thanh toán bằng số dư.</p>
-            </div>
-            <div class="shopee-products-grid" id="shopeeProductsGrid">
-              <!-- Tải động từ database -->
-              <div style="grid-column: 1 / -1; text-align: center; padding: 48px; color: var(--muted);">
-                <i class="fa-solid fa-spinner fa-spin" style="font-size: 32px; display: block; margin-bottom: 12px; color: var(--shopee);"></i>
-                Đang tải danh sách sản phẩm Shopee...
+
+              <!-- Phân loại Acc -->
+              <div class="shopee-side-box">
+                <h3 class="shopee-box-title"><i class="fa-solid fa-filter"></i> Phân loại Acc</h3>
+                <div class="shopee-filter-menu">
+                  <button class="shopee-filter-btn active" onclick="filterShopeeProducts('all', this)"><i class="fa-solid fa-list"></i> Tất cả sản phẩm</button>
+                  <button class="shopee-filter-btn" onclick="filterShopeeProducts('clone', this)"><i class="fa-solid fa-users"></i> Tài khoản Clone</button>
+                  <button class="shopee-filter-btn" onclick="filterShopeeProducts('co', this)"><i class="fa-solid fa-calendar-days"></i> Tài khoản Cổ (Ngâm lâu)</button>
+                  <button class="shopee-filter-btn" onclick="filterShopeeProducts('ads', this)"><i class="fa-solid fa-rectangle-ad"></i> Acc Ads / Live / Buff</button>
+                </div>
               </div>
-            </div>
-          </section>
+
+
+            </aside>
+
+            <!-- Khung Sản phẩm (Phải) -->
+            <section class="shopee-main" id="shopee-cats">
+              <div class="shopee-list-toolbar">
+                <div>
+                  <span class="sk-kicker" style="color: #ee4d2d; font-weight: 800;">Shopee Center</span>
+                  <h2 style="color:var(--text-bright)">SẢN PHẨM SHOPEE</h2>
+                </div>
+                <div class="shopee-search-bar">
+                  <i class="fa-solid fa-magnifying-glass"></i>
+                  <input type="text" placeholder="Tìm kiếm tài khoản..." oninput="searchShopeeProducts(this.value)" class="shopee-search-input">
+                </div>
+              </div>
+              <div class="shopee-products-grid" id="shopeeProductsGrid">
+                <!-- Tải động từ database -->
+                <div style="grid-column: 1 / -1; text-align: center; padding: 48px; color: var(--muted);">
+                  <i class="fa-solid fa-spinner fa-spin" style="font-size: 32px; display: block; margin-bottom: 12px; color: var(--shopee);"></i>
+                  Đang tải danh sách sản phẩm Shopee...
+                </div>
+              </div>
+            </section>
+          </div>
         </section>
       </main>
     </div>
@@ -1274,14 +1740,57 @@
       return `<span style="font-size: 11px; font-weight: 800; color: ${color}; background: ${bg}; padding: 4px 8px; border-radius: 4px; display: inline-flex; align-items: center; gap: 4px;">🛍 ${label}</span>`;
     }
 
+    let currentShopeeFilter = 'all';
+    let currentShopeeSearch = '';
+
+    window.filterShopeeProducts = function(type, btnElement) {
+      currentShopeeFilter = type;
+      const buttons = document.querySelectorAll('.shopee-filter-btn');
+      buttons.forEach(btn => btn.classList.remove('active'));
+      if (btnElement) {
+        btnElement.classList.add('active');
+      } else {
+        const targetBtn = document.querySelector(`.shopee-filter-btn[onclick*="'${type}'"]`);
+        if (targetBtn) targetBtn.classList.add('active');
+      }
+      renderShopeeProducts();
+    };
+
+    window.searchShopeeProducts = function(query) {
+      currentShopeeSearch = query.trim().toLowerCase();
+      renderShopeeProducts();
+    };
+
     function renderShopeeProducts() {
       const grid = document.getElementById('shopeeProductsGrid');
       if (!grid) return;
 
-      const shopeeProds = products.filter(p => p.cat === 'shopee');
+      let shopeeProds = products.filter(p => p.cat === 'shopee');
+
+      // Apply category filter
+      if (currentShopeeFilter !== 'all') {
+        shopeeProds = shopeeProds.filter(p => {
+          const nameLower = p.name.toLowerCase();
+          if (currentShopeeFilter === 'clone') {
+            return nameLower.includes('clone') || nameLower.includes('acc mới') || nameLower.includes('trắng');
+          }
+          if (currentShopeeFilter === 'co') {
+            return nameLower.includes('cổ') || nameLower.includes('ngâm') || nameLower.includes('lâu năm') || nameLower.includes('old') || nameLower.includes('202');
+          }
+          if (currentShopeeFilter === 'ads') {
+            return nameLower.includes('ads') || nameLower.includes('quảng cáo') || nameLower.includes('camp') || nameLower.includes('bm') || nameLower.includes('live');
+          }
+          return true;
+        });
+      }
+
+      // Apply search query filter
+      if (currentShopeeSearch) {
+        shopeeProds = shopeeProds.filter(p => p.name.toLowerCase().includes(currentShopeeSearch));
+      }
       
       if (shopeeProds.length === 0) {
-        grid.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 48px; color: var(--muted);"><i class="fa-solid fa-store" style="font-size: 32px; display: block; margin-bottom: 12px; color: var(--shopee);"></i>Chưa có sản phẩm Shopee nào được trưng bày.</div>';
+        grid.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 48px; color: var(--muted);"><i class="fa-solid fa-store" style="font-size: 32px; display: block; margin-bottom: 12px; color: var(--shopee);"></i>Không tìm thấy sản phẩm Shopee phù hợp.</div>';
         return;
       }
 
@@ -1301,11 +1810,10 @@
           mediaHtml = `<img src="${defaultShopeeImg}" alt="${escapeHtml(product.name)}" loading="lazy" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);" onerror="const i=Object.assign(document.createElement('i'), {className:'fa-solid fa-store', style:'font-size:32px;color:var(--muted)'}); this.replaceWith(i);">`;
         }
 
-        // Extracting just the number from formatted string
         const priceStr = formatProductPrice(product.price).replace('đ', '').trim();
 
         return `
-          <div class="shopee-product-card" style="background: rgba(17, 24, 39, 0.7); border: 1px solid rgba(238, 77, 45, 0.25); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; transition: all 0.3s ease; position: relative;" onmouseover="this.style.borderColor='#ee4d2d'; this.style.boxShadow='0 8px 24px rgba(238, 77, 45, 0.2)';" onmouseout="this.style.borderColor='rgba(238, 77, 45, 0.25)'; this.style.boxShadow='none';">
+          <div class="shopee-product-card" onclick="buyShopeeProduct('${escapeHtml(product.slug)}')">
             
             <div style="position: relative; padding-top: 100%; overflow: hidden;" onmouseover="const img = this.querySelector('img'); if(img) img.style.transform='scale(1.1)';" onmouseout="const img = this.querySelector('img'); if(img) img.style.transform='scale(1)';">
               <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.3);">
@@ -1319,7 +1827,7 @@
               </div>
             </div>
             
-            <div style="padding: 14px; display: flex; flex-direction: column; flex-grow: 1;">
+            <div class="shopee-card-inner-body" style="padding: 14px; display: flex; flex-direction: column; flex-grow: 1;">
               <h3 style="font-size: 14px; font-weight: 700; margin: 0 0 8px 0; line-height: 1.45; color: var(--text-bright); min-height: 40px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; transition: color 0.2s;" title="${escapeHtml(product.name)}" onmouseover="this.style.color='#ff683b'" onmouseout="this.style.color='var(--text-bright)'">
                 ${escapeHtml(product.name)}
               </h3>

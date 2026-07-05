@@ -581,23 +581,6 @@ function hideCartPreloader() {
 }
 
 function initCartPage() {
-  const token = localStorage.getItem('token');
-  if (!token) {
-    const shell = document.querySelector('.sk-shell');
-    if (shell) shell.style.display = 'none';
-
-    if (window.showToast) {
-      window.showToast('Vui lòng đăng nhập để xem giỏ hàng!', false);
-    } else {
-      alert('Vui lòng đăng nhập để xem giỏ hàng!');
-    }
-
-    setTimeout(() => {
-      window.location.href = 'login.html';
-    }, 1000);
-    return;
-  }
-
   cart = loadCart();
   renderCart();
   syncCartCheckoutButton();
