@@ -488,7 +488,7 @@
       -webkit-text-fill-color: transparent !important;
       z-index: 2;
       transform: translateZ(8px) !important;
-      text-shadow: 0 1px 0 #cbd5e1, 0 2px 3px rgba(0,0,0,0.5), 0 0 8px rgba(99, 102, 241, 0.4) !important;
+      text-shadow: 0 1px 0 #cbd5e1, 0 2px 3px rgba(0, 0, 0, 0.5), 0 0 8px rgba(99, 102, 241, 0.4) !important;
       line-height: 1 !important;
     }
 
@@ -508,6 +508,7 @@
       0% {
         transform: rotateX(65deg) rotateY(15deg) rotateZ(0deg);
       }
+
       100% {
         transform: rotateX(65deg) rotateY(15deg) rotateZ(360deg);
       }
@@ -521,7 +522,7 @@
 
     .nav-brand:hover .dg-logo-text {
       transform: translateZ(12px) !important;
-      text-shadow: 0 1px 0 var(--accent), 0 2px 4px rgba(0,0,0,0.6), 0 0 12px rgba(6, 182, 212, 0.6) !important;
+      text-shadow: 0 1px 0 var(--accent), 0 2px 4px rgba(0, 0, 0, 0.6), 0 0 12px rgba(6, 182, 212, 0.6) !important;
     }
 
     .nav-brand:hover .dg-logo-ring {
@@ -2027,14 +2028,14 @@
       height: 480px;
       perspective: 1000px;
     }
-    
+
     .cyber-hand-container {
       position: relative;
       width: 320px;
       height: 400px;
       transform-style: preserve-3d;
     }
-    
+
     .hand-glow-bg {
       position: absolute;
       top: 50%;
@@ -2047,14 +2048,14 @@
       pointer-events: none;
       z-index: 0;
     }
-    
+
     .floating-products-container {
       position: absolute;
       inset: 0;
       z-index: 3;
       transform-style: preserve-3d;
     }
-    
+
     .floating-prod-card {
       position: absolute;
       width: 90px;
@@ -2073,42 +2074,70 @@
       border-radius: 8px;
       opacity: 0;
       /* Custom properties default */
-      --tx: 0px; --ty: 0px; --rx: 0deg; --ry: 0deg;
-      --dx: 0px; --dy: 0px; --dz: 0px;
-      
+      --tx: 0px;
+      --ty: 0px;
+      --rx: 0deg;
+      --ry: 0deg;
+      --dx: 0px;
+      --dy: 0px;
+      --dz: 0px;
+
       animation: cardErupt 2.8s cubic-bezier(0.19, 1, 0.22, 1) forwards, cardFloat 6s ease-in-out infinite 2.8s;
     }
-    
+
     /* Specific coordinates via custom CSS properties */
     .floating-prod-card.chatgpt {
       top: 15px;
       left: 10px;
       border-color: rgba(16, 185, 129, 0.4);
-      --tx: -100px; --ty: -180px; --rx: -15deg; --ry: 12deg;
-      --dx: -8px; --dy: -15px; --dz: 15px;
+      --tx: -100px;
+      --ty: -180px;
+      --rx: -15deg;
+      --ry: 12deg;
+      --dx: -8px;
+      --dy: -15px;
+      --dz: 15px;
     }
+
     .floating-prod-card.netflix {
       top: 35px;
       right: 15px;
       border-color: rgba(239, 68, 68, 0.4);
-      --tx: 100px; --ty: -160px; --rx: 15deg; --ry: 10deg;
-      --dx: 8px; --dy: -12px; --dz: 10px;
+      --tx: 100px;
+      --ty: -160px;
+      --rx: 15deg;
+      --ry: 10deg;
+      --dx: 8px;
+      --dy: -12px;
+      --dz: 10px;
     }
+
     .floating-prod-card.canva {
       bottom: 120px;
       left: 15px;
       border-color: rgba(6, 182, 212, 0.4);
-      --tx: -120px; --ty: -50px; --rx: -12deg; --ry: 8deg;
-      --dx: -5px; --dy: -10px; --dz: 12px;
+      --tx: -120px;
+      --ty: -50px;
+      --rx: -12deg;
+      --ry: 8deg;
+      --dx: -5px;
+      --dy: -10px;
+      --dz: 12px;
     }
+
     .floating-prod-card.youtube {
       top: 135px;
       right: 10px;
       border-color: rgba(238, 77, 45, 0.4);
-      --tx: 110px; --ty: -40px; --rx: 18deg; --ry: -6deg;
-      --dx: 6px; --dy: -8px; --dz: 8px;
+      --tx: 110px;
+      --ty: -40px;
+      --rx: 18deg;
+      --ry: -6deg;
+      --dx: 6px;
+      --dy: -8px;
+      --dz: 8px;
     }
-    
+
     .floating-prod-card img {
       width: 44px;
       height: 44px;
@@ -2117,7 +2146,7 @@
       margin-bottom: 6px;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     }
-    
+
     .floating-prod-card .prod-badge {
       font-size: 8px;
       font-weight: 800;
@@ -2129,7 +2158,7 @@
       color: var(--brand-light);
       border: 0.5px solid rgba(99, 102, 241, 0.3);
     }
-    
+
     .floating-prod-card:hover {
       border-color: var(--accent) !important;
       box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), 0 0 20px var(--accent-glow) !important;
@@ -2140,16 +2169,42 @@
 
     /* Joint Eruption Easing (from palm Z: -50px to coordinates) */
     @keyframes cardErupt {
-      0% { transform: translate3d(0, 50px, -50px) scale(0); opacity: 0; filter: brightness(3); }
-      55% { transform: translate3d(0, 50px, -50px) scale(0); opacity: 0; filter: brightness(3); }
-      80% { transform: translate3d(calc(var(--tx) * 1.1), calc(var(--ty) * 1.1), 80px) scale(1.1); opacity: 1; filter: brightness(1.5); }
-      100% { transform: translate3d(var(--tx), var(--ty), 40px) scale(1); opacity: 1; filter: brightness(1); }
+      0% {
+        transform: translate3d(0, 50px, -50px) scale(0);
+        opacity: 0;
+        filter: brightness(3);
+      }
+
+      55% {
+        transform: translate3d(0, 50px, -50px) scale(0);
+        opacity: 0;
+        filter: brightness(3);
+      }
+
+      80% {
+        transform: translate3d(calc(var(--tx) * 1.1), calc(var(--ty) * 1.1), 80px) scale(1.1);
+        opacity: 1;
+        filter: brightness(1.5);
+      }
+
+      100% {
+        transform: translate3d(var(--tx), var(--ty), 40px) scale(1);
+        opacity: 1;
+        filter: brightness(1);
+      }
     }
-    
+
     /* Bobbing idle translation utilizing relative custom displacements */
     @keyframes cardFloat {
-      0%, 100% { transform: translate3d(var(--tx), var(--ty), 40px) rotateY(var(--rx)) rotateX(var(--ry)); }
-      50% { transform: translate3d(calc(var(--tx) + var(--dx)), calc(var(--ty) + var(--dy)), calc(40px + var(--dz))) rotateY(calc(var(--rx) + 5deg)) rotateX(calc(var(--ry) - 5deg)); }
+
+      0%,
+      100% {
+        transform: translate3d(var(--tx), var(--ty), 40px) rotateY(var(--rx)) rotateX(var(--ry));
+      }
+
+      50% {
+        transform: translate3d(calc(var(--tx) + var(--dx)), calc(var(--ty) + var(--dy)), calc(40px + var(--dz))) rotateY(calc(var(--rx) + 5deg)) rotateX(calc(var(--ry) - 5deg));
+      }
     }
   </style>
 </head>
@@ -2651,7 +2706,7 @@
 
         const k1 = new THREE.Mesh(new THREE.SphereGeometry(0.09, 12, 12), jointMetalMat);
         finger.add(k1);
-        
+
         const k1Glow = new THREE.Mesh(new THREE.TorusGeometry(0.11, 0.015, 6, 12), glowMat);
         k1Glow.rotation.x = Math.PI / 2;
         k1.add(k1Glow);
@@ -2664,7 +2719,7 @@
         const k2 = new THREE.Mesh(new THREE.SphereGeometry(0.075, 12, 12), jointMetalMat);
         k2.position.y = 0.45 * lengthFactor;
         p1.add(k2);
-        
+
         const k2Glow = new THREE.Mesh(new THREE.TorusGeometry(0.09, 0.015, 6, 12), glowMat);
         k2Glow.rotation.x = Math.PI / 2;
         k2.add(k2Glow);
@@ -2680,7 +2735,7 @@
           const k3 = new THREE.Mesh(new THREE.SphereGeometry(0.06, 12, 12), jointMetalMat);
           k3.position.y = 0.35 * lengthFactor;
           p2.add(k3);
-          
+
           const k3Glow = new THREE.Mesh(new THREE.TorusGeometry(0.072, 0.012, 6, 12), glowMat);
           k3Glow.rotation.x = Math.PI / 2;
           k3.add(k3Glow);
@@ -2928,7 +2983,7 @@
 
     window.addEventListener('DOMContentLoaded', () => {
       initRobot3D();
-      
+
       // Hide preloader like index.html (common.js behavior)
       setTimeout(() => {
         const preloader = document.getElementById('preloader');
