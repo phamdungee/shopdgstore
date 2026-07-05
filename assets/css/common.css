@@ -2074,16 +2074,28 @@ body.light-mode .sk-product-card-vertical > a {
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 16px;
+  padding: 12px 14px;
   background: var(--surface-soft);
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
   margin-bottom: 16px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.sk-user-mini > div {
+  min-width: 0;
+  overflow: hidden;
+  flex: 1;
 }
 
 .sk-user-mini b {
+  display: block;
   font-weight: 800;
   color: var(--text-bright);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 /* ── SIDEBAR MENU (Profile/Deposit) ───────────── */
