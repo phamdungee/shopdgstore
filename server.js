@@ -4,6 +4,9 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
+const http = require('http');
+const https = require('https');
 const { PORT, CORS_ALLOWED_ORIGINS } = require('./config/env');
 const registerRoutes = require('./routes');
 const { startCassoAutoPolling } = require('./routes/deposits');
@@ -98,11 +101,53 @@ if (!isVercel) {
     console.error('Cannot start tracking background jobs:', err.message);
   }
 
-  app.listen(PORT, () => {
-    console.log(`Server running at: http://localhost:${PORT}`);
-    console.log(`Login page: http://localhost:${PORT}/login.html`);
-    // startCassoAutoPolling(); // Đã tắt tiến trình tự động quét giao dịch Casso
-  });
+  // ── HTTPS Support (fixes Cloudflare Error 525) ──────────────────────────────
+  // Để bật HTTPS, hãy tạo chứng chỉ Cloudflare Origin Certificate rồi thêm
+  // hai dòng sau vào file .env trên VPS:
+  //   SSL_CERT=/etc/ssl/dgstore/origin.pem
+  //   SSL_KEY=/etc/ssl/dgstore/origin.key
+  const sslCertPath = process.env.SSL_CERT;
+  const sslKeyPath  = process.env.SSL_KEY;
+  const HTTPS_PORT  = Number(process.env.HTTPS_PORT) || 443;
+
+  if (sslCertPath && sslKeyPath && fs.existsSync(sslCertPath) && fs.existsSync(sslKeyPath)) {
+    try {
+      const sslOptions = {
+        cert: fs.readFileSync(sslCertPath),
+        key:  fs.readFileSync(sslKeyPath),
+      };
+
+      // Start HTTPS server on port 443 (or HTTPS_PORT)
+      https.createServer(sslOptions, app).listen(HTTPS_PORT, () => {
+        console.log(`✅ HTTPS server running on port ${HTTPS_PORT} (Cloudflare Error 525 fix active)`);
+      });
+
+      // Redirect plain HTTP → HTTPS
+      http.createServer((req, res) => {
+        res.writeHead(301, { Location: `https://${req.headers.host}${req.url}` });
+        res.end();
+      }).listen(PORT, () => {
+        console.log(`↪  HTTP → HTTPS redirect active on port ${PORT}`);
+      });
+
+    } catch (sslErr) {
+      console.error('[SSL] Failed to load certificates, falling back to HTTP:', sslErr.message);
+      app.listen(PORT, () => {
+        console.log(`Server running at: http://localhost:${PORT}`);
+      });
+    }
+  } else {
+    // Không có SSL cert — chạy HTTP thường (phù hợp Cloudflare Flexible mode)
+    if (sslCertPath || sslKeyPath) {
+      console.warn('[SSL] SSL_CERT or SSL_KEY is set but certificate file not found. Running HTTP only.');
+      console.warn('[SSL] Check paths:', { sslCertPath, sslKeyPath });
+    }
+    app.listen(PORT, () => {
+      console.log(`Server running at: http://localhost:${PORT}`);
+      console.log(`Login page: http://localhost:${PORT}/login.html`);
+      // startCassoAutoPolling(); // Đã tắt tiến trình tự động quét giao dịch Casso
+    });
+  }
 } else {
   console.log('Running server in Vercel Serverless environment.');
 }
