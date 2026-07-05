@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>DG Store | Cửa hàng tài khoản bản quyền</title>
-  <meta name="description" content="DG Store - Cửa hàng tài khoản bản quyền số, giao tự động 24/7. Netflix, ChatGPT, Spotify và hơn 120+ sản phẩm số." />
+  <meta name="description"
+    content="DG Store - Cửa hàng tài khoản bản quyền số, giao tự động 24/7. Netflix, ChatGPT, Spotify và hơn 120+ sản phẩm số." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
   <link href="assets/css/common.css" rel="stylesheet" />
   <link href="assets/css/icons.css" rel="stylesheet" />
@@ -28,6 +32,7 @@
       font-weight: 700;
       color: var(--text-sub) !important;
     }
+
     .sk-tab-btn.active {
       color: var(--brand-light) !important;
       border-bottom: 2px solid var(--brand) !important;
@@ -49,7 +54,7 @@
       content: '';
       position: absolute;
       inset: 0;
-      background-image: 
+      background-image:
         linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
         linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
       background-size: 40px 40px;
@@ -58,7 +63,7 @@
       opacity: 0.6;
     }
 
-    .sk-hero > div {
+    .sk-hero>div {
       position: relative;
       z-index: 1;
     }
@@ -77,7 +82,7 @@
       line-height: 1.15 !important;
       letter-spacing: -0.8px !important;
       color: #ffffff;
-      text-shadow: 0 4px 15px rgba(0,0,0,0.5);
+      text-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
     }
 
     .sk-hero-band p {
@@ -96,7 +101,8 @@
     }
 
     /* Shared Premium Conic LED styles for Banners */
-    .banner-big, .banner-small {
+    .banner-big,
+    .banner-small {
       background: rgba(15, 23, 42, 0.45) !important;
       border: none !important;
       border-radius: 12px !important;
@@ -109,7 +115,8 @@
       transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
     }
 
-    .banner-big::before, .banner-small::before {
+    .banner-big::before,
+    .banner-small::before {
       content: '';
       position: absolute;
       top: 50%;
@@ -124,7 +131,8 @@
       transition: opacity 0.4s;
     }
 
-    .banner-big::after, .banner-small::after {
+    .banner-big::after,
+    .banner-small::after {
       content: '';
       position: absolute;
       inset: 1.5px;
@@ -134,12 +142,14 @@
       transition: background 0.3s;
     }
 
-    .banner-big:hover::before, .banner-small:hover::before {
+    .banner-big:hover::before,
+    .banner-small:hover::before {
       opacity: 0.8;
       animation-duration: 3s;
     }
 
-    .banner-big:hover, .banner-small:hover {
+    .banner-big:hover,
+    .banner-small:hover {
       transform: translateY(-3px) !important;
       box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6), 0 0 20px rgba(99, 102, 241, 0.3) !important;
     }
@@ -246,7 +256,7 @@
       opacity: 0.35 !important;
     }
 
-    .sk-product-card-vertical > a {
+    .sk-product-card-vertical>a {
       background: rgba(15, 23, 42, 0.6) !important;
       border-radius: calc(var(--radius-lg) - 1.5px) !important;
       padding: 16px !important;
@@ -254,7 +264,7 @@
       transition: background 0.3s;
     }
 
-    .sk-product-card-vertical:hover > a {
+    .sk-product-card-vertical:hover>a {
       background: rgba(15, 23, 42, 0.8) !important;
     }
 
@@ -319,21 +329,34 @@
     }
 
     @keyframes ledRotate {
-      from { transform: translate(-50%, -50%) rotate(0deg); }
-      to { transform: translate(-50%, -50%) rotate(360deg); }
+      from {
+        transform: translate(-50%, -50%) rotate(0deg);
+      }
+
+      to {
+        transform: translate(-50%, -50%) rotate(360deg);
+      }
     }
 
     /* Floating 3D Card Animation */
     @keyframes heroFloatCard {
-      0%, 100% { transform: translateY(0) rotateY(0deg) rotateX(0deg); }
-      50% { transform: translateY(-8px) rotateY(4deg) rotateX(2deg); }
+
+      0%,
+      100% {
+        transform: translateY(0) rotateY(0deg) rotateX(0deg);
+      }
+
+      50% {
+        transform: translateY(-8px) rotateY(4deg) rotateX(2deg);
+      }
     }
+
     .sk-hero-card {
       animation: heroFloatCard 6s ease-in-out infinite;
       transform-style: preserve-3d;
       perspective: 1000px;
       border: 1px solid rgba(99, 102, 241, 0.25) !important;
-      box-shadow: 0 15px 35px rgba(0,0,0,0.3), 0 0 25px var(--brand-glow);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3), 0 0 25px var(--brand-glow);
     }
 
     /* Typing cursor blink */
@@ -344,9 +367,17 @@
       margin-left: 2px;
       animation: typingBlink 0.8s infinite;
     }
+
     @keyframes typingBlink {
-      0%, 100% { opacity: 0; }
-      50% { opacity: 1; }
+
+      0%,
+      100% {
+        opacity: 0;
+      }
+
+      50% {
+        opacity: 1;
+      }
     }
 
     /* Custom Beautiful Cyber Checkbox */
@@ -354,6 +385,7 @@
       display: flex;
       align-items: center;
     }
+
     .cyber-checkbox-label {
       display: inline-flex;
       align-items: center;
@@ -364,9 +396,11 @@
       color: var(--muted);
       transition: color 0.25s var(--ease-smooth);
     }
+
     .cyber-checkbox-label:hover {
       color: var(--text-bright);
     }
+
     .cyber-checkbox-input {
       position: absolute;
       opacity: 0;
@@ -374,6 +408,7 @@
       height: 0;
       margin: 0;
     }
+
     .cyber-checkbox-box {
       width: 18px;
       height: 18px;
@@ -387,6 +422,7 @@
       position: relative;
       flex-shrink: 0;
     }
+
     .cyber-checkbox-box::after {
       content: '\f00c';
       font-family: 'Font Awesome 6 Free';
@@ -397,19 +433,23 @@
       transform: scale(0.3);
       transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
-    .cyber-checkbox-input:checked + .cyber-checkbox-box {
+
+    .cyber-checkbox-input:checked+.cyber-checkbox-box {
       background: var(--brand-gradient);
       border-color: transparent;
       box-shadow: 0 0 12px var(--brand-glow);
     }
-    .cyber-checkbox-input:checked + .cyber-checkbox-box::after {
+
+    .cyber-checkbox-input:checked+.cyber-checkbox-box::after {
       opacity: 1;
       transform: scale(1);
     }
-    .cyber-checkbox-input:checked ~ .cyber-checkbox-text {
+
+    .cyber-checkbox-input:checked~.cyber-checkbox-text {
       color: var(--text-bright);
       text-shadow: 0 0 8px rgba(99, 102, 241, 0.5);
     }
+
     .cyber-checkbox-label:hover .cyber-checkbox-box {
       border-color: var(--brand-light);
       box-shadow: 0 0 8px rgba(99, 102, 241, 0.35);
@@ -423,18 +463,22 @@
       gap: 12px;
       margin-top: 18px;
     }
+
     .announcement-actions .sk-btn {
       flex-shrink: 0;
     }
+
     @media (max-width: 480px) {
       .announcement-actions {
         flex-direction: column;
         align-items: stretch;
         gap: 14px;
       }
+
       .cyber-checkbox-wrapper {
         justify-content: flex-start;
       }
+
       .announcement-actions .sk-btn {
         width: 100%;
         display: inline-flex;
@@ -470,15 +514,22 @@
     }
 
     @keyframes shopeeGlowPulse {
-      0% { transform: scale(1) translate(0, 0); opacity: 0.5; }
-      100% { transform: scale(1.25) translate(-25px, 25px); opacity: 0.8; }
+      0% {
+        transform: scale(1) translate(0, 0);
+        opacity: 0.5;
+      }
+
+      100% {
+        transform: scale(1.25) translate(-25px, 25px);
+        opacity: 0.8;
+      }
     }
 
     .shopee-hero::before {
       content: '';
       position: absolute;
       inset: 0;
-      background-image: 
+      background-image:
         linear-gradient(rgba(238, 77, 45, 0.03) 1px, transparent 1px),
         linear-gradient(90deg, rgba(238, 77, 45, 0.03) 1px, transparent 1px);
       background-size: 32px 32px;
@@ -734,7 +785,7 @@
 
     .shopee-search-bar:focus-within {
       border-color: rgba(238, 77, 45, 0.6) !important;
-      box-shadow: inset 0 1px 1px rgba(0,0,0,0.2), 0 0 15px rgba(238, 77, 45, 0.15) !important;
+      box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.2), 0 0 15px rgba(238, 77, 45, 0.15) !important;
       background: rgba(15, 23, 42, 0.65) !important;
     }
 
@@ -771,17 +822,21 @@
         grid-template-columns: 1fr !important;
         gap: 24px !important;
       }
+
       .sk-hero {
         padding: 24px 20px !important;
       }
+
       .shopee-layout {
         grid-template-columns: 1fr !important;
       }
+
       .shopee-sidebar {
         display: grid !important;
         grid-template-columns: repeat(2, 1fr) !important;
         gap: 12px !important;
       }
+
       .shopee-search-bar {
         width: 100% !important;
         margin-left: 0 !important;
@@ -793,35 +848,45 @@
       .shopee-sidebar {
         grid-template-columns: 1fr !important;
       }
+
       .sk-hero-banners-column {
         grid-template-columns: 1fr !important;
         gap: 12px !important;
       }
+
       .sk-product-grid-vertical {
         grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)) !important;
         gap: 12px !important;
         margin-top: 16px !important;
       }
-      .sk-product-card-vertical > a {
+
+      .sk-product-card-vertical>a {
         padding: 12px !important;
       }
+
       .sk-product-card-vertical .card-info h3 {
         font-size: 13.5px !important;
       }
+
       .sk-product-card-vertical .card-info p {
-        display: none !important; /* Hide long descriptions on mobile cards to stay clean and unified */
+        display: none !important;
+        /* Hide long descriptions on mobile cards to stay clean and unified */
       }
+
       .sk-product-card-vertical .card-price {
         font-size: 15px !important;
       }
+
       .sk-product-card-vertical:hover {
         transform: none !important;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4) !important;
       }
+
       .sk-product-showcase-head {
         justify-content: center !important;
         width: 100% !important;
       }
+
       .sk-product-search {
         width: 100% !important;
         max-width: 100% !important;
@@ -832,45 +897,59 @@
         grid-template-columns: repeat(2, 1fr) !important;
         gap: 10px !important;
       }
+
       .shopee-product-card {
         border-radius: 10px !important;
       }
-      .shopee-product-card > div:last-child {
+
+      .shopee-product-card>div:last-child {
         padding: 10px !important;
       }
+
       .shopee-product-card h3 {
         font-size: 12px !important;
         min-height: 34px !important;
         margin-bottom: 6px !important;
       }
+
       .shopee-product-card .sk-badge {
         font-size: 9px !important;
         padding: 2px 6px !important;
       }
+
       .shopee-product-card i.fa-solid.fa-cart-shopping {
         font-size: 11px !important;
       }
+
       .shopee-product-card button {
         width: 30px !important;
         height: 30px !important;
         border-radius: 8px !important;
       }
+
       .shopee-product-card div[style*="color: #fbbf24"] {
-        display: none !important; /* Hide stars */
+        display: none !important;
+        /* Hide stars */
       }
+
       .shopee-product-card div[style*="width: 1px"] {
-        display: none !important; /* Hide divider */
+        display: none !important;
+        /* Hide divider */
       }
+
       .shopee-product-card div[style*="Đã bán"] {
         font-size: 9.5px !important;
       }
+
       .shopee-product-card div[style*="font-size: 17px"] {
         font-size: 14.5px !important;
       }
+
       #shopee .sk-hero .sk-actions {
         flex-direction: column !important;
         align-items: stretch !important;
       }
+
       #shopee .sk-hero .sk-actions .sk-btn {
         width: 100% !important;
         justify-content: center !important;
@@ -878,6 +957,7 @@
     }
   </style>
 </head>
+
 <body>
   <div id="preloader">
     <div class="preloader-container">
@@ -915,7 +995,8 @@
             <span class="sk-cart-count" id="headerCartCount">0</span>
           </a>
           <div class="sk-auth-actions" id="headerAuthActions">
-            <a class="sk-btn sk-btn-primary" href="login.html"><i class="fa-solid fa-right-to-bracket"></i> <span class="btn-text">Đăng nhập / Đăng ký</span></a>
+            <a class="sk-btn sk-btn-primary" href="login.html"><i class="fa-solid fa-right-to-bracket"></i> <span
+                class="btn-text">Đăng nhập / Đăng ký</span></a>
           </div>
         </div>
       </div>
@@ -924,16 +1005,19 @@
     <aside class="sk-sidebar-new">
       <div class="sk-sidebar-new-nav">
         <div class="sidebar-title">TỔNG QUAN</div>
-        <button class="nav-item menu-link active" type="button" data-page="home" onclick="showPage('home')" data-tooltip="Trang chủ">
+        <button class="nav-item menu-link active" type="button" data-page="home" onclick="showPage('home')"
+          data-tooltip="Trang chủ">
           <i class="fa-solid fa-house"></i>
           <span class="nav-label">Trang chủ</span>
         </button>
-        <button class="nav-item menu-link" type="button" data-page="showcase" onclick="showProductShowcase()" data-tooltip="Sản phẩm">
+        <button class="nav-item menu-link" type="button" data-page="showcase" onclick="showProductShowcase()"
+          data-tooltip="Sản phẩm">
           <i class="fa-solid fa-boxes-stacked"></i>
           <span class="nav-label">Sản phẩm</span>
         </button>
-        <button class="nav-item menu-link" type="button" data-page="shopee" onclick="showPage('shopee')" data-tooltip="Shopee">
-          <img src="/assets/img/ảnh sản phẩm/png-clipartonline-food-app-logo-shopee-food-gofood-icon-for-shopee-users3692115-thumbnail.webp" alt="Shopee">
+        <button class="nav-item menu-link" type="button" data-page="shopee" onclick="showPage('shopee')"
+          data-tooltip="Shopee">
+          <img src="/assets/img/ảnh sản phẩm/logo-shopee-inkythuatso-2-01-24-14-52-10.jpg" alt="Shopee">
           <span class="nav-label">Shopee</span>
         </button>
         <a href="tuongtacmxh.html" class="nav-item" data-tooltip="Tương tác MXH">
@@ -948,7 +1032,8 @@
 
       <div class="sk-sidebar-new-nav">
         <div class="sidebar-title">GIAO DỊCH</div>
-        <button class="nav-item menu-link" type="button" data-page="orders" onclick="showPage('orders')" data-tooltip="Đơn hàng">
+        <button class="nav-item menu-link" type="button" data-page="orders" onclick="showPage('orders')"
+          data-tooltip="Đơn hàng">
           <i class="fa-solid fa-receipt"></i>
           <span class="nav-label">Đơn hàng</span>
         </button>
@@ -964,7 +1049,8 @@
           <i class="fa-solid fa-circle-user"></i>
           <span class="nav-label">Tài khoản</span>
         </a>
-        <button class="nav-item menu-link" type="button" data-page="policy" onclick="showPage('policy')" data-tooltip="Chính sách">
+        <button class="nav-item menu-link" type="button" data-page="policy" onclick="showPage('policy')"
+          data-tooltip="Chính sách">
           <i class="fa-solid fa-shield-halved"></i>
           <span class="nav-label">Chính sách</span>
         </button>
@@ -982,41 +1068,77 @@
           <div class="sk-hero">
             <div class="sk-hero-band">
               <div>
-                <span class="sk-badge sk-badge-accent" style="background: rgba(99, 102, 241, 0.15); border: 1px solid rgba(99, 102, 241, 0.30); color: #a78bfa; font-weight: 800; box-shadow: 0 0 12px rgba(99, 102, 241, 0.15);"><i class="fa-solid fa-fire"></i> Ưu đãi đang mở</span>
-                <h1 style="margin-top:12px; font-family: 'Inter', sans-serif; font-size: 32px; line-height: 1.35; font-weight: 900; letter-spacing: -0.02em; color: var(--text-bright);">Tài khoản <span style="background: linear-gradient(135deg, #a78bfa, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 0 20px rgba(99, 102, 241, 0.25);">bản quyền</span>, giao nhanh, quản lý tập trung.</h1>
-                <p style="font-size: 13.5px; color: var(--text-sub); line-height: 1.6; margin-top: 10px;">DG Store gom mua hàng, nạp tiền, đơn hàng và hồ sơ vào cùng một giao diện thống nhất. Người dùng có thể nạp qua <b style="color: var(--text-bright);">VietQR</b> và nhận sản phẩm ngay sau khi thanh toán.</p>
+                <span class="sk-badge sk-badge-accent"
+                  style="background: rgba(99, 102, 241, 0.15); border: 1px solid rgba(99, 102, 241, 0.30); color: #a78bfa; font-weight: 800; box-shadow: 0 0 12px rgba(99, 102, 241, 0.15);"><i
+                    class="fa-solid fa-fire"></i> Ưu đãi đang mở</span>
+                <h1
+                  style="margin-top:12px; font-family: 'Inter', sans-serif; font-size: 32px; line-height: 1.35; font-weight: 900; letter-spacing: -0.02em; color: var(--text-bright);">
+                  Tài khoản <span
+                    style="background: linear-gradient(135deg, #a78bfa, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 0 20px rgba(99, 102, 241, 0.25);">bản
+                    quyền</span>, giao nhanh, quản lý tập trung.</h1>
+                <p style="font-size: 13.5px; color: var(--text-sub); line-height: 1.6; margin-top: 10px;">DG Store gom
+                  mua hàng, nạp tiền, đơn hàng và hồ sơ vào cùng một giao diện thống nhất. Người dùng có thể nạp qua <b
+                    style="color: var(--text-bright);">VietQR</b> và nhận sản phẩm ngay sau khi thanh toán.</p>
                 <div class="sk-actions" style="margin-top:20px; justify-content:flex-start; flex-wrap:wrap">
-                  <button class="sk-btn" type="button" onclick="showProductShowcase()" style="background: linear-gradient(135deg, #6366f1, #a855f7); border: 1px solid rgba(255,255,255,0.1); color: #ffffff; box-shadow: 0 4px 16px rgba(99, 102, 241, 0.35); font-weight: 800; padding: 0 24px; height: 42px; border-radius: 8px; transition: all 0.3s; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(99, 102, 241, 0.5)';" onmouseout="this.style.transform='none'; this.style.boxShadow='0 4px 16px rgba(99, 102, 241, 0.35)';"><i class="fa-solid fa-box-open"></i> Xem sản phẩm</button>
+                  <button class="sk-btn" type="button" onclick="showProductShowcase()"
+                    style="background: linear-gradient(135deg, #6366f1, #a855f7); border: 1px solid rgba(255,255,255,0.1); color: #ffffff; box-shadow: 0 4px 16px rgba(99, 102, 241, 0.35); font-weight: 800; padding: 0 24px; height: 42px; border-radius: 8px; transition: all 0.3s; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;"
+                    onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(99, 102, 241, 0.5)';"
+                    onmouseout="this.style.transform='none'; this.style.boxShadow='0 4px 16px rgba(99, 102, 241, 0.35)';"><i
+                      class="fa-solid fa-box-open"></i> Xem sản phẩm</button>
                 </div>
               </div>
               <div class="sk-hero-banners-column">
                 <!-- Banner lớn: Kho tài nguyên -->
                 <div class="banner-big">
                   <div class="banner-glow"></div>
-                  <span class="banner-tag" style="background: rgba(99, 102, 241, 0.15); border: 1px solid rgba(99, 102, 241, 0.3); color: #a78bfa; font-weight: 800; font-size: 10px; text-transform: uppercase; padding: 3px 8px; border-radius: 6px; display: inline-block; margin-bottom: 8px; letter-spacing: 0.05em; margin-top: 4px;">Premium Hub</span>
-                  <h3 style="font-size: 16px; font-weight: 900; color: var(--text-bright); margin-bottom: 6px; letter-spacing: 0.05em;">KHO TÀI NGUYÊN</h3>
-                  <p style="font-size: 11.5px; color: var(--muted); margin-bottom: 12px; line-height: 1.5;">Hệ sinh thái hơn 120+ loại tài khoản bản quyền, ChatGPT Plus, Canva Pro, Netflix 4K và dịch vụ mạng xã hội.</p>
-                  <button class="sk-btn" type="button" onclick="showProductCategory('all')" style="align-self: flex-start; height: 34px; font-size: 12px; font-weight: 800; padding: 0 16px; border-radius: 6px; background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3); color: #a78bfa; transition: all 0.3s; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;" onmouseover="this.style.background='rgba(99, 102, 241, 0.2)'; this.style.transform='translateY(-1px)';" onmouseout="this.style.background='rgba(99, 102, 241, 0.1)'; this.style.transform='none';"><i class="fa-solid fa-compass"></i> Khám phá ngay</button>
+                  <span class="banner-tag"
+                    style="background: rgba(99, 102, 241, 0.15); border: 1px solid rgba(99, 102, 241, 0.3); color: #a78bfa; font-weight: 800; font-size: 10px; text-transform: uppercase; padding: 3px 8px; border-radius: 6px; display: inline-block; margin-bottom: 8px; letter-spacing: 0.05em; margin-top: 4px;">Premium
+                    Hub</span>
+                  <h3
+                    style="font-size: 16px; font-weight: 900; color: var(--text-bright); margin-bottom: 6px; letter-spacing: 0.05em;">
+                    KHO TÀI NGUYÊN</h3>
+                  <p style="font-size: 11.5px; color: var(--muted); margin-bottom: 12px; line-height: 1.5;">Hệ sinh thái
+                    hơn 120+ loại tài khoản bản quyền, ChatGPT Plus, Canva Pro, Netflix 4K và dịch vụ mạng xã hội.</p>
+                  <button class="sk-btn" type="button" onclick="showProductCategory('all')"
+                    style="align-self: flex-start; height: 34px; font-size: 12px; font-weight: 800; padding: 0 16px; border-radius: 6px; background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3); color: #a78bfa; transition: all 0.3s; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;"
+                    onmouseover="this.style.background='rgba(99, 102, 241, 0.2)'; this.style.transform='translateY(-1px)';"
+                    onmouseout="this.style.background='rgba(99, 102, 241, 0.1)'; this.style.transform='none';"><i
+                      class="fa-solid fa-compass"></i> Khám phá ngay</button>
                 </div>
 
                 <!-- Banner nhỏ: Nạp tiền nhanh -->
                 <div class="banner-small">
                   <div class="card-header-ic" style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
                     <i class="fa-solid fa-wallet" style="color: #10b981;"></i>
-                    <h4 style="font-size: 13.0px; font-weight: 800; color: var(--text-bright); margin: 0; letter-spacing: 0.04em;">NẠP TIỀN TỰ ĐỘNG</h4>
+                    <h4
+                      style="font-size: 13.0px; font-weight: 800; color: var(--text-bright); margin: 0; letter-spacing: 0.04em;">
+                      NẠP TIỀN TỰ ĐỘNG</h4>
                   </div>
-                  <p style="font-size: 11.5px; color: var(--muted); line-height: 1.4; margin: 0 0 12px 0;">Cổng thanh toán VietQR tự động cộng tiền vào ví chỉ sau 30 giây hoạt động 24/7.</p>
-                  <a href="nap-tien.html" class="sk-btn" style="width: 100%; justify-content: center; height: 34px; font-size: 12px; font-weight: 800; border-radius: 6px; background: linear-gradient(135deg, #10b981, #059669); border: 1px solid rgba(255, 255, 255, 0.15); color: #ffffff; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2); transition: all 0.3s; display: inline-flex; align-items: center; gap: 6px; text-decoration: none;" onmouseover="this.style.transform='translateY(-1.5px)'; this.style.boxShadow='0 6px 16px rgba(16, 185, 129, 0.35)';" onmouseout="this.style.transform='none'; this.style.boxShadow='0 4px 12px rgba(16, 185, 129, 0.2)';"><i class="fa-solid fa-credit-card"></i> Nạp tiền ngay</a>
+                  <p style="font-size: 11.5px; color: var(--muted); line-height: 1.4; margin: 0 0 12px 0;">Cổng thanh
+                    toán VietQR tự động cộng tiền vào ví chỉ sau 30 giây hoạt động 24/7.</p>
+                  <a href="nap-tien.html" class="sk-btn"
+                    style="width: 100%; justify-content: center; height: 34px; font-size: 12px; font-weight: 800; border-radius: 6px; background: linear-gradient(135deg, #10b981, #059669); border: 1px solid rgba(255, 255, 255, 0.15); color: #ffffff; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2); transition: all 0.3s; display: inline-flex; align-items: center; gap: 6px; text-decoration: none;"
+                    onmouseover="this.style.transform='translateY(-1.5px)'; this.style.boxShadow='0 6px 16px rgba(16, 185, 129, 0.35)';"
+                    onmouseout="this.style.transform='none'; this.style.boxShadow='0 4px 12px rgba(16, 185, 129, 0.2)';"><i
+                      class="fa-solid fa-credit-card"></i> Nạp tiền ngay</a>
                 </div>
 
                 <!-- Banner nhỏ: Săn sale giờ vàng -->
                 <div class="banner-small">
                   <div class="card-header-ic" style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
                     <i class="fa-solid fa-bolt" style="color: #f97316;"></i>
-                    <h4 style="font-size: 13.0px; font-weight: 800; color: var(--text-bright); margin: 0; letter-spacing: 0.04em;">SĂN SALE GIỜ VÀNG</h4>
+                    <h4
+                      style="font-size: 13.0px; font-weight: 800; color: var(--text-bright); margin: 0; letter-spacing: 0.04em;">
+                      SĂN SALE GIỜ VÀNG</h4>
                   </div>
-                  <p style="font-size: 11.5px; color: var(--muted); line-height: 1.4; margin: 0 0 12px 0;">Săn Deal hot giảm giá lên đến 50% cho các dịch vụ AI và làm việc.</p>
-                  <button class="sk-btn" style="width: 100%; justify-content: center; height: 34px; font-size: 12px; font-weight: 800; border-radius: 6px; background: linear-gradient(135deg, #f97316, #ea580c); border: 1px solid rgba(255, 255, 255, 0.15); color: #ffffff; box-shadow: 0 4px 12px rgba(249, 115, 22, 0.2); transition: all 0.3s; display: inline-flex; align-items: center; gap: 6px; cursor: pointer;" onclick="showProductCategory('ai')" onmouseover="this.style.transform='translateY(-1.5px)'; this.style.boxShadow='0 6px 16px rgba(249, 115, 22, 0.35)';" onmouseout="this.style.transform='none'; this.style.boxShadow='0 4px 12px rgba(249, 115, 22, 0.2)';"><i class="fa-solid fa-bolt"></i> Săn Deal AI</button>
+                  <p style="font-size: 11.5px; color: var(--muted); line-height: 1.4; margin: 0 0 12px 0;">Săn Deal hot
+                    giảm giá lên đến 50% cho các dịch vụ AI và làm việc.</p>
+                  <button class="sk-btn"
+                    style="width: 100%; justify-content: center; height: 34px; font-size: 12px; font-weight: 800; border-radius: 6px; background: linear-gradient(135deg, #f97316, #ea580c); border: 1px solid rgba(255, 255, 255, 0.15); color: #ffffff; box-shadow: 0 4px 12px rgba(249, 115, 22, 0.2); transition: all 0.3s; display: inline-flex; align-items: center; gap: 6px; cursor: pointer;"
+                    onclick="showProductCategory('ai')"
+                    onmouseover="this.style.transform='translateY(-1.5px)'; this.style.boxShadow='0 6px 16px rgba(249, 115, 22, 0.35)';"
+                    onmouseout="this.style.transform='none'; this.style.boxShadow='0 4px 12px rgba(249, 115, 22, 0.2)';"><i
+                      class="fa-solid fa-bolt"></i> Săn Deal AI</button>
                 </div>
               </div>
             </div>
@@ -1061,15 +1183,19 @@
             <div>
               <span class="sk-badge sk-badge-accent"><i class="fa-solid fa-star"></i> Bán chạy</span>
               <h1 id="productDetailTitle" style="margin-top:12px">ChatGPT Plus 30 ngày</h1>
-              <p id="productDetailDesc">Gói AI kích hoạt nhanh, phù hợp học tập, làm việc, viết nội dung và hỗ trợ code.</p>
+              <p id="productDetailDesc">Gói AI kích hoạt nhanh, phù hợp học tập, làm việc, viết nội dung và hỗ trợ code.
+              </p>
             </div>
             <div class="sk-detail-media" id="productDetailMedia" aria-label="Ảnh sản phẩm"></div>
-            <button class="sk-btn sk-btn-accent" type="button" onclick="toggleCart()"><i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ</button>
+            <button class="sk-btn sk-btn-accent" type="button" onclick="toggleCart()"><i
+                class="fa-solid fa-cart-plus"></i> Thêm vào giỏ</button>
           </div>
 
           <div class="sk-grid sk-grid-2">
             <section class="sk-card">
-              <div class="sk-section-head"><h2>Danh sách gói</h2></div>
+              <div class="sk-section-head">
+                <h2>Danh sách gói</h2>
+              </div>
               <div class="sk-grid sk-grid-2">
                 <button class="sk-btn sk-btn-soft" type="button">1 tháng - 79.000đ</button>
                 <button class="sk-btn" type="button">3 tháng - 219.000đ</button>
@@ -1078,12 +1204,15 @@
             <aside class="sk-card">
               <span class="sk-kicker">Thanh toán</span>
               <h2 style="margin-top:8px">Tổng tiền: <span class="sk-price">79.000đ</span></h2>
-              <p style="color:var(--muted); line-height:1.7">Thanh toán bằng số dư. Nếu chưa đủ số dư, hãy nạp tiền trước khi mua.</p>
+              <p style="color:var(--muted); line-height:1.7">Thanh toán bằng số dư. Nếu chưa đủ số dư, hãy nạp tiền
+                trước khi mua.</p>
             </aside>
           </div>
 
           <section class="sk-card" style="margin-top:20px">
-            <div class="sk-section-head"><h2>Sản phẩm liên quan</h2></div>
+            <div class="sk-section-head">
+              <h2>Sản phẩm liên quan</h2>
+            </div>
             <div class="sk-grid sk-grid-3" id="relatedProducts"></div>
           </section>
         </section>
@@ -1097,23 +1226,63 @@
             </div>
           </div>
           <div class="sk-grid sk-grid-4">
-            <div class="sk-stat"><span class="sk-stat-icon"><i class="fa-solid fa-box"></i></span><div><p>Tổng</p><b>0</b></div></div>
-            <div class="sk-stat"><span class="sk-stat-icon" style="background:var(--success-soft);color:var(--success);box-shadow:0 0 20px var(--success-glow)"><i class="fa-solid fa-check"></i></span><div><p>Hoàn thành</p><b>0</b></div></div>
-            <div class="sk-stat"><span class="sk-stat-icon" style="background:var(--warning-soft);color:var(--warning)"><i class="fa-solid fa-spinner"></i></span><div><p>Đang xử lý</p><b>0</b></div></div>
-            <div class="sk-stat"><span class="sk-stat-icon" style="background:var(--accent-soft);color:var(--accent-light);box-shadow:0 0 20px var(--accent-glow)"><i class="fa-solid fa-wallet"></i></span><div><p>Chi tiêu</p><b>0đ</b></div></div>
+            <div class="sk-stat"><span class="sk-stat-icon"><i class="fa-solid fa-box"></i></span>
+              <div>
+                <p>Tổng</p><b>0</b>
+              </div>
+            </div>
+            <div class="sk-stat"><span class="sk-stat-icon"
+                style="background:var(--success-soft);color:var(--success);box-shadow:0 0 20px var(--success-glow)"><i
+                  class="fa-solid fa-check"></i></span>
+              <div>
+                <p>Hoàn thành</p><b>0</b>
+              </div>
+            </div>
+            <div class="sk-stat"><span class="sk-stat-icon"
+                style="background:var(--warning-soft);color:var(--warning)"><i class="fa-solid fa-spinner"></i></span>
+              <div>
+                <p>Đang xử lý</p><b>0</b>
+              </div>
+            </div>
+            <div class="sk-stat"><span class="sk-stat-icon"
+                style="background:var(--accent-soft);color:var(--accent-light);box-shadow:0 0 20px var(--accent-glow)"><i
+                  class="fa-solid fa-wallet"></i></span>
+              <div>
+                <p>Chi tiêu</p><b>0đ</b>
+              </div>
+            </div>
           </div>
-          <div class="sk-tabs-orders" style="display:flex; gap:10px; margin-top:20px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom:10px;">
-            <button class="sk-tab-btn active" onclick="filterHomeOrders('all', this)" style="background:transparent; border:0; color:var(--text-bright); font-weight:700; font-size:13px; cursor:pointer; padding:6px 12px; position:relative;">TẤT CẢ</button>
-            <button class="sk-tab-btn" onclick="filterHomeOrders('completed', this)" style="background:transparent; border:0; color:var(--muted); font-weight:700; font-size:13px; cursor:pointer; padding:6px 12px; position:relative;">THÀNH CÔNG</button>
-            <button class="sk-tab-btn" onclick="filterHomeOrders('processing', this)" style="background:transparent; border:0; color:var(--muted); font-weight:700; font-size:13px; cursor:pointer; padding:6px 12px; position:relative;">ĐANG XỬ LÝ</button>
-            <button class="sk-tab-btn" onclick="filterHomeOrders('failed', this)" style="background:transparent; border:0; color:var(--muted); font-weight:700; font-size:13px; cursor:pointer; padding:6px 12px; position:relative;">THẤT BẠI / HOÀN TIỀN</button>
+          <div class="sk-tabs-orders"
+            style="display:flex; gap:10px; margin-top:20px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom:10px;">
+            <button class="sk-tab-btn active" onclick="filterHomeOrders('all', this)"
+              style="background:transparent; border:0; color:var(--text-bright); font-weight:700; font-size:13px; cursor:pointer; padding:6px 12px; position:relative;">TẤT
+              CẢ</button>
+            <button class="sk-tab-btn" onclick="filterHomeOrders('completed', this)"
+              style="background:transparent; border:0; color:var(--muted); font-weight:700; font-size:13px; cursor:pointer; padding:6px 12px; position:relative;">THÀNH
+              CÔNG</button>
+            <button class="sk-tab-btn" onclick="filterHomeOrders('processing', this)"
+              style="background:transparent; border:0; color:var(--muted); font-weight:700; font-size:13px; cursor:pointer; padding:6px 12px; position:relative;">ĐANG
+              XỬ LÝ</button>
+            <button class="sk-tab-btn" onclick="filterHomeOrders('failed', this)"
+              style="background:transparent; border:0; color:var(--muted); font-weight:700; font-size:13px; cursor:pointer; padding:6px 12px; position:relative;">THẤT
+              BẠI / HOÀN TIỀN</button>
           </div>
           <section class="sk-card" style="margin-top:20px">
             <div class="sk-table-wrap">
               <table class="sk-table">
-                <thead><tr><th>Mã đơn</th><th>Sản phẩm</th><th>Giá</th><th>Trạng thái</th><th>Hành động</th></tr></thead>
+                <thead>
+                  <tr>
+                    <th>Mã đơn</th>
+                    <th>Sản phẩm</th>
+                    <th>Giá</th>
+                    <th>Trạng thái</th>
+                    <th>Hành động</th>
+                  </tr>
+                </thead>
                 <tbody>
-                  <tr><td colspan="5">Đang chờ đồng bộ lịch sử đơn hàng...</td></tr>
+                  <tr>
+                    <td colspan="5">Đang chờ đồng bộ lịch sử đơn hàng...</td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -1127,32 +1296,44 @@
             <div>
               <span class="sk-badge sk-badge-accent"><i class="fa-solid fa-file-contract"></i> Terms of Service</span>
               <h1 style="margin-top:12px">Chính sách bán hàng & Bảo hành</h1>
-              <p>Sản phẩm kỹ thuật số được bàn giao tự động sau khi xác nhận thanh toán thành công. Chính sách bảo hành 1 đổi 1 áp dụng trong 03 ngày kể từ thời điểm giao dịch thành công.</p>
+              <p>Sản phẩm kỹ thuật số được bàn giao tự động sau khi xác nhận thanh toán thành công. Chính sách bảo hành
+                1 đổi 1 áp dụng trong 03 ngày kể từ thời điểm giao dịch thành công.</p>
             </div>
           </div>
           <section class="sk-policy-grid">
             <article class="sk-card sk-policy-card">
               <div class="sk-policy-icon"><i class="fa-solid fa-scale-balanced"></i></div>
               <h3>Điều khoản chung</h3>
-              <p>Tất cả sản phẩm kỹ thuật số được hệ thống bàn giao tự động ngay sau khi xác nhận thanh toán thành công.</p>
+              <p>Tất cả sản phẩm kỹ thuật số được hệ thống bàn giao tự động ngay sau khi xác nhận thanh toán thành công.
+              </p>
               <p>Khách hàng có trách nhiệm bảo mật và sử dụng sản phẩm đúng mục đích ngay sau khi nhận thông tin.</p>
             </article>
             <article class="sk-card sk-policy-card">
-              <div class="sk-policy-icon" style="background:var(--neon-soft);color:var(--neon);box-shadow:0 0 16px var(--neon-glow)"><i class="fa-solid fa-shield-heart"></i></div>
+              <div class="sk-policy-icon"
+                style="background:var(--neon-soft);color:var(--neon);box-shadow:0 0 16px var(--neon-glow)"><i
+                  class="fa-solid fa-shield-heart"></i></div>
               <h3>Chính sách bảo hành</h3>
-              <p><b>Thời hạn:</b> Tất cả sản phẩm được áp dụng chế độ bảo hành 1 đổi 1 trong vòng 03 ngày (72 giờ) kể từ thời điểm giao dịch thành công.</p>
-              <p><b>Phạm vi:</b> Hỗ trợ đổi mới nếu lỗi từ phía nhà cung cấp, bao gồm tài khoản không thể đăng nhập, lỗi kích hoạt dịch vụ, hoặc thông tin bàn giao không khớp với mô tả.</p>
+              <p><b>Thời hạn:</b> Tất cả sản phẩm được áp dụng chế độ bảo hành 1 đổi 1 trong vòng 03 ngày (72 giờ) kể từ
+                thời điểm giao dịch thành công.</p>
+              <p><b>Phạm vi:</b> Hỗ trợ đổi mới nếu lỗi từ phía nhà cung cấp, bao gồm tài khoản không thể đăng nhập, lỗi
+                kích hoạt dịch vụ, hoặc thông tin bàn giao không khớp với mô tả.</p>
             </article>
             <article class="sk-card sk-policy-card">
-              <div class="sk-policy-icon" style="background:var(--accent-soft);color:var(--accent-light);box-shadow:0 0 16px var(--accent-glow)"><i class="fa-solid fa-headset"></i></div>
+              <div class="sk-policy-icon"
+                style="background:var(--accent-soft);color:var(--accent-light);box-shadow:0 0 16px var(--accent-glow)">
+                <i class="fa-solid fa-headset"></i></div>
               <h3>Quy trình xử lý</h3>
-              <p>Khi gặp sự cố, khách hàng vui lòng liên hệ đội ngũ hỗ trợ qua <b>[Link Telegram/Messenger]</b> kèm theo <b>[Mã đơn hàng]</b> và bằng chứng lỗi (hình ảnh/video).</p>
+              <p>Khi gặp sự cố, khách hàng vui lòng liên hệ đội ngũ hỗ trợ qua <b>[Link Telegram/Messenger]</b> kèm theo
+                <b>[Mã đơn hàng]</b> và bằng chứng lỗi (hình ảnh/video).</p>
               <p>Hệ thống sẽ kiểm tra và thực hiện đổi mới sản phẩm ngay sau khi xác thực lỗi từ phía hệ thống.</p>
             </article>
             <article class="sk-card sk-policy-card sk-policy-wide">
-              <div class="sk-policy-icon" style="background:var(--warning-soft);color:var(--warning)"><i class="fa-solid fa-circle-info"></i></div>
+              <div class="sk-policy-icon" style="background:var(--warning-soft);color:var(--warning)"><i
+                  class="fa-solid fa-circle-info"></i></div>
               <h3>Lưu ý</h3>
-              <p>Chúng tôi không áp dụng chính sách hoàn tiền mặt. Mọi khiếu nại phát sinh sau thời hạn 03 ngày hoặc do lỗi từ phía người dùng, như tự ý thay đổi thông tin bảo mật hoặc vi phạm chính sách của nền tảng gốc, sẽ nằm ngoài phạm vi bảo hành.</p>
+              <p>Chúng tôi không áp dụng chính sách hoàn tiền mặt. Mọi khiếu nại phát sinh sau thời hạn 03 ngày hoặc do
+                lỗi từ phía người dùng, như tự ý thay đổi thông tin bảo mật hoặc vi phạm chính sách của nền tảng gốc, sẽ
+                nằm ngoài phạm vi bảo hành.</p>
             </article>
           </section>
 
@@ -1166,15 +1347,19 @@
             <div class="sk-faq-list">
               <div class="sk-faq-item">
                 <b>Q: Sau khi mua hàng, tôi được hỗ trợ trong bao lâu?</b>
-                <span>A: Sản phẩm của bạn được bảo hành lỗi 1 đổi 1 trong vòng 03 ngày kể từ lúc nhận hàng thành công.</span>
+                <span>A: Sản phẩm của bạn được bảo hành lỗi 1 đổi 1 trong vòng 03 ngày kể từ lúc nhận hàng thành
+                  công.</span>
               </div>
               <div class="sk-faq-item">
                 <b>Q: Tôi bị lỗi đăng nhập thì cần làm gì?</b>
-                <span>A: Vui lòng không tự ý thay đổi thông tin tài khoản khi chưa kiểm tra kỹ. Hãy chụp ảnh hoặc quay video màn hình lỗi và gửi ngay cho hỗ trợ viên để được xử lý đổi mới trong thời gian bảo hành.</span>
+                <span>A: Vui lòng không tự ý thay đổi thông tin tài khoản khi chưa kiểm tra kỹ. Hãy chụp ảnh hoặc quay
+                  video màn hình lỗi và gửi ngay cho hỗ trợ viên để được xử lý đổi mới trong thời gian bảo hành.</span>
               </div>
               <div class="sk-faq-item">
                 <b>Q: Tôi có thể nhận lại tiền nếu không ưng ý sản phẩm không?</b>
-                <span>A: Do sản phẩm là tài sản kỹ thuật số đã được bàn giao, chúng tôi không hỗ trợ hoàn tiền. Thay vào đó, chúng tôi đảm bảo quyền lợi bằng chính sách bảo hành 1 đổi 1 trong vòng 3 ngày nếu sản phẩm lỗi.</span>
+                <span>A: Do sản phẩm là tài sản kỹ thuật số đã được bàn giao, chúng tôi không hỗ trợ hoàn tiền. Thay vào
+                  đó, chúng tôi đảm bảo quyền lợi bằng chính sách bảo hành 1 đổi 1 trong vòng 3 ngày nếu sản phẩm
+                  lỗi.</span>
               </div>
             </div>
           </section>
@@ -1197,10 +1382,12 @@
                 <h2>Tìm nhanh dịch vụ</h2>
               </div>
               <div style="position:relative; margin-bottom:20px;">
-                <i class="fa-solid fa-magnifying-glass" style="position:absolute; left:16px; top:50%; transform:translateY(-50%); color:var(--muted)"></i>
-                <input type="text" class="sk-input" placeholder="-- Gõ tên/server ID để tìm nhanh --" style="padding-left:40px;">
+                <i class="fa-solid fa-magnifying-glass"
+                  style="position:absolute; left:16px; top:50%; transform:translateY(-50%); color:var(--muted)"></i>
+                <input type="text" class="sk-input" placeholder="-- Gõ tên/server ID để tìm nhanh --"
+                  style="padding-left:40px;">
               </div>
-              
+
               <div class="sk-form-group">
                 <label>Nền Tảng <span style="color:var(--danger)">*</span></label>
                 <select class="sk-input">
@@ -1231,11 +1418,14 @@
               <div class="sk-form-group">
                 <label>Dịch Vụ <span style="color:var(--danger)">*</span></label>
                 <select class="sk-input" style="height: auto; padding: 12px; line-height: 1.5;">
-                  <option>Server3806 - Facebook Post React | Like 👍 | Lên Ngay | Không Tụt | 10K/D - 7.560₫/1000</option>
+                  <option>Server3806 - Facebook Post React | Like 👍 | Lên Ngay | Không Tụt | 10K/D - 7.560₫/1000
+                  </option>
                   <option>Server3807 - Facebook Post React | Love ❤️ | Lên Ngay - 8.000₫/1000</option>
                 </select>
                 <div style="margin-top: 12px;">
-                  <span class="sk-badge" style="background:var(--success-soft); color:var(--success); border:1px solid rgba(16,185,129,0.2)">Hỗ Trợ Hủy</span>
+                  <span class="sk-badge"
+                    style="background:var(--success-soft); color:var(--success); border:1px solid rgba(16,185,129,0.2)">Hỗ
+                    Trợ Hủy</span>
                 </div>
               </div>
             </div>
@@ -1245,7 +1435,8 @@
               <div class="sk-section-head">
                 <h2>Info Thông tin máy chủ</h2>
               </div>
-              <div style="background: rgba(99,102,241,0.05); border: 1px solid rgba(99,102,241,0.15); padding: 16px; border-radius: var(--radius); margin-bottom: 24px;">
+              <div
+                style="background: rgba(99,102,241,0.05); border: 1px solid rgba(99,102,241,0.15); padding: 16px; border-radius: var(--radius); margin-bottom: 24px;">
                 <div style="display:grid; gap:8px;">
                   <div><strong>Chất lượng:</strong> Dùng Ổn</div>
                   <div><strong>Bắt đầu:</strong> Ngay lập tức / 0-3 giờ</div>
@@ -1267,16 +1458,20 @@
               <div class="sk-form-group">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                   <label style="margin:0">Liên Kết / UID Cần Tăng <span style="color:var(--danger)">*</span></label>
-                  <a href="#" style="font-size:13px; color:var(--brand-light); text-decoration:none; font-weight:500;"><i class="fa-solid fa-book-open"></i> Xem Hướng Dẫn</a>
+                  <a href="#"
+                    style="font-size:13px; color:var(--brand-light); text-decoration:none; font-weight:500;"><i
+                      class="fa-solid fa-book-open"></i> Xem Hướng Dẫn</a>
                 </div>
                 <div style="display:flex; gap:8px; margin-bottom: 12px;">
                   <button class="sk-btn sk-btn-primary" style="flex:1" type="button">Một</button>
                   <button class="sk-btn sk-btn-soft" style="flex:1" type="button">Nhiều</button>
                 </div>
-                <textarea class="sk-input" rows="3" placeholder="Nhập liên kết hoặc UID cần tăng tương tác..."></textarea>
+                <textarea class="sk-input" rows="3"
+                  placeholder="Nhập liên kết hoặc UID cần tăng tương tác..."></textarea>
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
                   <span style="font-size:12px; color:var(--muted);">Nhập trực tiếp hoặc bấm nút để dán</span>
-                  <button class="sk-btn sk-btn-soft" style="padding:4px 12px; font-size:12px; height:auto;" type="button"><i class="fa-solid fa-paste"></i> Dán</button>
+                  <button class="sk-btn sk-btn-soft" style="padding:4px 12px; font-size:12px; height:auto;"
+                    type="button"><i class="fa-solid fa-paste"></i> Dán</button>
                 </div>
               </div>
 
@@ -1287,25 +1482,30 @@
               </div>
 
               <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom: 24px;">
-                <div style="background:var(--surface-soft); padding:12px; border-radius:var(--radius); border:1px solid var(--line);">
+                <div
+                  style="background:var(--surface-soft); padding:12px; border-radius:var(--radius); border:1px solid var(--line);">
                   <div style="font-size:12px; color:var(--muted); margin-bottom:4px;">Trạng thái</div>
                   <div style="font-weight:600; color:var(--success);">Hoạt động</div>
                 </div>
-                <div style="background:var(--surface-soft); padding:12px; border-radius:var(--radius); border:1px solid var(--line);">
+                <div
+                  style="background:var(--surface-soft); padding:12px; border-radius:var(--radius); border:1px solid var(--line);">
                   <div style="font-size:12px; color:var(--muted); margin-bottom:4px;">Thời gian trung bình</div>
                   <div style="font-weight:600;">2h 58m 4s</div>
                 </div>
-                <div style="background:var(--surface-soft); padding:12px; border-radius:var(--radius); border:1px solid var(--line);">
+                <div
+                  style="background:var(--surface-soft); padding:12px; border-radius:var(--radius); border:1px solid var(--line);">
                   <div style="font-size:12px; color:var(--muted); margin-bottom:4px;">Hỗ trợ hủy</div>
                   <div style="font-weight:600; color:var(--success);">Hỗ Trợ Hủy</div>
                 </div>
-                <div style="background:var(--surface-soft); padding:12px; border-radius:var(--radius); border:1px solid var(--line);">
+                <div
+                  style="background:var(--surface-soft); padding:12px; border-radius:var(--radius); border:1px solid var(--line);">
                   <div style="font-size:12px; color:var(--muted); margin-bottom:4px;">Bảo hành</div>
                   <div style="font-weight:600; color:var(--danger);">Không Bảo Hành</div>
                 </div>
               </div>
 
-              <div style="background:var(--surface-soft); padding:16px; border-radius:var(--radius); border:1px solid var(--line); margin-bottom: 24px;">
+              <div
+                style="background:var(--surface-soft); padding:16px; border-radius:var(--radius); border:1px solid var(--line); margin-bottom: 24px;">
                 <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
                   <span style="color:var(--muted)">Giá trị đơn hàng:</span>
                   <strong>7.560₫</strong>
@@ -1314,7 +1514,8 @@
                   <span style="color:var(--muted)">Tổng tiền cần thanh toán:</span>
                   <strong style="color:var(--accent-light); font-size:20px;">7.560₫</strong>
                 </div>
-                <div style="display:flex; justify-content:space-between; padding-top:12px; border-top:1px dashed var(--line);">
+                <div
+                  style="display:flex; justify-content:space-between; padding-top:12px; border-top:1px dashed var(--line);">
                   <span style="color:var(--muted)">Số dư hiện tại:</span>
                   <strong class="dynamic-sync-balance">0₫</strong>
                 </div>
@@ -1330,7 +1531,8 @@
               </div>
               <p style="font-size:12px; color:var(--muted); margin-bottom:24px;">Múi giờ: Asia/Ho_Chi_Minh</p>
 
-              <button class="sk-btn sk-btn-primary" style="width:100%; height:52px; font-size:16px; font-weight:600;" type="button">
+              <button class="sk-btn sk-btn-primary" style="width:100%; height:52px; font-size:16px; font-weight:600;"
+                type="button">
                 <i class="fa-solid fa-cart-arrow-down"></i> TẠO TIẾN TRÌNH
               </button>
 
@@ -1345,17 +1547,23 @@
             <div class="sk-hero-band" style="background: transparent;">
               <div>
                 <span class="sk-badge-shopee"><i class="fa-solid fa-cart-shopping"></i> Shopee Center</span>
-                <h1 style="margin-top:12px; color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.2); font-family: 'Inter', sans-serif;">MUA BÁN TÀI KHOẢN SHOPEE TỰ ĐỘNG</h1>
-                <p style="color: rgba(255,255,255,0.9); font-weight: 500;">Kho tài khoản Shopee đa dạng - Giao hàng tự động 24/7</p>
+                <h1
+                  style="margin-top:12px; color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.2); font-family: 'Inter', sans-serif;">
+                  MUA BÁN TÀI KHOẢN SHOPEE TỰ ĐỘNG</h1>
+                <p style="color: rgba(255,255,255,0.9); font-weight: 500;">Kho tài khoản Shopee đa dạng - Giao hàng tự
+                  động 24/7</p>
                 <div class="sk-actions" style="margin-top:16px; justify-content:flex-start; flex-wrap:wrap; gap: 12px;">
-                  <button class="sk-btn sk-btn-shopee-primary" type="button" onclick="scrollToShopeeSection('shopee-cats')"><i class="fa-solid fa-store"></i> MUA NGAY</button>
-                  <a class="sk-btn sk-btn-shopee-outline" href="tracking.html"><i class="fa-solid fa-box"></i> THEO DÕI ĐƠN HÀNG</a>
+                  <button class="sk-btn sk-btn-shopee-primary" type="button"
+                    onclick="scrollToShopeeSection('shopee-cats')"><i class="fa-solid fa-store"></i> MUA NGAY</button>
+                  <a class="sk-btn sk-btn-shopee-outline" href="tracking.html"><i class="fa-solid fa-box"></i> THEO DÕI
+                    ĐƠN HÀNG</a>
                 </div>
               </div>
               <div class="sk-hero-card">
                 <span class="sk-kicker" style="color:rgba(255, 255, 255, 0.6); font-weight: 800;">Đại lý ủy quyền</span>
                 <h2 style="margin:6px 0 3px; font-size:24px; color: #ffffff; font-weight: 800;">Shopee Partner</h2>
-                <p style="color: rgba(255,255,255,0.9); font-size: 13px; line-height: 1.5; margin: 0;">Cung cấp acc clone, acc cổ, ads, live, hỗ trợ tích hợp API.</p>
+                <p style="color: rgba(255,255,255,0.9); font-size: 13px; line-height: 1.5; margin: 0;">Cung cấp acc
+                  clone, acc cổ, ads, live, hỗ trợ tích hợp API.</p>
               </div>
             </div>
           </div>
@@ -1378,10 +1586,14 @@
               <div class="shopee-side-box">
                 <h3 class="shopee-box-title"><i class="fa-solid fa-filter"></i> Phân loại Acc</h3>
                 <div class="shopee-filter-menu">
-                  <button class="shopee-filter-btn active" onclick="filterShopeeProducts('all', this)"><i class="fa-solid fa-list"></i> Tất cả sản phẩm</button>
-                  <button class="shopee-filter-btn" onclick="filterShopeeProducts('clone', this)"><i class="fa-solid fa-users"></i> Tài khoản Clone</button>
-                  <button class="shopee-filter-btn" onclick="filterShopeeProducts('co', this)"><i class="fa-solid fa-calendar-days"></i> Tài khoản Cổ (Ngâm lâu)</button>
-                  <button class="shopee-filter-btn" onclick="filterShopeeProducts('ads', this)"><i class="fa-solid fa-rectangle-ad"></i> Acc Ads / Live / Buff</button>
+                  <button class="shopee-filter-btn active" onclick="filterShopeeProducts('all', this)"><i
+                      class="fa-solid fa-list"></i> Tất cả sản phẩm</button>
+                  <button class="shopee-filter-btn" onclick="filterShopeeProducts('clone', this)"><i
+                      class="fa-solid fa-users"></i> Tài khoản Clone</button>
+                  <button class="shopee-filter-btn" onclick="filterShopeeProducts('co', this)"><i
+                      class="fa-solid fa-calendar-days"></i> Tài khoản Cổ (Ngâm lâu)</button>
+                  <button class="shopee-filter-btn" onclick="filterShopeeProducts('ads', this)"><i
+                      class="fa-solid fa-rectangle-ad"></i> Acc Ads / Live / Buff</button>
                 </div>
               </div>
 
@@ -1397,13 +1609,15 @@
                 </div>
                 <div class="shopee-search-bar">
                   <i class="fa-solid fa-magnifying-glass"></i>
-                  <input type="text" placeholder="Tìm kiếm tài khoản..." oninput="searchShopeeProducts(this.value)" class="shopee-search-input">
+                  <input type="text" placeholder="Tìm kiếm tài khoản..." oninput="searchShopeeProducts(this.value)"
+                    class="shopee-search-input">
                 </div>
               </div>
               <div class="shopee-products-grid" id="shopeeProductsGrid">
                 <!-- Tải động từ database -->
                 <div style="grid-column: 1 / -1; text-align: center; padding: 48px; color: var(--muted);">
-                  <i class="fa-solid fa-spinner fa-spin" style="font-size: 32px; display: block; margin-bottom: 12px; color: var(--shopee);"></i>
+                  <i class="fa-solid fa-spinner fa-spin"
+                    style="font-size: 32px; display: block; margin-bottom: 12px; color: var(--shopee);"></i>
                   Đang tải danh sách sản phẩm Shopee...
                 </div>
               </div>
@@ -1417,7 +1631,8 @@
       <aside class="sk-modal-card">
         <div class="sk-section-head">
           <h2>Giỏ hàng</h2>
-          <button class="sk-icon-btn" type="button" onclick="toggleCart()" aria-label="Đóng"><i class="fa-solid fa-xmark"></i></button>
+          <button class="sk-icon-btn" type="button" onclick="toggleCart()" aria-label="Đóng"><i
+              class="fa-solid fa-xmark"></i></button>
         </div>
         <div class="sk-card" style="box-shadow:none">
           <b>Netflix Premium 1 tháng</b>
@@ -1430,11 +1645,14 @@
     <!-- Modal Chi Tiết Đơn Hàng -->
     <div class="sk-modal opacity-0 pointer-events-none" id="order-detail-modal" style="z-index: 2010;">
       <div class="sk-modal-card cyberpunk-modal-card" style="width: min(650px, 100%);">
-        <div class="sk-section-head" style="border-bottom: 1px solid var(--line); padding-bottom: 14px; margin-bottom: 20px;">
-          <h2 id="odModalCode" style="font-size: 18px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.05em; color: var(--brand); text-shadow: 0 0 10px rgba(99, 102, 241, 0.2); margin: 0; display: flex; align-items: center; gap: 8px;">
+        <div class="sk-section-head"
+          style="border-bottom: 1px solid var(--line); padding-bottom: 14px; margin-bottom: 20px;">
+          <h2 id="odModalCode"
+            style="font-size: 18px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.05em; color: var(--brand); text-shadow: 0 0 10px rgba(99, 102, 241, 0.2); margin: 0; display: flex; align-items: center; gap: 8px;">
             <i class="fa-solid fa-receipt"></i> Chi tiết đơn hàng
           </h2>
-          <button class="sk-icon-btn close-modal-cyber" type="button" onclick="closeOrderDetailModal()" aria-label="Đóng"><i class="fa-solid fa-xmark"></i></button>
+          <button class="sk-icon-btn close-modal-cyber" type="button" onclick="closeOrderDetailModal()"
+            aria-label="Đóng"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <div class="sk-content" style="display: flex; flex-direction: column; gap: 16px;">
           <div class="sk-order-detail-grid">
@@ -1452,7 +1670,8 @@
             </div>
             <div class="sk-order-detail-item">
               <span>Tổng tiền</span>
-              <strong id="odModalPrice" style="color: var(--accent-light); font-size: 16px; font-weight: 950; text-shadow: 0 0 8px var(--accent-glow);">---</strong>
+              <strong id="odModalPrice"
+                style="color: var(--accent-light); font-size: 16px; font-weight: 950; text-shadow: 0 0 8px var(--accent-glow);">---</strong>
             </div>
             <div class="sk-order-detail-item">
               <span>Thời gian</span>
@@ -1465,18 +1684,25 @@
           </div>
 
           <div style="border-top: 1px solid var(--line); padding-top: 16px;">
-            <label style="color: var(--brand); font-weight: 800; font-size: 11px; display: block; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.1em; text-shadow: 0 0 5px rgba(99, 102, 241, 0.2);">
+            <label
+              style="color: var(--brand); font-weight: 800; font-size: 11px; display: block; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.1em; text-shadow: 0 0 5px rgba(99, 102, 241, 0.2);">
               <i class="fa-solid fa-unlock-keyhole"></i> Thông tin tài khoản bàn giao
             </label>
             <div class="cyber-textarea-wrapper" style="position: relative;">
-              <textarea id="odModalDelivery" readonly style="width: 100%; height: 130px; font-family: 'Fira Code', 'Courier New', monospace; font-size: 13px; font-weight: 600; padding: 14px; border-radius: var(--radius); border: 1px solid var(--line); background: var(--bg); resize: vertical; color: var(--text-bright); line-height: 1.6; outline: none; box-shadow: inset 0 2px 8px rgba(0,0,0,0.2), 0 0 10px rgba(99, 102, 241, 0.02); transition: all 0.3s ease;"></textarea>
-              <div style="position: absolute; right: 10px; bottom: 10px; font-size: 9px; color: var(--muted); text-transform: uppercase; font-weight: 800; letter-spacing: 0.05em; pointer-events: none;">Auto-delivery system</div>
+              <textarea id="odModalDelivery" readonly
+                style="width: 100%; height: 130px; font-family: 'Fira Code', 'Courier New', monospace; font-size: 13px; font-weight: 600; padding: 14px; border-radius: var(--radius); border: 1px solid var(--line); background: var(--bg); resize: vertical; color: var(--text-bright); line-height: 1.6; outline: none; box-shadow: inset 0 2px 8px rgba(0,0,0,0.2), 0 0 10px rgba(99, 102, 241, 0.02); transition: all 0.3s ease;"></textarea>
+              <div
+                style="position: absolute; right: 10px; bottom: 10px; font-size: 9px; color: var(--muted); text-transform: uppercase; font-weight: 800; letter-spacing: 0.05em; pointer-events: none;">
+                Auto-delivery system</div>
             </div>
           </div>
 
           <div class="sk-actions" style="justify-content: flex-end; gap: 10px; margin-top: 10px;">
             <button class="sk-btn sk-btn-cyber-outline" type="button" onclick="closeOrderDetailModal()">Đóng</button>
-            <button class="sk-btn sk-btn-primary" style="background: linear-gradient(135deg, #00f3ff, #0070ff); color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.2); border: 0; font-weight: 800; height: 38px; box-shadow: 0 4px 16px rgba(0, 243, 255, 0.45);" type="button" onclick="copyOrderDetailDelivery()"><i class="fa-solid fa-copy"></i> Sao chép thông tin</button>
+            <button class="sk-btn sk-btn-primary"
+              style="background: linear-gradient(135deg, #00f3ff, #0070ff); color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.2); border: 0; font-weight: 800; height: 38px; box-shadow: 0 4px 16px rgba(0, 243, 255, 0.45);"
+              type="button" onclick="copyOrderDetailDelivery()"><i class="fa-solid fa-copy"></i> Sao chép thông
+              tin</button>
           </div>
         </div>
       </div>
@@ -1485,14 +1711,20 @@
     <!-- Modal Thông báo từ Admin -->
     <div class="sk-modal opacity-0 pointer-events-none" id="announcement-modal" style="z-index: 2100;">
       <div class="sk-modal-card cyberpunk-modal-card" style="width: min(500px, 100%);">
-        <div class="sk-section-head" style="border-bottom: 1px solid var(--line); padding-bottom: 14px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
-          <h2 id="announceModalTitle" style="font-size: 18px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.05em; color: var(--brand); text-shadow: 0 0 10px rgba(99, 102, 241, 0.2); margin: 0; display: flex; align-items: center; gap: 8px;">
+        <div class="sk-section-head"
+          style="border-bottom: 1px solid var(--line); padding-bottom: 14px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+          <h2 id="announceModalTitle"
+            style="font-size: 18px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.05em; color: var(--brand); text-shadow: 0 0 10px rgba(99, 102, 241, 0.2); margin: 0; display: flex; align-items: center; gap: 8px;">
             <i class="fa-solid fa-bullhorn"></i> Thông báo hệ thống
           </h2>
-          <button class="sk-icon-btn close-modal-cyber" type="button" onclick="closeAnnouncementModal()" aria-label="Đóng" style="background: none; border: none; color: var(--text-sub); cursor: pointer; font-size: 16px;"><i class="fa-solid fa-xmark"></i></button>
+          <button class="sk-icon-btn close-modal-cyber" type="button" onclick="closeAnnouncementModal()"
+            aria-label="Đóng"
+            style="background: none; border: none; color: var(--text-sub); cursor: pointer; font-size: 16px;"><i
+              class="fa-solid fa-xmark"></i></button>
         </div>
         <div class="sk-content" style="display: flex; flex-direction: column; gap: 16px;">
-          <div id="announceModalContent" style="color: var(--text-bright); line-height: 1.6; max-height: 300px; overflow-y: auto; white-space: pre-wrap; font-size: 14px;">
+          <div id="announceModalContent"
+            style="color: var(--text-bright); line-height: 1.6; max-height: 300px; overflow-y: auto; white-space: pre-wrap; font-size: 14px;">
             ---
           </div>
           <div class="sk-actions announcement-actions">
@@ -1503,15 +1735,19 @@
                 <span class="cyber-checkbox-text">Không hiện lại trong 3h</span>
               </label>
             </div>
-            <button class="sk-btn sk-btn-primary" style="background: var(--brand-grad); color: #fff; border: 0; font-weight: 800; height: 38px; padding: 0 24px; border-radius: var(--radius); cursor: pointer; box-shadow: 0 4px 14px var(--brand-glow);" type="button" onclick="closeAnnouncementModal()"><i class="fa-solid fa-check"></i> Đã hiểu</button>
+            <button class="sk-btn sk-btn-primary"
+              style="background: var(--brand-grad); color: #fff; border: 0; font-weight: 800; height: 38px; padding: 0 24px; border-radius: var(--radius); cursor: pointer; box-shadow: 0 4px 14px var(--brand-glow);"
+              type="button" onclick="closeAnnouncementModal()"><i class="fa-solid fa-check"></i> Đã hiểu</button>
           </div>
         </div>
       </div>
     </div>
 
     <footer class="sk-footer">
-      <div class="sk-footer-inner" style="display: block; text-align: center; padding: 24px 0; border-top: 1px solid var(--line);">
-        <p style="margin: 0; font-size: 13px; color: var(--muted);">© 2026 DG Store. All rights reserved. Designed for ultimate digital automation.</p>
+      <div class="sk-footer-inner"
+        style="display: block; text-align: center; padding: 24px 0; border-top: 1px solid var(--line);">
+        <p style="margin: 0; font-size: 13px; color: var(--muted);">© 2026 DG Store. All rights reserved. Designed for
+          ultimate digital automation.</p>
       </div>
     </footer>
   </div>
@@ -1532,7 +1768,7 @@
         .replaceAll("'", '&#039;');
     }
 
-     function formatMoney(value) {
+    function formatMoney(value) {
       return `${Number(value || 0).toLocaleString('vi-VN')}đ`;
     }
 
@@ -1672,10 +1908,10 @@
     function renderProducts() {
       const query = (document.getElementById('searchInput')?.value || '').toLowerCase();
       const list = products.filter(product => (currentCategory === 'all' || product.cat === currentCategory) && product.name.toLowerCase().includes(query));
-      
+
       const productGrid = document.getElementById('productGrid');
       const featuredSection = document.getElementById('featuredSection');
-      
+
       if (!productGrid) return;
 
       if (list.length === 0) {
@@ -1718,7 +1954,7 @@
       let label = 'Shopee Center';
       let color = '#ee4d2d';
       let bg = 'var(--shopee-soft)';
-      
+
       if (nameLower.includes('cookie')) {
         label = 'Chrome Cookie';
         color = 'var(--accent-light)';
@@ -1736,14 +1972,14 @@
         color = 'var(--neon)';
         bg = 'var(--neon-soft)';
       }
-      
+
       return `<span style="font-size: 11px; font-weight: 800; color: ${color}; background: ${bg}; padding: 4px 8px; border-radius: 4px; display: inline-flex; align-items: center; gap: 4px;">🛍 ${label}</span>`;
     }
 
     let currentShopeeFilter = 'all';
     let currentShopeeSearch = '';
 
-    window.filterShopeeProducts = function(type, btnElement) {
+    window.filterShopeeProducts = function (type, btnElement) {
       currentShopeeFilter = type;
       const buttons = document.querySelectorAll('.shopee-filter-btn');
       buttons.forEach(btn => btn.classList.remove('active'));
@@ -1756,7 +1992,7 @@
       renderShopeeProducts();
     };
 
-    window.searchShopeeProducts = function(query) {
+    window.searchShopeeProducts = function (query) {
       currentShopeeSearch = query.trim().toLowerCase();
       renderShopeeProducts();
     };
@@ -1788,7 +2024,7 @@
       if (currentShopeeSearch) {
         shopeeProds = shopeeProds.filter(p => p.name.toLowerCase().includes(currentShopeeSearch));
       }
-      
+
       if (shopeeProds.length === 0) {
         grid.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 48px; color: var(--muted);"><i class="fa-solid fa-store" style="font-size: 32px; display: block; margin-bottom: 12px; color: var(--shopee);"></i>Không tìm thấy sản phẩm Shopee phù hợp.</div>';
         return;
@@ -1800,8 +2036,8 @@
         const starsHtml = '⭐'.repeat(rateVal);
         const stockText = product.stock !== null && product.stock !== undefined && product.stock !== '' ? product.stock : '∞';
         const soldCount = (product.name.charCodeAt(0) * 15 + product.name.length * 7) % 1000 + 120;
-        const formattedSoldCount = soldCount >= 1000 ? (soldCount/1000).toFixed(1) + 'k' : soldCount;
-        
+        const formattedSoldCount = soldCount >= 1000 ? (soldCount / 1000).toFixed(1) + 'k' : soldCount;
+
         let mediaHtml = '';
         if (product.image) {
           mediaHtml = productMedia(product);
@@ -1855,7 +2091,7 @@
           </div>
         `;
       }).join('');
-      
+
       if (window.replaceIcons) window.replaceIcons(grid);
     }
 
@@ -1946,7 +2182,7 @@
           </tr>
         `;
       }).join('');
-      
+
       if (window.replaceIcons) window.replaceIcons(tbody);
     }
 
@@ -1989,13 +2225,13 @@
       if (modal) {
         modal.classList.add('opacity-0', 'pointer-events-none');
       }
-      
+
       const hideCheckbox = document.getElementById('hideAnnouncement3h');
       if (hideCheckbox && hideCheckbox.checked) {
         const hideUntil = Date.now() + 3 * 60 * 60 * 1000; // 3 hours in milliseconds
         localStorage.setItem('hideAnnouncementUntil', hideUntil);
       }
-      
+
       if (window.currentAnnouncementUpdatedAt) {
         localStorage.setItem('lastClosedAnnouncementTime', window.currentAnnouncementUpdatedAt);
       }
@@ -2010,7 +2246,7 @@
           window.currentAnnouncementUpdatedAt = announceUpdatedAt;
 
           const lastClosedTime = Number(localStorage.getItem('lastClosedAnnouncementTime') || 0);
-          
+
           if (announceUpdatedAt <= lastClosedTime) {
             const hideUntil = Number(localStorage.getItem('hideAnnouncementUntil') || 0);
             if (Date.now() < hideUntil) {
@@ -2021,11 +2257,11 @@
           }
 
           document.getElementById('announceModalContent').innerText = data.announcement.content || '';
-          
+
           if (data.announcement.title) {
             document.getElementById('announceModalTitle').innerHTML = `<i class="fa-solid fa-bullhorn"></i> ${escapeHtml(data.announcement.title)}`;
           }
-          
+
           const modal = document.getElementById('announcement-modal');
           if (modal) {
             modal.classList.remove('opacity-0', 'pointer-events-none');
@@ -2051,7 +2287,7 @@
     async function loadHomeOrders() {
       const token = localStorage.getItem('token');
       const tbody = document.querySelector('#orders tbody');
-      
+
       if (!token) {
         if (tbody) {
           tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--danger);">Vui lòng đăng nhập để xem lịch sử đơn hàng.</td></tr>';
@@ -2308,7 +2544,7 @@
       updateHeaderCartCount();
       await checkAnnouncement();
     }
-    
+
     window.addEventListener('hashchange', openInitialHashTarget);
     initPage();
   </script>
@@ -2317,4 +2553,5 @@
   <script src="assets/js/icons.js"></script>
   <script src="assets/js/common.js"></script>
 </body>
+
 </html>

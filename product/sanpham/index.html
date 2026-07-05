@@ -1864,7 +1864,11 @@
 
     function guardProductAvailable() {
       if (!isProductUnavailable()) return true;
-      alert('Sản phẩm tạm hết hàng. Vui lòng chọn sản phẩm khác.');
+      if (window.showToast) {
+        window.showToast('Sản phẩm tạm hết hàng. Vui lòng chọn sản phẩm khác.', false);
+      } else {
+        alert('Sản phẩm tạm hết hàng. Vui lòng chọn sản phẩm khác.');
+      }
       return false;
     }
 
@@ -1917,7 +1921,11 @@
       const cartKey = 'dgCart';
       const totals = calculateOrderTotals();
       if (!isValidOrderTotals(totals)) {
-        alert('Số lượng hoặc tổng tiền không hợp lệ.');
+        if (window.showToast) {
+          window.showToast('Số lượng hoặc tổng tiền không hợp lệ.', false);
+        } else {
+          alert('Số lượng hoặc tổng tiền không hợp lệ.');
+        }
         return;
       }
       let cart = [];
@@ -1953,7 +1961,11 @@
       localStorage.setItem(cartKey, JSON.stringify(cart));
       updateHeaderCartCount();
       if (!options.silent) {
-        alert('Đã thêm sản phẩm vào giỏ hàng.');
+        if (window.showToast) {
+          window.showToast('Đã thêm sản phẩm vào giỏ hàng thành công!', true);
+        } else {
+          alert('Đã thêm sản phẩm vào giỏ hàng.');
+        }
       }
     }
 
@@ -2004,7 +2016,11 @@
 
       const totals = calculateOrderTotals();
       if (!isValidOrderTotals(totals)) {
-        alert('Số lượng hoặc tổng tiền không hợp lệ.');
+        if (window.showToast) {
+          window.showToast('Số lượng hoặc tổng tiền không hợp lệ.', false);
+        } else {
+          alert('Số lượng hoặc tổng tiền không hợp lệ.');
+        }
         return;
       }
 
