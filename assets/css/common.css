@@ -798,12 +798,39 @@ img {
 }
 
 .nav-item i,
-.nav-item .sk-icon {
+.nav-item .sk-icon,
+.nav-item img {
   width: 20px;
   min-width: 20px;
+  height: 20px;
+  object-fit: cover;
+  border-radius: 4px;
   text-align: center;
-  font-size: 16px;
+  font-size: 16.5px;
   transition: all var(--transition);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Specific glowing color signatures for each menu icon */
+.nav-item i.fa-house { color: #a78bfa !important; }
+.nav-item i.fa-boxes-stacked { color: #22d3ee !important; }
+.nav-item i.fa-shopee { color: #ff683b !important; }
+.nav-item i.fa-share-nodes { color: #f472b6 !important; }
+.nav-item i.fa-list-check { color: #fbbf24 !important; }
+.nav-item i.fa-receipt { color: #34d399 !important; }
+.nav-item i.fa-wallet { color: #10b981 !important; }
+.nav-item i.fa-circle-user { color: #38bdf8 !important; }
+.nav-item i.fa-shield-halved { color: #818cf8 !important; }
+.nav-item i.fa-headset { color: #c084fc !important; }
+.nav-item i.fa-gauge-high { color: #f43f5e !important; }
+
+/* Micro-animations on hover */
+.nav-item:hover i,
+.nav-item:hover img {
+  transform: scale(1.22) rotate(4deg);
+  filter: brightness(1.2) drop-shadow(0 0 6px currentColor);
 }
 
 .nav-label {

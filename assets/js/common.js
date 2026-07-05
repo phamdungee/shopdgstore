@@ -174,7 +174,7 @@
       // Don't overwrite the cart icon if it's in the same container. Just replace the auth part.
       // We will look for an element with id="authActionsContainer" inside, or just replace the whole thing if it's purely for auth.
       let container = target.querySelector('#authActionsContainer') || target;
-      container.innerHTML = '<a class="sk-btn sk-btn-primary" href="/login.html"><i class="fa-solid fa-right-to-bracket"></i> <span class="btn-text">Login</span></a>';
+      container.innerHTML = '<a class="sk-btn sk-btn-primary" href="/login.html"><i class="fa-solid fa-right-to-bracket"></i> <span class="btn-text">Đăng nhập / Đăng ký</span></a>';
       if (window.replaceIcons) window.replaceIcons(container);
     });
   }
