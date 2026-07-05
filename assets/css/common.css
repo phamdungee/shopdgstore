@@ -330,10 +330,46 @@ img {
   transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.5s !important;
 }
 
+.dg-logo-mark::before,
 .dg-logo-mark::after {
-  content: none !important;
-  display: none !important;
+  content: '' !important;
+  display: block !important;
+  position: absolute;
+  background: #ffffff;
+  pointer-events: none;
+  z-index: 5;
+  clip-path: polygon(50% 0%, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0% 50%, 38% 38%);
+  filter: drop-shadow(0 0 4px var(--accent-light)) drop-shadow(0 0 8px var(--brand-light));
+  animation: logoStarBlink 3s ease-in-out infinite;
 }
+
+.dg-logo-mark::before {
+  width: 9px;
+  height: 9px;
+  top: -3px;
+  right: -3px;
+  animation-delay: 0s;
+}
+
+.dg-logo-mark::after {
+  width: 7px;
+  height: 7px;
+  bottom: -2px;
+  left: -2px;
+  animation-delay: 1.5s;
+}
+
+@keyframes logoStarBlink {
+  0%, 100% {
+    transform: scale(0) rotate(0deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1) rotate(180deg);
+    opacity: 1;
+  }
+}
+
 
 .dg-logo-text {
   font-family: 'Outfit', 'Inter', sans-serif;
@@ -1756,8 +1792,12 @@ body.light-mode .sk-product-card-vertical > a {
 .sk-icon-slider-track {
   display: flex;
   gap: 10px;
-  animation: iconScroll 20s linear infinite;
+  width: max-content;
+  animation: iconScroll 25s linear infinite;
+  will-change: transform;
 }
+
+
 
 .sk-icon-slider-track-reverse {
   animation-direction: reverse;

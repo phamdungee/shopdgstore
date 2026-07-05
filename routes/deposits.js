@@ -5,7 +5,7 @@ const router = express.Router();
 const cassoRouter = express.Router();
 const supabase = require('../config/supabase');
 const cassoClient = require('../config/casso');
-const { authMiddleware } = require('../middlewares/authMiddleware');
+const { authMiddleware, adminMiddleware } = require('../middlewares/authMiddleware');
 // Lưu trữ danh sách kết nối SSE đang hoạt động
 const sseClients = new Map();
 
@@ -1007,7 +1007,7 @@ cassoRouter.post('/webhook/handler-bank-transfer', handleCassoWebhook);
 cassoRouter.post('/webhook', handleCassoWebhook);
 router.post('/webhook', handleCassoWebhook);
 
-cassoRouter.post('/register-webhook', async (req, res, next) => {
+cassoRouter.post('/register-webhook', authMiddleware, adminMiddleware, async (req, res, next) => {
   try {
     if (!CASSO_API_KEY) {
       return res.status(400).json({ code: 400, message: 'Thiếu CASSO_API_KEY trong cấu hình .env' });

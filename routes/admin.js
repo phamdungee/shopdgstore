@@ -132,6 +132,35 @@ function productPayload(body, options = {}) {
   return payload;
 }
 
+// =================================================================
+// PUBLIC ROUTES (No Auth/Admin validation required)
+// =================================================================
+const ANNOUNCEMENT_FILE = path.join(__dirname, '..', 'config', 'announcement.json');
+
+function getAnnouncementData() {
+  try {
+    if (fs.existsSync(ANNOUNCEMENT_FILE)) {
+      const data = fs.readFileSync(ANNOUNCEMENT_FILE, 'utf8');
+      return JSON.parse(data);
+    }
+  } catch (err) {
+    console.error('Error reading announcement file:', err);
+  }
+  return { title: 'Thông báo', content: '', active: false, updatedAt: 0 };
+}
+
+// GET /api/admin/announcement/public - Public announcement endpoint
+router.get('/announcement/public', (req, res) => {
+  const ann = getAnnouncementData();
+  return res.json({ ok: true, announcement: ann });
+});
+
+// =================================================================
+// SECURE GATEWAY: All routes registered below require Admin role
+// =================================================================
+router.use(authMiddleware);
+router.use(adminMiddleware);
+
 router.get('/dashboard', authMiddleware, adminMiddleware, async (req, res) => {
   try {
     const { data: users, error: usersError } = await supabase
@@ -434,26 +463,6 @@ router.get('/images', authMiddleware, adminMiddleware, async (req, res) => {
     console.error('List images error:', err);
     return res.status(500).json({ ok: false, message: 'Lỗi server khi lấy danh sách ảnh' });
   }
-});
-
-// GET /api/admin/announcement/public - Public announcement endpoint
-const ANNOUNCEMENT_FILE = path.join(__dirname, '..', 'config', 'announcement.json');
-
-function getAnnouncementData() {
-  try {
-    if (fs.existsSync(ANNOUNCEMENT_FILE)) {
-      const data = fs.readFileSync(ANNOUNCEMENT_FILE, 'utf8');
-      return JSON.parse(data);
-    }
-  } catch (err) {
-    console.error('Error reading announcement file:', err);
-  }
-  return { title: 'Thông báo', content: '', active: false, updatedAt: 0 };
-}
-
-router.get('/announcement/public', (req, res) => {
-  const ann = getAnnouncementData();
-  return res.json({ ok: true, announcement: ann });
 });
 
 // POST /api/admin/announcement - Update announcement (Admin only)

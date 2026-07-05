@@ -45,14 +45,24 @@ router.post('/upload', authMiddleware, (req, res) => {
     }
 
     try {
-      const userRole = req.user?.role; // 'admin', 'seller', 'user'
+      const userRole = req.user?.role || 'user'; // 'admin', 'seller', 'user'
       
-      // Authorization check: Only Admin, Seller can upload any files. Customers can only upload avatars.
-      let folder = 'products';
-      if (userRole === 'user') {
-        folder = 'avatars';
-      } else if (req.query.folder && ['products', 'avatars', 'banners'].includes(req.query.folder)) {
+      const ALLOWED_FOLDERS = {
+        admin: ['products', 'avatars', 'banners', 'categories'],
+        seller: ['products', 'avatars', 'banners', 'categories'],
+        user: ['avatars']
+      };
+
+      const permittedFolders = ALLOWED_FOLDERS[userRole] || ALLOWED_FOLDERS.user;
+      let folder = permittedFolders[0] || 'avatars';
+      if (req.query.folder && permittedFolders.includes(req.query.folder)) {
         folder = req.query.folder;
+      }
+
+      // Specific size limits by folder
+      const maxAvatarSize = 2 * 1024 * 1024; // 2MB
+      if (folder === 'avatars' && req.file.size > maxAvatarSize) {
+        return res.status(400).json({ ok: false, message: 'Ảnh đại diện (avatar) không được vượt quá 2MB.' });
       }
 
       let fileBuffer = req.file.buffer;

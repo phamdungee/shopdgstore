@@ -4,19 +4,7 @@
 
 (function () {
   const SVG_ICONS = {
-    // Brand Logo (fa-bolt): Hexagon lightning bolt
-    'fa-bolt': `
-      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="grad-bolt" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#6366f1" />
-            <stop offset="50%" stop-color="#8b5cf6" />
-            <stop offset="100%" stop-color="#ec4899" />
-          </linearGradient>
-        </defs>
-        <path d="M12 2L3 7v10l9 5 9-5V7l-9-5zm-1 14.5v-3.5H8.5l4.5-7.5v3.5h2.5l-4.5 7.5z" fill="url(#grad-bolt)" />
-      </svg>
-    `,
+
 
     // Home (fa-house): Abstract house with outline
     'fa-house': `

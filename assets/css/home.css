@@ -1,21 +1,3 @@
-<!DOCTYPE html>
-<html lang="vi">
-
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DG Store — Hệ Sinh Thái Tài Khoản Số Tự Động 24/7</title>
-  <meta name="description"
-    content="DG Store - Hệ sinh thái tài khoản số bản quyền hàng đầu Việt Nam. ChatGPT Plus, Netflix 4K, Canva Pro, Adobe CC giao tự động 24/7." />
-
-  <!-- Premium Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..900&family=Outfit:wght@300..900&display=swap"
-    rel="stylesheet" />
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
-
-  <style>
     /*═══════════════════════════════════════════════════════
       DG Store — Ultimate Cyber Glassmorphism Theme
     ═══════════════════════════════════════════════════════*/
@@ -353,19 +335,18 @@
       left: 50%;
       width: 250%;
       height: 250%;
-      background: conic-gradient(from 0deg, #22d3ee, #3b82f6, #6366f1, #8b5cf6, #f472b6, #22d3ee);
+      background: conic-gradient(from 0deg, transparent 30%, #6366f1 50%, #d946ef 75%, #22d3ee 90%, transparent 100%);
       transform: translate(-50%, -50%) rotate(0deg);
-      animation: ledRotate 6s linear infinite;
+      animation: ledRotate 4s linear infinite;
       z-index: -2;
-      filter: brightness(1.1);
     }
 
     .glass-card::after {
       content: '';
       position: absolute;
-      inset: 1.5px;
+      inset: 1.2px;
       background: rgba(3, 3, 12, 0.94);
-      border-radius: calc(var(--r-lg) - 1.5px);
+      border-radius: calc(var(--r-lg) - 1.2px);
       z-index: -1;
       transition: background 0.3s;
     }
@@ -384,12 +365,7 @@
 
     .glass-card:hover {
       transform: translateY(-4px);
-      box-shadow: 0 15px 45px rgba(0, 0, 0, 0.65), 0 0 30px rgba(6, 182, 212, 0.6), 0 0 60px rgba(99, 102, 241, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.1);
-    }
-
-    .glass-card:hover::before {
-      animation-duration: 2.2s;
-      filter: brightness(1.35) blur(0.5px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), 0 0 25px rgba(99, 102, 241, 0.35);
     }
 
     @keyframes ledRotate {
@@ -473,9 +449,7 @@
       position: relative;
       overflow: visible !important;
       z-index: 1;
-      transform-style: preserve-3d !important;
-      perspective: 500px !important;
-      transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.5s, box-shadow 0.5s !important;
+      transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.5s !important;
     }
 
     .dg-logo-text {
@@ -487,8 +461,7 @@
       -webkit-background-clip: text !important;
       -webkit-text-fill-color: transparent !important;
       z-index: 2;
-      transform: translateZ(8px) !important;
-      text-shadow: 0 1px 0 #cbd5e1, 0 2px 3px rgba(0,0,0,0.5), 0 0 8px rgba(99, 102, 241, 0.4) !important;
+      text-shadow: 0 0 10px rgba(99, 102, 241, 0.5) !important;
       line-height: 1 !important;
     }
 
@@ -498,38 +471,33 @@
       border: 1px dashed var(--accent);
       border-radius: 50%;
       opacity: 0.5;
-      transform: rotateX(65deg) rotateY(15deg) rotateZ(0deg) !important;
-      animation: logoSpin3D 12s linear infinite !important;
+      animation: logoSpin 12s linear infinite;
       pointer-events: none;
-      transition: all 0.5s ease !important;
+      transition: all 0.3s ease;
     }
 
-    @keyframes logoSpin3D {
+    @keyframes logoSpin {
       0% {
-        transform: rotateX(65deg) rotateY(15deg) rotateZ(0deg);
+        transform: rotate(0deg);
       }
+
       100% {
-        transform: rotateX(65deg) rotateY(15deg) rotateZ(360deg);
+        transform: rotate(360deg);
       }
     }
 
     .nav-brand:hover .dg-logo-mark {
-      transform: scale(1.1) rotateX(15deg) rotateY(20deg) !important;
+      transform: scale(1.1) rotate(5deg);
       border-color: var(--accent) !important;
-      box-shadow: 0 5px 20px rgba(6, 182, 212, 0.4), inset 0 0 15px rgba(6, 182, 212, 0.4) !important;
-    }
-
-    .nav-brand:hover .dg-logo-text {
-      transform: translateZ(12px) !important;
-      text-shadow: 0 1px 0 var(--accent), 0 2px 4px rgba(0,0,0,0.6), 0 0 12px rgba(6, 182, 212, 0.6) !important;
+      box-shadow: 0 0 25px rgba(6, 182, 212, 0.4), inset 0 0 15px rgba(6, 182, 212, 0.4) !important;
     }
 
     .nav-brand:hover .dg-logo-ring {
       opacity: 0.95;
       border-style: solid;
       border-color: var(--accent);
-      animation-duration: 4s !important;
-      inset: -7px !important;
+      animation-duration: 3s;
+      inset: -6px;
     }
 
     .ft-brand:hover .dg-logo-mark {
@@ -777,21 +745,17 @@
 
     /* Header Responsive Optimizations */
     @media (max-width: 768px) {
-
       .btn-login .btn-text,
       .sk-btn .btn-text {
         display: none !important;
       }
-
       .btn-login {
         padding: 9px 12px !important;
       }
-
       .nav-uinfo,
       .sk-user-meta {
         display: none !important;
       }
-
       .nav-user,
       .sk-user-chip {
         padding: 0 !important;
@@ -799,18 +763,15 @@
         border: none !important;
         box-shadow: none !important;
       }
-
       .sk-user-avatar {
         width: 36px !important;
         height: 36px !important;
         font-size: 13px !important;
       }
-
       .btn-nav-a span,
       .sk-btn span {
         display: none !important;
       }
-
       .btn-nav-a,
       .sk-btn {
         padding: 8px !important;
@@ -871,7 +832,7 @@
 
     .mob-links {
       display: flex;
-      flex-direction: column;
+      
       gap: 8px;
     }
 
@@ -910,7 +871,7 @@
       position: absolute;
       inset: 0;
       z-index: 0;
-      background: url('assets/img/gear5-luffy.jpg') center center / cover no-repeat;
+      background: radial-gradient(circle at 80% 20%, rgba(99, 102, 241, 0.08) 0%, rgba(6, 182, 212, 0.03) 50%, #02020a 100%);
       will-change: transform;
       transition: transform 0.1s linear;
     }
@@ -1676,7 +1637,7 @@
     .ft-brand-ic {
       width: 32px;
       height: 32px;
-      border-radius: 8px;
+      border-radius: 16px;
       background: var(--brand-grad);
       display: flex;
       align-items: center;
@@ -1853,7 +1814,6 @@
       align-items: center;
       gap: 8px;
     }
-
     .sk-user-chip {
       min-height: 38px;
       display: inline-flex;
@@ -1867,23 +1827,19 @@
       transition: var(--tr);
       text-decoration: none;
     }
-
     .sk-user-chip:hover {
       border-color: var(--brand-light);
       background: rgba(255, 255, 255, 0.05);
       box-shadow: var(--glow-brand);
       transform: translateY(-1px);
     }
-
     body.light-mode .sk-user-chip {
       background: rgba(15, 23, 42, 0.02);
       border-color: var(--line);
     }
-
     body.light-mode .sk-user-chip:hover {
       background: rgba(15, 23, 42, 0.05);
     }
-
     .sk-user-avatar {
       width: 30px;
       height: 30px;
@@ -1896,30 +1852,25 @@
       font-weight: 800;
       box-shadow: 0 0 10px rgba(99, 102, 241, 0.4);
     }
-
     .sk-user-meta {
       display: grid;
       gap: 1px;
       line-height: 1.2;
       text-align: left;
     }
-
     .sk-user-meta strong {
       font-size: 12.5px;
       font-weight: 700;
       color: var(--text);
     }
-
     .sk-user-meta small {
       font-size: 11px;
       font-weight: 800;
       color: var(--accent);
     }
-
     body.light-mode .sk-user-meta small {
       color: var(--brand);
     }
-
     .sk-btn {
       display: inline-flex;
       align-items: center;
@@ -1937,22 +1888,18 @@
       cursor: pointer;
       text-decoration: none;
     }
-
     .sk-btn:hover {
       border-color: var(--brand-light);
       background: rgba(255, 255, 255, 0.05);
       transform: translateY(-2px);
       box-shadow: var(--glow-brand);
     }
-
     body.light-mode .sk-btn {
       background: rgba(15, 23, 42, 0.02);
     }
-
     body.light-mode .sk-btn:hover {
       background: rgba(15, 23, 42, 0.05);
     }
-
     .sk-btn-accent {
       background: var(--accent-grad);
       border-color: transparent;
@@ -1960,24 +1907,20 @@
       font-weight: 700;
       box-shadow: 0 0 15px rgba(34, 211, 238, 0.3);
     }
-
     .sk-btn-accent:hover {
       box-shadow: 0 0 25px rgba(34, 211, 238, 0.5);
       filter: brightness(1.1);
       border-color: transparent;
     }
-
     .sk-btn-soft {
       background: var(--glass-bg);
       border-color: var(--line);
       color: var(--brand-light);
     }
-
     .sk-btn-soft:hover {
       background: rgba(99, 102, 241, 0.1);
       border-color: rgba(99, 102, 241, 0.3);
     }
-
     .sk-icon-btn {
       width: 38px;
       height: 38px;
@@ -1991,30 +1934,346 @@
       transition: var(--tr);
       cursor: pointer;
     }
-
     .sk-icon-btn:hover {
       color: var(--brand-light);
       border-color: var(--brand);
       background: rgba(99, 102, 241, 0.08);
       box-shadow: var(--glow-brand);
     }
-
     body.light-mode .sk-icon-btn {
       background: rgba(15, 23, 42, 0.02);
     }
-
     body.light-mode .sk-icon-btn:hover {
       background: rgba(15, 23, 42, 0.05);
     }
-
     .sk-logout-btn {
       color: var(--danger) !important;
     }
-
     .sk-logout-btn:hover {
       background: rgba(248, 113, 113, 0.1) !important;
       border-color: var(--danger) !important;
       box-shadow: 0 0 15px rgba(248, 113, 113, 0.3) !important;
+    }
+    /* ── SERVICE ICON DECORATIONS ───────────────── */
+    .floating-prod-card .service-icon {
+      font-size: 34px;
+      margin-bottom: 0;
+      transition: transform 0.3s ease, filter 0.3s ease;
+    }
+    
+    .floating-prod-card:hover .service-icon {
+      transform: scale(1.18) rotate(5deg);
+    }
+    
+    .service-icon.chatgpt-color { color: #10b981; filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.5)); }
+    .service-icon.netflix-color { color: #ef4444; filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.5)); }
+    .service-icon.canva-color { color: #c084fc; filter: drop-shadow(0 0 8px rgba(192, 132, 252, 0.5)); }
+    .service-icon.youtube-color { color: #ff0000; filter: drop-shadow(0 0 8px rgba(255, 0, 0, 0.5)); }
+
+    /* ── 3D PREMIUM LOGO DESIGN ────────────────── */
+    .nav-brand {
+      perspective: 1000px;
+      transform-style: preserve-3d;
+    }
+    
+    .dg-logo-mark {
+      position: relative;
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      background: rgba(99, 102, 241, 0.08);
+      border: 1.5px solid rgba(99, 102, 241, 0.25);
+      transform-style: preserve-3d;
+      transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.5s, box-shadow 0.5s !important;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.4), 0 0 10px rgba(99, 102, 241, 0.2), inset 0 0 8px rgba(99, 102, 241, 0.3) !important;
+    }
+    
+    .dg-logo-mark i {
+      font-size: 18px;
+      color: #fff;
+      transform: translateZ(12px);
+      filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.6));
+      transition: transform 0.4s ease;
+    }
+    
+    .dg-logo-text {
+      font-family: 'Outfit', 'Inter', sans-serif;
+      font-weight: 800;
+      color: #fff;
+      font-size: 20px;
+      letter-spacing: 0.5px;
+      transform: translateZ(15px);
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      text-shadow: 0 1px 0 #e2e8f0, 0 2px 0 #94a3b8, 0 3px 0 #475569, 0 5px 10px rgba(0, 0, 0, 0.5), 0 0 10px rgba(99, 102, 241, 0.4) !important;
+    }
+    
+    .dg-logo-ring {
+      position: absolute;
+      border: 1.5px dashed rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      pointer-events: none;
+      opacity: 0.6;
+      transition: all 0.5s;
+    }
+    
+    .dg-logo-ring.outer {
+      inset: -5px;
+      transform: rotateX(65deg) rotateY(15deg) rotateZ(0deg);
+      animation: logo3DSpinOuter 12s linear infinite;
+      border-color: rgba(99, 102, 241, 0.4);
+    }
+    
+    .dg-logo-ring.inner {
+      inset: -2px;
+      transform: rotateX(-45deg) rotateY(35deg) rotateZ(0deg);
+      animation: logo3DSpinInner 9s linear infinite;
+      border-color: rgba(34, 211, 238, 0.4);
+    }
+    
+    @keyframes logo3DSpinOuter {
+      0% { transform: rotateX(65deg) rotateY(15deg) rotateZ(0deg); }
+      100% { transform: rotateX(65deg) rotateY(15deg) rotateZ(360deg); }
+    }
+    
+    @keyframes logo3DSpinInner {
+      0% { transform: rotateX(-45deg) rotateY(35deg) rotateZ(360deg); }
+      100% { transform: rotateX(-45deg) rotateY(35deg) rotateZ(0deg); }
+    }
+    
+    /* Hover Effects */
+    .nav-brand:hover .dg-logo-mark {
+      transform: scale(1.1) rotateY(22deg) rotateX(12deg) translateZ(5px);
+      border-color: var(--accent) !important;
+      box-shadow: 0 8px 25px rgba(6, 182, 212, 0.5), 0 0 25px rgba(6, 182, 212, 0.4), inset 0 0 15px rgba(6, 182, 212, 0.4) !important;
+    }
+    
+    .nav-brand:hover .dg-logo-mark i {
+      transform: translateZ(20px) scale(1.1);
+      color: var(--accent);
+      filter: drop-shadow(0 0 12px rgba(6, 182, 212, 0.8));
+    }
+    
+    .nav-brand:hover .dg-logo-ring.outer {
+      opacity: 0.95;
+      border-style: solid;
+      border-color: var(--accent);
+      animation-duration: 4s;
+      inset: -8px;
+    }
+    
+    .nav-brand:hover .dg-logo-ring.inner {
+      opacity: 0.95;
+      border-style: solid;
+      border-color: var(--accent2);
+      animation-duration: 3s;
+      inset: -4px;
+    }
+    
+    .nav-brand:hover .dg-logo-text {
+      color: var(--accent);
+      text-shadow: 0 1px 0 var(--accent), 0 2px 0 var(--brand), 0 3px 0 #312e81, 0 6px 15px rgba(0, 0, 0, 0.6), 0 0 20px rgba(6, 182, 212, 0.5) !important;
+    }
+
+    /* ── 3D PLANETARY LOGO SYSTEM ───────────────── */
+    .nav-brand {
+      perspective: 1000px;
+      transform-style: preserve-3d;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+    
+    .dg-logo-mark.planetary {
+      position: relative;
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      transform-style: preserve-3d;
+      transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      border: none !important;
+      background: transparent !important;
+      box-shadow: none !important;
+    }
+    
+    .dg-logo-planet {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #a855f7 0%, #6366f1 45%, #1e1b4b 100%);
+      box-shadow: inset -3px -3px 8px rgba(0, 0, 0, 0.8), 0 0 15px rgba(99, 102, 241, 0.6);
+      position: relative;
+      transform-style: preserve-3d;
+      display: grid;
+      place-items: center;
+      transition: transform 0.4s ease;
+    }
+    
+    .dg-logo-planet i.logo-decal {
+      font-size: 11px;
+      color: #22d3ee;
+      transform: translateZ(5px);
+      filter: drop-shadow(0 0 6px rgba(34, 211, 238, 0.8));
+    }
+    
+    .dg-logo-ring {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      transition: all 0.5s;
+    }
+    
+    .dg-logo-ring.outer-orbit {
+      inset: -6px;
+      border: 1.5px solid rgba(34, 211, 238, 0.45);
+      transform: rotateX(70deg) rotateY(15deg) rotateZ(0deg);
+      animation: logo3DSpinOuter 12s linear infinite;
+    }
+    
+    .dg-logo-ring.inner-orbit {
+      inset: -2px;
+      border: 1.2px dashed rgba(244, 114, 182, 0.5);
+      transform: rotateX(-50deg) rotateY(30deg) rotateZ(0deg);
+      animation: logo3DSpinInner 8s linear infinite;
+    }
+    
+    .dg-logo-satellite {
+      position: absolute;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #fbbf24;
+      box-shadow: 0 0 8px #fbbf24;
+      animation: logoSatelliteOrbit 6s linear infinite;
+      transform-style: preserve-3d;
+    }
+    
+    @keyframes logoSatelliteOrbit {
+      0% { transform: rotateX(70deg) rotateY(15deg) rotate(0deg) translate(22px) rotate(-0deg); }
+      100% { transform: rotateX(70deg) rotateY(15deg) rotate(360deg) translate(22px) rotate(-360deg); }
+    }
+    
+    /* Logo Hover State */
+    .nav-brand:hover .dg-logo-mark.planetary {
+      transform: scale(1.15) rotateY(20deg) rotateX(15deg);
+    }
+    
+    .nav-brand:hover .dg-logo-planet {
+      background: radial-gradient(circle at 30% 30%, #f472b6 0%, #a855f7 40%, #312e81 100%);
+      box-shadow: inset -3px -3px 8px rgba(0, 0, 0, 0.8), 0 0 20px rgba(168, 85, 247, 0.8);
+      transform: translateZ(5px);
+    }
+    
+    .nav-brand:hover .dg-logo-ring.outer-orbit {
+      border-color: var(--accent);
+      border-style: solid;
+      inset: -8px;
+    }
+    
+    .nav-brand:hover .dg-logo-ring.inner-orbit {
+      border-color: var(--accent2);
+      inset: -3px;
+    }
+
+
+
+    /* ── LOGO DECAL TEXT STYLE ──────────────────── */
+    .dg-logo-planet span.logo-decal-text {
+      font-family: 'Outfit', 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 950;
+      color: #22d3ee;
+      position: absolute;
+      top: 52%;
+      left: 50%;
+      transform: translate(-50%, -50%) translateZ(6px);
+      text-shadow: 0 0 6px rgba(34, 211, 238, 0.9);
+      letter-spacing: -0.7px;
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    /* ── SHARP HIGH-TECH PLANETARY LOGO DETAILS ── */
+    .dg-logo-planet::before {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 3px;
+      width: 7px;
+      height: 3px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.7);
+      transform: rotate(-28deg);
+      filter: blur(0.3px);
+      z-index: 2;
+      pointer-events: none;
+    }
+    
+    .logo-planet-grid {
+      position: absolute;
+      inset: 2px;
+      border-radius: 50%;
+      border: 0.8px dashed rgba(255, 255, 255, 0.2);
+      animation: logoGridSpin 15s linear infinite;
+      pointer-events: none;
+      z-index: 1;
+    }
+    
+    .dg-logo-dot {
+      position: absolute;
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: #22d3ee;
+      box-shadow: 0 0 6px #22d3ee;
+      pointer-events: none;
+      z-index: 3;
+    }
+    
+    .dg-logo-dot.dot-t {
+      top: -1px;
+      left: calc(50% - 1.5px);
+    }
+    
+    .dg-logo-dot.dot-r {
+      right: -1px;
+      top: calc(50% - 1.5px);
+      background: #f472b6;
+      box-shadow: 0 0 6px #f472b6;
+    }
+    
+    .dg-logo-dot.dot-b {
+      bottom: -1px;
+      left: calc(50% - 1.5px);
+    }
+    
+    .dg-logo-dot.dot-l {
+      left: -1px;
+      top: calc(50% - 1.5px);
+      background: #f472b6;
+      box-shadow: 0 0 6px #f472b6;
+    }
+    
+    @keyframes logoGridSpin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Joint Eruption Easing (from palm Z: -50px to coordinates) */
+    @keyframes cardErupt {
+      0% { transform: translate3d(0, 50px, -50px) scale(0); opacity: 0; filter: brightness(3); }
+      55% { transform: translate3d(0, 50px, -50px) scale(0); opacity: 0; filter: brightness(3); }
+      80% { transform: translate3d(calc(var(--tx) * 1.1), calc(var(--ty) * 1.1), 80px) scale(1.1); opacity: 1; filter: brightness(1.5); }
+      100% { transform: translate3d(var(--tx), var(--ty), 40px) scale(1); opacity: 1; filter: brightness(1); }
+    }
+    
+    /* Bobbing idle translation utilizing relative custom displacements */
+    @keyframes cardFloat {
+      0%, 100% { transform: translate3d(var(--tx), var(--ty), 40px) rotateY(var(--rx)) rotateX(var(--ry)); }
+      50% { transform: translate3d(calc(var(--tx) + var(--dx)), calc(var(--ty) + var(--dy)), calc(40px + var(--dz))) rotateY(calc(var(--rx) + 5deg)) rotateX(calc(var(--ry) - 5deg)); }
     }
 
     /* ── 3D CYBER ROBOT HAND & FLOATING CARDS ──── */
@@ -2137,808 +2396,3 @@
       cursor: pointer;
       z-index: 10;
     }
-
-    /* Joint Eruption Easing (from palm Z: -50px to coordinates) */
-    @keyframes cardErupt {
-      0% { transform: translate3d(0, 50px, -50px) scale(0); opacity: 0; filter: brightness(3); }
-      55% { transform: translate3d(0, 50px, -50px) scale(0); opacity: 0; filter: brightness(3); }
-      80% { transform: translate3d(calc(var(--tx) * 1.1), calc(var(--ty) * 1.1), 80px) scale(1.1); opacity: 1; filter: brightness(1.5); }
-      100% { transform: translate3d(var(--tx), var(--ty), 40px) scale(1); opacity: 1; filter: brightness(1); }
-    }
-    
-    /* Bobbing idle translation utilizing relative custom displacements */
-    @keyframes cardFloat {
-      0%, 100% { transform: translate3d(var(--tx), var(--ty), 40px) rotateY(var(--rx)) rotateX(var(--ry)); }
-      50% { transform: translate3d(calc(var(--tx) + var(--dx)), calc(var(--ty) + var(--dy)), calc(40px + var(--dz))) rotateY(calc(var(--rx) + 5deg)) rotateX(calc(var(--ry) - 5deg)); }
-    }
-  </style>
-</head>
-
-<body>
-
-  <div id="preloader">
-    <div class="preloader-container">
-      <div class="preloader-logo">
-        <div class="preloader-bolt"><span class="dg-logo-text" style="font-size: 20px;">DG</span></div>
-        <div class="preloader-ring"></div>
-      </div>
-      <p class="preloader-text">DG Store</p>
-      <p class="preloader-subtext">Đang tải trang chủ...</p>
-      <div class="preloader-bar">
-        <div class="preloader-progress"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ═══ GLIDING NAVBAR ═══ -->
-  <nav class="nav" id="landingNav">
-    <div class="nav-in">
-      <a class="nav-brand" href="home.html">
-        <div class="nav-brand-ic dg-logo-mark">
-          <span class="dg-logo-text">DG</span>
-          <span class="dg-logo-ring"></span>
-        </div>
-        <span class="nav-brand-txt">DG Store</span>
-      </a>
-      <div class="nav-links">
-        <a class="nav-lk" href="index.html"><i class="fa-solid fa-store"></i> Cửa hàng</a>
-        <a class="nav-lk" href="profile.html"><i class="fa-solid fa-user"></i> Tài khoản</a>
-        <a class="nav-lk" href="nap-tien.html"><i class="fa-solid fa-wallet"></i> Nạp tiền</a>
-        <a class="nav-lk" href="tracking.html"><i class="fa-solid fa-truck-fast"></i> Vận đơn</a>
-      </div>
-      <div class="nav-acts">
-        <div id="headerAuthActions">
-          <a class="btn-login" href="login.html"><i class="fa-solid fa-right-to-bracket"></i> <span
-              class="btn-text">Đăng ký / Đăng nhập</span></a>
-        </div>
-        <button class="mob-toggle" id="mobToggle" aria-label="Menu"><i class="fa-solid fa-bars"></i></button>
-      </div>
-    </div>
-  </nav>
-
-  <!-- Mobile Navigation Sidebar -->
-  <div class="mob-nav" id="mobNav">
-    <div class="mob-panel">
-      <button class="mob-close" id="mobClose"><i class="fa-solid fa-xmark"></i></button>
-      <div class="mob-links">
-        <a class="mob-lk" href="index.html"><i class="fa-solid fa-store"></i> Cửa hàng</a>
-        <a class="mob-lk" href="profile.html"><i class="fa-solid fa-user"></i> Tài khoản</a>
-        <a class="mob-lk" href="nap-tien.html"><i class="fa-solid fa-wallet"></i> Nạp tiền</a>
-        <a class="mob-lk" href="tracking.html"><i class="fa-solid fa-truck-fast"></i> Vận đơn</a>
-      </div>
-    </div>
-  </div>
-
-  <!-- ═══ HERO SECTION (Gear 5 Parallax + Glowing Display) ═══ -->
-  <section class="hero" id="heroSection">
-    <!-- Layer 1: Background image -->
-    <div class="hero-bg" id="heroBg"></div>
-
-    <!-- Layer 2: Cyber Dark/Vignette overlay -->
-    <div class="hero-overlay"></div>
-
-    <!-- Sparkles -->
-    <div class="hero-sparkle"></div>
-    <div class="hero-sparkle"></div>
-    <div class="hero-sparkle"></div>
-    <div class="hero-sparkle"></div>
-
-    <!-- Floating particles -->
-    <div class="hero-particles">
-      <div class="hp"></div>
-      <div class="hp"></div>
-      <div class="hp"></div>
-      <div class="hp"></div>
-    </div>
-
-    <!-- Layer 3: Typography & Content -->
-    <div class="hero-content">
-      <div class="hero-text-col">
-        <div class="hero-text-glow"></div>
-
-        <div class="hero-badge">
-          <span class="live-dot"></span>
-          <span>Hệ thống hoạt động tự động 24/7</span>
-        </div>
-
-        <h1 class="hero-h1">
-          Tài Khoản Số<br />
-          <span class="accent">Bản Quyền Tự Động</span>
-        </h1>
-
-        <p class="hero-sub">ChatGPT Plus, Netflix 4K, Canva Pro, Adobe CC — nhận ngay chỉ sau vài giây. Quy trình thanh
-          toán nhanh chóng, bảo hành 1 đổi 1 uy tín.</p>
-
-        <div class="hero-cta">
-          <a href="index.html" class="btn-primary"><i class="fa-solid fa-bolt"></i> Mua Ngay</a>
-          <a href="index.html" class="btn-ghost"><i class="fa-solid fa-eye"></i> Xem Sản Phẩm</a>
-        </div>
-
-        <div class="hero-stats">
-          <div class="glass-card hero-stat-card">
-            <div class="hero-stat-num" data-target="12500" data-suffix="+">0</div>
-            <div class="hero-stat-lbl">Khách hàng</div>
-          </div>
-          <div class="glass-card hero-stat-card">
-            <div class="hero-stat-num" data-target="85000" data-suffix="+">0</div>
-            <div class="hero-stat-lbl">Đơn đã giao</div>
-          </div>
-          <div class="glass-card hero-stat-card">
-            <div class="hero-stat-num" data-target="99.8" data-suffix="%" data-decimal="true">0</div>
-            <div class="hero-stat-lbl">Hài lòng</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ═══ MARQUEE BRANDS SLIDER ═══ -->
-  <section class="marquee-sec">
-    <div class="marquee-label">Đối tác & Dịch vụ liên kết hàng đầu</div>
-    <div class="marquee-track">
-      <div class="marquee-item"><i class="fa-solid fa-robot"></i> ChatGPT Plus</div>
-      <div class="marquee-item"><i class="fa-solid fa-film"></i> Netflix Premium</div>
-      <div class="marquee-item"><i class="fa-solid fa-wand-magic-sparkles"></i> Canva Pro</div>
-      <div class="marquee-item"><i class="fa-solid fa-palette"></i> Adobe CC</div>
-      <div class="marquee-item"><i class="fa-solid fa-scissors"></i> CapCut Pro</div>
-      <div class="marquee-item"><i class="fa-solid fa-laptop-code"></i> Windows / Office</div>
-      <div class="marquee-item"><i class="fa-brands fa-spotify"></i> Spotify Premium</div>
-      <div class="marquee-item"><i class="fa-brands fa-youtube"></i> YouTube Premium</div>
-      <div class="marquee-item"><i class="fa-solid fa-robot"></i> ChatGPT Plus</div>
-      <div class="marquee-item"><i class="fa-solid fa-film"></i> Netflix Premium</div>
-      <div class="marquee-item"><i class="fa-solid fa-wand-magic-sparkles"></i> Canva Pro</div>
-      <div class="marquee-item"><i class="fa-solid fa-palette"></i> Adobe CC</div>
-      <div class="marquee-item"><i class="fa-solid fa-scissors"></i> CapCut Pro</div>
-      <div class="marquee-item"><i class="fa-solid fa-laptop-code"></i> Windows / Office</div>
-      <div class="marquee-item"><i class="fa-brands fa-spotify"></i> Spotify Premium</div>
-      <div class="marquee-item"><i class="fa-brands fa-youtube"></i> YouTube Premium</div>
-    </div>
-  </section>
-
-  <!-- ═══ FEATURES (Tại sao chọn DG Store) ═══ -->
-  <section class="sec" id="features">
-    <div class="sec-head anim">
-      <div class="sec-badge"><i class="fa-solid fa-shield-halved"></i> Tại sao chọn DG Store?</div>
-      <h2 class="sec-h2">Nhanh chóng · Uy tín · Tự động</h2>
-      <p class="sec-p">Hệ thống giao hàng tự động hóa hoàn toàn 24/7, mang đến trải nghiệm tức thì cùng dịch vụ bảo hành
-        toàn diện.</p>
-    </div>
-
-    <div class="feat-grid">
-      <article class="glass-card feat-card anim">
-        <div class="feat-ic"
-          style="background: linear-gradient(135deg, #22d3ee, #0284c7); box-shadow: 0 0 15px rgba(34, 211, 238, 0.4);">
-          <i class="fa-solid fa-bolt"></i>
-        </div>
-        <h3 class="feat-h3">Giao Tự Động</h3>
-        <p class="feat-p">Nhận thông tin tài khoản ngay sau khi thanh toán thành công. Hệ thống xử lý tự động bất kể
-          ngày đêm.</p>
-      </article>
-
-      <article class="glass-card feat-card anim">
-        <div class="feat-ic"
-          style="background: linear-gradient(135deg, #10b981, #047857); box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);">
-          <i class="fa-solid fa-shield-halved"></i>
-        </div>
-        <h3 class="feat-h3">Bảo Hành 1 Đổi 1</h3>
-        <p class="feat-p">Đổi mới miễn phí nếu tài khoản gặp sự cố trong thời gian bảo hành. Đảm bảo quyền lợi khách
-          hàng tuyệt đối.</p>
-      </article>
-
-      <article class="glass-card feat-card anim">
-        <div class="feat-ic"
-          style="background: linear-gradient(135deg, #6366f1, #4f46e5); box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);">
-          <i class="fa-solid fa-wallet"></i>
-        </div>
-        <h3 class="feat-h3">Nạp Tiền VietQR</h3>
-        <p class="feat-p">Cổng nạp tự động thông qua mã VietQR. Tiền cộng vào ví ngay sau 60 giây giao dịch thành công.
-        </p>
-      </article>
-
-      <article class="glass-card feat-card anim">
-        <div class="feat-ic"
-          style="background: linear-gradient(135deg, #fbbf24, #d97706); box-shadow: 0 0 15px rgba(251, 191, 36, 0.4);">
-          <i class="fa-solid fa-headset"></i>
-        </div>
-        <h3 class="feat-h3">Hỗ Trợ 24/7</h3>
-        <p class="feat-p">Đội ngũ CSKH chuyên nghiệp trực qua Zalo, Telegram, Fanpage hỗ trợ xử lý sự cố nhanh chóng 24
-          giờ mỗi ngày.</p>
-      </article>
-
-      <article class="glass-card feat-card anim">
-        <div class="feat-ic"
-          style="background: linear-gradient(135deg, #f472b6, #db2777); box-shadow: 0 0 15px rgba(244, 114, 182, 0.4);">
-          <i class="fa-solid fa-lock"></i>
-        </div>
-        <h3 class="feat-h3">Bảo Mật Tuyệt Đối</h3>
-        <p class="feat-p">Mã hóa dữ liệu đầu cuối. Cung cấp tài khoản riêng biệt, không dùng chung hay xâm hại thông tin
-          cá nhân.</p>
-      </article>
-
-      <article class="glass-card feat-card anim">
-        <div class="feat-ic"
-          style="background: linear-gradient(135deg, #38bdf8, #0284c7); box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);">
-          <i class="fa-solid fa-tags"></i>
-        </div>
-        <h3 class="feat-h3">Giá Tốt Hàng Đầu</h3>
-        <p class="feat-p">Tiết kiệm lên tới 70% so với việc mua trực tiếp tại nhà phát hành dịch vụ. Chương trình ưu đãi
-          liên tục mở rộng.</p>
-      </article>
-    </div>
-  </section>
-
-
-  <!-- ═══ CALL TO ACTION ═══ -->
-  <section class="cta-sec">
-    <div class="glass-card cta-box anim">
-      <div class="cta-glow-dot"></div>
-      <h2 class="cta-h2">Sẵn Sàng Trải Nghiệm?</h2>
-      <p class="cta-p">Đăng ký tài khoản miễn phí và tham gia hệ sinh thái tài khoản số tự động chỉ với vài thao tác cơ
-        bản.</p>
-      <div class="cta-btns">
-        <a href="login.html" class="btn-primary"><i class="fa-solid fa-user-plus"></i> Tạo Tài Khoản</a>
-        <a href="index.html" class="btn-ghost"><i class="fa-solid fa-store"></i> Vào Cửa Hàng</a>
-      </div>
-    </div>
-  </section>
-
-  <!-- ═══ FOOTER ═══ -->
-  <footer class="footer" style="padding: 30px 0; border-top: 1px solid rgba(255, 255, 255, 0.05); margin-top: 60px;">
-    <div style="text-align: center; max-width: 1200px; margin: 0 auto; padding: 0 20px;">
-      <p style="margin: 0; color: var(--text-sub); font-size: 13.5px; opacity: 0.85;">© 2026 DG Store. All rights
-        reserved. Designed for ultimate digital automation.</p>
-    </div>
-  </footer>
-
-  <!-- ═══ SCRIPTS ═══ -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-  <script>
-    const API_BASE = window.DG_API_BASE || window.SKYNET_API_BASE || '/api';
-    function formatMoney(v) { return `${Number(v || 0).toLocaleString('vi-VN')}đ`; }
-    function getStoredUser() { try { return JSON.parse(localStorage.getItem('user') || 'null'); } catch { return null; } }
-    function clearAuthSession() { localStorage.removeItem('token'); localStorage.removeItem('user'); localStorage.removeItem('isLoggedIn'); }
-
-    function renderHeaderLoggedOut() {
-      const t = document.getElementById('headerAuthActions');
-      if (t) t.innerHTML = '<a class="btn-login" href="login.html"><i class="fa-solid fa-right-to-bracket"></i> <span class="btn-text">Đăng ký / Đăng nhập</span></a>';
-    }
-
-    function renderHeaderUser(user) {
-      const t = document.getElementById('headerAuthActions');
-      if (!t) return;
-
-      const displayName = user.fullName || user.username || 'User';
-      const initial = displayName.trim().charAt(0).toUpperCase() || 'U';
-      const safeName = displayName;
-
-      const adminLink = user.role === 'admin'
-        ? `<a class="btn-nav-a" href="admin.html"><i class="fa-solid fa-gauge-high"></i> <span>Admin</span></a>`
-        : '';
-
-      t.innerHTML = `
-        <div class="nav-user-container" style="display: flex; align-items: center; gap: 10px;">
-          ${adminLink}
-          <a class="nav-user" href="profile.html" title="Mở tài khoản">
-            <span class="nav-av">${initial}</span>
-            <span class="nav-uinfo">
-              <strong>${safeName}</strong>
-              <small>${formatMoney(user.balance)}</small>
-            </span>
-          </a>
-          <button class="btn-out" onclick="handleHeaderLogout()" title="Đăng xuất">
-            <i class="fa-solid fa-right-from-bracket"></i>
-          </button>
-        </div>
-      `;
-    }
-
-    async function syncHeaderAuth() {
-      const token = localStorage.getItem('token');
-      const cachedUser = getStoredUser();
-      if (cachedUser) renderHeaderUser(cachedUser);
-      if (!token) { if (!cachedUser) renderHeaderLoggedOut(); return; }
-      try {
-        const res = await fetch(`${API_BASE}/me`, { headers: { Authorization: `Bearer ${token}` } });
-        const data = await res.json().catch(() => ({}));
-        if (!res.ok || data.ok === false || !data.user) {
-          clearAuthSession(); renderHeaderLoggedOut(); return;
-        }
-        localStorage.setItem('user', JSON.stringify(data.user));
-        localStorage.setItem('isLoggedIn', 'true');
-        renderHeaderUser(data.user);
-      } catch {
-        if (!cachedUser) renderHeaderLoggedOut();
-      }
-    }
-    function handleHeaderLogout() { clearAuthSession(); renderHeaderLoggedOut(); }
-
-    // Theme Toggle Disabled (Defaulting to Dark Theme)
-    localStorage.removeItem('theme');
-    document.body.classList.remove('light-mode');
-
-    // Mobile Nav Toggle
-    const mobToggle = document.getElementById('mobToggle');
-    const mobClose = document.getElementById('mobClose');
-    const mobNav = document.getElementById('mobNav');
-    if (mobToggle && mobNav) {
-      mobToggle.addEventListener('click', () => mobNav.classList.add('open'));
-    }
-    if (mobClose && mobNav) {
-      mobClose.addEventListener('click', () => mobNav.classList.remove('open'));
-    }
-
-    // Parallax scroll & Nav color change
-    window.addEventListener('scroll', () => {
-      const scrolled = window.pageYOffset;
-      const heroBg = document.getElementById('heroBg');
-      if (heroBg) {
-        heroBg.style.transform = `translateY(${scrolled * 0.35}px)`;
-      }
-      const nav = document.getElementById('landingNav');
-      if (nav) {
-        if (scrolled > 50) {
-          nav.classList.add('scrolled');
-        } else {
-          nav.classList.remove('scrolled');
-        }
-      }
-    });
-
-    // Intersection Observer for fade-in animations
-    const animElements = document.querySelectorAll('.anim');
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('vis');
-        }
-      });
-    }, { threshold: 0.1 });
-    animElements.forEach(el => observer.observe(el));
-
-    // Number count up animation for stats
-    const statsElements = document.querySelectorAll('.hero-stat-num, .stat-num');
-    const statsObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting && !entry.target.classList.contains('counted')) {
-          entry.target.classList.add('counted');
-          const target = parseFloat(entry.target.getAttribute('data-target'));
-          const suffix = entry.target.getAttribute('data-suffix') || '';
-          const decimal = entry.target.getAttribute('data-decimal') === 'true';
-          let current = 0;
-          const duration = 2000;
-          const stepTime = 30;
-          const steps = duration / stepTime;
-          const increment = target / steps;
-          const timer = setInterval(() => {
-            current += increment;
-            if (current >= target) {
-              current = target;
-              clearInterval(timer);
-            }
-            entry.target.innerText = (decimal ? current.toFixed(1) : Math.floor(current).toLocaleString('vi-VN')) + suffix;
-          }, stepTime);
-        }
-      });
-    }, { threshold: 0.15 });
-    statsElements.forEach(el => statsObserver.observe(el));
-
-    syncHeaderAuth();
-
-    // ── WebGL Three.js 3D Robot Arm & Particles ──
-    const initRobot3D = () => {
-      const canvas = document.getElementById('robotCanvas');
-      if (!canvas) {
-        const preloader = document.getElementById('preloader');
-        if (preloader) {
-          preloader.classList.add('opacity-0');
-          setTimeout(() => preloader.remove(), 500);
-        }
-        return;
-      }
-
-      const container = canvas.parentElement;
-      const width = container.clientWidth || 320;
-      const height = container.clientHeight || 400;
-
-      const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
-      camera.position.set(0, 0, 8);
-
-      const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
-      renderer.setSize(width, height);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-      const ambientLight = new THREE.AmbientLight(0x0a0f1d, 1.2);
-      scene.add(ambientLight);
-
-      const dirLight1 = new THREE.DirectionalLight(0x6366f1, 4);
-      dirLight1.position.set(5, 5, 5);
-      scene.add(dirLight1);
-
-      const dirLight2 = new THREE.DirectionalLight(0x22d3ee, 3);
-      dirLight2.position.set(-5, 2, 3);
-      scene.add(dirLight2);
-
-      const pointLight = new THREE.PointLight(0xf472b6, 4, 12);
-      pointLight.position.set(0, 0.5, 0.5);
-      scene.add(pointLight);
-
-      const metalMat = new THREE.MeshStandardMaterial({
-        color: 0x1e293b,
-        metalness: 0.95,
-        roughness: 0.12,
-        emissive: 0x070b19,
-        flatShading: false
-      });
-
-      const jointMetalMat = new THREE.MeshStandardMaterial({
-        color: 0xe2e8f0,
-        metalness: 0.98,
-        roughness: 0.05,
-        emissive: 0x0f172a
-      });
-
-      const glowMat = new THREE.MeshStandardMaterial({
-        color: 0x22d3ee,
-        emissive: 0x22d3ee,
-        emissiveIntensity: 2.5,
-        transparent: true,
-        opacity: 0.95
-      });
-
-      const coreMat = new THREE.MeshStandardMaterial({
-        color: 0xffffff,
-        emissive: 0xf472b6,
-        emissiveIntensity: 4.0
-      });
-
-      const armGroup = new THREE.Group();
-      scene.add(armGroup);
-
-      const forearmGeo = new THREE.CylinderGeometry(0.28, 0.42, 2.2, 16);
-      const forearm = new THREE.Mesh(forearmGeo, metalMat);
-      forearm.position.y = -2;
-      armGroup.add(forearm);
-
-      const bandGeo = new THREE.CylinderGeometry(0.29, 0.33, 0.15, 16);
-      const band = new THREE.Mesh(bandGeo, glowMat);
-      band.position.y = -1.8;
-      armGroup.add(band);
-
-      const band2Geo = new THREE.CylinderGeometry(0.35, 0.38, 0.1, 16);
-      const band2 = new THREE.Mesh(band2Geo, glowMat);
-      band2.position.y = -2.4;
-      armGroup.add(band2);
-
-      const wristGeo = new THREE.SphereGeometry(0.36, 20, 20);
-      const wrist = new THREE.Mesh(wristGeo, jointMetalMat);
-      wrist.position.y = -0.7;
-      armGroup.add(wrist);
-
-      const wristRingGeo = new THREE.TorusGeometry(0.42, 0.04, 8, 24);
-      const wristRing = new THREE.Mesh(wristRingGeo, glowMat);
-      wristRing.rotation.x = Math.PI / 2;
-      wristRing.position.y = -0.7;
-      armGroup.add(wristRing);
-
-      const palmGroup = new THREE.Group();
-      palmGroup.position.set(0, 0, 0);
-      armGroup.add(palmGroup);
-
-      const palmGeo = new THREE.BoxGeometry(0.95, 0.18, 0.85);
-      const palm = new THREE.Mesh(palmGeo, metalMat);
-      palm.position.y = -0.2;
-      palmGroup.add(palm);
-
-      const coreGeo = new THREE.SphereGeometry(0.22, 20, 20);
-      const core = new THREE.Mesh(coreGeo, coreMat);
-      core.position.set(0, -0.05, 0.1);
-      palmGroup.add(core);
-
-      const ringGeo = new THREE.TorusGeometry(0.32, 0.04, 8, 24);
-      const ring = new THREE.Mesh(ringGeo, glowMat);
-      ring.rotation.x = Math.PI / 2;
-      ring.position.set(0, -0.05, 0.1);
-      palmGroup.add(ring);
-
-      const fingerList = [];
-      const createFinger = (offsetName, xOffset, zOffset, lengthFactor, fingerAngle) => {
-        const finger = new THREE.Group();
-        finger.position.set(xOffset, -0.1, zOffset);
-        finger.rotation.z = fingerAngle;
-        palmGroup.add(finger);
-
-        const k1 = new THREE.Mesh(new THREE.SphereGeometry(0.09, 12, 12), jointMetalMat);
-        finger.add(k1);
-        
-        const k1Glow = new THREE.Mesh(new THREE.TorusGeometry(0.11, 0.015, 6, 12), glowMat);
-        k1Glow.rotation.x = Math.PI / 2;
-        k1.add(k1Glow);
-
-        const phalanx1Geo = new THREE.CylinderGeometry(0.06, 0.08, 0.45 * lengthFactor, 10);
-        phalanx1Geo.translate(0, 0.225 * lengthFactor, 0);
-        const p1 = new THREE.Mesh(phalanx1Geo, metalMat);
-        finger.add(p1);
-
-        const k2 = new THREE.Mesh(new THREE.SphereGeometry(0.075, 12, 12), jointMetalMat);
-        k2.position.y = 0.45 * lengthFactor;
-        p1.add(k2);
-        
-        const k2Glow = new THREE.Mesh(new THREE.TorusGeometry(0.09, 0.015, 6, 12), glowMat);
-        k2Glow.rotation.x = Math.PI / 2;
-        k2.add(k2Glow);
-
-        const phalanx2Geo = new THREE.CylinderGeometry(0.05, 0.06, 0.35 * lengthFactor, 10);
-        phalanx2Geo.translate(0, 0.175 * lengthFactor, 0);
-        const p2 = new THREE.Mesh(phalanx2Geo, metalMat);
-        p2.position.y = 0.45 * lengthFactor;
-        p1.add(p2);
-
-        let p3 = null;
-        if (offsetName !== 'thumb') {
-          const k3 = new THREE.Mesh(new THREE.SphereGeometry(0.06, 12, 12), jointMetalMat);
-          k3.position.y = 0.35 * lengthFactor;
-          p2.add(k3);
-          
-          const k3Glow = new THREE.Mesh(new THREE.TorusGeometry(0.072, 0.012, 6, 12), glowMat);
-          k3Glow.rotation.x = Math.PI / 2;
-          k3.add(k3Glow);
-
-          const phalanx3Geo = new THREE.CylinderGeometry(0.035, 0.05, 0.25 * lengthFactor, 10);
-          phalanx3Geo.translate(0, 0.125 * lengthFactor, 0);
-          p3 = new THREE.Mesh(phalanx3Geo, metalMat);
-          p3.position.y = 0.35 * lengthFactor;
-          p2.add(p3);
-        }
-
-        fingerList.push({ name: offsetName, root: finger, p1, p2, p3 });
-      };
-
-      createFinger('thumb', -0.45, 0.1, 0.8, -Math.PI / 6);
-      createFinger('index', -0.28, 0.35, 1.0, -Math.PI / 24);
-      createFinger('middle', 0.0, 0.4, 1.1, 0);
-      createFinger('ring', 0.26, 0.33, 1.0, Math.PI / 24);
-      createFinger('pinky', 0.46, 0.18, 0.85, Math.PI / 12);
-
-      const thumb = fingerList.find(f => f.name === 'thumb');
-      thumb.root.rotation.x = Math.PI / 4;
-
-      const particleCount = 80;
-      const particlesGeo = new THREE.BufferGeometry();
-      const positions = new Float32Array(particleCount * 3);
-      const velocities = [];
-
-      for (let i = 0; i < particleCount; i++) {
-        positions[i * 3] = (Math.random() - 0.5) * 6;
-        positions[i * 3 + 1] = (Math.random() - 0.5) * 5 - 2;
-        positions[i * 3 + 2] = (Math.random() - 0.5) * 3;
-
-        velocities.push({
-          y: 0.01 + Math.random() * 0.02,
-          x: (Math.random() - 0.5) * 0.005,
-          z: (Math.random() - 0.5) * 0.005,
-          originalX: positions[i * 3],
-          speedOffset: Math.random() * 100
-        });
-      }
-
-      particlesGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-
-      const createParticleTexture = () => {
-        const c = document.createElement('canvas');
-        c.width = 16;
-        c.height = 16;
-        const ctx = c.getContext('2d');
-        const grad = ctx.createRadialGradient(8, 8, 0, 8, 8, 8);
-        grad.addColorStop(0, 'rgba(255,255,255,1)');
-        grad.addColorStop(0.3, 'rgba(168,85,247,0.8)');
-        grad.addColorStop(1, 'rgba(99,102,241,0)');
-        ctx.fillStyle = grad;
-        ctx.fillRect(0, 0, 16, 16);
-        return new THREE.CanvasTexture(c);
-      };
-
-      const particleMat = new THREE.PointsMaterial({
-        size: 0.15,
-        map: createParticleTexture(),
-        transparent: true,
-        blending: THREE.AdditiveBlending,
-        depthWrite: false
-      });
-
-      const particleSystem = new THREE.Points(particlesGeo, particleMat);
-      scene.add(particleSystem);
-
-      let mouseX = 0;
-      let mouseY = 0;
-      let targetRotY = 0;
-      let targetRotX = 0;
-
-      window.addEventListener('mousemove', (e) => {
-        const rect = canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        mouseX = (x / rect.width - 0.5) * 2;
-        mouseY = (y / rect.height - 0.5) * 2;
-        targetRotY = mouseX * 0.45;
-        targetRotX = -mouseY * 0.35;
-      });
-
-      armGroup.position.y = -6;
-      core.scale.set(0, 0, 0);
-      ring.scale.set(0, 0, 0);
-
-      fingerList.forEach(f => {
-        if (f.name === 'thumb') {
-          f.p1.rotation.x = Math.PI / 2.5;
-          f.p2.rotation.x = Math.PI / 2.5;
-        } else {
-          f.p1.rotation.x = -Math.PI / 2;
-          f.p2.rotation.x = -Math.PI / 1.8;
-          f.p3.rotation.x = -Math.PI / 2.2;
-        }
-      });
-
-      gsap.set(".floating-prod-card", { scale: 0, opacity: 0 });
-
-      const tl = gsap.timeline();
-
-      tl.to(armGroup.position, {
-        y: 0.5,
-        duration: 1.8,
-        ease: "power3.out"
-      });
-
-      tl.to(armGroup.rotation, {
-        y: Math.PI * 2,
-        duration: 1.6,
-        ease: "back.out(1.1)",
-      }, "-=1.4");
-
-      fingerList.forEach((f, idx) => {
-        const delay = "-=" + (1.2 - idx * 0.08);
-        if (f.name === 'thumb') {
-          tl.to(f.p1.rotation, { x: 0, duration: 1.4, ease: "elastic.out(1, 0.5)" }, delay);
-          tl.to(f.p2.rotation, { x: 0, duration: 1.4, ease: "elastic.out(1, 0.5)" }, "<");
-        } else {
-          tl.to(f.p1.rotation, { x: 0.15, duration: 1.5, ease: "elastic.out(1, 0.55)" }, delay);
-          tl.to(f.p2.rotation, { x: 0, duration: 1.5, ease: "elastic.out(1, 0.55)" }, "<");
-          tl.to(f.p3.rotation, { x: -0.1, duration: 1.5, ease: "elastic.out(1, 0.55)" }, "<");
-        }
-      });
-
-      tl.to(core.scale, {
-        x: 1, y: 1, z: 1,
-        duration: 0.6,
-        ease: "elastic.out(1, 0.4)",
-        onStart: () => {
-          pointLight.intensity = 6;
-        }
-      }, "-=1.0");
-
-      tl.to(ring.scale, {
-        x: 1, y: 1, z: 1,
-        duration: 0.8,
-        ease: "power2.out"
-      }, "<");
-
-      tl.to(".floating-prod-card", {
-        scale: 1,
-        opacity: 1,
-        duration: 1.2,
-        ease: "back.out(1.5)",
-        stagger: 0.1,
-        onComplete: () => {
-          const preloader = document.getElementById('preloader');
-          if (preloader) {
-            preloader.classList.add('opacity-0');
-            setTimeout(() => preloader.remove(), 500);
-          }
-        }
-      }, "-=0.6");
-
-      let clock = new THREE.Clock();
-
-      const animate = () => {
-        requestAnimationFrame(animate);
-
-        const elapsedTime = clock.getElapsedTime();
-
-        armGroup.rotation.y += (targetRotY - armGroup.rotation.y) * 0.08;
-        armGroup.rotation.x += (targetRotX - armGroup.rotation.x) * 0.08;
-        armGroup.position.y = 0.5 + Math.sin(elapsedTime * 1.8) * 0.04;
-
-        ring.rotation.z += 0.02;
-        core.rotation.y += 0.01;
-
-        pointLight.intensity = 4 + Math.sin(elapsedTime * 4) * 1.5;
-
-        const introProgress = Math.min(elapsedTime / 2.8, 1.0);
-        if (introProgress >= 1.0) {
-          fingerList.forEach((f, idx) => {
-            const wiggleVal = Math.sin(elapsedTime * 1.5 + idx * 0.6) * 0.05;
-            if (f.name === 'thumb') {
-              f.p1.rotation.x = wiggleVal * 0.4;
-              f.p2.rotation.x = wiggleVal * 0.8;
-            } else {
-              f.p1.rotation.x = 0.15 + wiggleVal;
-              f.p2.rotation.x = wiggleVal * 0.8;
-              f.p3.rotation.x = -0.1 + wiggleVal * 0.5;
-            }
-          });
-        }
-
-        const posAttr = particlesGeo.attributes.position.array;
-        const fingerTips = [];
-        fingerList.forEach(f => {
-          const tip = new THREE.Vector3();
-          f.p3 ? f.p3.getWorldPosition(tip) : f.p2.getWorldPosition(tip);
-          fingerTips.push(tip);
-        });
-
-        for (let i = 0; i < particleCount; i++) {
-          const idx = i * 3;
-          const vel = velocities[i];
-
-          posAttr[idx + 1] += vel.y;
-          posAttr[idx] += vel.x + Math.sin(elapsedTime + vel.speedOffset) * 0.003;
-          posAttr[idx + 2] += vel.z;
-
-          const pPos = new THREE.Vector3(posAttr[idx], posAttr[idx + 1], posAttr[idx + 2]);
-
-          let closestTip = null;
-          let minDist = 2.0;
-
-          fingerTips.forEach(tip => {
-            const dist = pPos.distanceTo(tip);
-            if (dist < minDist) {
-              minDist = dist;
-              closestTip = tip;
-            }
-          });
-
-          if (closestTip) {
-            posAttr[idx] += (closestTip.x - posAttr[idx]) * 0.08;
-            posAttr[idx + 1] += (closestTip.y - posAttr[idx + 1]) * 0.08;
-            posAttr[idx + 2] += (closestTip.z - posAttr[idx + 2]) * 0.08;
-          }
-
-          if (posAttr[idx + 1] > 3.5) {
-            posAttr[idx] = (Math.random() - 0.5) * 6;
-            posAttr[idx + 1] = -2.5;
-            posAttr[idx + 2] = (Math.random() - 0.5) * 3;
-          }
-        }
-
-        particlesGeo.attributes.position.needsUpdate = true;
-        renderer.render(scene, camera);
-      };
-
-      animate();
-
-      window.addEventListener('resize', () => {
-        const w = container.clientWidth || 320;
-        const h = container.clientHeight || 400;
-        camera.aspect = w / h;
-        camera.updateProjectionMatrix();
-        renderer.setSize(w, h);
-      });
-    };
-
-    window.addEventListener('DOMContentLoaded', () => {
-      initRobot3D();
-      
-      // Hide preloader like index.html (common.js behavior)
-      setTimeout(() => {
-        const preloader = document.getElementById('preloader');
-        if (preloader) {
-          preloader.classList.add('opacity-0');
-          setTimeout(() => preloader.remove(), 500);
-        }
-      }, 400);
-    });
-  </script>
-</body>
-
-</html>
