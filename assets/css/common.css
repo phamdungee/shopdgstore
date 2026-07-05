@@ -718,20 +718,22 @@ img {
   top: 72px;
   left: 0;
   bottom: 0;
-  width: 68px;
-  background: rgba(10, 14, 26, 0.9);
-  border-right: 1px solid var(--line);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  width: 72px;
+  background: linear-gradient(180deg, rgba(8,10,22,0.97) 0%, rgba(12,16,32,0.97) 100%);
+  border-right: 1px solid rgba(255,255,255,0.055);
+  backdrop-filter: blur(24px) saturate(1.5);
+  -webkit-backdrop-filter: blur(24px) saturate(1.5);
   z-index: 900;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 16px 8px;
+  gap: 4px;
+  padding: 14px 8px 24px;
   overflow-y: auto;
   overflow-x: hidden;
-  transition: width 0.3s var(--ease-smooth);
+  transition: width 0.32s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.32s ease;
   scrollbar-width: none;
+  box-shadow: 4px 0 24px rgba(0,0,0,0.3);
 }
 
 .sk-sidebar-new::-webkit-scrollbar {
@@ -739,139 +741,223 @@ img {
 }
 
 .sk-sidebar-new:hover {
-  width: 220px;
+  width: 230px;
+  box-shadow: 8px 0 40px rgba(0,0,0,0.45);
 }
 
+/* ── Section groups ── */
 .sk-sidebar-new-nav {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
 }
 
 .sk-sidebar-new-nav + .sk-sidebar-new-nav {
-  margin-top: 8px;
-  padding-top: 8px;
-  border-top: 1px solid var(--line);
+  margin-top: 6px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  position: relative;
 }
 
+/* ── Section headers ── */
 .sidebar-title {
-  font-size: 9px;
+  font-size: 9.5px;
   font-weight: 800;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--muted-dark);
-  padding: 4px 14px;
+  color: rgba(148,163,184,0.45);
+  padding: 2px 12px 6px;
   white-space: nowrap;
   opacity: 0;
-  transition: opacity 0.2s;
+  max-height: 0;
+  overflow: hidden;
+  transition: opacity 0.25s ease, max-height 0.25s ease;
+  pointer-events: none;
 }
 
 .sk-sidebar-new:hover .sidebar-title {
   opacity: 1;
+  max-height: 24px;
 }
 
+/* Color-coded section titles */
+.sk-sidebar-new-nav:nth-child(1) .sidebar-title { color: rgba(167,139,250,0.6); }
+.sk-sidebar-new-nav:nth-child(2) .sidebar-title { color: rgba(52,211,153,0.6); }
+.sk-sidebar-new-nav:nth-child(3) .sidebar-title { color: rgba(56,189,248,0.6); }
+
+/* ── Nav items ── */
 .nav-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 10px 14px;
+  gap: 11px;
+  padding: 9px 12px;
   font-size: 13px;
-  font-weight: 600;
-  color: var(--muted);
-  border-radius: var(--radius);
+  font-weight: 500;
+  color: rgba(148,163,184,0.75);
+  border-radius: 10px;
   white-space: nowrap;
-  transition: all var(--transition);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   cursor: pointer;
-  border: none;
-  background: none;
+  border: 1px solid transparent;
+  background: transparent;
   text-align: left;
   width: 100%;
+  text-decoration: none;
 }
 
 .nav-item-sub {
-  padding-left: 14px;
+  padding-left: 12px;
 }
 
 .sk-sidebar-new:hover .nav-item-sub {
-  padding-left: 28px;
+  padding-left: 24px;
 }
 
+/* ── Icon wrappers — each icon in a colored bubble ── */
 .nav-item i,
 .nav-item .sk-icon,
 .nav-item img {
-  width: 20px;
-  min-width: 20px;
-  height: 20px;
+  width: 34px;
+  min-width: 34px;
+  height: 34px;
   object-fit: cover;
-  border-radius: 4px;
+  border-radius: 9px;
   text-align: center;
-  font-size: 16.5px;
-  transition: all var(--transition);
+  font-size: 15px;
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  flex-shrink: 0;
+  padding: 2px;
 }
 
-/* Specific glowing color signatures for each menu icon */
-.nav-item i.fa-house { color: #a78bfa !important; }
-.nav-item i.fa-boxes-stacked { color: #22d3ee !important; }
-.nav-item i.fa-shopee { color: #ff683b !important; }
-.nav-item i.fa-share-nodes { color: #f472b6 !important; }
-.nav-item i.fa-list-check { color: #fbbf24 !important; }
-.nav-item i.fa-receipt { color: #34d399 !important; }
-.nav-item i.fa-wallet { color: #10b981 !important; }
-.nav-item i.fa-circle-user { color: #38bdf8 !important; }
-.nav-item i.fa-shield-halved { color: #818cf8 !important; }
-.nav-item i.fa-headset { color: #c084fc !important; }
-.nav-item i.fa-gauge-high { color: #f43f5e !important; }
-
-/* Micro-animations on hover */
-.nav-item:hover i,
-.nav-item:hover img {
-  transform: scale(1.22) rotate(4deg);
-  filter: brightness(1.2) drop-shadow(0 0 6px currentColor);
+/* Specific icon bubble colors */
+.nav-item i.fa-house {
+  color: #a78bfa;
+  background: rgba(167,139,250,0.12);
+  border-color: rgba(167,139,250,0.2);
+}
+.nav-item i.fa-boxes-stacked {
+  color: #22d3ee;
+  background: rgba(34,211,238,0.12);
+  border-color: rgba(34,211,238,0.2);
+}
+.nav-item img {
+  background: rgba(255,104,59,0.1);
+  border-color: rgba(255,104,59,0.2);
+  border-radius: 9px;
+}
+.nav-item i.fa-share-nodes {
+  color: #f472b6;
+  background: rgba(244,114,182,0.12);
+  border-color: rgba(244,114,182,0.2);
+}
+.nav-item i.fa-list-check {
+  color: #fbbf24;
+  background: rgba(251,191,36,0.12);
+  border-color: rgba(251,191,36,0.2);
+}
+.nav-item i.fa-receipt {
+  color: #34d399;
+  background: rgba(52,211,153,0.12);
+  border-color: rgba(52,211,153,0.2);
+}
+.nav-item i.fa-wallet {
+  color: #10b981;
+  background: rgba(16,185,129,0.12);
+  border-color: rgba(16,185,129,0.2);
+}
+.nav-item i.fa-circle-user {
+  color: #38bdf8;
+  background: rgba(56,189,248,0.12);
+  border-color: rgba(56,189,248,0.2);
+}
+.nav-item i.fa-shield-halved {
+  color: #818cf8;
+  background: rgba(129,140,248,0.12);
+  border-color: rgba(129,140,248,0.2);
+}
+.nav-item i.fa-headset {
+  color: #c084fc;
+  background: rgba(192,132,252,0.12);
+  border-color: rgba(192,132,252,0.2);
+}
+.nav-item i.fa-gauge-high {
+  color: #f43f5e;
+  background: rgba(244,63,94,0.12);
+  border-color: rgba(244,63,94,0.2);
 }
 
+/* ── Labels ── */
 .nav-label {
   opacity: 0;
-  transition: opacity 0.2s;
+  max-width: 0;
   overflow: hidden;
+  transition: opacity 0.25s ease, max-width 0.32s ease;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
 }
 
 .sk-sidebar-new:hover .nav-label {
   opacity: 1;
+  max-width: 160px;
 }
 
+/* ── Hover state ── */
 .nav-item:hover {
-  color: var(--brand-light);
-  background: var(--brand-soft);
+  color: #f1f5f9;
+  background: rgba(255,255,255,0.07);
+  border-color: rgba(255,255,255,0.09);
+  transform: translateX(2px);
 }
 
+.nav-item:hover i,
+.nav-item:hover img {
+  transform: scale(1.1);
+  filter: brightness(1.25) drop-shadow(0 0 8px currentColor);
+  border-color: rgba(255,255,255,0.25);
+}
+
+/* ── Active state — glowing pill ── */
 .nav-item.active,
 .nav-item.menu-link.active {
-  color: var(--brand-light);
-  background: var(--brand-soft);
+  color: #fff;
+  background: rgba(99,102,241,0.18);
+  border-color: rgba(99,102,241,0.35);
+  box-shadow: inset 0 0 20px rgba(99,102,241,0.08),
+              0 2px 12px rgba(99,102,241,0.15);
 }
 
-/* Neon active indicator */
+.nav-item.active i,
+.nav-item.menu-link.active i {
+  filter: brightness(1.3) drop-shadow(0 0 10px currentColor);
+}
+
+/* Glowing left indicator bar */
 .nav-item.active::before,
 .nav-item.menu-link.active::before {
   content: '';
   position: absolute;
-  left: 0;
+  left: -8px;
   top: 50%;
   transform: translateY(-50%);
   width: 3px;
-  height: 20px;
-  background: var(--brand-gradient);
+  height: 22px;
+  background: linear-gradient(180deg, #818cf8, #6366f1);
   border-radius: 0 4px 4px 0;
-  box-shadow: 0 0 12px var(--brand-glow);
+  box-shadow: 0 0 12px rgba(99,102,241,0.7),
+              0 0 24px rgba(99,102,241,0.35);
 }
 
 /* ── LAYOUT ───────────────────────────────────── */
 .sk-layout {
-  margin-left: 68px;
+  margin-left: 72px;
   padding: 24px;
   min-height: calc(100vh - 72px);
   transition: margin-left 0.3s var(--ease-smooth);
@@ -1934,7 +2020,7 @@ body.light-mode .sk-product-card-vertical > a {
 
 /* ── FOOTER ───────────────────────────────────── */
 .sk-footer {
-  margin-left: 68px;
+  margin-left: 72px;
   padding: 0 24px;
   margin-top: 48px;
 }
@@ -2499,7 +2585,7 @@ body.light-mode .sk-product-card-vertical > a {
 
 /* ── CART PAGE ────────────────────────────────── */
 .sk-cart-page {
-  margin-left: 68px;
+  margin-left: 72px;
   padding: 24px;
 }
 
