@@ -2929,6 +2929,7 @@ body.light-mode .shopee-card-inner {
 }
 
 @media (max-width: 980px) {
+  /* Collapse sidebar to icon-only bar */
   .sk-sidebar-new {
     width: 0 !important;
     padding: 0 !important;
@@ -2940,15 +2941,24 @@ body.light-mode .shopee-card-inner {
     width: 0 !important;
   }
 
+  /* When hamburger opens sidebar — show full labels */
   .sk-sidebar-expanded .sk-sidebar-new {
     width: 260px !important;
-    padding: 16px 8px !important;
-    border-right: 1px solid var(--line) !important;
+    padding: 14px 8px 24px !important;
+    border-right: 1px solid rgba(255,255,255,0.06) !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
   }
 
-  .sk-sidebar-expanded .sk-sidebar-new .nav-label,
+  /* ✅ FIX: nav-label needs BOTH opacity AND max-width to show text */
+  .sk-sidebar-expanded .sk-sidebar-new .nav-label {
+    opacity: 1 !important;
+    max-width: 160px !important;
+  }
+
   .sk-sidebar-expanded .sk-sidebar-new .sidebar-title {
     opacity: 1 !important;
+    max-height: 24px !important;
   }
 
   .sk-layout,
@@ -4230,12 +4240,16 @@ body.light-mode .sk-btn-cyber-outline:hover {
 
 /* On tablets and mobile screens (width <= 768px) */
 @media (max-width: 768px) {
-  /* Reduce topbar padding and gaps */
+  /* Topbar inner fills width with minimal side padding */
   .sk-topbar-inner {
+    width: 100% !important;
+    padding: 0 12px !important;
     gap: 8px !important;
   }
+
   .sk-actions {
     gap: 6px !important;
+    flex-shrink: 0;
   }
 
   /* Collapse the user chip to just show the avatar circle */
@@ -4250,32 +4264,53 @@ body.light-mode .sk-btn-cyber-outline:hover {
     display: none !important;
   }
   .sk-user-avatar {
-    width: 38px !important;
-    height: 38px !important;
+    width: 36px !important;
+    height: 36px !important;
     font-size: 13px !important;
   }
 
-  /* Collapse the Admin and Nạp tiền buttons in the header to icon-only buttons */
-  .sk-actions .sk-btn .btn-text {
+  /* Keep login button text visible on mobile — just compact it */
+  .sk-auth-actions .sk-btn-primary {
+    height: 34px !important;
+    padding: 0 10px !important;
+    font-size: 10.5px !important;
+    letter-spacing: 0.03em !important;
+    gap: 5px !important;
+  }
+
+  /* Keep btn-text visible for login button specifically */
+  .sk-auth-actions .sk-btn .btn-text {
+    display: inline !important;
+  }
+
+  /* Hide text of OTHER header buttons (admin, nap tien etc.) */
+  .sk-topbar .sk-actions > .sk-btn:not(.sk-auth-actions .sk-btn) .btn-text,
+  .sk-actions .sk-btn:not(.sk-auth-actions .sk-btn) .btn-text {
     display: none !important;
   }
-  .sk-actions .sk-btn {
-    padding: 0 12px !important;
-    height: 38px !important;
-    min-width: 38px !important;
+  .sk-actions .sk-btn:not(.sk-auth-actions .sk-btn) {
+    padding: 0 10px !important;
+    height: 36px !important;
+    min-width: 36px !important;
     justify-content: center !important;
   }
 
   /* Compact static badge on tablet/mobile */
   .sk-topbar .sk-actions .sk-badge {
-    padding: 0 12px !important;
-    height: 38px !important;
-    font-size: 12px !important;
+    padding: 0 10px !important;
+    height: 36px !important;
+    font-size: 11.5px !important;
   }
-  
+
   /* Hide the brand subtitle on tablet/mobile */
   .sk-brand-subtitle {
     display: none !important;
+  }
+
+  /* Brand mark slightly smaller */
+  .sk-brand-mark {
+    width: 32px !important;
+    height: 32px !important;
   }
 }
 
@@ -4315,4 +4350,288 @@ body.light-mode .sk-btn-cyber-outline:hover {
   color: #ffffff !important;
   box-shadow: 0 6px 20px rgba(168, 85, 247, 0.3), 0 0 10px rgba(99, 102, 241, 0.15) !important;
   transform: translateY(-2px) scale(1.02) !important;
+}
+
+/* ══════════════════════════════════════════════════
+   BREAKPOINT: Desktop Wide (> 1280px)
+   ══════════════════════════════════════════════════ */
+@media (min-width: 1280px) {
+  .sk-layout {
+    padding: 28px 32px;
+  }
+
+  .sk-content {
+    max-width: 1360px;
+  }
+}
+
+/* ══════════════════════════════════════════════════
+   BREAKPOINT: Laptop (max-width: 1024px) — spacing only
+   Sidebar width is handled by the 980px block above
+   ══════════════════════════════════════════════════ */
+@media (max-width: 1024px) and (min-width: 981px) {
+  /* Sidebar shrinks slightly on 981-1024px screens */
+  .sk-sidebar-new {
+    width: 64px;
+  }
+
+  .sk-sidebar-new:hover {
+    width: 210px;
+  }
+
+  .sk-layout {
+    margin-left: 64px;
+    padding: 20px;
+  }
+
+  .sk-footer {
+    margin-left: 64px;
+  }
+
+  .sk-cart-page {
+    margin-left: 64px;
+  }
+}
+
+/* ══════════════════════════════════════════════════
+   BREAKPOINT: Tablet (max-width: 768px)
+   Sidebar collapses, content fills full width
+   ══════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  /* ── Hide desktop sidebar ── */
+  .sk-sidebar-new {
+    display: none !important;
+  }
+
+  /* ── Layout fills full width ── */
+  .sk-layout {
+    margin-left: 0 !important;
+    padding: 16px 14px 24px;
+  }
+
+  .sk-footer {
+    margin-left: 0 !important;
+  }
+
+  .sk-cart-page {
+    margin-left: 0 !important;
+    padding: 16px 14px 24px;
+  }
+
+  /* ── Topbar tighter ── */
+  .sk-topbar-inner {
+    padding: 0 14px;
+    gap: 8px;
+  }
+
+  /* ── Cards ── */
+  .sk-card {
+    padding: 16px;
+  }
+
+  /* ── Grids collapse ── */
+  .sk-grid-2,
+  .sk-grid-3,
+  .sk-grid-4 {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  /* ── Section heads compact ── */
+  .sk-section-head {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 10px;
+  }
+
+  /* ── Stats grid to 2 columns ── */
+  .sk-grid-4 {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* ── Tables horizontal scroll ── */
+  .sk-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* ── Modals full-width ── */
+  .sk-modal-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 16px !important;
+    border-radius: 16px !important;
+    max-height: 88vh !important;
+    overflow-y: auto;
+  }
+
+  .sk-modal {
+    align-items: center !important;
+  }
+
+
+  /* ── Hero section ── */
+  .sk-hero {
+    padding: 20px 16px !important;
+    border-radius: var(--radius-lg) !important;
+  }
+
+  /* ── Product grid ── */
+  .sk-product-grid-vertical {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px;
+  }
+
+  /* ── Nap tien page adjustments ── */
+  .sk-naptien-layout {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* ══════════════════════════════════════════════════
+   BREAKPOINT: Mobile (max-width: 560px)
+   ══════════════════════════════════════════════════ */
+@media (max-width: 560px) {
+  /* ── Topbar ── */
+  .sk-brand-subtitle {
+    display: none !important;
+  }
+
+  .sk-topbar-inner {
+    padding: 0 12px;
+  }
+
+  /* ── Layout padding ── */
+  .sk-layout {
+    padding: 12px 10px 78px;
+  }
+
+  /* ── Cards ── */
+  .sk-card {
+    padding: 14px;
+    border-radius: var(--radius);
+  }
+
+  /* ── Hero ── */
+  .sk-hero {
+    padding: 16px 14px !important;
+  }
+
+  .sk-hero-band {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  .sk-hero-band h1 {
+    font-size: 22px !important;
+    line-height: 1.2 !important;
+  }
+
+  .sk-hero-banners-column {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  /* ── Stats ── */
+  .sk-stat {
+    padding: 12px !important;
+  }
+
+  /* ── Buttons ── */
+  .sk-btn {
+    height: 40px;
+    font-size: 12.5px;
+    padding: 0 14px;
+  }
+
+  /* ── Product grid ── */
+  .sk-product-grid-vertical {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+  }
+
+  .sk-product-card-vertical > a {
+    padding: 10px !important;
+  }
+
+  .sk-product-card-vertical .card-info h3 {
+    font-size: 12.5px !important;
+    line-height: 1.3 !important;
+  }
+
+  .sk-product-card-vertical .card-info p {
+    display: none !important;
+  }
+
+  .sk-product-card-vertical .card-price {
+    font-size: 14px !important;
+  }
+
+  /* ── Mobile drawer grid 3 cols ── */
+  .sk-mobile-drawer-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  /* ── Tables ── */
+  .sk-table th,
+  .sk-table td {
+    font-size: 11.5px !important;
+    padding: 8px 10px !important;
+  }
+}
+
+/* ══════════════════════════════════════════════════
+   BREAKPOINT: Small Mobile (max-width: 420px)
+   ══════════════════════════════════════════════════ */
+@media (max-width: 420px) {
+  .sk-brand > span:not(.sk-brand-mark) {
+    display: none !important;
+  }
+
+  .sk-brand-mark {
+    margin-right: 0 !important;
+  }
+
+  .sk-layout {
+    padding: 10px 8px 16px;
+  }
+
+  .sk-grid-4 {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+  }
+
+  /* ── Product grid 2 narrow cols ── */
+  .sk-product-grid-vertical {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 6px !important;
+  }
+
+  .sk-hero-band h1 {
+    font-size: 20px !important;
+  }
+
+  /* Login button: ultra compact on tiny phones */
+  .sk-auth-actions .sk-btn-primary {
+    height: 32px !important;
+    padding: 0 8px !important;
+    font-size: 9.5px !important;
+    gap: 4px !important;
+  }
+
+  /* Keep login text visible */
+  .sk-auth-actions .sk-btn .btn-text {
+    display: inline !important;
+  }
+
+  /* Hide text for other header buttons only */
+  .sk-actions .sk-btn:not(.sk-auth-actions .sk-btn) .btn-text {
+    display: none !important;
+  }
+
+  .sk-actions .sk-btn:not(.sk-auth-actions .sk-btn) {
+    padding: 0 8px !important;
+    height: 34px !important;
+    min-width: 34px !important;
+  }
 }
