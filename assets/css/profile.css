@@ -183,6 +183,8 @@
   font-weight: 700;
   color: var(--text-bright);
   margin-top: 4px;
+  word-break: break-all;
+  overflow-wrap: break-word;
 }
 
 #tab-content-security .sk-alert {

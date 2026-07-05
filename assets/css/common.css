@@ -2245,6 +2245,8 @@ body.light-mode .sk-product-card-vertical > a {
   color: var(--text);
   line-height: 1.6;
   margin: 0;
+  word-break: break-all;
+  overflow-wrap: break-word;
 }
 
 .sk-profile-info-grid {
@@ -3317,6 +3319,8 @@ body.light-mode .sk-order-detail-grid {
 .sk-order-detail-item strong {
   font-size: 14.5px;
   color: var(--text-bright);
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 .close-modal-cyber {
   color: var(--muted);
