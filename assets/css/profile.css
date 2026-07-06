@@ -2,65 +2,6 @@
    DG Store — Cyber Neon Glass Profile Redesign
    ═══════════════════════════════════════════════════════ */
 
-:root {
-  /* Profile page theme override */
-  --bg: #0f172a;
-  --bg-gradient: none;
-  --surface: #131c2f;
-  --surface-solid: #131c2f;
-  --surface-soft: rgba(255, 255, 255, 0.03);
-  --line: rgba(255, 255, 255, 0.06);
-  --border: rgba(255, 255, 255, 0.06);
-  --glass-border: rgba(255, 255, 255, 0.06);
-  
-  --brand: #5b5bff;
-  --brand-light: #7a7aff;
-  --brand-soft: rgba(91, 91, 255, 0.15);
-  --brand-glow: rgba(91, 91, 255, 0.3);
-  --brand-gradient: linear-gradient(135deg, #5b5bff 0%, #00d2ff 100%);
-  
-  --success: #29e27d;
-  --success-soft: rgba(41, 226, 125, 0.15);
-  --success-glow: rgba(41, 226, 125, 0.3);
-  
-  --warning: #ffc857;
-  --warning-soft: rgba(255, 200, 87, 0.15);
-  
-  --text: #c5c8d4;
-  --text-bright: #ffffff;
-  --muted: #8b92a6;
-  
-  --radius: 14px;
-  --radius-lg: 18px;
-  --radius-xl: 18px;
-  
-  /* Shadow override */
-  --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
-  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.15);
-  --shadow-glow: 0 0 20px var(--brand-glow);
-  
-  /* Sidebar custom sizing variable */
-  --sidebar-width: 320px;
-}
-
-/* Custom Scrollbar for Desktop */
-@media (min-width: 992px) {
-  ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-  }
-  ::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  ::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 99px;
-  }
-  ::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.2);
-  }
-}
-
 /* Base Layout */
 .sk-profile-page {
   display: grid;
@@ -85,6 +26,8 @@
   border-radius: var(--radius-lg);
   padding: 24px;
   box-shadow: var(--card-shadow);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
   transition: all var(--speed-sidebar) ease;
 }
 
@@ -352,6 +295,8 @@
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
   box-shadow: var(--card-shadow);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
   position: relative;
   overflow: hidden;
 }
@@ -409,6 +354,8 @@
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
   box-shadow: var(--card-shadow);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
   overflow: hidden;
   transition: all var(--speed-card) ease;
 }
