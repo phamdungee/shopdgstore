@@ -4796,6 +4796,10 @@ Sidebar collapses, content fills full width
     display: none !important;
   }
 
+  .sk-sidebar-expanded .sk-sidebar-new {
+    display: flex !important;
+  }
+
   /* ── Layout fills full width ── */
   .sk-layout {
     margin-left: 0 !important;
