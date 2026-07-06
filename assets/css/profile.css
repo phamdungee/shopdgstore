@@ -1,6 +1,7 @@
 /* ═══════════════════════════════════════════════════════
-   DG Store — Cyber Neon Glass Profile Redesign
+   DG Store — Cyber Neon Glass Profile Style
    Fits the two-column sidebar skeleton in profile.html
+   All styles inherit from global common.css tokens
    ═══════════════════════════════════════════════════════ */
 
 /* Custom Scrollbar for Desktop */
@@ -50,7 +51,7 @@
   z-index: 10;
 }
 
-/* User mini panel */
+/* User mini card */
 .sk-user-mini {
   display: flex;
   flex-direction: column;
@@ -65,6 +66,7 @@
   font-size: 16px;
   font-weight: 800;
   color: var(--text-bright);
+  word-break: break-all;
 }
 
 /* Avatar with Rotating Glow Ring */
@@ -117,7 +119,7 @@
   inset: 0;
   z-index: 3;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.65);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -238,7 +240,13 @@
   font-size: 13.5px;
 }
 
-/* Stats metrics blocks override */
+/* Metrics Dashboard grid scrollbar override */
+.sk-profile-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
 .sk-profile-metrics .sk-stat {
   background: var(--surface-soft);
   border: 1px solid var(--line);
@@ -568,7 +576,7 @@
   }
 }
 
-/* Tablet (768px - 991px) */
+/* Tablet & Mobile Screens (<= 991px) */
 @media (max-width: 991px) {
   .sk-profile-page {
     grid-template-columns: 1fr;
@@ -578,19 +586,19 @@
 
   .sk-profile-sidebar {
     position: static;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px 20px;
-    gap: 20px;
+    flex-direction: column;
+    padding: 20px;
+    gap: 16px;
   }
 
   .sk-user-mini {
     flex-direction: row;
     text-align: left;
-    padding-bottom: 0;
-    border-bottom: none;
-    flex-shrink: 0;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--line);
+    width: 100%;
+    justify-content: flex-start;
+    gap: 16px;
   }
 
   .avatar-glow-container {
@@ -599,15 +607,45 @@
     margin: 0;
   }
 
-  /* Hide menus in sidebar block & transform sidebar item logic */
-  .sk-profile-sidebar .sk-sidebar-title,
-  .sk-profile-sidebar .sk-menu {
+  /* Hide raw headers to fit layout */
+  .sk-profile-sidebar .sk-sidebar-title {
     display: none;
   }
+
+  /* Reposition menus horizontally */
+  .sk-profile-sidebar nav.sk-menu {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .sk-profile-sidebar .sidebar-item {
+    width: auto;
+    flex: 1 1 calc(50% - 4px); /* 2 items per row */
+    justify-content: center;
+    height: 38px;
+    font-size: 13px;
+    padding: 0 12px;
+  }
+
+  /* Metrics scrolling dashboard */
+  .sk-profile-metrics {
+    display: flex;
+    overflow-x: auto;
+    scrollbar-width: none;
+    gap: 12px;
+    width: 100%;
+  }
   
-  /* Horizontal scroll tabs menu automatically created for tablet/mobile */
-  .sk-profile-main {
-    gap: 20px;
+  .sk-profile-metrics::-webkit-scrollbar {
+    display: none;
+  }
+
+  .sk-profile-metrics .sk-stat {
+    flex: 0 0 180px;
+    padding: 14px 16px;
+    gap: 12px;
   }
 
   .sk-profile-info-grid {
@@ -618,7 +656,6 @@
 /* Mobile & Large Phones (< 768px) */
 @media (max-width: 767px) {
   .sk-profile-page {
-    grid-template-columns: 1fr;
     gap: 16px;
     padding: 16px 8px;
     padding-top: calc(16px + env(safe-area-inset-top));
@@ -626,22 +663,18 @@
   }
 
   .sk-profile-sidebar {
-    padding: 12px 14px;
+    padding: 14px;
     border-radius: var(--radius-lg);
     gap: 12px;
   }
 
   .avatar-glow-container {
-    width: 48px;
-    height: 48px;
+    width: 52px;
+    height: 52px;
   }
 
   .sk-user-mini b {
-    font-size: 14.5px;
-  }
-
-  .sk-user-mini {
-    gap: 10px;
+    font-size: 15px;
   }
 
   .sk-profile-hero {
@@ -702,13 +735,19 @@
 
 /* Small Phones (< 576px) */
 @media (max-width: 575px) {
-  .sk-profile-sidebar {
-    justify-content: center;
+  .sk-profile-sidebar nav.sk-menu {
+    flex-direction: column;
   }
-  
-  /* On very small phones, we center the mini card profile */
+
+  .sk-profile-sidebar .sidebar-item {
+    flex: 1 1 100%;
+  }
+
   .sk-user-mini {
     flex-direction: column;
     text-align: center;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
   }
 }
