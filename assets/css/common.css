@@ -333,6 +333,7 @@ img {
 .dg-logo-mark {
   width: 40px;
   height: 40px;
+  flex-shrink: 0 !important;
   display: flex !important;
   align-items: center;
   justify-content: center;
@@ -2317,7 +2318,7 @@ body.light-mode .sk-product-card-vertical>a {
   overflow: hidden;
 }
 
-.sk-user-mini>div {
+.sk-user-mini>div:not(.avatar-glow-container) {
   min-width: 0;
   overflow: hidden;
   flex: 1;

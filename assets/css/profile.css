@@ -72,6 +72,8 @@
   position: relative;
   width: 76px;
   height: 76px;
+  flex-shrink: 0;
+  overflow: visible;
 }
 
 .avatar-glow-ring {
