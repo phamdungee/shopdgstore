@@ -69,27 +69,27 @@ function setInfoCell(index, value) {
 }
 
 function setAccountStats(user, stats = {}) {
-  const container = document.getElementById('profileMetricsContainer');
+  const container = document.getElementById('profileMetricsContainer') || document.querySelector('.sk-profile-metrics');
   if (!container) return;
 
   container.innerHTML = `
-    <div class="pf-stat">
-      <span class="pf-stat-icon"><i class="fa-solid fa-wallet"></i></span>
-      <div class="pf-stat-data">
+    <div class="sk-stat">
+      <span class="sk-stat-icon"><i class="fa-solid fa-wallet"></i></span>
+      <div>
         <p>Số dư hiện tại</p>
         <b class="dynamic-sync-balance">${formatMoney(user?.balance || 0)}</b>
       </div>
     </div>
-    <div class="pf-stat">
-      <span class="pf-stat-icon"><i class="fa-solid fa-chart-line"></i></span>
-      <div class="pf-stat-data">
+    <div class="sk-stat">
+      <span class="sk-stat-icon"><i class="fa-solid fa-chart-line"></i></span>
+      <div>
         <p>Tổng nạp</p>
         <b>${formatMoney(stats.totalDeposit || 0)}</b>
       </div>
     </div>
-    <div class="pf-stat">
-      <span class="pf-stat-icon"><i class="fa-solid fa-money-bill-wave"></i></span>
-      <div class="pf-stat-data">
+    <div class="sk-stat">
+      <span class="sk-stat-icon"><i class="fa-solid fa-money-bill-wave"></i></span>
+      <div>
         <p>Đã dùng</p>
         <b>${formatMoney(stats.totalSpent || 0)}</b>
       </div>
@@ -178,7 +178,7 @@ function applyUserToProfile(user) {
   });
 
   // Render avatar fallback support
-  const sidebarAvatar = document.querySelector('.pf-avatar-img, .profile-modern-avatar-section .sk-avatar, #sidebarProfileCard .sk-avatar');
+  const sidebarAvatar = document.querySelector('.sk-user-mini .sk-avatar');
   if (sidebarAvatar) {
     if (user.avatarUrl) {
       const img = document.createElement('img');
@@ -234,15 +234,15 @@ function applyUserToProfile(user) {
   });
 
   // Populate Info Grid cells (replaces skeletons)
-  const infoGrid = document.getElementById('profileInfoGrid');
+  const infoGrid = document.querySelector('.sk-profile-info-grid');
   if (infoGrid) {
     infoGrid.innerHTML = `
-      <div class="pf-info-cell"><span>Tên đăng nhập</span><span class="dynamic-sync-username">${escapeHtml(user.username || 'user')}</span></div>
-      <div class="pf-info-cell"><span>Địa chỉ email</span><span>${escapeHtml(user.email || 'Chưa cập nhật')}</span></div>
-      <div class="pf-info-cell"><span>Số điện thoại</span><span id="txt-phone">${escapeHtml(user.phone || 'Chưa cập nhật')}</span></div>
-      <div class="pf-info-cell"><span>Họ và tên</span><span id="txt-fullname">${escapeHtml(user.fullName || user.username || 'Chưa cập nhật')}</span></div>
-      <div class="pf-info-cell"><span>Ngày đăng ký</span><span>${user.createdAt ? formatDateTime(user.createdAt) : 'Chưa cập nhật'}</span></div>
-      <div class="pf-info-cell"><span>Cấp tài khoản</span><span><span class="sk-badge-rank ${rankBadgeClass}">${rankName}</span></span></div>
+      <div class="sk-info-cell"><span>Tên đăng nhập</span><span class="dynamic-sync-username">${escapeHtml(user.username || 'user')}</span></div>
+      <div class="sk-info-cell"><span>Địa chỉ email</span><span>${escapeHtml(user.email || 'Chưa cập nhật')}</span></div>
+      <div class="sk-info-cell"><span>Số điện thoại</span><span id="txt-phone">${escapeHtml(user.phone || 'Chưa cập nhật')}</span></div>
+      <div class="sk-info-cell"><span>Họ và tên</span><span id="txt-fullname">${escapeHtml(user.fullName || user.username || 'Chưa cập nhật')}</span></div>
+      <div class="sk-info-cell"><span>Ngày đăng ký</span><span>${user.createdAt ? formatDateTime(user.createdAt) : 'Chưa cập nhật'}</span></div>
+      <div class="sk-info-cell"><span>Cấp tài khoản</span><span><span class="sk-badge-rank ${rankBadgeClass}">${rankName}</span></span></div>
     `;
   }
 
@@ -393,7 +393,7 @@ function copyOrderDetailDelivery() {
 }
 
 function switchProfileTab(tabTarget) {
-  document.querySelectorAll('.pf-panel').forEach(view => {
+  document.querySelectorAll('.profile-tab-section').forEach(view => {
     view.classList.add('hidden');
   });
 
