@@ -124,7 +124,18 @@ if (!isVercel) {
       };
 
       // Start HTTPS server on port 443 (or HTTPS_PORT)
-      https.createServer(sslOptions, app).listen(HTTPS_PORT, () => {
+      const httpsServer = https.createServer(sslOptions, app);
+
+      httpsServer.on('tlsClientError', (err, tlsSocket) => {
+        console.error('[TLS CLIENT ERROR]', err.message);
+        console.error('[TLS CLIENT ERROR] Full:', err);
+      });
+
+      httpsServer.on('secureConnection', (tlsSocket) => {
+        console.log('[TLS OK] Protocol:', tlsSocket.getProtocol(), '| Cipher:', tlsSocket.getCipher().name);
+      });
+
+      httpsServer.listen(HTTPS_PORT, () => {
         console.log(`✅ HTTPS server running on port ${HTTPS_PORT} (Cloudflare Error 525 fix active)`);
       });
 
