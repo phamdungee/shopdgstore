@@ -2415,111 +2415,6 @@ body.light-mode .sk-product-card-vertical>a {
   border-color: rgba(99, 102, 241, 0.15);
 }
 
-/* ── PROFILE PAGE ─────────────────────────────── */
-.sk-profile-page {
-  display: grid;
-  grid-template-columns: 240px 1fr;
-  gap: 24px;
-  align-items: start;
-}
-
-.sk-profile-sidebar {
-  position: sticky;
-  top: 96px;
-  padding: 20px;
-  background: var(--glass-bg);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
-  backdrop-filter: var(--glass-blur);
-}
-
-.sk-profile-main {
-  min-width: 0;
-}
-
-.sk-profile-hero {
-  padding: 24px;
-  background: var(--glass-bg);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
-  margin-bottom: 20px;
-}
-
-.sk-profile-metrics {
-  margin-bottom: 24px;
-}
-
-/* Tab sections */
-.profile-tab-section {
-  background: var(--glass-bg);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
-  backdrop-filter: var(--glass-blur);
-  padding: 0;
-  overflow: hidden;
-}
-
-.sk-tab-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 20px 24px;
-  border-bottom: 1px solid var(--line);
-  flex-wrap: wrap;
-}
-
-.sk-tab-head h2 {
-  font-size: 17px;
-  font-weight: 800;
-  color: var(--text-bright);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 0;
-}
-
-.sk-tab-body {
-  padding: 24px;
-}
-
-/* Info cells */
-.sk-info-cell {
-  padding: 16px;
-  background: var(--surface-soft);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-}
-
-.sk-info-cell>span:first-child {
-  display: block;
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  margin-bottom: 6px;
-}
-
-.sk-info-cell>span:last-child,
-.sk-info-cell>p {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text);
-  line-height: 1.6;
-  margin: 0;
-  word-break: break-all;
-  overflow-wrap: break-word;
-}
-
-.sk-profile-info-grid {
-  gap: 12px;
-}
-
-.sk-policy-profile-grid {
-  gap: 12px;
-}
-
 /* ── DEPOSIT PAGE ─────────────────────────────── */
 .sk-deposit-page {
   display: grid;
@@ -3211,14 +3106,6 @@ body.light-mode .shopee-card-inner {
   .sk-hero-band {
     grid-template-columns: 1fr;
     padding: 32px 24px;
-  }
-
-  .sk-profile-page {
-    grid-template-columns: 1fr;
-  }
-
-  .sk-profile-sidebar {
-    position: static;
   }
 
   .sk-deposit-page {
