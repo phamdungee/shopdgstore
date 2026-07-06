@@ -102,49 +102,27 @@ if (!isVercel) {
   }
 
   // ── HTTPS Support (fixes Cloudflare Error 525) ──────────────────────────────
-  // Để bật HTTPS, hãy tạo chứng chỉ Cloudflare Origin Certificate rồi thêm
-  // hai dòng sau vào file .env trên VPS:
-  //   SSL_CERT=/etc/ssl/dgstore/origin.pem
-  //   SSL_KEY=/etc/ssl/dgstore/origin.key
+  // Sử dụng port 8443 để tránh xung đột với Windows svchost/IKEEXT trên port 443.
+  // Cloudflare hỗ trợ HTTPS trên port 8443 — cấu hình Origin Rules trỏ về port này.
   const sslCertPath = process.env.SSL_CERT;
   const sslKeyPath  = process.env.SSL_KEY;
-  const HTTPS_PORT  = Number(process.env.HTTPS_PORT) || 443;
 
   if (sslCertPath && sslKeyPath && fs.existsSync(sslCertPath) && fs.existsSync(sslKeyPath)) {
     try {
       const cert = fs.readFileSync(sslCertPath, "utf8");
       const key  = fs.readFileSync(sslKeyPath, "utf8");
 
-      console.log('[SSL DEBUG] cert starts with:', cert.substring(0, 40));
-      console.log('[SSL DEBUG] key  starts with:', key.substring(0, 40));
+      const sslOptions = { cert, key };
 
-      const sslOptions = {
-        cert,
-        key,
-      };
-
-      // Start HTTPS server on port 443 (or HTTPS_PORT)
+      // Start HTTPS server on PORT (8443) — Cloudflare connects here via Origin Rules
       const httpsServer = https.createServer(sslOptions, app);
 
-      httpsServer.on('tlsClientError', (err, tlsSocket) => {
+      httpsServer.on('tlsClientError', (err) => {
         console.error('[TLS CLIENT ERROR]', err.message);
-        console.error('[TLS CLIENT ERROR] Full:', err);
       });
 
-      httpsServer.on('secureConnection', (tlsSocket) => {
-        console.log('[TLS OK] Protocol:', tlsSocket.getProtocol(), '| Cipher:', tlsSocket.getCipher().name);
-      });
-
-      httpsServer.listen(HTTPS_PORT, () => {
-        console.log(`✅ HTTPS server running on port ${HTTPS_PORT} (Cloudflare Error 525 fix active)`);
-      });
-
-      // Redirect plain HTTP → HTTPS
-      http.createServer((req, res) => {
-        res.writeHead(301, { Location: `https://${req.headers.host}${req.url}` });
-        res.end();
-      }).listen(PORT, () => {
-        console.log(`↪  HTTP → HTTPS redirect active on port ${PORT}`);
+      httpsServer.listen(PORT, () => {
+        console.log(`✅ HTTPS server running on port ${PORT} (Cloudflare Origin Rules → port ${PORT})`);
       });
 
     } catch (sslErr) {
