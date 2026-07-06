@@ -113,30 +113,55 @@
 
   <main class="sk-layout sk-profile-page">
     <aside class="sk-sidebar sk-profile-sidebar">
-      <div class="sk-user-mini">
-        <div class="avatar-glow-container" onclick="openEditModal()" style="cursor: pointer;" title="Đổi ảnh đại diện">
-          <div class="avatar-glow-ring"></div>
-          <div class="sk-avatar"><i class="fa-solid fa-user"></i></div>
-          <div class="avatar-hover-overlay"><i class="fa-solid fa-camera"></i></div>
+      <div class="sk-user-mini" id="sidebarProfileCard">
+        <div class="sk-user-mini-header">
+          <div class="avatar-glow-container" onclick="openEditModal()" title="Đổi ảnh đại diện" role="button" aria-label="Đổi ảnh đại diện" tabindex="0">
+            <div class="avatar-glow-ring"></div>
+            <div class="sk-avatar"><i class="fa-solid fa-user"></i></div>
+            <div class="avatar-hover-overlay"><i class="fa-solid fa-camera"></i></div>
+          </div>
+          <div class="sk-user-mini-info" id="mobileUserSubline" data-subline="UID: --- | Thành viên">
+            <b class="dynamic-sync-username">user</b>
+            <span class="sk-user-mini-role-badge badge-member">Thành viên</span>
+          </div>
         </div>
-        <div>
-          <b class="dynamic-sync-username">user</b>
-          <div style="margin-top:4px; color:var(--brand); font-size:12px; font-weight:900" class="dynamic-sync-balance">0đ</div>
+        <div class="sk-user-mini-divider"></div>
+        <div class="sk-user-mini-details">
+          <div class="sk-user-detail-row">
+            <span class="detail-label"><i class="fa-solid fa-id-card"></i> UID</span>
+            <span class="detail-value dynamic-sync-uid">---</span>
+          </div>
+          <div class="sk-user-detail-row">
+            <span class="detail-label"><i class="fa-solid fa-crown"></i> Cấp độ</span>
+            <span class="detail-value"><span class="sk-badge-rank badge-member dynamic-sync-rank">Thành viên</span></span>
+          </div>
+          <div class="sk-user-detail-row">
+            <span class="detail-label"><i class="fa-solid fa-wallet"></i> Số dư</span>
+            <span class="detail-value dynamic-sync-balance color-success">0đ</span>
+          </div>
+          <div class="sk-user-detail-row">
+            <span class="detail-label"><i class="fa-solid fa-calendar-days"></i> Tham gia</span>
+            <span class="detail-value dynamic-sync-joined">---</span>
+          </div>
         </div>
       </div>
 
-      <div class="sk-sidebar-title" style="margin-top:16px">Tài khoản</div>
-      <nav class="sk-menu" id="menu-group-account">
-        <button class="sidebar-item is-active" id="menu-profile" type="button" onclick="switchProfileTab('profile')"><i class="fa-solid fa-user"></i> Thông tin cá nhân</button>
-        <button class="sidebar-item" id="menu-security" type="button" onclick="switchProfileTab('security')"><i class="fa-solid fa-file-contract"></i> Chính sách</button>
-        <button class="sidebar-item" id="menu-password" type="button" onclick="switchProfileTab('password')"><i class="fa-solid fa-lock"></i> Đổi mật khẩu</button>
-      </nav>
+      <div class="sk-profile-menu-group">
+        <div class="sk-sidebar-title">Tài khoản</div>
+        <nav class="sk-menu" id="menu-group-account" role="navigation" aria-label="Menu tài khoản">
+          <button class="sidebar-item is-active" id="menu-profile" type="button" onclick="switchProfileTab('profile')" tabindex="0" aria-label="Thông tin cá nhân"><i class="fa-solid fa-user"></i> Thông tin cá nhân</button>
+          <button class="sidebar-item" id="menu-security" type="button" onclick="switchProfileTab('security')" tabindex="0" aria-label="Chính sách"><i class="fa-solid fa-shield-halved"></i> Chính sách</button>
+          <button class="sidebar-item" id="menu-password" type="button" onclick="switchProfileTab('password')" tabindex="0" aria-label="Đổi mật khẩu"><i class="fa-solid fa-key"></i> Đổi mật khẩu</button>
+        </nav>
+      </div>
 
-      <div class="sk-sidebar-title" style="margin-top:18px">Giao dịch</div>
-      <nav class="sk-menu" id="menu-group-transaction">
-        <button class="sidebar-item" id="menu-orders" type="button" onclick="switchProfileTab('orders')"><i class="fa-solid fa-receipt"></i> Đơn hàng của tôi</button>
-        <button class="sidebar-item" id="menu-transactions" type="button" onclick="switchProfileTab('transactions')"><i class="fa-solid fa-wallet"></i> Biến động số dư</button>
-      </nav>
+      <div class="sk-profile-menu-group">
+        <div class="sk-sidebar-title">Giao dịch</div>
+        <nav class="sk-menu" id="menu-group-transaction" role="navigation" aria-label="Menu giao dịch">
+          <button class="sidebar-item" id="menu-orders" type="button" onclick="switchProfileTab('orders')" tabindex="0" aria-label="Đơn hàng của tôi"><i class="fa-solid fa-box-open"></i> Đơn hàng của tôi</button>
+          <button class="sidebar-item" id="menu-transactions" type="button" onclick="switchProfileTab('transactions')" tabindex="0" aria-label="Biến động số dư"><i class="fa-solid fa-clock-rotate-left"></i> Biến động số dư</button>
+        </nav>
+      </div>
     </aside>
 
     <div class="sk-content sk-profile-main">
@@ -148,32 +173,40 @@
         </div>
       </section>
 
-      <section class="sk-grid sk-grid-3 sk-profile-metrics">
-        <div class="sk-stat"><span class="sk-stat-icon"><i class="fa-solid fa-wallet"></i></span><div><p>Số dư hiện tại</p><b class="dynamic-sync-balance">0đ</b></div></div>
-        <div class="sk-stat"><span class="sk-stat-icon"><i class="fa-solid fa-chart-line"></i></span><div><p>Tổng nạp</p><b>500.000đ</b></div></div>
-        <div class="sk-stat"><span class="sk-stat-icon"><i class="fa-solid fa-money-bill-wave"></i></span><div><p>Đã dùng</p><b>0đ</b></div></div>
+      <section class="sk-grid sk-grid-3 sk-profile-metrics" id="profileMetricsContainer">
+        <div class="sk-stat skeleton skeleton-stat"></div>
+        <div class="sk-stat skeleton skeleton-stat"></div>
+        <div class="sk-stat skeleton skeleton-stat"></div>
       </section>
+
+      <!-- Error State Block (hidden by default) -->
+      <div id="profileErrorState" class="sk-error-state hidden" role="alert">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <h3>Không tải được hồ sơ</h3>
+        <p>Hệ thống không thể kết nối tới máy chủ. Vui lòng kiểm tra lại kết nối mạng.</p>
+        <button class="sk-btn sk-btn-primary" type="button" onclick="retryLoadingProfile()" aria-label="Thử lại"><i class="fa-solid fa-rotate-right"></i> Thử lại</button>
+      </div>
 
       <section class="profile-tab-section" id="tab-content-profile">
         <div class="sk-tab-head">
-          <h2><i class="fa-solid fa-user-circle" style="color:var(--brand)"></i> Thông tin tài khoản</h2>
-          <button class="sk-btn sk-btn-primary" type="button" onclick="openEditModal()"><i class="fa-solid fa-pen-to-square"></i> Chỉnh sửa</button>
+          <h2><i class="fa-solid fa-circle-user" style="color:var(--brand)"></i> Thông tin tài khoản</h2>
+          <button class="sk-btn sk-btn-primary" id="btnEditProfile" type="button" onclick="openEditModal()" aria-label="Chỉnh sửa hồ sơ" style="display:none;"><i class="fa-solid fa-pen-to-square"></i> Chỉnh sửa</button>
         </div>
         <div class="sk-tab-body">
-          <div class="sk-grid sk-grid-3 sk-profile-info-grid">
-            <div class="sk-info-cell"><span>Tên đăng nhập</span><span class="dynamic-sync-username">user</span></div>
-            <div class="sk-info-cell"><span>Địa chỉ email</span><span>support@dgstore.vn</span></div>
-            <div class="sk-info-cell"><span>Số điện thoại</span><span id="txt-phone">Chưa cập nhật</span></div>
-            <div class="sk-info-cell"><span>Họ và tên</span><span id="txt-fullname">Chưa cập nhật</span></div>
-            <div class="sk-info-cell"><span>Ngày đăng ký</span><span>2026-05-01 23:52:26</span></div>
-            <div class="sk-info-cell"><span>Cấp tài khoản</span><span>Thành viên</span></div>
+          <div class="sk-grid sk-grid-3 sk-profile-info-grid" id="profileInfoGrid">
+            <div class="sk-info-cell skeleton skeleton-cell"></div>
+            <div class="sk-info-cell skeleton skeleton-cell"></div>
+            <div class="sk-info-cell skeleton skeleton-cell"></div>
+            <div class="sk-info-cell skeleton skeleton-cell"></div>
+            <div class="sk-info-cell skeleton skeleton-cell"></div>
+            <div class="sk-info-cell skeleton skeleton-cell"></div>
           </div>
         </div>
       </section>
 
       <section class="profile-tab-section hidden" id="tab-content-security">
         <div class="sk-tab-head">
-          <h2><i class="fa-solid fa-file-contract" style="color:var(--accent)"></i> Chính sách bán hàng & Bảo hành</h2>
+          <h2><i class="fa-solid fa-shield-halved" style="color:var(--accent)"></i> Chính sách bán hàng & Bảo hành</h2>
         </div>
         <div class="sk-tab-body sk-content">
           <div class="sk-alert sk-policy-alert">
@@ -192,83 +225,61 @@
             </article>
             <article class="sk-info-cell">
               <span>Quy trình xử lý</span>
-              <p>Khi gặp sự cố, khách hàng vui lòng liên hệ đội ngũ hỗ trợ qua [Link Telegram/Messenger] kèm theo [Mã đơn hàng] và bằng chứng lỗi (hình ảnh/video).</p>
+              <p>Khi gặp sự cố, khách hàng vui lòng liên hệ đội ngũ hỗ trợ qua kênh hỗ trợ của chúng tôi kèm theo mã đơn hàng và bằng chứng lỗi.</p>
             </article>
             <article class="sk-info-cell">
               <span>Lưu ý</span>
-              <p>Chúng tôi không áp dụng chính sách hoàn tiền mặt. Khiếu nại sau 03 ngày hoặc lỗi do người dùng tự ý thay đổi bảo mật, vi phạm chính sách nền tảng gốc sẽ nằm ngoài phạm vi bảo hành.</p>
+              <p>Chúng tôi không áp dụng chính sách hoàn tiền mặt. Khiếu nại sau 03 ngày hoặc lỗi do người dùng tự ý thay đổi bảo mật sẽ nằm ngoài phạm vi bảo hành.</p>
             </article>
-          </div>
-
-          <div class="sk-faq-list">
-            <div class="sk-faq-item"><b>Q: Sau khi mua hàng, tôi được hỗ trợ trong bao lâu?</b><span>A: Sản phẩm của bạn được bảo hành lỗi 1 đổi 1 trong vòng 03 ngày kể từ lúc nhận hàng thành công.</span></div>
-            <div class="sk-faq-item"><b>Q: Tôi bị lỗi đăng nhập thì cần làm gì?</b><span>A: Vui lòng không tự ý thay đổi thông tin tài khoản khi chưa kiểm tra kỹ. Hãy chụp ảnh hoặc quay video màn hình lỗi và gửi ngay cho hỗ trợ viên để được xử lý đổi mới trong thời gian bảo hành.</span></div>
-            <div class="sk-faq-item"><b>Q: Tôi có thể nhận lại tiền nếu không ưng ý sản phẩm không?</b><span>A: Do sản phẩm là tài sản kỹ thuật số đã được bàn giao, chúng tôi không hỗ trợ hoàn tiền. Thay vào đó, sản phẩm lỗi được bảo hành 1 đổi 1 trong vòng 3 ngày.</span></div>
           </div>
         </div>
       </section>
 
       <section class="profile-tab-section hidden" id="tab-content-password">
         <div class="sk-tab-head">
-          <h2><i class="fa-solid fa-lock" style="color:var(--danger)"></i> Đổi mật khẩu</h2>
+          <h2><i class="fa-solid fa-key" style="color:var(--danger)"></i> Đổi mật khẩu</h2>
         </div>
-        <form class="sk-tab-body sk-content" style="max-width:520px" onsubmit="event.preventDefault(); alert('Cập nhật mật khẩu thành công!');">
+        <form class="sk-tab-body sk-content" style="max-width:520px" onsubmit="handlePasswordUpdate(event)">
           <div class="sk-field">
-            <label>Mật khẩu hiện tại</label>
+            <label for="current-password">Mật khẩu hiện tại</label>
             <div class="sk-password-field">
               <input id="current-password" required type="password" />
               <button type="button" onclick="togglePasswordVisibility('current-password', this)" aria-label="Hiện mật khẩu"><i class="fa-solid fa-eye"></i></button>
             </div>
           </div>
           <div class="sk-field">
-            <label>Mật khẩu mới</label>
+            <label for="new-password">Mật khẩu mới</label>
             <div class="sk-password-field">
               <input id="new-password" required type="password" />
               <button type="button" onclick="togglePasswordVisibility('new-password', this)" aria-label="Hiện mật khẩu"><i class="fa-solid fa-eye"></i></button>
             </div>
           </div>
           <div class="sk-field">
-            <label>Xác nhận mật khẩu mới</label>
+            <label for="confirm-password">Xác nhận mật khẩu mới</label>
             <div class="sk-password-field">
               <input id="confirm-password" required type="password" />
               <button type="button" onclick="togglePasswordVisibility('confirm-password', this)" aria-label="Hiện mật khẩu"><i class="fa-solid fa-eye"></i></button>
             </div>
           </div>
-          <button class="sk-btn sk-btn-primary" type="submit">Cập nhật mật khẩu</button>
+          <button class="sk-btn sk-btn-primary" type="submit" aria-label="Cập nhật mật khẩu">Cập nhật mật khẩu</button>
         </form>
       </section>
 
       <section class="profile-tab-section hidden" id="tab-content-orders">
         <div class="sk-tab-head">
-          <h2><i class="fa-solid fa-receipt" style="color:var(--brand)"></i> Lịch sử đơn hàng</h2>
+          <h2><i class="fa-solid fa-box-open" style="color:var(--brand)"></i> Lịch sử đơn hàng</h2>
         </div>
-        <div class="sk-tab-body">
-          <div class="sk-table-wrap">
-            <table class="sk-table">
-              <thead><tr><th>Mã đơn</th><th>Sản phẩm</th><th>Giá trị</th><th>Ngày mua</th><th>Trạng thái</th><th>Hành động</th></tr></thead>
-              <tbody>
-                <tr><td>#DG98241</td><td>Netflix Premium UltraHD 4K</td><td class="sk-price">65.000đ</td><td>01/06/2026</td><td><span class="sk-badge">Thành công</span></td><td><button class="sk-btn" type="button" onclick="alert('Tài khoản: netflix@dgstore.vn | Mật khẩu: dgstore2026')">Xem</button></td></tr>
-                <tr><td>#DG98210</td><td>Spotify Premium 1 tháng</td><td class="sk-price">29.000đ</td><td>28/05/2026</td><td><span class="sk-badge">Thành công</span></td><td><button class="sk-btn" type="button">Chi tiết</button></td></tr>
-              </tbody>
-            </table>
-          </div>
+        <div class="sk-tab-body" id="ordersTabBody">
+          <div class="skeleton skeleton-cell" style="height:120px; width:100%;"></div>
         </div>
       </section>
 
       <section class="profile-tab-section hidden" id="tab-content-transactions">
         <div class="sk-tab-head">
-          <h2><i class="fa-solid fa-wallet" style="color:var(--success)"></i> Biến động số dư</h2>
+          <h2><i class="fa-solid fa-clock-rotate-left" style="color:var(--success)"></i> Biến động số dư</h2>
         </div>
-        <div class="sk-tab-body">
-          <div class="sk-table-wrap">
-            <table class="sk-table">
-              <thead><tr><th>Mã GD</th><th>Thay đổi</th><th>Số dư cuối</th><th>Nội dung</th><th>Thời gian</th></tr></thead>
-              <tbody>
-                <tr><td>#DEP5512</td><td style="color:var(--success); font-weight:900">+500.000đ</td><td>500.000đ</td><td>Nạp tiền qua VietQR</td><td>01/06/2026 14:30</td></tr>
-                <tr><td>#BUY9012</td><td style="color:var(--danger); font-weight:900">-65.000đ</td><td>435.000đ</td><td>Mua Netflix Premium #DG98241</td><td>01/06/2026 15:02</td></tr>
-              </tbody>
-            </table>
-          </div>
+        <div class="sk-tab-body" id="transactionsTabBody">
+          <div class="skeleton skeleton-cell" style="height:120px; width:100%;"></div>
         </div>
       </section>
     <footer class="sk-footer">

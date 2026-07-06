@@ -69,10 +69,32 @@ function setInfoCell(index, value) {
 }
 
 function setAccountStats(user, stats = {}) {
-  const statValues = document.querySelectorAll('.sk-profile-metrics .sk-stat b');
-  if (statValues[0]) statValues[0].innerText = formatMoney(user?.balance || 0);
-  if (statValues[1]) statValues[1].innerText = formatMoney(stats.totalDeposit || 0);
-  if (statValues[2]) statValues[2].innerText = formatMoney(stats.totalSpent || 0);
+  const container = document.getElementById('profileMetricsContainer');
+  if (!container) return;
+
+  container.innerHTML = `
+    <div class="sk-stat">
+      <span class="sk-stat-icon"><i class="fa-solid fa-wallet"></i></span>
+      <div>
+        <p>Số dư hiện tại</p>
+        <b class="dynamic-sync-balance">${formatMoney(user?.balance || 0)}</b>
+      </div>
+    </div>
+    <div class="sk-stat">
+      <span class="sk-stat-icon"><i class="fa-solid fa-chart-line"></i></span>
+      <div>
+        <p>Tổng nạp</p>
+        <b>${formatMoney(stats.totalDeposit || 0)}</b>
+      </div>
+    </div>
+    <div class="sk-stat">
+      <span class="sk-stat-icon"><i class="fa-solid fa-money-bill-wave"></i></span>
+      <div>
+        <p>Đã dùng</p>
+        <b>${formatMoney(stats.totalSpent || 0)}</b>
+      </div>
+    </div>
+  `;
 }
 
 async function authorizedFetch(path, options = {}) {
@@ -146,29 +168,87 @@ function applyUserToProfile(user) {
 
   document.querySelectorAll('.dynamic-sync-username').forEach(el => {
     el.innerText = user.username || 'user';
+    el.style.overflow = 'hidden';
+    el.style.textOverflow = 'ellipsis';
+    el.style.whiteSpace = 'nowrap';
   });
 
   document.querySelectorAll('.dynamic-sync-balance').forEach(el => {
     el.innerText = formatMoney(user.balance);
   });
 
-  // Render sidebar avatar
-  const sidebarAvatar = document.querySelector('.sk-user-mini .sk-avatar');
+  // Render sidebar avatar fallback support
+  const sidebarAvatar = document.querySelector('#sidebarProfileCard .sk-avatar');
   if (sidebarAvatar) {
     if (user.avatarUrl) {
-      sidebarAvatar.innerHTML = `<img src="${escapeHtml(user.avatarUrl)}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" />`;
+      const img = document.createElement('img');
+      img.src = escapeHtml(user.avatarUrl);
+      img.alt = 'Avatar';
+      img.onerror = () => {
+        const initial = (user.username || user.email || 'U').trim().charAt(0).toUpperCase();
+        sidebarAvatar.innerHTML = `<span class="avatar-fallback" style="font-weight:900;">${escapeHtml(initial)}</span>`;
+      };
+      sidebarAvatar.innerHTML = '';
+      sidebarAvatar.appendChild(img);
     } else {
-      sidebarAvatar.innerHTML = `<i class="fa-solid fa-user"></i>`;
+      const initial = (user.username || user.email || 'U').trim().charAt(0).toUpperCase();
+      sidebarAvatar.innerHTML = `<span class="avatar-fallback" style="font-weight:900;">${escapeHtml(initial)}</span>`;
     }
   }
 
-  setInfoCell(0, user.username || 'user');
-  setInfoCell(1, user.email || 'Chưa cập nhật');
-  setInfoCell(2, user.phone || 'Chưa cập nhật');
-  setInfoCell(3, user.fullName || user.username || 'Chưa cập nhật');
-  setInfoCell(4, formatDateTime(user.createdAt));
-  setInfoCell(5, roleLabel(user.role));
-  setAccountStats(user, accountHistory.stats);
+  // Populate dynamic rows in card
+  const uidString = user.id ? user.id.toString().substring(0, 8).toUpperCase() : '---';
+  document.querySelectorAll('.dynamic-sync-uid').forEach(el => {
+    el.innerText = uidString;
+  });
+
+  let rankName = 'Thành viên';
+  let rankBadgeClass = 'badge-member';
+  if (user.role === 'admin') {
+    rankName = 'ADMIN';
+    rankBadgeClass = 'badge-admin';
+  } else if (accountHistory.stats.totalDeposit > 1000000) {
+    rankName = 'VIP';
+    rankBadgeClass = 'badge-vip';
+  }
+
+  const rankEl = document.querySelector('.dynamic-sync-rank');
+  if (rankEl) {
+    rankEl.className = `sk-badge-rank ${rankBadgeClass} dynamic-sync-rank`;
+    rankEl.innerText = rankName;
+  }
+
+  const roleBadgeEl = document.querySelector('.sk-user-mini-role-badge');
+  if (roleBadgeEl) {
+    roleBadgeEl.className = `sk-user-mini-role-badge ${rankBadgeClass}`;
+    roleBadgeEl.innerText = rankName;
+  }
+
+  const sublineEl = document.getElementById('mobileUserSubline');
+  if (sublineEl) {
+    sublineEl.setAttribute('data-subline', `UID: ${uidString} | ${rankName}`);
+  }
+
+  document.querySelectorAll('.dynamic-sync-joined').forEach(el => {
+    el.innerText = user.createdAt ? new Date(user.createdAt).toLocaleDateString('vi-VN') : '---';
+  });
+
+  // Populate Info Grid cells (replaces skeletons)
+  const infoGrid = document.getElementById('profileInfoGrid');
+  if (infoGrid) {
+    infoGrid.innerHTML = `
+      <div class="sk-info-cell"><span>Tên đăng nhập</span><span class="dynamic-sync-username">${escapeHtml(user.username || 'user')}</span></div>
+      <div class="sk-info-cell"><span>Địa chỉ email</span><span>${escapeHtml(user.email || 'Chưa cập nhật')}</span></div>
+      <div class="sk-info-cell"><span>Số điện thoại</span><span id="txt-phone">${escapeHtml(user.phone || 'Chưa cập nhật')}</span></div>
+      <div class="sk-info-cell"><span>Họ và tên</span><span id="txt-fullname">${escapeHtml(user.fullName || user.username || 'Chưa cập nhật')}</span></div>
+      <div class="sk-info-cell"><span>Ngày đăng ký</span><span>${user.createdAt ? formatDateTime(user.createdAt) : 'Chưa cập nhật'}</span></div>
+      <div class="sk-info-cell"><span>Cấp tài khoản</span><span><span class="sk-badge-rank ${rankBadgeClass}">${rankName}</span></span></div>
+    `;
+  }
+
+  // Show edit profile button
+  const btnEdit = document.getElementById('btnEditProfile');
+  if (btnEdit) btnEdit.style.display = 'inline-flex';
 
   const txtPhone = document.getElementById('txt-phone');
   if (txtPhone) txtPhone.innerText = user.phone || 'Chưa cập nhật';
@@ -195,45 +275,85 @@ function orderStatusLabel(status) {
 }
 
 function renderOrders(orders) {
-  const tbody = document.querySelector('#tab-content-orders tbody');
-  if (!tbody) return;
+  const ordersBody = document.getElementById('ordersTabBody');
+  if (!ordersBody) return;
 
   const completedOrders = orders.filter(order => order.status === 'completed');
 
-  tbody.innerHTML = completedOrders.map(order => `
-    <tr>
-      <td>#${escapeHtml(order.code || order.id || '---')}</td>
-      <td>
-        <b>${escapeHtml(order.productName || 'Sản phẩm')}</b><br>
-        <span style="color:var(--muted)">${escapeHtml(order.variantName || 'Gói mặc định')} x${Number(order.quantity || 1)}</span>
-      </td>
-      <td class="sk-price">${formatMoney(order.totalPrice)}</td>
-      <td>${formatDateTime(order.createdAt)}</td>
-      <td><span class="sk-badge sk-badge-success" style="background: var(--success-soft); color: var(--success); border-color: rgba(16, 185, 129, 0.2);">${escapeHtml(orderStatusLabel(order.status))}</span></td>
-      <td>
-        <button class="sk-btn sk-btn-success" style="background: var(--success); color: #fff; box-shadow: 0 0 10px rgba(16, 185, 129, 0.35); border: 0; font-weight: 700; font-size: 12px; padding: 6px 12px; display: inline-flex; align-items: center; gap: 4px;" type="button" onclick="showOrderDetail('${escapeHtml(order.id)}')"><i class="fa-solid fa-key"></i> Lấy tài khoản</button>
-      </td>
-    </tr>
-  `).join('') || '<tr><td colspan="6">Chưa có đơn hàng thành công nào.</td></tr>';
+  if (completedOrders.length === 0) {
+    ordersBody.innerHTML = `
+      <div class="sk-empty-state">
+        <i class="fa-solid fa-folder-open" style="font-size: 40px; color: rgba(255,255,255,0.1); margin-bottom: 16px;"></i>
+        <h3>Chưa có đơn hàng nào</h3>
+        <p>Lịch sử mua hàng của bạn hiện đang trống. Hãy thực hiện giao dịch đầu tiên!</p>
+      </div>
+    `;
+    return;
+  }
+
+  ordersBody.innerHTML = `
+    <div class="sk-table-wrap">
+      <table class="sk-table">
+        <thead><tr><th>Mã đơn</th><th>Sản phẩm</th><th>Giá trị</th><th>Ngày mua</th><th>Trạng thái</th><th>Hành động</th></tr></thead>
+        <tbody>
+          ${completedOrders.map(order => `
+            <tr>
+              <td>#${escapeHtml(order.code || order.id || '---')}</td>
+              <td>
+                <b>${escapeHtml(order.productName || 'Sản phẩm')}</b><br>
+                <span style="color:var(--muted)">${escapeHtml(order.variantName || 'Gói mặc định')} x${Number(order.quantity || 1)}</span>
+              </td>
+              <td class="sk-price">${formatMoney(order.totalPrice)}</td>
+              <td>${formatDateTime(order.createdAt)}</td>
+              <td><span class="sk-badge sk-badge-success" style="background: var(--success-soft); color: var(--success); border-color: rgba(41, 226, 125, 0.2);">${escapeHtml(orderStatusLabel(order.status))}</span></td>
+              <td>
+                <button class="sk-btn sk-btn-success" style="background: var(--success); color: #fff; border: 0; font-weight: 700; font-size: 12px; padding: 6px 12px; display: inline-flex; align-items: center; gap: 4px;" type="button" onclick="showOrderDetail('${escapeHtml(order.id)}')"><i class="fa-solid fa-key"></i> Lấy tài khoản</button>
+              </td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
 }
 
 function renderTransactions(transactions) {
-  const tbody = document.querySelector('#tab-content-transactions tbody');
-  if (!tbody) return;
+  const txBody = document.getElementById('transactionsTabBody');
+  if (!txBody) return;
 
-  tbody.innerHTML = transactions.map(item => {
-    const amount = Number(item.amount || 0);
-    const color = amount >= 0 ? 'var(--success)' : 'var(--danger)';
-    return `
-      <tr>
-        <td>#${escapeHtml(item.code || item.id || '---')}</td>
-        <td style="color:${color}; font-weight:900">${formatSignedMoney(amount)}</td>
-        <td>${formatMoney(item.balanceAfter)}</td>
-        <td>${escapeHtml(item.content || 'Biến động số dư')}</td>
-        <td>${formatDateTime(item.createdAt)}</td>
-      </tr>
+  if (transactions.length === 0) {
+    txBody.innerHTML = `
+      <div class="sk-empty-state">
+        <i class="fa-solid fa-clock-rotate-left" style="font-size: 40px; color: rgba(255,255,255,0.1); margin-bottom: 16px;"></i>
+        <h3>Chưa có giao dịch nào</h3>
+        <p>Lịch sử biến động số dư tài khoản của bạn hiện đang trống.</p>
+      </div>
     `;
-  }).join('') || '<tr><td colspan="5">Chưa có biến động số dư.</td></tr>';
+    return;
+  }
+
+  txBody.innerHTML = `
+    <div class="sk-table-wrap">
+      <table class="sk-table">
+        <thead><tr><th>Mã GD</th><th>Thay đổi</th><th>Số dư cuối</th><th>Nội dung</th><th>Thời gian</th></tr></thead>
+        <tbody>
+          ${transactions.map(item => {
+            const amount = Number(item.amount || 0);
+            const color = amount >= 0 ? 'var(--success)' : 'var(--danger)';
+            return `
+              <tr>
+                <td>#${escapeHtml(item.code || item.id || '---')}</td>
+                <td style="color:${color}; font-weight:900">${formatSignedMoney(amount)}</td>
+                <td>${formatMoney(item.balanceAfter)}</td>
+                <td>${escapeHtml(item.content || 'Biến động số dư')}</td>
+                <td>${formatDateTime(item.createdAt)}</td>
+              </tr>
+            `;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
 }
 
 function showOrderDetail(orderId) {
@@ -346,6 +466,68 @@ function handleHashChange() {
   updateGlobalSidebarActive();
 }
 
+window.handlePasswordUpdate = changePassword;
+
+window.retryLoadingProfile = function() {
+  const errorState = document.getElementById('profileErrorState');
+  if (errorState) errorState.classList.add('hidden');
+  showSkeletons();
+  loadProfileFlow();
+};
+
+function showSkeletons() {
+  const infoGrid = document.getElementById('profileInfoGrid');
+  if (infoGrid) {
+    infoGrid.innerHTML = `
+      <div class="sk-info-cell skeleton skeleton-cell"></div>
+      <div class="sk-info-cell skeleton skeleton-cell"></div>
+      <div class="sk-info-cell skeleton skeleton-cell"></div>
+      <div class="sk-info-cell skeleton skeleton-cell"></div>
+      <div class="sk-info-cell skeleton skeleton-cell"></div>
+      <div class="sk-info-cell skeleton skeleton-cell"></div>
+    `;
+  }
+  const metrics = document.getElementById('profileMetricsContainer');
+  if (metrics) {
+    metrics.innerHTML = `
+      <div class="sk-stat skeleton skeleton-stat"></div>
+      <div class="sk-stat skeleton skeleton-stat"></div>
+      <div class="sk-stat skeleton skeleton-stat"></div>
+    `;
+  }
+  const btnEdit = document.getElementById('btnEditProfile');
+  if (btnEdit) btnEdit.style.display = 'none';
+
+  const ordersBody = document.getElementById('ordersTabBody');
+  if (ordersBody) {
+    ordersBody.innerHTML = `<div class="skeleton skeleton-cell" style="height:120px; width:100%;"></div>`;
+  }
+  const txBody = document.getElementById('transactionsTabBody');
+  if (txBody) {
+    txBody.innerHTML = `<div class="skeleton skeleton-cell" style="height:120px; width:100%;"></div>`;
+  }
+}
+
+async function loadProfileFlow() {
+  try {
+    const user = await fetchMe();
+    if (!user) {
+      throw new Error('Không lấy được thông tin người dùng');
+    }
+    await fetchAccountHistory();
+    applyUserToProfile(user);
+  } catch (err) {
+    console.error(err);
+    const errorState = document.getElementById('profileErrorState');
+    if (errorState) errorState.classList.remove('hidden');
+    
+    const infoGrid = document.getElementById('profileInfoGrid');
+    if (infoGrid) infoGrid.innerHTML = '';
+    const metrics = document.getElementById('profileMetricsContainer');
+    if (metrics) metrics.innerHTML = '';
+  }
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   const passwordForm = document.getElementById('current-password')?.closest('form');
   if (passwordForm) passwordForm.onsubmit = changePassword;
@@ -358,10 +540,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Sync tab based on URL hash on page load
   handleHashChange();
 
-  const user = await fetchMe();
-  applyUserToProfile(user);
-  if (user) await fetchAccountHistory();
-  setTimeout(hidePreloader, 300);
+  // Hide the generic preloader immediately to display skeletons
+  hidePreloader();
+  
+  // Start loading data flow
+  loadProfileFlow();
 });
 
 window.addEventListener('hashchange', handleHashChange);

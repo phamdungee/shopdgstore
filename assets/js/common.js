@@ -187,7 +187,7 @@
       const initial = displayName.trim().charAt(0).toUpperCase() || 'U';
       const safeName = escapeHtml(displayName);
       const adminLink = user.role === 'admin'
-        ? '<a class="sk-btn sk-btn-accent" href="/admin.html"><i class="fa-solid fa-gauge-high"></i> <span class="btn-text">Admin</span></a>'
+        ? '<a class="sk-btn sk-btn-accent sk-admin-btn" href="/admin.html"><i class="fa-solid fa-gauge-high"></i> <span class="btn-text">Admin</span></a>'
         : '';
       let finalAvatarUrl = user.avatarUrl;
       if (finalAvatarUrl && !finalAvatarUrl.startsWith('http') && !finalAvatarUrl.startsWith('/')) {
@@ -206,7 +206,7 @@
           </span>
         </a>
         ${adminLink}
-        <a class="sk-btn sk-btn-soft" href="/nap-tien.html"><i class="fa-solid fa-wallet"></i> <span class="btn-text">Nạp tiền</span></a>
+        <a class="sk-btn sk-btn-soft sk-deposit-btn" href="/nap-tien.html"><i class="fa-solid fa-wallet"></i> <span class="btn-text">Nạp tiền</span></a>
         <button class="sk-icon-btn sk-logout-btn" type="button" onclick="handleHeaderLogout()" aria-label="Đăng xuất">
           <i class="fa-solid fa-right-from-bracket"></i>
         </button>
@@ -214,6 +214,23 @@
       if (window.replaceIcons) window.replaceIcons(container);
     });
     
+    // Dynamically insert Admin Dashboard in sidebar drawer for admins
+    if (user.role === 'admin') {
+      const sidebar = document.querySelector('.sk-sidebar-new');
+      if (sidebar && !sidebar.querySelector('[href*="/admin.html"]')) {
+        const adminSection = document.createElement('div');
+        adminSection.className = 'sk-sidebar-new-nav sk-sidebar-admin-section';
+        adminSection.innerHTML = `
+          <div class="sidebar-title">ADMIN</div>
+          <a href="/admin.html" class="nav-item" data-tooltip="Dashboard">
+            <i class="fa-solid fa-gauge-high"></i>
+            <span class="nav-label">Dashboard</span>
+          </a>
+        `;
+        sidebar.insertBefore(adminSection, sidebar.firstChild);
+      }
+    }
+
     // Also sync balance texts across the page
     document.querySelectorAll('.dynamic-sync-balance').forEach(el => {
       el.innerText = formatMoney(user.balance);
