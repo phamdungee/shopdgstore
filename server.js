@@ -112,9 +112,15 @@ if (!isVercel) {
 
   if (sslCertPath && sslKeyPath && fs.existsSync(sslCertPath) && fs.existsSync(sslKeyPath)) {
     try {
+      const cert = fs.readFileSync(sslCertPath, "utf8");
+      const key  = fs.readFileSync(sslKeyPath, "utf8");
+
+      console.log('[SSL DEBUG] cert starts with:', cert.substring(0, 40));
+      console.log('[SSL DEBUG] key  starts with:', key.substring(0, 40));
+
       const sslOptions = {
-        cert: fs.readFileSync(sslCertPath),
-        key:  fs.readFileSync(sslKeyPath),
+        cert,
+        key,
       };
 
       // Start HTTPS server on port 443 (or HTTPS_PORT)
@@ -131,7 +137,7 @@ if (!isVercel) {
       });
 
     } catch (sslErr) {
-      console.error('[SSL] Failed to load certificates, falling back to HTTP:', sslErr.message);
+      console.error(sslErr);
       app.listen(PORT, () => {
         console.log(`Server running at: http://localhost:${PORT}`);
       });
