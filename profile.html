@@ -111,82 +111,68 @@
       </div>
     </aside>
 
-  <main class="sk-layout sk-profile-page">
-    <aside class="sk-sidebar sk-profile-sidebar">
-      <div class="sk-user-mini" id="sidebarProfileCard">
-        <div class="sk-user-mini-header">
-          <div class="avatar-glow-container" onclick="openEditModal()" title="Đổi ảnh đại diện" role="button" aria-label="Đổi ảnh đại diện" tabindex="0">
-            <div class="avatar-glow-ring"></div>
-            <div class="sk-avatar"><i class="fa-solid fa-user"></i></div>
-            <div class="avatar-hover-overlay"><i class="fa-solid fa-camera"></i></div>
-          </div>
-          <div class="sk-user-mini-info" id="mobileUserSubline" data-subline="UID: --- | Thành viên">
-            <b class="dynamic-sync-username">user</b>
+  <main class="sk-layout sk-profile-page-modern">
+    <!-- 1. Top Profile Header Banner -->
+    <header class="profile-modern-header">
+      <div class="profile-modern-avatar-section">
+        <div class="avatar-glow-container" onclick="openEditModal()" title="Đổi ảnh đại diện" role="button" aria-label="Đổi ảnh đại diện" tabindex="0">
+          <div class="avatar-glow-ring"></div>
+          <div class="sk-avatar"><i class="fa-solid fa-user"></i></div>
+          <div class="avatar-hover-overlay"><i class="fa-solid fa-camera"></i></div>
+        </div>
+        <div class="profile-modern-user-info" id="mobileUserSubline" data-subline="UID: --- | Thành viên">
+          <div class="profile-modern-name-row">
+            <h1 class="dynamic-sync-username">user</h1>
             <span class="sk-user-mini-role-badge badge-member">Thành viên</span>
           </div>
-        </div>
-        <div class="sk-user-mini-divider"></div>
-        <div class="sk-user-mini-details">
-          <div class="sk-user-detail-row">
-            <span class="detail-label"><i class="fa-solid fa-id-card"></i> UID</span>
-            <span class="detail-value dynamic-sync-uid">---</span>
-          </div>
-          <div class="sk-user-detail-row">
-            <span class="detail-label"><i class="fa-solid fa-crown"></i> Cấp độ</span>
-            <span class="detail-value"><span class="sk-badge-rank badge-member dynamic-sync-rank">Thành viên</span></span>
-          </div>
-          <div class="sk-user-detail-row">
-            <span class="detail-label"><i class="fa-solid fa-wallet"></i> Số dư</span>
-            <span class="detail-value dynamic-sync-balance color-success">0đ</span>
-          </div>
-          <div class="sk-user-detail-row">
-            <span class="detail-label"><i class="fa-solid fa-calendar-days"></i> Tham gia</span>
-            <span class="detail-value dynamic-sync-joined">---</span>
+          <div class="profile-modern-meta-row">
+            <span><i class="fa-solid fa-id-card"></i> UID: <b class="dynamic-sync-uid">---</b></span>
+            <span class="meta-divider">|</span>
+            <span><i class="fa-solid fa-crown"></i> Cấp độ: <b class="dynamic-sync-rank">Thành viên</b></span>
+            <span class="meta-divider">|</span>
+            <span><i class="fa-solid fa-calendar-days"></i> Tham gia: <b class="dynamic-sync-joined">---</b></span>
           </div>
         </div>
       </div>
-
-      <div class="sk-profile-menu-group">
-        <div class="sk-sidebar-title">Tài khoản</div>
-        <nav class="sk-menu" id="menu-group-account" role="navigation" aria-label="Menu tài khoản">
-          <button class="sidebar-item is-active" id="menu-profile" type="button" onclick="switchProfileTab('profile')" tabindex="0" aria-label="Thông tin cá nhân"><i class="fa-solid fa-user"></i> Thông tin cá nhân</button>
-          <button class="sidebar-item" id="menu-security" type="button" onclick="switchProfileTab('security')" tabindex="0" aria-label="Chính sách"><i class="fa-solid fa-shield-halved"></i> Chính sách</button>
-          <button class="sidebar-item" id="menu-password" type="button" onclick="switchProfileTab('password')" tabindex="0" aria-label="Đổi mật khẩu"><i class="fa-solid fa-key"></i> Đổi mật khẩu</button>
-        </nav>
+      
+      <!-- Metrics Container -->
+      <div class="profile-modern-metrics" id="profileMetricsContainer">
+        <!-- Skeletons render first -->
+        <div class="modern-metric-card skeleton skeleton-stat" style="height: 72px;"></div>
+        <div class="modern-metric-card skeleton skeleton-stat" style="height: 72px;"></div>
+        <div class="modern-metric-card skeleton skeleton-stat" style="height: 72px;"></div>
       </div>
+    </header>
 
-      <div class="sk-profile-menu-group">
-        <div class="sk-sidebar-title">Giao dịch</div>
-        <nav class="sk-menu" id="menu-group-transaction" role="navigation" aria-label="Menu giao dịch">
-          <button class="sidebar-item" id="menu-orders" type="button" onclick="switchProfileTab('orders')" tabindex="0" aria-label="Đơn hàng của tôi"><i class="fa-solid fa-box-open"></i> Đơn hàng của tôi</button>
-          <button class="sidebar-item" id="menu-transactions" type="button" onclick="switchProfileTab('transactions')" tabindex="0" aria-label="Biến động số dư"><i class="fa-solid fa-clock-rotate-left"></i> Biến động số dư</button>
-        </nav>
-      </div>
-    </aside>
+    <!-- 2. Horizontal Navigation Tabs Bar -->
+    <nav class="profile-modern-tabs" role="navigation" aria-label="Menu hồ sơ">
+      <button class="modern-tab-btn active" id="menu-profile" type="button" onclick="switchProfileTab('profile')" tabindex="0" aria-label="Thông tin cá nhân">
+        <i class="fa-solid fa-user"></i> <span>Thông tin cá nhân</span>
+      </button>
+      <button class="modern-tab-btn" id="menu-orders" type="button" onclick="switchProfileTab('orders')" tabindex="0" aria-label="Đơn hàng của tôi">
+        <i class="fa-solid fa-box-open"></i> <span>Đơn hàng của tôi</span>
+      </button>
+      <button class="modern-tab-btn" id="menu-transactions" type="button" onclick="switchProfileTab('transactions')" tabindex="0" aria-label="Biến động số dư">
+        <i class="fa-solid fa-clock-rotate-left"></i> <span>Biến động số dư</span>
+      </button>
+      <button class="modern-tab-btn" id="menu-password" type="button" onclick="switchProfileTab('password')" tabindex="0" aria-label="Đổi mật khẩu">
+        <i class="fa-solid fa-key"></i> <span>Đổi mật khẩu</span>
+      </button>
+      <button class="modern-tab-btn" id="menu-security" type="button" onclick="switchProfileTab('security')" tabindex="0" aria-label="Chính sách bán hàng">
+        <i class="fa-solid fa-shield-halved"></i> <span>Chính sách bán hàng</span>
+      </button>
+    </nav>
 
-    <div class="sk-content sk-profile-main">
-      <section class="sk-page-title sk-profile-hero">
-        <div>
-          <span class="sk-badge sk-badge-accent"><i class="fa-solid fa-circle-check"></i> Hồ sơ đang hoạt động</span>
-          <h1 style="margin-top:12px">Trung tâm tài khoản</h1>
-          <p>Quản lý thông tin cá nhân, chính sách, đơn hàng và biến động số dư trong cùng một giao diện.</p>
-        </div>
-      </section>
+    <!-- 3. Error State Block (hidden by default) -->
+    <div id="profileErrorState" class="sk-error-state hidden" role="alert">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+      <h3>Không tải được hồ sơ</h3>
+      <p>Hệ thống không thể kết nối tới máy chủ. Vui lòng kiểm tra lại kết nối mạng.</p>
+      <button class="sk-btn sk-btn-primary" type="button" onclick="retryLoadingProfile()" aria-label="Thử lại"><i class="fa-solid fa-rotate-right"></i> Thử lại</button>
+    </div>
 
-      <section class="sk-grid sk-grid-3 sk-profile-metrics" id="profileMetricsContainer">
-        <div class="sk-stat skeleton skeleton-stat"></div>
-        <div class="sk-stat skeleton skeleton-stat"></div>
-        <div class="sk-stat skeleton skeleton-stat"></div>
-      </section>
-
-      <!-- Error State Block (hidden by default) -->
-      <div id="profileErrorState" class="sk-error-state hidden" role="alert">
-        <i class="fa-solid fa-triangle-exclamation"></i>
-        <h3>Không tải được hồ sơ</h3>
-        <p>Hệ thống không thể kết nối tới máy chủ. Vui lòng kiểm tra lại kết nối mạng.</p>
-        <button class="sk-btn sk-btn-primary" type="button" onclick="retryLoadingProfile()" aria-label="Thử lại"><i class="fa-solid fa-rotate-right"></i> Thử lại</button>
-      </div>
-
+    <!-- 4. Active Tab Content Panels Wrapper -->
+    <div class="profile-modern-content-wrapper">
       <section class="profile-tab-section" id="tab-content-profile">
         <div class="sk-tab-head">
           <h2><i class="fa-solid fa-circle-user" style="color:var(--brand)"></i> Thông tin tài khoản</h2>

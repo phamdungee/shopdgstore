@@ -178,7 +178,7 @@ function applyUserToProfile(user) {
   });
 
   // Render sidebar avatar fallback support
-  const sidebarAvatar = document.querySelector('#sidebarProfileCard .sk-avatar');
+  const sidebarAvatar = document.querySelector('.profile-modern-avatar-section .sk-avatar, #sidebarProfileCard .sk-avatar');
   if (sidebarAvatar) {
     if (user.avatarUrl) {
       const img = document.createElement('img');
@@ -398,7 +398,8 @@ function switchProfileTab(tabTarget) {
   });
 
   ['profile', 'security', 'password', 'orders', 'transactions'].forEach(id => {
-    document.getElementById(`menu-${id}`)?.classList.remove('is-active');
+    const btn = document.getElementById(`menu-${id}`);
+    if (btn) btn.classList.remove('is-active', 'active');
   });
 
   const targetEl = document.getElementById(`tab-content-${tabTarget}`);
@@ -412,7 +413,9 @@ function switchProfileTab(tabTarget) {
     }
   }
 
-  document.getElementById(`menu-${tabTarget}`)?.classList.add('is-active');
+  const activeBtn = document.getElementById(`menu-${tabTarget}`);
+  if (activeBtn) activeBtn.classList.add('is-active', 'active');
+  
   if (window.location.hash !== `#${tabTarget}`) {
     window.history.replaceState(null, null, `#${tabTarget}`);
   }
