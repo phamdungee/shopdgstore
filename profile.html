@@ -4,10 +4,11 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Quản lý tài khoản | DG Store</title>
+  <meta name="description" content="Quản lý thông tin cá nhân, đơn hàng, nạp tiền và bảo mật tài khoản tại DG Store." />
   <script src="assets/js/profile.config.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
   <link href="assets/css/common.css" rel="stylesheet" />
   <link href="assets/css/icons.css" rel="stylesheet" />
@@ -41,17 +42,14 @@
             <span class="sk-brand-subtitle">Tài khoản bản quyền</span>
           </span>
         </a>
-
         <div style="flex: 1 1 auto;"></div>
-
         <div class="sk-actions">
           <a class="sk-icon-btn sk-cart-link" href="/cart.html" aria-label="Giỏ hàng">
             <i class="fa-solid fa-cart-shopping"></i>
             <span class="sk-cart-count" id="headerCartCount">0</span>
           </a>
           <div class="sk-auth-actions" id="headerAuthActions">
-            <a class="sk-btn sk-btn-primary" href="/login.html"><i class="fa-solid fa-right-to-bracket"></i> <span
-                class="btn-text">Đăng nhập / Đăng ký</span></a>
+            <a class="sk-btn sk-btn-primary" href="/login.html"><i class="fa-solid fa-right-to-bracket"></i> <span class="btn-text">Đăng nhập / Đăng ký</span></a>
           </div>
         </div>
       </div>
@@ -81,7 +79,6 @@
           <span class="nav-label">Lịch sử đơn MXH</span>
         </a>
       </div>
-
       <div class="sk-sidebar-new-nav">
         <div class="sidebar-title">GIAO DỊCH</div>
         <a href="/index.html#orders" class="nav-item" data-tooltip="Đơn hàng">
@@ -93,7 +90,6 @@
           <span class="nav-label">Nạp tiền</span>
         </a>
       </div>
-
       <div class="sk-sidebar-new-nav">
         <div class="sidebar-title">TÀI KHOẢN</div>
         <a href="/profile.html" class="nav-item active" data-tooltip="Tài khoản">
@@ -111,121 +107,110 @@
       </div>
     </aside>
 
-  <main class="sk-layout sk-profile-page-modern">
-    <!-- 1. Top Profile Header Banner -->
-    <header class="profile-modern-header">
-      <div class="profile-modern-avatar-section">
-        <div class="avatar-glow-container" onclick="openEditModal()" title="Đổi ảnh đại diện" role="button" aria-label="Đổi ảnh đại diện" tabindex="0">
-          <div class="avatar-glow-ring"></div>
-          <div class="sk-avatar"><i class="fa-solid fa-user"></i></div>
-          <div class="avatar-hover-overlay"><i class="fa-solid fa-camera"></i></div>
-        </div>
-        <div class="profile-modern-user-info" id="mobileUserSubline" data-subline="UID: --- | Thành viên">
-          <div class="profile-modern-name-row">
-            <h1 class="dynamic-sync-username">user</h1>
-            <span class="sk-user-mini-role-badge badge-member">Thành viên</span>
+    <!-- ═══ PROFILE MAIN CONTENT ═══ -->
+    <main class="sk-layout pf-page">
+
+      <!-- User Card Banner -->
+      <section class="pf-card">
+        <div class="pf-card-bg"></div>
+        <div class="pf-card-inner">
+          <div class="pf-card-left">
+            <div class="pf-avatar" onclick="openEditModal()" title="Đổi ảnh đại diện" role="button" tabindex="0">
+              <div class="pf-avatar-ring"></div>
+              <div class="pf-avatar-img sk-avatar"><i class="fa-solid fa-user"></i></div>
+              <div class="pf-avatar-hover"><i class="fa-solid fa-camera"></i></div>
+            </div>
+            <div class="pf-user-info" id="mobileUserSubline" data-subline="UID: --- | Thành viên">
+              <div class="pf-user-name-row">
+                <h1 class="dynamic-sync-username">user</h1>
+                <span class="pf-badge badge-member">Thành viên</span>
+              </div>
+              <div class="pf-user-meta">
+                <span><i class="fa-solid fa-id-card"></i> UID: <b class="dynamic-sync-uid">---</b></span>
+                <span class="pf-meta-dot"></span>
+                <span><i class="fa-solid fa-calendar-days"></i> <b class="dynamic-sync-joined">---</b></span>
+              </div>
+            </div>
           </div>
-          <div class="profile-modern-meta-row">
-            <span><i class="fa-solid fa-id-card"></i> UID: <b class="dynamic-sync-uid">---</b></span>
-            <span class="meta-divider">|</span>
-            <span><i class="fa-solid fa-crown"></i> Cấp độ: <b class="dynamic-sync-rank">Thành viên</b></span>
-            <span class="meta-divider">|</span>
-            <span><i class="fa-solid fa-calendar-days"></i> Tham gia: <b class="dynamic-sync-joined">---</b></span>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Metrics Container -->
-      <div class="profile-modern-metrics" id="profileMetricsContainer">
-        <!-- Skeletons render first -->
-        <div class="modern-metric-card skeleton skeleton-stat" style="height: 72px;"></div>
-        <div class="modern-metric-card skeleton skeleton-stat" style="height: 72px;"></div>
-        <div class="modern-metric-card skeleton skeleton-stat" style="height: 72px;"></div>
-      </div>
-    </header>
-
-    <!-- 2. Horizontal Navigation Tabs Bar -->
-    <nav class="profile-modern-tabs" role="navigation" aria-label="Menu hồ sơ">
-      <button class="modern-tab-btn active" id="menu-profile" type="button" onclick="switchProfileTab('profile')" tabindex="0" aria-label="Thông tin cá nhân">
-        <i class="fa-solid fa-user"></i> <span>Thông tin cá nhân</span>
-      </button>
-      <button class="modern-tab-btn" id="menu-orders" type="button" onclick="switchProfileTab('orders')" tabindex="0" aria-label="Đơn hàng của tôi">
-        <i class="fa-solid fa-box-open"></i> <span>Đơn hàng của tôi</span>
-      </button>
-      <button class="modern-tab-btn" id="menu-transactions" type="button" onclick="switchProfileTab('transactions')" tabindex="0" aria-label="Biến động số dư">
-        <i class="fa-solid fa-clock-rotate-left"></i> <span>Biến động số dư</span>
-      </button>
-      <button class="modern-tab-btn" id="menu-password" type="button" onclick="switchProfileTab('password')" tabindex="0" aria-label="Đổi mật khẩu">
-        <i class="fa-solid fa-key"></i> <span>Đổi mật khẩu</span>
-      </button>
-      <button class="modern-tab-btn" id="menu-security" type="button" onclick="switchProfileTab('security')" tabindex="0" aria-label="Chính sách bán hàng">
-        <i class="fa-solid fa-shield-halved"></i> <span>Chính sách bán hàng</span>
-      </button>
-    </nav>
-
-    <!-- 3. Error State Block (hidden by default) -->
-    <div id="profileErrorState" class="sk-error-state hidden" role="alert">
-      <i class="fa-solid fa-triangle-exclamation"></i>
-      <h3>Không tải được hồ sơ</h3>
-      <p>Hệ thống không thể kết nối tới máy chủ. Vui lòng kiểm tra lại kết nối mạng.</p>
-      <button class="sk-btn sk-btn-primary" type="button" onclick="retryLoadingProfile()" aria-label="Thử lại"><i class="fa-solid fa-rotate-right"></i> Thử lại</button>
-    </div>
-
-    <!-- 4. Active Tab Content Panels Wrapper -->
-    <div class="profile-modern-content-wrapper">
-      <section class="profile-tab-section" id="tab-content-profile">
-        <div class="sk-tab-head">
-          <h2><i class="fa-solid fa-circle-user" style="color:var(--brand)"></i> Thông tin tài khoản</h2>
-          <button class="sk-btn sk-btn-primary" id="btnEditProfile" type="button" onclick="openEditModal()" aria-label="Chỉnh sửa hồ sơ" style="display:none;"><i class="fa-solid fa-pen-to-square"></i> Chỉnh sửa</button>
-        </div>
-        <div class="sk-tab-body">
-          <div class="sk-grid sk-grid-3 sk-profile-info-grid" id="profileInfoGrid">
-            <div class="sk-info-cell skeleton skeleton-cell"></div>
-            <div class="sk-info-cell skeleton skeleton-cell"></div>
-            <div class="sk-info-cell skeleton skeleton-cell"></div>
-            <div class="sk-info-cell skeleton skeleton-cell"></div>
-            <div class="sk-info-cell skeleton skeleton-cell"></div>
-            <div class="sk-info-cell skeleton skeleton-cell"></div>
+          <div class="pf-card-stats" id="profileMetricsContainer">
+            <div class="pf-stat skeleton"></div>
+            <div class="pf-stat skeleton"></div>
+            <div class="pf-stat skeleton"></div>
           </div>
         </div>
       </section>
 
-      <section class="profile-tab-section hidden" id="tab-content-security">
-        <div class="sk-tab-head">
-          <h2><i class="fa-solid fa-shield-halved" style="color:var(--accent)"></i> Chính sách bán hàng & Bảo hành</h2>
-        </div>
-        <div class="sk-tab-body sk-content">
-          <div class="sk-alert sk-policy-alert">
-            <i class="fa-solid fa-shield-heart"></i>
-            <div><b>Bảo hành 1 đổi 1 trong 03 ngày</b><br />Áp dụng trong vòng 72 giờ kể từ thời điểm giao dịch thành công nếu lỗi phát sinh từ phía hệ thống hoặc nhà cung cấp.</div>
-          </div>
+      <!-- Tab Navigation -->
+      <nav class="pf-tabs" role="tablist" aria-label="Menu hồ sơ">
+        <button class="pf-tab active" id="menu-profile" type="button" role="tab" onclick="switchProfileTab('profile')">
+          <i class="fa-solid fa-user"></i><span>Hồ sơ</span>
+        </button>
+        <button class="pf-tab" id="menu-orders" type="button" role="tab" onclick="switchProfileTab('orders')">
+          <i class="fa-solid fa-box-open"></i><span>Đơn hàng</span>
+        </button>
+        <button class="pf-tab" id="menu-transactions" type="button" role="tab" onclick="switchProfileTab('transactions')">
+          <i class="fa-solid fa-clock-rotate-left"></i><span>Số dư</span>
+        </button>
+        <button class="pf-tab" id="menu-password" type="button" role="tab" onclick="switchProfileTab('password')">
+          <i class="fa-solid fa-key"></i><span>Mật khẩu</span>
+        </button>
+        <button class="pf-tab" id="menu-security" type="button" role="tab" onclick="switchProfileTab('security')">
+          <i class="fa-solid fa-shield-halved"></i><span>Chính sách</span>
+        </button>
+      </nav>
 
-          <div class="sk-grid sk-grid-2 sk-policy-profile-grid">
-            <article class="sk-info-cell">
-              <span>Điều khoản chung</span>
-              <p>Tất cả sản phẩm kỹ thuật số được hệ thống bàn giao tự động ngay sau khi xác nhận thanh toán thành công. Khách hàng có trách nhiệm bảo mật và sử dụng sản phẩm đúng mục đích ngay sau khi nhận thông tin.</p>
-            </article>
-            <article class="sk-info-cell">
-              <span>Phạm vi bảo hành</span>
-              <p>Hỗ trợ đổi mới sản phẩm nếu xảy ra lỗi từ phía nhà cung cấp, bao gồm tài khoản không thể đăng nhập, lỗi kích hoạt dịch vụ, hoặc thông tin bàn giao không khớp với mô tả.</p>
-            </article>
-            <article class="sk-info-cell">
-              <span>Quy trình xử lý</span>
-              <p>Khi gặp sự cố, khách hàng vui lòng liên hệ đội ngũ hỗ trợ qua kênh hỗ trợ của chúng tôi kèm theo mã đơn hàng và bằng chứng lỗi.</p>
-            </article>
-            <article class="sk-info-cell">
-              <span>Lưu ý</span>
-              <p>Chúng tôi không áp dụng chính sách hoàn tiền mặt. Khiếu nại sau 03 ngày hoặc lỗi do người dùng tự ý thay đổi bảo mật sẽ nằm ngoài phạm vi bảo hành.</p>
-            </article>
+      <!-- Error State (hidden by default) -->
+      <div id="profileErrorState" class="pf-error hidden" role="alert">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <h3>Không tải được hồ sơ</h3>
+        <p>Hệ thống không thể kết nối tới máy chủ.</p>
+        <button class="sk-btn sk-btn-primary" type="button" onclick="retryLoadingProfile()"><i class="fa-solid fa-rotate-right"></i> Thử lại</button>
+      </div>
+
+      <!-- Tab: Profile Info -->
+      <section class="pf-panel" id="tab-content-profile" role="tabpanel">
+        <div class="pf-panel-head">
+          <h2><i class="fa-solid fa-circle-user"></i> Thông tin tài khoản</h2>
+          <button class="sk-btn sk-btn-primary" id="btnEditProfile" type="button" onclick="openEditModal()" style="display:none;"><i class="fa-solid fa-pen-to-square"></i> Chỉnh sửa</button>
+        </div>
+        <div class="pf-panel-body">
+          <div class="pf-info-grid" id="profileInfoGrid">
+            <div class="pf-info-cell skeleton"></div>
+            <div class="pf-info-cell skeleton"></div>
+            <div class="pf-info-cell skeleton"></div>
+            <div class="pf-info-cell skeleton"></div>
+            <div class="pf-info-cell skeleton"></div>
+            <div class="pf-info-cell skeleton"></div>
           </div>
         </div>
       </section>
 
-      <section class="profile-tab-section hidden" id="tab-content-password">
-        <div class="sk-tab-head">
-          <h2><i class="fa-solid fa-key" style="color:var(--danger)"></i> Đổi mật khẩu</h2>
+      <!-- Tab: Orders -->
+      <section class="pf-panel hidden" id="tab-content-orders" role="tabpanel">
+        <div class="pf-panel-head">
+          <h2><i class="fa-solid fa-box-open"></i> Lịch sử đơn hàng</h2>
         </div>
-        <form class="sk-tab-body sk-content" style="max-width:520px" onsubmit="handlePasswordUpdate(event)">
+        <div class="pf-panel-body" id="ordersTabBody">
+          <div class="skeleton" style="height:120px; width:100%; border-radius: var(--radius);"></div>
+        </div>
+      </section>
+
+      <!-- Tab: Transactions -->
+      <section class="pf-panel hidden" id="tab-content-transactions" role="tabpanel">
+        <div class="pf-panel-head">
+          <h2><i class="fa-solid fa-clock-rotate-left"></i> Biến động số dư</h2>
+        </div>
+        <div class="pf-panel-body" id="transactionsTabBody">
+          <div class="skeleton" style="height:120px; width:100%; border-radius: var(--radius);"></div>
+        </div>
+      </section>
+
+      <!-- Tab: Password -->
+      <section class="pf-panel hidden" id="tab-content-password" role="tabpanel">
+        <div class="pf-panel-head">
+          <h2><i class="fa-solid fa-key"></i> Đổi mật khẩu</h2>
+        </div>
+        <form class="pf-panel-body" style="max-width:480px" onsubmit="handlePasswordUpdate(event)">
           <div class="sk-field">
             <label for="current-password">Mật khẩu hiện tại</label>
             <div class="sk-password-field">
@@ -247,135 +232,122 @@
               <button type="button" onclick="togglePasswordVisibility('confirm-password', this)" aria-label="Hiện mật khẩu"><i class="fa-solid fa-eye"></i></button>
             </div>
           </div>
-          <button class="sk-btn sk-btn-primary" type="submit" aria-label="Cập nhật mật khẩu">Cập nhật mật khẩu</button>
+          <button class="sk-btn sk-btn-primary" type="submit">Cập nhật mật khẩu</button>
         </form>
       </section>
 
-      <section class="profile-tab-section hidden" id="tab-content-orders">
-        <div class="sk-tab-head">
-          <h2><i class="fa-solid fa-box-open" style="color:var(--brand)"></i> Lịch sử đơn hàng</h2>
+      <!-- Tab: Security / Policy -->
+      <section class="pf-panel hidden" id="tab-content-security" role="tabpanel">
+        <div class="pf-panel-head">
+          <h2><i class="fa-solid fa-shield-halved"></i> Chính sách bán hàng &amp; Bảo hành</h2>
         </div>
-        <div class="sk-tab-body" id="ordersTabBody">
-          <div class="skeleton skeleton-cell" style="height:120px; width:100%;"></div>
+        <div class="pf-panel-body">
+          <div class="pf-policy-alert">
+            <i class="fa-solid fa-shield-heart"></i>
+            <div><b>Bảo hành 1 đổi 1 trong 03 ngày</b><br />Áp dụng trong vòng 72 giờ kể từ thời điểm giao dịch thành công nếu lỗi phát sinh từ phía hệ thống hoặc nhà cung cấp.</div>
+          </div>
+          <div class="pf-policy-grid">
+            <article class="pf-policy-item">
+              <h4>Điều khoản chung</h4>
+              <p>Tất cả sản phẩm kỹ thuật số được hệ thống bàn giao tự động ngay sau khi xác nhận thanh toán thành công. Khách hàng có trách nhiệm bảo mật và sử dụng sản phẩm đúng mục đích.</p>
+            </article>
+            <article class="pf-policy-item">
+              <h4>Phạm vi bảo hành</h4>
+              <p>Hỗ trợ đổi mới sản phẩm nếu xảy ra lỗi từ phía nhà cung cấp, bao gồm tài khoản không thể đăng nhập, lỗi kích hoạt dịch vụ, hoặc thông tin bàn giao không khớp với mô tả.</p>
+            </article>
+            <article class="pf-policy-item">
+              <h4>Quy trình xử lý</h4>
+              <p>Khi gặp sự cố, vui lòng liên hệ đội ngũ hỗ trợ qua kênh hỗ trợ kèm theo mã đơn hàng và bằng chứng lỗi.</p>
+            </article>
+            <article class="pf-policy-item">
+              <h4>Lưu ý</h4>
+              <p>Chúng tôi không áp dụng chính sách hoàn tiền mặt. Khiếu nại sau 03 ngày hoặc lỗi do người dùng tự ý thay đổi bảo mật sẽ nằm ngoài phạm vi bảo hành.</p>
+            </article>
+          </div>
         </div>
       </section>
 
-      <section class="profile-tab-section hidden" id="tab-content-transactions">
-        <div class="sk-tab-head">
-          <h2><i class="fa-solid fa-clock-rotate-left" style="color:var(--success)"></i> Biến động số dư</h2>
+      <footer class="sk-footer">
+        <div class="sk-footer-inner" style="display: block; text-align: center; padding: 24px 0; border-top: 1px solid var(--line);">
+          <p style="margin: 0; font-size: 13px; color: var(--muted);">© 2026 DG Store. All rights reserved.</p>
         </div>
-        <div class="sk-tab-body" id="transactionsTabBody">
-          <div class="skeleton skeleton-cell" style="height:120px; width:100%;"></div>
-        </div>
-      </section>
-    <footer class="sk-footer">
-      <div class="sk-footer-inner" style="display: block; text-align: center; padding: 24px 0; border-top: 1px solid var(--line);">
-        <p style="margin: 0; font-size: 13px; color: var(--muted);">© 2026 DG Store. All rights reserved. Designed for ultimate digital automation.</p>
-      </div>
-    </footer>
-  </main>
+      </footer>
+    </main>
 
-  <div class="sk-modal opacity-0 pointer-events-none" id="edit-profile-modal">
-    <div class="sk-modal-card" style="width: min(520px, 95vw);">
-      <div class="sk-section-head">
-        <h2>Chỉnh sửa hồ sơ</h2>
-        <button class="sk-icon-btn" type="button" onclick="closeEditModal()" aria-label="Đóng"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-      <div class="sk-content">
-        <!-- Avatar Edit Section -->
-        <div class="sk-avatar-edit-container">
-          <div class="modal-avatar-preview-wrapper">
-            <div class="avatar-glow-ring" style="inset: -3px;"></div>
-            <div id="modal-avatar-preview" class="sk-avatar">
-              <i class="fa-solid fa-user"></i>
+    <!-- Modal: Edit Profile -->
+    <div class="sk-modal opacity-0 pointer-events-none" id="edit-profile-modal">
+      <div class="sk-modal-card" style="width: min(520px, 95vw);">
+        <div class="sk-section-head">
+          <h2>Chỉnh sửa hồ sơ</h2>
+          <button class="sk-icon-btn" type="button" onclick="closeEditModal()" aria-label="Đóng"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="sk-content">
+          <div class="pf-avatar-edit">
+            <div class="pf-avatar pf-avatar--lg">
+              <div class="pf-avatar-ring"></div>
+              <div id="modal-avatar-preview" class="pf-avatar-img sk-avatar"><i class="fa-solid fa-user"></i></div>
+            </div>
+            <button class="sk-btn sk-btn-soft" type="button" onclick="document.getElementById('input-avatar-file').click();" style="height: 34px; padding: 0 14px; font-size: 12.5px;">
+              <i class="fa-solid fa-cloud-arrow-up"></i> Tải ảnh từ thiết bị
+            </button>
+            <input type="file" id="input-avatar-file" accept="image/*" style="display:none;" />
+            <div class="pf-presets">
+              <label>Hoặc chọn ảnh đại diện có sẵn</label>
+              <div class="pf-presets-grid">
+                <img class="pf-preset" src="assets/img/nguoi-dan-ong-chau-a-deo-kinh-va-co-rau-dung-thu-gian-hinh-minh-hoa-avatar-vector-2d-khuon-mat-nhan-vat-hoat-hinh-nam-truong-thanh-vui-ve-chup-anh-chan-dung-tu-t.avif" alt="Preset 1" onclick="selectPresetAvatar(this.src)" />
+                <img class="pf-preset" src="assets/img/images.jpg" alt="Preset 2" onclick="selectPresetAvatar(this.src)" />
+                <img class="pf-preset" src="assets/img/images (1).jpg" alt="Preset 3" onclick="selectPresetAvatar(this.src)" />
+                <img class="pf-preset" src="assets/img/anh-ho-so-nguoi-dan-ong_24908-81754.avif" alt="Preset 4" onclick="selectPresetAvatar(this.src)" />
+                <img class="pf-preset" src="assets/img/anh-dai-dien-zalo-30.jpg" alt="Preset 5" onclick="selectPresetAvatar(this.src)" />
+              </div>
             </div>
           </div>
-          
-          <button class="sk-btn sk-btn-soft" type="button" onclick="document.getElementById('input-avatar-file').click();" style="height: 34px; padding: 0 14px; font-size: 12.5px;">
-            <i class="fa-solid fa-cloud-arrow-up"></i> Tải ảnh từ thiết bị
-          </button>
-          <input type="file" id="input-avatar-file" accept="image/*" style="display:none;" />
-          
-          <div class="presets-section">
-            <label>Hoặc chọn ảnh đại diện có sẵn</label>
-            <div class="avatar-presets-grid">
-              <img class="preset-avatar-item" src="assets/img/nguoi-dan-ong-chau-a-deo-kinh-va-co-rau-dung-thu-gian-hinh-minh-hoa-avatar-vector-2d-khuon-mat-nhan-vat-hoat-hinh-nam-truong-thanh-vui-ve-chup-anh-chan-dung-tu-t.avif" alt="Preset 1" onclick="selectPresetAvatar(this.src)" />
-              <img class="preset-avatar-item" src="assets/img/images.jpg" alt="Preset 2" onclick="selectPresetAvatar(this.src)" />
-              <img class="preset-avatar-item" src="assets/img/images (1).jpg" alt="Preset 3" onclick="selectPresetAvatar(this.src)" />
-              <img class="preset-avatar-item" src="assets/img/anh-ho-so-nguoi-dan-ong_24908-81754.avif" alt="Preset 4" onclick="selectPresetAvatar(this.src)" />
-              <img class="preset-avatar-item" src="assets/img/anh-dai-dien-zalo-30.jpg" alt="Preset 5" onclick="selectPresetAvatar(this.src)" />
-            </div>
+          <div class="sk-field"><label>Số điện thoại</label><input id="input-phone" type="text" value="" /></div>
+          <div class="sk-field"><label>Họ và tên</label><input id="input-fullname" type="text" value="" /></div>
+          <div class="sk-actions" style="justify-content:flex-end; margin-top: 24px;">
+            <button class="sk-btn" type="button" onclick="closeEditModal()">Đóng</button>
+            <button class="sk-btn sk-btn-primary" type="button" onclick="saveProfileChanges()">Lưu thay đổi</button>
           </div>
-        </div>
-
-        <div class="sk-field"><label>Số điện thoại</label><input id="input-phone" type="text" value="" /></div>
-        <div class="sk-field"><label>Họ và tên</label><input id="input-fullname" type="text" value="" /></div>
-        <div class="sk-actions" style="justify-content:flex-end; margin-top: 24px;">
-          <button class="sk-btn" type="button" onclick="closeEditModal()">Đóng</button>
-          <button class="sk-btn sk-btn-primary" type="button" onclick="saveProfileChanges()">Lưu thay đổi</button>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Modal Chi Tiết Đơn Hàng -->
-  <div class="sk-modal opacity-0 pointer-events-none" id="order-detail-modal" style="z-index: 2010;">
-    <div class="sk-modal-card cyberpunk-modal-card" style="width: min(650px, 100%);">
-      <div class="sk-section-head" style="border-bottom: 1px solid var(--line); padding-bottom: 14px; margin-bottom: 20px;">
-        <h2 id="odModalCode" style="font-size: 18px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.05em; color: var(--brand); text-shadow: 0 0 10px rgba(99, 102, 241, 0.2); margin: 0; display: flex; align-items: center; gap: 8px;">
-          <i class="fa-solid fa-receipt"></i> Chi tiết đơn hàng
-        </h2>
-        <button class="sk-icon-btn close-modal-cyber" type="button" onclick="closeOrderDetailModal()" aria-label="Đóng"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-      <div class="sk-content" style="display: flex; flex-direction: column; gap: 16px;">
-        <div class="sk-order-detail-grid">
-          <div class="sk-order-detail-item">
-            <span>Sản phẩm</span>
-            <strong id="odModalProduct" style="color: var(--text-bright); font-weight: 800;">---</strong>
-          </div>
-          <div class="sk-order-detail-item">
-            <span>Phân loại</span>
-            <strong id="odModalVariant" style="color: var(--text-bright); font-weight: 800;">---</strong>
-          </div>
-          <div class="sk-order-detail-item">
-            <span>Số lượng</span>
-            <strong id="odModalQty" style="color: var(--text-bright); font-weight: 800;">---</strong>
-          </div>
-          <div class="sk-order-detail-item">
-            <span>Tổng tiền</span>
-            <strong id="odModalPrice" style="color: var(--accent-light); font-size: 16px; font-weight: 950; text-shadow: 0 0 8px var(--accent-glow);">---</strong>
-          </div>
-          <div class="sk-order-detail-item">
-            <span>Thời gian</span>
-            <strong id="odModalTime" style="color: var(--text-bright); font-weight: 700;">---</strong>
-          </div>
-          <div class="sk-order-detail-item">
-            <span>Trạng thái</span>
-            <div><span id="odModalStatus" class="sk-badge" style="font-weight: 800;">---</span></div>
-          </div>
+    <!-- Modal: Order Detail -->
+    <div class="sk-modal opacity-0 pointer-events-none" id="order-detail-modal" style="z-index: 2010;">
+      <div class="sk-modal-card cyberpunk-modal-card" style="width: min(650px, 100%);">
+        <div class="sk-section-head" style="border-bottom: 1px solid var(--line); padding-bottom: 14px; margin-bottom: 20px;">
+          <h2 id="odModalCode" style="font-size: 18px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.05em; color: var(--brand); margin: 0; display: flex; align-items: center; gap: 8px;">
+            <i class="fa-solid fa-receipt"></i> Chi tiết đơn hàng
+          </h2>
+          <button class="sk-icon-btn close-modal-cyber" type="button" onclick="closeOrderDetailModal()" aria-label="Đóng"><i class="fa-solid fa-xmark"></i></button>
         </div>
-
-        <div style="border-top: 1px solid var(--line); padding-top: 16px;">
-          <label style="color: var(--brand); font-weight: 800; font-size: 11px; display: block; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.1em; text-shadow: 0 0 5px rgba(99, 102, 241, 0.2);">
-            <i class="fa-solid fa-unlock-keyhole"></i> Thông tin tài khoản bàn giao
-          </label>
-          <div class="cyber-textarea-wrapper" style="position: relative;">
-            <textarea id="odModalDelivery" readonly style="width: 100%; height: 130px; font-family: 'Fira Code', 'Courier New', monospace; font-size: 13px; font-weight: 600; padding: 14px; border-radius: var(--radius); border: 1px solid var(--line); background: var(--bg); resize: vertical; color: var(--text-bright); line-height: 1.6; outline: none; box-shadow: inset 0 2px 8px rgba(0,0,0,0.2), 0 0 10px rgba(99, 102, 241, 0.02); transition: all 0.3s ease;"></textarea>
-            <div style="position: absolute; right: 10px; bottom: 10px; font-size: 9px; color: var(--muted); text-transform: uppercase; font-weight: 800; letter-spacing: 0.05em; pointer-events: none;">Auto-delivery system</div>
+        <div class="sk-content" style="display: flex; flex-direction: column; gap: 16px;">
+          <div class="sk-order-detail-grid">
+            <div class="sk-order-detail-item"><span>Sản phẩm</span><strong id="odModalProduct">---</strong></div>
+            <div class="sk-order-detail-item"><span>Phân loại</span><strong id="odModalVariant">---</strong></div>
+            <div class="sk-order-detail-item"><span>Số lượng</span><strong id="odModalQty">---</strong></div>
+            <div class="sk-order-detail-item"><span>Tổng tiền</span><strong id="odModalPrice" style="color: var(--accent-light); font-size: 16px; font-weight: 950;">---</strong></div>
+            <div class="sk-order-detail-item"><span>Thời gian</span><strong id="odModalTime">---</strong></div>
+            <div class="sk-order-detail-item"><span>Trạng thái</span><div><span id="odModalStatus" class="sk-badge" style="font-weight: 800;">---</span></div></div>
           </div>
-        </div>
-
-        <div class="sk-actions" style="justify-content: flex-end; gap: 10px; margin-top: 10px;">
-          <button class="sk-btn sk-btn-cyber-outline" type="button" onclick="closeOrderDetailModal()">Đóng</button>
-          <button class="sk-btn sk-btn-primary" style="background: linear-gradient(135deg, #00f3ff, #0070ff); color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.2); border: 0; font-weight: 800; height: 38px; box-shadow: 0 4px 16px rgba(0, 243, 255, 0.45);" type="button" onclick="copyOrderDetailDelivery()"><i class="fa-solid fa-copy"></i> Sao chép thông tin</button>
+          <div style="border-top: 1px solid var(--line); padding-top: 16px;">
+            <label style="color: var(--brand); font-weight: 800; font-size: 11px; display: block; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.1em;">
+              <i class="fa-solid fa-unlock-keyhole"></i> Thông tin tài khoản bàn giao
+            </label>
+            <textarea id="odModalDelivery" readonly style="width: 100%; height: 130px; font-family: 'Fira Code', 'Courier New', monospace; font-size: 13px; font-weight: 600; padding: 14px; border-radius: var(--radius); border: 1px solid var(--line); background: var(--bg); resize: vertical; color: var(--text-bright); line-height: 1.6; outline: none;"></textarea>
+          </div>
+          <div class="sk-actions" style="justify-content: flex-end; gap: 10px; margin-top: 10px;">
+            <button class="sk-btn" type="button" onclick="closeOrderDetailModal()">Đóng</button>
+            <button class="sk-btn sk-btn-primary" type="button" onclick="copyOrderDetailDelivery()"><i class="fa-solid fa-copy"></i> Sao chép</button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+
+  </div><!-- /.sk-shell -->
 
   <script src="assets/js/icons.js"></script>
   <script src="assets/js/common.js"></script>
   <script src="assets/js/profile.js"></script>
-  </div>
 </body>
 </html>
