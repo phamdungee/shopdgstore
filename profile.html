@@ -279,28 +279,31 @@
 
   <!-- Modal: Edit Profile -->
   <div class="sk-modal opacity-0 pointer-events-none" id="edit-profile-modal">
-    <div class="sk-modal-card" style="width: min(520px, 95vw);">
+    <div class="sk-modal-card modern-edit-modal" style="width: min(680px, 95vw);">
       <div class="sk-section-head">
-        <h2>Chỉnh sửa hồ sơ</h2>
+        <h2><i class="fa-solid fa-user-gear" style="color: var(--brand-light); margin-right: 8px;"></i>Chỉnh sửa hồ sơ</h2>
         <button class="sk-icon-btn" type="button" onclick="closeEditModal()" aria-label="Đóng"><i class="fa-solid fa-xmark"></i></button>
       </div>
-      <div class="sk-content">
-        <!-- Avatar Edit Section -->
-        <div class="sk-avatar-edit-container">
-          <div class="modal-avatar-preview-wrapper">
-            <div class="avatar-glow-ring" style="inset: -3px;"></div>
+      <div class="sk-content modal-grid-layout">
+        <!-- Left: Avatar Edit Group -->
+        <div class="avatar-edit-column">
+          <div class="modal-avatar-preview-wrapper" onclick="document.getElementById('input-avatar-file').click();" style="cursor: pointer;" title="Đổi ảnh đại diện">
+            <div class="avatar-glow-ring"></div>
             <div id="modal-avatar-preview" class="sk-avatar">
               <i class="fa-solid fa-user"></i>
             </div>
+            <div class="avatar-hover-overlay">
+              <i class="fa-solid fa-camera"></i>
+            </div>
           </div>
           
-          <button class="sk-btn sk-btn-soft" type="button" onclick="document.getElementById('input-avatar-file').click();" style="height: 34px; padding: 0 14px; font-size: 12.5px;">
-            <i class="fa-solid fa-cloud-arrow-up"></i> Tải ảnh từ thiết bị
+          <button class="sk-btn sk-btn-soft upload-device-btn" type="button" onclick="document.getElementById('input-avatar-file').click();">
+            <i class="fa-solid fa-cloud-arrow-up"></i> Tải ảnh thiết bị
           </button>
           <input type="file" id="input-avatar-file" accept="image/*" style="display:none;" />
           
           <div class="presets-section">
-            <label>Hoặc chọn ảnh đại diện có sẵn</label>
+            <span class="presets-title">Ảnh đại diện có sẵn</span>
             <div class="avatar-presets-grid">
               <img class="preset-avatar-item" src="assets/img/nguoi-dan-ong-chau-a-deo-kinh-va-co-rau-dung-thu-gian-hinh-minh-hoa-avatar-vector-2d-khuon-mat-nhan-vat-hoat-hinh-nam-truong-thanh-vui-ve-chup-anh-chan-dung-tu-t.avif" alt="Preset 1" onclick="selectPresetAvatar(this.src)" />
               <img class="preset-avatar-item" src="assets/img/images.jpg" alt="Preset 2" onclick="selectPresetAvatar(this.src)" />
@@ -311,11 +314,31 @@
           </div>
         </div>
 
-        <div class="sk-field"><label>Số điện thoại</label><input id="input-phone" type="text" value="" /></div>
-        <div class="sk-field"><label>Họ và tên</label><input id="input-fullname" type="text" value="" /></div>
-        <div class="sk-actions" style="justify-content:flex-end; margin-top: 24px;">
-          <button class="sk-btn" type="button" onclick="closeEditModal()">Đóng</button>
-          <button class="sk-btn sk-btn-primary" type="button" onclick="saveProfileChanges()">Lưu thay đổi</button>
+        <!-- Right: Input Fields Group -->
+        <div class="form-fields-column">
+          <div class="sk-field">
+            <label for="input-fullname"><i class="fa-solid fa-signature" style="color: var(--brand-light); margin-right: 6px;"></i> Họ và tên</label>
+            <div class="input-icon-wrapper">
+              <input id="input-fullname" type="text" placeholder="Nhập họ và tên của bạn" />
+            </div>
+          </div>
+          
+          <div class="sk-field">
+            <label for="input-phone"><i class="fa-solid fa-phone" style="color: var(--brand-light); margin-right: 6px;"></i> Số điện thoại</label>
+            <div class="input-icon-wrapper">
+              <input id="input-phone" type="text" placeholder="Nhập số điện thoại liên hệ" />
+            </div>
+          </div>
+          
+          <div class="edit-modal-info-box">
+            <i class="fa-solid fa-circle-info"></i>
+            <span>Thông tin này dùng để hỗ trợ bảo mật hoặc xác nhận đơn hàng khi cần thiết.</span>
+          </div>
+
+          <div class="sk-actions edit-modal-actions">
+            <button class="sk-btn sk-btn-soft" type="button" onclick="closeEditModal()">Đóng</button>
+            <button class="sk-btn sk-btn-primary" type="button" onclick="saveProfileChanges()"><i class="fa-solid fa-check"></i> Lưu thay đổi</button>
+          </div>
         </div>
       </div>
     </div>

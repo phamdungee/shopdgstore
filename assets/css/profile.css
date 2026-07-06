@@ -478,21 +478,34 @@
 }
 
 /* ── PRESETS / EDIT AVATAR ───────────────────────── */
-.sk-avatar-edit-container {
+.modal-grid-layout {
+  display: grid;
+  grid-template-columns: 200px minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.avatar-edit-column {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
-  margin-bottom: 24px;
+  text-align: center;
+  gap: 14px;
+  background: rgba(255, 255, 255, 0.015);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 20px 16px;
 }
 
 .modal-avatar-preview-wrapper {
   position: relative;
   width: 88px;
   height: 88px;
+  margin: 0 auto;
 }
 
 .modal-avatar-preview-wrapper .avatar-glow-ring {
+  inset: -3px;
   animation: avatarRingRotate 6s linear infinite;
 }
 
@@ -511,6 +524,7 @@
   font-size: 32px;
   font-weight: 900;
   color: var(--text-bright);
+  transition: filter var(--transition);
 }
 
 .modal-avatar-preview-wrapper .sk-avatar img {
@@ -520,50 +534,153 @@
   border-radius: 50%;
 }
 
+.modal-avatar-preview-wrapper:hover .sk-avatar {
+  filter: brightness(0.7);
+}
+
+.modal-avatar-preview-wrapper:hover .avatar-hover-overlay {
+  opacity: 1;
+}
+
+.upload-device-btn {
+  height: 34px;
+  padding: 0 14px;
+  font-size: 12px;
+  font-weight: 700;
+  width: 100%;
+  justify-content: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .presets-section {
   width: 100%;
   border-top: 1px solid var(--line);
-  padding-top: 20px;
-  margin-top: 10px;
+  padding-top: 14px;
 }
 
-.presets-section label {
-  font-size: 11px;
+.presets-title {
+  font-size: 10px;
   font-weight: 800;
-  color: var(--brand-light);
+  color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   display: block;
-  margin-bottom: 14px;
+  margin-bottom: 12px;
   text-align: center;
 }
 
 .avatar-presets-grid {
   display: flex;
   justify-content: center;
-  gap: 10px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
 .preset-avatar-item {
-  width: 48px;
-  height: 48px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid rgba(255, 255, 255, 0.08);
+  border: 1.5px solid rgba(255, 255, 255, 0.08);
   cursor: pointer;
   transition: all var(--transition);
 }
 
 .preset-avatar-item:hover {
-  transform: scale(1.1);
+  transform: scale(1.15);
   border-color: var(--brand-light);
-  box-shadow: 0 0 10px var(--brand-glow);
+  box-shadow: 0 0 8px var(--brand-glow);
 }
 
 .preset-avatar-item.active {
   border-color: var(--brand-light);
+  box-shadow: 0 0 10px var(--brand-glow);
+}
+
+/* Form Fields Column styles */
+.form-fields-column {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  height: 100%;
+  justify-content: space-between;
+}
+
+.form-fields-column .sk-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-fields-column .sk-field label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+}
+
+.input-icon-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.input-icon-wrapper input {
+  width: 100%;
+  height: 40px;
+  padding: 0 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  color: var(--text-bright);
+  font-size: 13.5px;
+  font-weight: 500;
+  transition: all var(--transition);
+  font-family: inherit;
+}
+
+.input-icon-wrapper input:focus {
+  border-color: var(--brand-light);
+  background: rgba(99, 102, 241, 0.05);
   box-shadow: 0 0 12px var(--brand-glow);
+  outline: none;
+}
+
+.edit-modal-info-box {
+  display: flex;
+  gap: 10px;
+  padding: 12px 14px;
+  background: var(--brand-soft);
+  border: 1px solid rgba(99, 102, 241, 0.15);
+  border-radius: var(--radius);
+  font-size: 12.5px;
+  color: var(--text);
+  line-height: 1.5;
+  align-items: flex-start;
+  margin-top: 8px;
+}
+
+.edit-modal-info-box i {
+  color: var(--brand-light);
+  font-size: 15px;
+  margin-top: 1px;
+  flex-shrink: 0;
+}
+
+.edit-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+@media (max-width: 640px) {
+  .modal-grid-layout {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
 }
 
 /* ── RESPONSIVE & BREAKPOINTS ── */
