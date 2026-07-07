@@ -4878,8 +4878,8 @@ BREAKPOINT: Mobile (max-width: 560px)
 
   /* ── Product grid ── */
   .sk-product-grid-vertical {
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 8px !important;
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
   }
 
   .sk-product-card-vertical>a {
@@ -4935,8 +4935,8 @@ BREAKPOINT: Small Mobile (max-width: 420px)
 
   /* ── Product grid 2 narrow cols ── */
   .sk-product-grid-vertical {
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 6px !important;
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
   }
 
   .sk-hero-band h1 {

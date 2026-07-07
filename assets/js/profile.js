@@ -178,7 +178,7 @@ function applyUserToProfile(user) {
   });
 
   // Render avatar fallback support
-  const sidebarAvatar = document.querySelector('.sk-user-mini .sk-avatar');
+  const sidebarAvatar = document.querySelector('.sk-hero-avatar .sk-avatar') || document.querySelector('.sk-user-mini .sk-avatar');
   if (sidebarAvatar) {
     if (user.avatarUrl) {
       const img = document.createElement('img');
@@ -415,6 +415,12 @@ function switchProfileTab(tabTarget) {
 
   const activeBtn = document.getElementById(`menu-${tabTarget}`);
   if (activeBtn) activeBtn.classList.add('is-active', 'active');
+
+  // Update mobile buttons active state
+  document.querySelectorAll('.mobile-nav-btn').forEach(btn => {
+    const isTarget = btn.getAttribute('data-tab') === tabTarget;
+    btn.classList.toggle('is-active', isTarget);
+  });
   
   if (window.location.hash !== `#${tabTarget}`) {
     window.history.replaceState(null, null, `#${tabTarget}`);
@@ -433,13 +439,18 @@ function updateGlobalSidebarActive() {
     let isMatch = false;
     
     if (isProfilePage) {
-      if (href === 'profile.html' && (!currentHash || currentHash === '#profile')) {
+      const isProfileLink = href === 'profile.html' || href === '/profile.html';
+      const isOrdersLink = href === 'profile.html#orders' || href === '/profile.html#orders' || href.includes('index.html#orders');
+      const isPolicyLink = href === 'profile.html#policy' || href === '/profile.html#policy' || href === 'profile.html#security' || href === '/profile.html#security';
+      const isHistoryLink = href === 'profile.html#history' || href === '/profile.html#history' || href === 'profile.html#transactions' || href === '/profile.html#transactions';
+
+      if (isProfileLink && (!currentHash || currentHash === '#profile')) {
         isMatch = true;
-      } else if ((href === 'profile.html#orders' || href.includes('index.html#orders')) && currentHash === '#orders') {
+      } else if (isOrdersLink && currentHash === '#orders') {
         isMatch = true;
-      } else if (href === 'profile.html#policy' && (currentHash === '#policy' || currentHash === '#security')) {
+      } else if (isPolicyLink && (currentHash === '#policy' || currentHash === '#security')) {
         isMatch = true;
-      } else if (href === 'profile.html#history' && (currentHash === '#history' || currentHash === '#transactions')) {
+      } else if (isHistoryLink && (currentHash === '#history' || currentHash === '#transactions')) {
         isMatch = true;
       }
     } else {
@@ -548,6 +559,34 @@ document.addEventListener('DOMContentLoaded', async () => {
   
   // Start loading data flow
   loadProfileFlow();
+  
+  // Mobile sidebar toggle
+  const toggleBtn = document.getElementById('mobileSidebarToggle');
+  function createBackdrop() {
+    let bd = document.getElementById('mobileSidebarBackdrop');
+    if (!bd) {
+      bd = document.createElement('div');
+      bd.id = 'mobileSidebarBackdrop';
+      bd.className = 'mobile-sidebar-backdrop';
+      document.body.appendChild(bd);
+      bd.addEventListener('click', () => {
+        document.body.classList.remove('sidebar-open');
+      });
+    }
+    return bd;
+  }
+
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', () => {
+      const open = document.body.classList.toggle('sidebar-open');
+      if (open) createBackdrop();
+    });
+  }
+
+  // Close sidebar on larger resize
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 991) document.body.classList.remove('sidebar-open');
+  });
 });
 
 window.addEventListener('hashchange', handleHashChange);

@@ -527,7 +527,20 @@
           span.setAttribute('style', i.getAttribute('style'));
         }
 
-        span.innerHTML = SVG_ICONS[faClass];
+        // Generate unique IDs for gradients to prevent rendering issues when early instances are hidden
+        let svgContent = SVG_ICONS[faClass];
+        const gradMatches = svgContent.match(/id="(grad-[^"]+)"/g);
+        if (gradMatches) {
+          gradMatches.forEach(match => {
+            const originalId = match.match(/id="([^"]+)"/)[1];
+            const uniqueId = `${originalId}-${Math.floor(Math.random() * 1000000)}`;
+            const idRegex = new RegExp(`id="${originalId}"`, 'g');
+            const urlRegex = new RegExp(`url\\(#${originalId}\\)`, 'g');
+            svgContent = svgContent.replace(idRegex, `id="${uniqueId}"`).replace(urlRegex, `url(#${uniqueId})`);
+          });
+        }
+
+        span.innerHTML = svgContent;
         i.parentNode.replaceChild(span, i);
       }
     });
