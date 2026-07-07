@@ -1027,20 +1027,11 @@ function startPaymentPolling(billId) {
 function handlePaymentSuccess(details = {}) {
   clearStoredBill();
 
-  const pulse = document.getElementById('liveStatusPulse');
-  const text = document.getElementById('liveStatusText');
   const newBalance = Number(details.newBalance || 0);
 
-  if (pulse) {
-    pulse.className = 'inline-block w-2 h-2 rounded-full status-completed-pulse';
-  }
-  if (text) {
-    text.innerText = 'Nạp quỹ thành công! Số tiền đã được cộng vào số dư của bạn.';
-    text.style.color = 'var(--success)';
-  }
-
-  showToast('Giao dịch chuyển khoản thành công!', true);
-  showPaymentSuccessNotice(details);
+  // Hiển thị thông báo ở góc trên bên phải
+  const amount = Number(details.amount || activeBillSnapshot?.amount || 0);
+  showToast(`Đã nạp thành công ${formatVnd(amount)}`, true);
 
   // Cập nhật thông tin user trong local storage
   let user = null;
@@ -1054,10 +1045,8 @@ function handlePaymentSuccess(details = {}) {
   activeBillId = null;
   activeBillSnapshot = null;
 
-  document.getElementById('deposit-form-panel')?.classList.add('sk-hidden');
-  document.getElementById('deposit-active-panel')?.classList.add('sk-hidden');
-
-  // Giữ người dùng ở màn hình hiện tại để đọc thông báo thành công hoặc xem biến động số dư.
+  // Quay lại giao diện form nạp tiền
+  showDepositFormPanel();
 }
 
 function triggerConfetti() {
