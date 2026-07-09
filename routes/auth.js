@@ -194,6 +194,67 @@ router.post('/login', loginLimiter, verifyTurnstile, async (req, res) => {
   }
 });
 
+router.post('/request-password-reset', async (req, res) => {
+  try {
+    const email = normalizeString(req.body.email || '').toLowerCase();
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return res.status(400).json({ ok: false, message: 'Email không hợp lệ' });
+    }
+
+    const redirectTo = String(req.body.redirectTo || `${req.protocol}://${req.get('host')}/reset-password.html`);
+    const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo });
+
+    if (error) {
+      console.error('Request password reset error:', error);
+    }
+
+    return res.json({
+      ok: true,
+      message: 'Nếu email tồn tại trong hệ thống, bạn sẽ nhận được liên kết đặt lại mật khẩu trong vài phút.'
+    });
+  } catch (err) {
+    console.error('Request password reset error:', err);
+    return res.status(500).json({ ok: false, message: 'Không thể gửi email đặt lại mật khẩu lúc này.' });
+  }
+});
+
+router.post('/reset-password', async (req, res) => {
+  try {
+    const password = String(req.body.password || '');
+    const tokenHash = String(req.body.tokenHash || req.body.token_hash || '');
+
+    if (!password || password.length < 8) {
+      return res.status(400).json({ ok: false, message: 'Mật khẩu phải có ít nhất 8 ký tự.' });
+    }
+
+    if (!tokenHash) {
+      return res.status(400).json({ ok: false, message: 'Liên kết đặt lại mật khẩu không hợp lệ hoặc đã hết hạn.' });
+    }
+
+    const { data: authData, error: verifyError } = await supabase.auth.verifyOtp({
+      token_hash: tokenHash,
+      type: 'recovery'
+    });
+
+    if (verifyError || !authData?.user?.id) {
+      console.error('Verify recovery token error:', verifyError);
+      return res.status(400).json({ ok: false, message: 'Liên kết đặt lại mật khẩu không hợp lệ hoặc đã hết hạn.' });
+    }
+
+    const { error: updateError } = await supabase.auth.admin.updateUserById(authData.user.id, { password });
+
+    if (updateError) {
+      console.error('Update password error:', updateError);
+      return res.status(400).json({ ok: false, message: 'Không thể cập nhật mật khẩu. Vui lòng thử lại.' });
+    }
+
+    return res.json({ ok: true, message: 'Đặt lại mật khẩu thành công.' });
+  } catch (err) {
+    console.error('Reset password error:', err);
+    return res.status(500).json({ ok: false, message: 'Không thể đặt lại mật khẩu lúc này.' });
+  }
+});
+
 router.post('/setup-admin', async (req, res) => {
   try {
     const setupKey = String(req.body.setupKey || '');

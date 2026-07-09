@@ -114,14 +114,24 @@ html {
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 body {
   min-height: 100vh;
+  max-width: 100%;
   overflow-x: hidden;
   color: var(--text);
   background: var(--bg-gradient);
-  font-family: 'Outfit', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family:
+    "Outfit",
+    "Inter",
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
   font-size: 14px;
   line-height: 1.6;
   padding-top: env(safe-area-inset-top, 0px);
@@ -144,16 +154,28 @@ body {
 
 /* Ambient light effect */
 body::before {
-  content: '';
+  content: "";
   position: fixed;
   top: -50%;
   left: -50%;
   width: 200%;
   height: 200%;
   background:
-    radial-gradient(ellipse at 20% 20%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 80%, rgba(236, 72, 153, 0.05) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 50%, rgba(6, 182, 212, 0.03) 0%, transparent 60%);
+    radial-gradient(
+      ellipse at 20% 20%,
+      rgba(99, 102, 241, 0.08) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      ellipse at 80% 80%,
+      rgba(236, 72, 153, 0.05) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      ellipse at 50% 50%,
+      rgba(6, 182, 212, 0.03) 0%,
+      transparent 60%
+    );
   pointer-events: none;
   z-index: 0;
 }
@@ -243,13 +265,20 @@ img {
 
 /* Gradient glow line under topbar */
 .sk-topbar::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: -1px;
   left: 10%;
   right: 10%;
   height: 1px;
-  background: linear-gradient(90deg, transparent, var(--brand), var(--neon), var(--accent), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--brand),
+    var(--neon),
+    var(--accent),
+    transparent
+  );
   opacity: 0.4;
 }
 
@@ -308,7 +337,9 @@ img {
   color: #fff;
   background: var(--brand-gradient);
   border-radius: var(--radius);
-  box-shadow: 0 8px 24px var(--brand-glow), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  box-shadow:
+    0 8px 24px var(--brand-glow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
   font-size: 18px;
   position: relative;
   overflow: hidden;
@@ -316,18 +347,22 @@ img {
 
 /* Shimmer effect on brand icon */
 .sk-brand-mark::after {
-  content: '';
+  content: "";
   position: absolute;
   top: -50%;
   left: -50%;
   width: 200%;
   height: 200%;
-  background: linear-gradient(45deg, transparent 40%, rgba(255, 255, 255, 0.15) 50%, transparent 60%);
+  background: linear-gradient(
+    45deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.15) 50%,
+    transparent 60%
+  );
   animation: brandShimmer 3s ease-in-out infinite;
 }
 
 @keyframes brandShimmer {
-
   0%,
   100% {
     transform: translateX(-100%) rotate(45deg);
@@ -366,25 +401,43 @@ img {
   align-items: center;
   justify-content: center;
   border-radius: 50% !important;
-  background: radial-gradient(circle, #101629 60%, var(--brand-dark) 100%) !important;
+  background: radial-gradient(
+    circle,
+    #101629 60%,
+    var(--brand-dark) 100%
+  ) !important;
   border: 2px solid rgba(99, 102, 241, 0.4) !important;
-  box-shadow: 0 0 15px var(--brand-glow), inset 0 0 10px rgba(99, 102, 241, 0.5) !important;
+  box-shadow:
+    0 0 15px var(--brand-glow),
+    inset 0 0 10px rgba(99, 102, 241, 0.5) !important;
   position: relative;
   overflow: visible !important;
   z-index: 1;
-  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.5s !important;
+  transition:
+    transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
+    border-color 0.5s !important;
 }
 
 .dg-logo-mark::before,
 .dg-logo-mark::after {
-  content: '' !important;
+  content: "" !important;
   display: block !important;
   position: absolute;
   background: #ffffff;
   pointer-events: none;
   z-index: 5;
-  clip-path: polygon(50% 0%, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0% 50%, 38% 38%);
-  filter: drop-shadow(0 0 4px var(--accent-light)) drop-shadow(0 0 8px var(--brand-light));
+  clip-path: polygon(
+    50% 0%,
+    62% 38%,
+    100% 50%,
+    62% 62%,
+    50% 100%,
+    38% 62%,
+    0% 50%,
+    38% 38%
+  );
+  filter: drop-shadow(0 0 4px var(--accent-light))
+    drop-shadow(0 0 8px var(--brand-light));
   animation: logoStarBlink 3s ease-in-out infinite;
 }
 
@@ -405,7 +458,6 @@ img {
 }
 
 @keyframes logoStarBlink {
-
   0%,
   100% {
     transform: scale(0) rotate(0deg);
@@ -418,9 +470,8 @@ img {
   }
 }
 
-
 .dg-logo-text {
-  font-family: 'Outfit', 'Inter', sans-serif;
+  font-family: "Outfit", "Inter", sans-serif;
   font-weight: 900;
   font-size: 15px;
   letter-spacing: -0.5px;
@@ -457,7 +508,9 @@ img {
 .sk-brand:hover .dg-logo-mark {
   transform: scale(1.1) rotate(5deg);
   border-color: var(--accent-light) !important;
-  box-shadow: 0 0 25px var(--accent-glow), inset 0 0 15px var(--accent-glow) !important;
+  box-shadow:
+    0 0 25px var(--accent-glow),
+    inset 0 0 15px var(--accent-glow) !important;
 }
 
 .sk-brand:hover .dg-logo-ring {
@@ -487,9 +540,15 @@ img {
   align-items: center;
   justify-content: center;
   border-radius: 50% !important;
-  background: radial-gradient(circle, #101629 60%, var(--brand-dark) 100%) !important;
+  background: radial-gradient(
+    circle,
+    #101629 60%,
+    var(--brand-dark) 100%
+  ) !important;
   border: 2px solid rgba(99, 102, 241, 0.4) !important;
-  box-shadow: 0 0 20px var(--brand-glow), inset 0 0 10px rgba(99, 102, 241, 0.5) !important;
+  box-shadow:
+    0 0 20px var(--brand-glow),
+    inset 0 0 10px rgba(99, 102, 241, 0.5) !important;
   position: relative;
   width: 54px !important;
   height: 54px !important;
@@ -497,7 +556,6 @@ img {
 }
 
 @keyframes logoPulse {
-
   0%,
   100% {
     transform: scale(1);
@@ -509,7 +567,6 @@ img {
     filter: brightness(1.25);
   }
 }
-
 
 /* ── NAV ──────────────────────────────────────── */
 .sk-nav {
@@ -652,7 +709,9 @@ img {
 .sk-btn:hover {
   border-color: var(--brand-light);
   transform: translateY(-2px);
-  box-shadow: 0 0 20px var(--brand-glow), var(--shadow-sm);
+  box-shadow:
+    0 0 20px var(--brand-glow),
+    var(--shadow-sm);
 }
 
 .sk-btn:active {
@@ -784,7 +843,11 @@ img {
   left: 0;
   bottom: 0;
   width: 72px;
-  background: linear-gradient(180deg, rgba(8, 10, 22, 0.97) 0%, rgba(12, 16, 32, 0.97) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(8, 10, 22, 0.97) 0%,
+    rgba(12, 16, 32, 0.97) 100%
+  );
   border-right: 1px solid rgba(255, 255, 255, 0.055);
   backdrop-filter: blur(24px) saturate(1.5);
   -webkit-backdrop-filter: blur(24px) saturate(1.5);
@@ -795,7 +858,8 @@ img {
   padding: 14px 8px 24px;
   overflow-y: auto;
   overflow-x: hidden;
-  transition: width 0.32s cubic-bezier(0.4, 0, 0.2, 1),
+  transition:
+    width 0.32s cubic-bezier(0.4, 0, 0.2, 1),
     box-shadow 0.32s ease;
   scrollbar-width: none;
   box-shadow: 4px 0 24px rgba(0, 0, 0, 0.3);
@@ -817,7 +881,7 @@ img {
   gap: 2px;
 }
 
-.sk-sidebar-new-nav+.sk-sidebar-new-nav {
+.sk-sidebar-new-nav + .sk-sidebar-new-nav {
   margin-top: 6px;
   padding-top: 10px;
   border-top: 1px solid rgba(255, 255, 255, 0.06);
@@ -836,7 +900,9 @@ img {
   opacity: 0;
   max-height: 0;
   overflow: hidden;
-  transition: opacity 0.25s ease, max-height 0.25s ease;
+  transition:
+    opacity 0.25s ease,
+    max-height 0.25s ease;
   pointer-events: none;
 }
 
@@ -980,7 +1046,9 @@ img {
   opacity: 0;
   max-width: 0;
   overflow: hidden;
-  transition: opacity 0.25s ease, max-width 0.32s ease;
+  transition:
+    opacity 0.25s ease,
+    max-width 0.32s ease;
   white-space: nowrap;
   font-size: 13px;
   font-weight: 500;
@@ -1013,7 +1081,8 @@ img {
   color: #fff;
   background: rgba(99, 102, 241, 0.18);
   border-color: rgba(99, 102, 241, 0.35);
-  box-shadow: inset 0 0 20px rgba(99, 102, 241, 0.08),
+  box-shadow:
+    inset 0 0 20px rgba(99, 102, 241, 0.08),
     0 2px 12px rgba(99, 102, 241, 0.15);
 }
 
@@ -1025,7 +1094,7 @@ img {
 /* Glowing left indicator bar */
 .nav-item.active::before,
 .nav-item.menu-link.active::before {
-  content: '';
+  content: "";
   position: absolute;
   left: -8px;
   top: 50%;
@@ -1034,14 +1103,15 @@ img {
   height: 22px;
   background: linear-gradient(180deg, #818cf8, #6366f1);
   border-radius: 0 4px 4px 0;
-  box-shadow: 0 0 12px rgba(99, 102, 241, 0.7),
+  box-shadow:
+    0 0 12px rgba(99, 102, 241, 0.7),
     0 0 24px rgba(99, 102, 241, 0.35);
 }
 
 /* ── LAYOUT ───────────────────────────────────── */
 .sk-layout {
   margin-left: 72px;
-  padding: 24px;
+  padding: 24px 40px;
   min-height: calc(100vh - 72px);
   transition: margin-left 0.3s var(--ease-smooth);
 }
@@ -1139,10 +1209,12 @@ img {
   gap: 32px;
   align-items: center;
   padding: 48px 40px;
-  background: linear-gradient(135deg,
-      rgba(99, 102, 241, 0.15) 0%,
-      rgba(139, 92, 246, 0.1) 40%,
-      rgba(236, 72, 153, 0.08) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(99, 102, 241, 0.15) 0%,
+    rgba(139, 92, 246, 0.1) 40%,
+    rgba(236, 72, 153, 0.08) 100%
+  );
   border: 1px solid var(--line);
   border-radius: var(--radius-xl);
   backdrop-filter: var(--glass-blur);
@@ -1151,7 +1223,7 @@ img {
 
 /* Animated gradient mesh for hero */
 .sk-hero-band::before {
-  content: '';
+  content: "";
   position: absolute;
   top: -100px;
   right: -100px;
@@ -1163,7 +1235,6 @@ img {
 }
 
 @keyframes heroFloat {
-
   0%,
   100% {
     transform: translate(0, 0) scale(1);
@@ -1331,7 +1402,9 @@ input:focus,
 select:focus,
 textarea:focus {
   border-color: var(--brand);
-  box-shadow: 0 0 0 3px var(--brand-soft), 0 0 20px var(--brand-glow);
+  box-shadow:
+    0 0 0 3px var(--brand-soft),
+    0 0 20px var(--brand-glow);
   background: rgba(17, 24, 39, 0.8);
 }
 
@@ -1399,8 +1472,13 @@ select {
 
 /* ── TABLES ───────────────────────────────────── */
 .sk-table-wrap {
+  display: block;
+  width: 100%;
+  max-width: 100%;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   border-radius: var(--radius);
+  box-sizing: border-box;
 }
 
 .sk-table {
@@ -1454,7 +1532,9 @@ select {
   background: rgba(10, 14, 26, 0.8);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  transition: opacity 0.25s var(--ease-smooth), visibility 0.25s;
+  transition:
+    opacity 0.25s var(--ease-smooth),
+    visibility 0.25s;
 }
 
 .sk-modal.opacity-0 {
@@ -1472,7 +1552,9 @@ select {
   border: 1px solid rgba(99, 102, 241, 0.2);
   border-radius: var(--radius-xl);
   backdrop-filter: blur(24px);
-  box-shadow: var(--shadow), 0 0 50px rgba(99, 102, 241, 0.15);
+  box-shadow:
+    var(--shadow),
+    0 0 50px rgba(99, 102, 241, 0.15);
   transition: transform 0.25s var(--ease-bounce);
 }
 
@@ -1509,7 +1591,9 @@ select {
   border-left: 4px solid var(--neon);
   border-radius: var(--radius);
   backdrop-filter: blur(12px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 15px rgba(236, 72, 153, 0.2);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 0 15px rgba(236, 72, 153, 0.2);
   animation: toastSlideIn 0.3s var(--ease-bounce);
 }
 
@@ -1622,8 +1706,9 @@ select {
 /* Product grid */
 .sk-product-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: repeat(5, minmax(260px, 1fr));
   gap: 20px;
+  justify-content: center;
 }
 
 /* Product card styles */
@@ -1642,7 +1727,9 @@ select {
 .sk-product-card:hover {
   transform: translateY(-6px);
   border-color: var(--brand);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3), 0 0 30px var(--brand-glow);
+  box-shadow:
+    0 16px 40px rgba(0, 0, 0, 0.3),
+    0 0 30px var(--brand-glow);
 }
 
 /* Horizontal Product Card & Showcase Layout */
@@ -1655,13 +1742,14 @@ select {
 
 .sk-product-grid-vertical {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  grid-template-columns: repeat(5, minmax(220px, 1fr));
   gap: 16px;
   margin-top: 24px;
+  justify-content: center;
 }
 
 @property --angle {
-  syntax: '<angle>';
+  syntax: "<angle>";
   initial-value: 0deg;
   inherits: false;
 }
@@ -1689,8 +1777,16 @@ select {
   inset: 0;
   border-radius: var(--radius-lg);
   padding: 1.5px;
-  background: conic-gradient(from var(--angle, 0deg), #00f3ff, #8b5cf6, #d946ef, #00f3ff);
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  background: conic-gradient(
+    from var(--angle, 0deg),
+    #00f3ff,
+    #8b5cf6,
+    #d946ef,
+    #00f3ff
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   pointer-events: none;
@@ -1706,10 +1802,12 @@ select {
 
 .sk-product-card-vertical:hover {
   transform: translateY(-5px);
-  box-shadow: 0 10px 30px rgba(0, 243, 255, 0.25), 0 0 15px rgba(139, 92, 246, 0.15);
+  box-shadow:
+    0 10px 30px rgba(0, 243, 255, 0.25),
+    0 0 15px rgba(139, 92, 246, 0.15);
 }
 
-.sk-product-card-vertical>a {
+.sk-product-card-vertical > a {
   background: rgba(10, 16, 32, 0.9) !important;
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
@@ -1725,7 +1823,7 @@ select {
   color: inherit;
 }
 
-body.light-mode .sk-product-card-vertical>a {
+body.light-mode .sk-product-card-vertical > a {
   background: rgba(255, 255, 255, 0.95) !important;
   color: var(--text) !important;
 }
@@ -1854,7 +1952,11 @@ body.light-mode .sk-product-card-vertical>a {
 }
 
 .sk-sidebar-banner {
-  background: linear-gradient(135deg, rgba(17, 24, 39, 0.8) 0%, rgba(10, 14, 26, 0.95) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(17, 24, 39, 0.8) 0%,
+    rgba(10, 14, 26, 0.95) 100%
+  );
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
   padding: 24px;
@@ -1869,7 +1971,11 @@ body.light-mode .sk-product-card-vertical>a {
   right: -30%;
   width: 140px;
   height: 140px;
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.2) 0%, transparent 70%);
+  background: radial-gradient(
+    circle,
+    rgba(99, 102, 241, 0.2) 0%,
+    transparent 70%
+  );
   filter: blur(20px);
   z-index: -1;
   pointer-events: none;
@@ -1920,7 +2026,11 @@ body.light-mode .sk-product-card-vertical>a {
   left: -40%;
   width: 120px;
   height: 120px;
-  background: radial-gradient(circle, rgba(6, 182, 212, 0.12) 0%, transparent 70%);
+  background: radial-gradient(
+    circle,
+    rgba(6, 182, 212, 0.12) 0%,
+    transparent 70%
+  );
   filter: blur(15px);
   z-index: -1;
   pointer-events: none;
@@ -2016,8 +2126,6 @@ body.light-mode .sk-product-card-vertical>a {
   animation: iconScroll 25s linear infinite;
   will-change: transform;
 }
-
-
 
 .sk-icon-slider-track-reverse {
   animation-direction: reverse;
@@ -2187,7 +2295,9 @@ body.light-mode .sk-product-card-vertical>a {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: opacity 0.5s ease, visibility 0.5s;
+  transition:
+    opacity 0.5s ease,
+    visibility 0.5s;
 }
 
 #preloader.opacity-0 {
@@ -2240,7 +2350,7 @@ body.light-mode .sk-product-card-vertical>a {
 }
 
 .preloader-text {
-  font-family: 'Outfit', sans-serif;
+  font-family: "Outfit", sans-serif;
   font-size: 18px;
   font-weight: 900;
   letter-spacing: 2px;
@@ -2294,7 +2404,6 @@ body.light-mode .sk-product-card-vertical>a {
 }
 
 @keyframes pulseGlow {
-
   0%,
   100% {
     transform: scale(1);
@@ -2308,7 +2417,6 @@ body.light-mode .sk-product-card-vertical>a {
 }
 
 @keyframes pulseOpacity {
-
   0%,
   100% {
     opacity: 0.6;
@@ -2346,7 +2454,7 @@ body.light-mode .sk-product-card-vertical>a {
   overflow: hidden;
 }
 
-.sk-user-mini>div:not(.avatar-glow-container) {
+.sk-user-mini > div:not(.avatar-glow-container) {
   min-width: 0;
   overflow: hidden;
   flex: 1;
@@ -2622,7 +2730,7 @@ body.light-mode .sk-product-card-vertical>a {
 }
 
 .sk-record div,
-.sk-transfer-item>div {
+.sk-transfer-item > div {
   flex: 1;
   display: grid;
   gap: 2px;
@@ -2681,7 +2789,7 @@ body.light-mode .sk-product-card-vertical>a {
   gap: 10px;
 }
 
-.sk-cart-summary-list>div {
+.sk-cart-summary-list > div {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -2689,11 +2797,11 @@ body.light-mode .sk-product-card-vertical>a {
   font-size: 14px;
 }
 
-.sk-cart-summary-list>div span {
+.sk-cart-summary-list > div span {
   color: var(--muted);
 }
 
-.sk-cart-summary-list>div b {
+.sk-cart-summary-list > div b {
   color: var(--text-bright);
   font-weight: 700;
 }
@@ -2824,8 +2932,16 @@ body.light-mode .sk-product-card-vertical>a {
   inset: 0;
   border-radius: var(--radius-lg);
   padding: 1.5px;
-  background: conic-gradient(from var(--angle, 0deg), #ee4d2d, #ff5722, #ff9800, #ee4d2d);
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  background: conic-gradient(
+    from var(--angle, 0deg),
+    #ee4d2d,
+    #ff5722,
+    #ff9800,
+    #ee4d2d
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   pointer-events: none;
@@ -2841,7 +2957,9 @@ body.light-mode .sk-product-card-vertical>a {
 
 .shopee-product-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 12px 30px rgba(238, 77, 45, 0.25), 0 0 15px rgba(255, 152, 0, 0.15);
+  box-shadow:
+    0 12px 30px rgba(238, 77, 45, 0.25),
+    0 0 15px rgba(255, 152, 0, 0.15);
 }
 
 .shopee-card-inner {
@@ -2913,14 +3031,17 @@ body.light-mode .shopee-card-inner {
   .sk-sidebar-expanded.sk-has-mini-sidebar .sk-sidebar-new {
     width: 260px !important;
   }
+
   .sk-sidebar-expanded.sk-has-mini-sidebar .sk-sidebar-new .nav-label {
     opacity: 1 !important;
     max-width: 160px !important;
   }
+
   .sk-sidebar-expanded.sk-has-mini-sidebar .sk-sidebar-new .sidebar-title {
     opacity: 1 !important;
     max-height: 24px !important;
   }
+
   .sk-sidebar-expanded.sk-has-mini-sidebar .sk-layout,
   .sk-sidebar-expanded.sk-has-mini-sidebar .sk-footer,
   .sk-sidebar-expanded.sk-has-mini-sidebar .sk-cart-page {
@@ -2932,7 +3053,11 @@ body.light-mode .shopee-card-inner {
 .sk-topbar .sk-btn-accent {
   height: 38px !important;
   padding: 0 12px !important;
-  background: linear-gradient(135deg, rgba(6, 182, 212, 0.12), rgba(34, 211, 238, 0.12)) !important;
+  background: linear-gradient(
+    135deg,
+    rgba(6, 182, 212, 0.12),
+    rgba(34, 211, 238, 0.12)
+  ) !important;
   border: 1px solid rgba(6, 182, 212, 0.35) !important;
   color: #22d3ee !important;
   box-shadow: 0 0 12px rgba(6, 182, 212, 0.15) !important;
@@ -2940,7 +3065,11 @@ body.light-mode .shopee-card-inner {
 }
 
 .sk-topbar .sk-btn-accent:hover {
-  background: linear-gradient(135deg, rgba(6, 182, 212, 0.22), rgba(34, 211, 238, 0.22)) !important;
+  background: linear-gradient(
+    135deg,
+    rgba(6, 182, 212, 0.22),
+    rgba(34, 211, 238, 0.22)
+  ) !important;
   border-color: rgba(6, 182, 212, 0.6) !important;
   box-shadow: 0 0 18px rgba(6, 182, 212, 0.3) !important;
   transform: translateY(-2px) !important;
@@ -2956,7 +3085,9 @@ body.light-mode .shopee-card-inner {
   opacity: 0;
   pointer-events: none;
   visibility: hidden;
-  transition: opacity 0.3s, visibility 0.3s;
+  transition:
+    opacity 0.3s,
+    visibility 0.3s;
 }
 
 .sk-sidebar-backdrop.is-visible {
@@ -3029,7 +3160,6 @@ body.light-mode .shopee-card-inner {
 }
 
 @keyframes glowPulse {
-
   0%,
   100% {
     opacity: 0.5;
@@ -3056,7 +3186,6 @@ body.light-mode .shopee-card-inner {
 }
 
 @media (max-width: 980px) {
-
   /* Collapse sidebar to icon-only bar */
   .sk-sidebar-new {
     width: 0 !important;
@@ -3304,7 +3433,6 @@ body.light-mode .shopee-card-inner {
 }
 
 @keyframes flashLightning {
-
   0%,
   100% {
     opacity: 0.7;
@@ -3318,7 +3446,7 @@ body.light-mode .shopee-card-inner {
 }
 
 .flash-sale-header .timer {
-  font-family: 'Fira Code', 'Courier New', monospace;
+  font-family: "Fira Code", "Courier New", monospace;
   font-size: 16px;
   font-weight: 800;
   color: var(--neon);
@@ -3332,7 +3460,11 @@ body.light-mode .shopee-card-inner {
 
 /* Big Banner */
 .banner-big {
-  background: linear-gradient(135deg, rgba(26, 28, 46, 0.9) 0%, rgba(10, 14, 26, 0.95) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(26, 28, 46, 0.9) 0%,
+    rgba(10, 14, 26, 0.95) 100%
+  );
   border: 1px solid rgba(0, 255, 255, 0.2);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
   border-radius: 15px;
@@ -3358,7 +3490,11 @@ body.light-mode .shopee-card-inner {
   right: -20px;
   width: 120px;
   height: 120px;
-  background: radial-gradient(circle, rgba(0, 255, 255, 0.15) 0%, transparent 70%);
+  background: radial-gradient(
+    circle,
+    rgba(0, 255, 255, 0.15) 0%,
+    transparent 70%
+  );
   filter: blur(15px);
   z-index: -1;
   pointer-events: none;
@@ -3517,7 +3653,8 @@ body.light-mode .shopee-card-inner {
 .cyberpunk-modal-card {
   background: rgba(10, 16, 32, 0.98) !important;
   border: 1px solid rgba(99, 102, 241, 0.25) !important;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8),
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.8),
     0 0 30px rgba(99, 102, 241, 0.15),
     inset 0 1px 1px rgba(255, 255, 255, 0.05) !important;
   position: relative;
@@ -3527,7 +3664,8 @@ body.light-mode .shopee-card-inner {
 body.light-mode .cyberpunk-modal-card {
   background: rgba(255, 255, 255, 0.98) !important;
   border: 1px solid rgba(79, 70, 229, 0.2) !important;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15),
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.15),
     0 0 30px rgba(79, 70, 229, 0.08),
     inset 0 1px 1px rgba(255, 255, 255, 0.8) !important;
   color: var(--text) !important;
@@ -3540,7 +3678,10 @@ body.light-mode .cyberpunk-modal-card {
   left: 0;
   width: 100%;
   height: 4px;
-  background: var(--brand-grad, linear-gradient(90deg, #6366f1, #d946ef, #6366f1));
+  background: var(
+    --brand-grad,
+    linear-gradient(90deg, #6366f1, #d946ef, #6366f1)
+  );
   background-size: 200% auto;
   animation: cyberGlowBar 6s linear infinite;
 }
@@ -3638,7 +3779,9 @@ CHECKOUT FLOW MODAL — Shared Styles
   opacity: 0;
   pointer-events: none;
   visibility: hidden;
-  transition: opacity 0.35s ease, visibility 0.35s ease;
+  transition:
+    opacity 0.35s ease,
+    visibility 0.35s ease;
 }
 
 .sk-modal-backdrop.is-visible {
@@ -3654,28 +3797,40 @@ CHECKOUT FLOW MODAL — Shared Styles
   width: min(680px, calc(100vw - 28px));
   max-height: calc(100vh - 40px);
   overflow-y: auto;
-  background: linear-gradient(165deg, rgba(17, 24, 39, 0.92) 0%, rgba(10, 14, 26, 0.96) 100%);
+  background: linear-gradient(
+    165deg,
+    rgba(17, 24, 39, 0.92) 0%,
+    rgba(10, 14, 26, 0.96) 100%
+  );
   border: 1px solid rgba(99, 102, 241, 0.18);
   border-radius: 20px;
   backdrop-filter: blur(32px);
   box-shadow:
-  0 30px 80px rgba(0, 0, 0, 0.6),
-  0 0 0 1px rgba(99, 102, 241, 0.08),
-  inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    0 30px 80px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(99, 102, 241, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
   transform: translateY(24px) scale(0.92);
-  transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.35s ease;
+  transition:
+    transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity 0.35s ease;
   opacity: 0;
   position: relative;
 }
 
 .sk-flow-modal::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 10%;
   right: 10%;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.5), rgba(236, 72, 153, 0.3), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(99, 102, 241, 0.5),
+    rgba(236, 72, 153, 0.3),
+    transparent
+  );
   border-radius: 1px;
 }
 
@@ -3710,13 +3865,18 @@ CHECKOUT FLOW MODAL — Shared Styles
 }
 
 .sk-modal-header::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: -1px;
   left: 5%;
   right: 5%;
   height: 1px;
-  background: linear-gradient(90deg, transparent, var(--brand-glow), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--brand-glow),
+    transparent
+  );
 }
 
 .sk-modal-header h3 {
@@ -3765,7 +3925,11 @@ CHECKOUT FLOW MODAL — Shared Styles
 
 /* ── ORDER SUMMARY CARD ── */
 .sk-order-summary-box {
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.06), rgba(236, 72, 153, 0.04));
+  background: linear-gradient(
+    135deg,
+    rgba(99, 102, 241, 0.06),
+    rgba(236, 72, 153, 0.04)
+  );
   border: 1px solid rgba(99, 102, 241, 0.12);
   border-radius: 14px;
   padding: 20px;
@@ -3775,13 +3939,18 @@ CHECKOUT FLOW MODAL — Shared Styles
 }
 
 .sk-order-summary-box::before {
-  content: '';
+  content: "";
   position: absolute;
   top: -1px;
   left: 20%;
   right: 20%;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.35), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(99, 102, 241, 0.35),
+    transparent
+  );
 }
 
 .sk-order-summary-grid {
@@ -3795,8 +3964,8 @@ CHECKOUT FLOW MODAL — Shared Styles
   position: relative;
 }
 
-.sk-summary-item+.sk-summary-item::before {
-  content: '';
+.sk-summary-item + .sk-summary-item::before {
+  content: "";
   position: absolute;
   left: -8px;
   top: 10%;
@@ -3825,7 +3994,11 @@ CHECKOUT FLOW MODAL — Shared Styles
 /* ── DATA FLOW CONTAINER ── */
 .sk-data-flow-container {
   position: relative;
-  background: linear-gradient(145deg, rgba(17, 24, 39, 0.5), rgba(10, 14, 26, 0.6));
+  background: linear-gradient(
+    145deg,
+    rgba(17, 24, 39, 0.5),
+    rgba(10, 14, 26, 0.6)
+  );
   border: 1px solid rgba(99, 102, 241, 0.1);
   border-radius: 16px;
   padding: 28px;
@@ -3835,24 +4008,32 @@ CHECKOUT FLOW MODAL — Shared Styles
 
 /* Ambient glow inside container */
 .sk-data-flow-container::before {
-  content: '';
+  content: "";
   position: absolute;
   top: -40%;
   left: -20%;
   width: 60%;
   height: 80%;
-  background: radial-gradient(ellipse, rgba(99, 102, 241, 0.06) 0%, transparent 70%);
+  background: radial-gradient(
+    ellipse,
+    rgba(99, 102, 241, 0.06) 0%,
+    transparent 70%
+  );
   pointer-events: none;
 }
 
 .sk-data-flow-container::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: -30%;
   right: -20%;
   width: 50%;
   height: 70%;
-  background: radial-gradient(ellipse, rgba(6, 182, 212, 0.04) 0%, transparent 70%);
+  background: radial-gradient(
+    ellipse,
+    rgba(6, 182, 212, 0.04) 0%,
+    transparent 70%
+  );
   pointer-events: none;
 }
 
@@ -3887,7 +4068,7 @@ CHECKOUT FLOW MODAL — Shared Styles
 
 /* Outer ring animation */
 .sk-flow-node::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: -5px;
   border-radius: 50%;
@@ -3900,7 +4081,9 @@ CHECKOUT FLOW MODAL — Shared Styles
   border-color: var(--brand);
   color: var(--brand-light);
   background: rgba(99, 102, 241, 0.12);
-  box-shadow: 0 0 24px var(--brand-glow), 0 0 48px rgba(99, 102, 241, 0.15);
+  box-shadow:
+    0 0 24px var(--brand-glow),
+    0 0 48px rgba(99, 102, 241, 0.15);
   animation: nodeActivePulse 2s ease-in-out infinite;
 }
 
@@ -3914,7 +4097,9 @@ CHECKOUT FLOW MODAL — Shared Styles
   border-color: var(--success);
   color: #fff;
   background: linear-gradient(135deg, #10b981, #059669);
-  box-shadow: 0 0 24px var(--success-glow), 0 0 48px rgba(16, 185, 129, 0.15);
+  box-shadow:
+    0 0 24px var(--success-glow),
+    0 0 48px rgba(16, 185, 129, 0.15);
   animation: none;
 }
 
@@ -3928,7 +4113,9 @@ CHECKOUT FLOW MODAL — Shared Styles
   border-color: var(--danger);
   color: #fff;
   background: linear-gradient(135deg, #ef4444, #dc2626);
-  box-shadow: 0 0 24px var(--danger-glow), 0 0 48px rgba(239, 68, 68, 0.15);
+  box-shadow:
+    0 0 24px var(--danger-glow),
+    0 0 48px rgba(239, 68, 68, 0.15);
   animation: nodeErrorShake 0.5s ease;
 }
 
@@ -3946,14 +4133,17 @@ CHECKOUT FLOW MODAL — Shared Styles
 }
 
 @keyframes nodeActivePulse {
-
   0%,
   100% {
-    box-shadow: 0 0 20px var(--brand-glow), 0 0 40px rgba(99, 102, 241, 0.1);
+    box-shadow:
+      0 0 20px var(--brand-glow),
+      0 0 40px rgba(99, 102, 241, 0.1);
   }
 
   50% {
-    box-shadow: 0 0 30px var(--brand-glow), 0 0 60px rgba(99, 102, 241, 0.2);
+    box-shadow:
+      0 0 30px var(--brand-glow),
+      0 0 60px rgba(99, 102, 241, 0.2);
   }
 }
 
@@ -3968,7 +4158,6 @@ CHECKOUT FLOW MODAL — Shared Styles
 }
 
 @keyframes nodeErrorShake {
-
   0%,
   100% {
     transform: translateX(0);
@@ -4064,7 +4253,12 @@ CHECKOUT FLOW MODAL — Shared Styles
   height: 100%;
   top: -1px;
   bottom: -1px;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.6),
+    transparent
+  );
   animation: flowPulseAnim 1.2s infinite linear;
   display: none;
   border-radius: 3px;
@@ -4106,7 +4300,7 @@ CHECKOUT FLOW MODAL — Shared Styles
 
 /* Vertical connecting line between stages */
 .sk-flow-stage-row:not(:last-child)::after {
-  content: '';
+  content: "";
   position: absolute;
   left: 14px;
   top: 42px;
@@ -4176,7 +4370,7 @@ CHECKOUT FLOW MODAL — Shared Styles
 
 /* Checkmark replaces number on success */
 .sk-flow-stage-row.is-success .sk-stage-num::after {
-  content: '✓';
+  content: "✓";
   font-size: 13px;
   font-weight: 900;
 }
@@ -4193,7 +4387,7 @@ CHECKOUT FLOW MODAL — Shared Styles
 }
 
 .sk-flow-stage-row.is-error .sk-stage-num::after {
-  content: '✕';
+  content: "✕";
   font-size: 12px;
   font-weight: 900;
 }
@@ -4209,7 +4403,6 @@ CHECKOUT FLOW MODAL — Shared Styles
 }
 
 @keyframes stageNumPulse {
-
   0%,
   100% {
     box-shadow: 0 0 10px var(--brand-glow);
@@ -4281,19 +4474,25 @@ CHECKOUT FLOW MODAL — Shared Styles
 /* ── ERROR RESULT CARD ── */
 .sk-error-result {
   margin-top: 20px;
-  background: linear-gradient(135deg, rgba(239, 68, 68, 0.06), rgba(239, 68, 68, 0.02));
+  background: linear-gradient(
+    135deg,
+    rgba(239, 68, 68, 0.06),
+    rgba(239, 68, 68, 0.02)
+  );
   border: 1px solid rgba(239, 68, 68, 0.2);
   border-radius: 14px;
   padding: 24px;
   display: none;
   animation: errorSlideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3), 0 0 20px rgba(239, 68, 68, 0.08);
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.3),
+    0 0 20px rgba(239, 68, 68, 0.08);
   position: relative;
   overflow: hidden;
 }
 
 .sk-error-result::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -4329,7 +4528,6 @@ CHECKOUT FLOW MODAL — Shared Styles
 }
 
 @keyframes errorIconPulse {
-
   0%,
   100% {
     box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.15);
@@ -4393,19 +4591,25 @@ CHECKOUT FLOW MODAL — Shared Styles
 /* ── SUCCESS DELIVERY RESULT ── */
 .sk-delivery-result {
   margin-top: 20px;
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.06), rgba(16, 185, 129, 0.02));
+  background: linear-gradient(
+    135deg,
+    rgba(16, 185, 129, 0.06),
+    rgba(16, 185, 129, 0.02)
+  );
   border: 1px solid rgba(16, 185, 129, 0.2);
   border-radius: 14px;
   padding: 24px;
   display: none;
   animation: successSlideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3), 0 0 20px rgba(16, 185, 129, 0.08);
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.3),
+    0 0 20px rgba(16, 185, 129, 0.08);
   position: relative;
   overflow: hidden;
 }
 
 .sk-delivery-result::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -4430,7 +4634,11 @@ CHECKOUT FLOW MODAL — Shared Styles
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.08));
+  background: linear-gradient(
+    135deg,
+    rgba(16, 185, 129, 0.15),
+    rgba(16, 185, 129, 0.08)
+  );
   border: 2px solid rgba(16, 185, 129, 0.25);
   display: grid;
   place-items: center;
@@ -4441,7 +4649,6 @@ CHECKOUT FLOW MODAL — Shared Styles
 }
 
 @keyframes successIconGlow {
-
   0%,
   100% {
     box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.2);
@@ -4474,7 +4681,7 @@ CHECKOUT FLOW MODAL — Shared Styles
 .sk-delivery-textarea {
   width: 100%;
   height: 110px;
-  font-family: 'Fira Code', 'JetBrains Mono', 'Courier New', monospace;
+  font-family: "Fira Code", "JetBrains Mono", "Courier New", monospace;
   font-size: 13px;
   font-weight: 600;
   padding: 14px 16px;
@@ -4487,12 +4694,16 @@ CHECKOUT FLOW MODAL — Shared Styles
   line-height: 1.7;
   outline: none;
   box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.4);
-  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
 }
 
 .sk-delivery-textarea:focus {
   border-color: var(--success);
-  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.4), 0 0 15px rgba(16, 185, 129, 0.15);
+  box-shadow:
+    inset 0 2px 6px rgba(0, 0, 0, 0.4),
+    0 0 15px rgba(16, 185, 129, 0.15);
 }
 
 .sk-delivery-actions {
@@ -4518,20 +4729,20 @@ CHECKOUT FLOW MODAL — Shared Styles
 }
 
 .sk-processing-dot::after {
-  content: '...';
+  content: "...";
 }
 
 @keyframes processingDots {
   0% {
-    content: '.';
+    content: ".";
   }
 
   33% {
-    content: '..';
+    content: "..";
   }
 
   66% {
-    content: '...';
+    content: "...";
   }
 }
 
@@ -4554,7 +4765,7 @@ CHECKOUT FLOW MODAL — Shared Styles
     gap: 12px;
   }
 
-  .sk-summary-item+.sk-summary-item::before {
+  .sk-summary-item + .sk-summary-item::before {
     display: none;
   }
 
@@ -4605,12 +4816,16 @@ CHECKOUT FLOW MODAL — Shared Styles
   }
 
   /* Hide button texts for other buttons (admin, logout) to save space */
-  .sk-topbar .sk-actions > .sk-btn:not(.sk-auth-actions .sk-btn):not(.sk-deposit-btn) .btn-text,
-  .sk-actions .sk-btn:not(.sk-auth-actions .sk-btn):not(.sk-deposit-btn) .btn-text {
+  .sk-topbar
+    .sk-actions
+    > .sk-btn:not(.sk-auth-actions .sk-btn):not(.sk-deposit-btn)
+    .btn-text {
     display: none !important;
   }
 
-  .sk-actions .sk-btn:not(.sk-auth-actions .sk-btn):not(.sk-deposit-btn) {
+  .sk-topbar
+    .sk-actions
+    .sk-btn:not(.sk-auth-actions .sk-btn):not(.sk-deposit-btn) {
     width: 38px !important;
     height: 38px !important;
     padding: 0 !important;
@@ -4628,9 +4843,11 @@ CHECKOUT FLOW MODAL — Shared Styles
   .sk-brand {
     display: none !important;
   }
+
   .sk-admin-btn {
     display: none !important;
   }
+
   .sk-logout-btn {
     display: none !important;
   }
@@ -4644,6 +4861,7 @@ CHECKOUT FLOW MODAL — Shared Styles
     align-items: center !important;
     gap: 6px !important;
   }
+
   .sk-deposit-btn .btn-text {
     display: inline !important;
     font-size: 13px !important;
@@ -4652,7 +4870,11 @@ CHECKOUT FLOW MODAL — Shared Styles
 
 /* ── PREMIUM HEADER LOGIN BUTTON STYLING ── */
 .sk-auth-actions .sk-btn-primary {
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(168, 85, 247, 0.12) 100%) !important;
+  background: linear-gradient(
+    135deg,
+    rgba(99, 102, 241, 0.12) 0%,
+    rgba(168, 85, 247, 0.12) 100%
+  ) !important;
   border: 1px solid rgba(168, 85, 247, 0.35) !important;
   color: #e9d5ff !important;
   font-weight: 800 !important;
@@ -4662,7 +4884,9 @@ CHECKOUT FLOW MODAL — Shared Styles
   height: 36px !important;
   padding: 0 16px !important;
   border-radius: 8px !important;
-  box-shadow: 0 4px 15px rgba(168, 85, 247, 0.12), inset 0 1px 1px rgba(255, 255, 255, 0.05) !important;
+  box-shadow:
+    0 4px 15px rgba(168, 85, 247, 0.12),
+    inset 0 1px 1px rgba(255, 255, 255, 0.05) !important;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
   display: inline-flex;
   align-items: center;
@@ -4670,10 +4894,16 @@ CHECKOUT FLOW MODAL — Shared Styles
 }
 
 .sk-auth-actions .sk-btn-primary:hover {
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.22) 0%, rgba(168, 85, 247, 0.22) 100%) !important;
+  background: linear-gradient(
+    135deg,
+    rgba(99, 102, 241, 0.22) 0%,
+    rgba(168, 85, 247, 0.22) 100%
+  ) !important;
   border-color: #a855f7 !important;
   color: #ffffff !important;
-  box-shadow: 0 6px 20px rgba(168, 85, 247, 0.3), 0 0 10px rgba(99, 102, 241, 0.15) !important;
+  box-shadow:
+    0 6px 20px rgba(168, 85, 247, 0.3),
+    0 0 10px rgba(99, 102, 241, 0.15) !important;
   transform: translateY(-2px) scale(1.02) !important;
 }
 
@@ -4695,7 +4925,6 @@ BREAKPOINT: Laptop (max-width: 1024px) — spacing only
 Sidebar width is handled by the 980px block above
 ══════════════════════════════════════════════════ */
 @media (max-width: 1024px) and (min-width: 981px) {
-
   /* Sidebar shrinks slightly on 981-1024px screens */
   .sk-sidebar-new {
     width: 64px;
@@ -4724,7 +4953,6 @@ BREAKPOINT: Tablet (max-width: 768px)
 Sidebar collapses, content fills full width
 ══════════════════════════════════════════════════ */
 @media (max-width: 768px) {
-
   /* ── Hide desktop sidebar ── */
   .sk-sidebar-new {
     display: none !important;
@@ -4782,8 +5010,34 @@ Sidebar collapses, content fills full width
 
   /* ── Tables horizontal scroll ── */
   .sk-table-wrap {
-    overflow-x: auto;
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: auto !important;
     -webkit-overflow-scrolling: touch;
+  }
+
+  #orders,
+  #orders .sk-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+    box-sizing: border-box;
+  }
+
+  #orders .sk-table {
+    width: max-content !important;
+    min-width: 100% !important;
+  }
+
+  #orders .sk-table th,
+  #orders .sk-table td {
+    white-space: nowrap;
+  }
+
+  #orders .sk-table td:nth-child(2) {
+    white-space: normal;
+    min-width: 160px;
   }
 
   /* ── Modals full-width ── */
@@ -4799,7 +5053,6 @@ Sidebar collapses, content fills full width
   .sk-modal {
     align-items: center !important;
   }
-
 
   /* ── Hero section ── */
   .sk-hero {
@@ -4823,7 +5076,6 @@ Sidebar collapses, content fills full width
 BREAKPOINT: Mobile (max-width: 560px)
 ══════════════════════════════════════════════════ */
 @media (max-width: 560px) {
-
   /* ── Topbar ── */
   .sk-brand-subtitle {
     display: none !important;
@@ -4882,7 +5134,7 @@ BREAKPOINT: Mobile (max-width: 560px)
     gap: 12px !important;
   }
 
-  .sk-product-card-vertical>a {
+  .sk-product-card-vertical > a {
     padding: 10px !important;
   }
 
@@ -4916,7 +5168,7 @@ BREAKPOINT: Mobile (max-width: 560px)
 BREAKPOINT: Small Mobile (max-width: 420px)
 ══════════════════════════════════════════════════ */
 @media (max-width: 420px) {
-  .sk-brand>span:not(.sk-brand-mark) {
+  .sk-brand > span:not(.sk-brand-mark) {
     display: none !important;
   }
 
@@ -4957,12 +5209,13 @@ BREAKPOINT: Small Mobile (max-width: 420px)
   }
 
   /* Hide text for other header buttons only */
-  .sk-actions .sk-btn:not(.sk-auth-actions .sk-btn) .btn-text {
+  .sk-topbar .sk-actions .sk-btn:not(.sk-auth-actions .sk-btn) .btn-text {
     display: none !important;
   }
 
-  .sk-actions .sk-btn:not(.sk-auth-actions .sk-btn) {
+  .sk-topbar .sk-actions .sk-btn:not(.sk-auth-actions .sk-btn) {
     padding: 0 8px !important;
     height: 34px !important;
     min-width: 34px !important;
   }
+}

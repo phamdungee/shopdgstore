@@ -2,25 +2,50 @@
    DG Store — Cyber Neon Glass Auth Styling Redesign
    ═══════════════════════════════════════════════════════ */
 
-body.sk-auth-body, input, button, select, textarea, samp {
-  font-family: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif !important;
+body.sk-auth-body,
+input,
+button,
+select,
+textarea,
+samp {
+  font-family:
+    "Outfit",
+    "Inter",
+    system-ui,
+    -apple-system,
+    sans-serif !important;
 }
 
 /* Prevent FontAwesome icons from being overridden by text font-family */
-.fa, .fas, .far, .fab, .fa-solid, .fa-regular, .fa-brands {
+.fa,
+.fas,
+.far,
+.fab,
+.fa-solid,
+.fa-regular,
+.fa-brands {
   font-family: "Font Awesome 6 Free", "Font Awesome 6 Brands" !important;
 }
 
 body.sk-auth-body {
   background: #0a0e1a !important;
-  background-image: radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
-                    radial-gradient(circle at 90% 80%, rgba(236, 72, 153, 0.12) 0%, transparent 40%) !important;
+  background-image:
+    radial-gradient(
+      circle at 10% 20%,
+      rgba(99, 102, 241, 0.15) 0%,
+      transparent 40%
+    ),
+    radial-gradient(
+      circle at 90% 80%,
+      rgba(236, 72, 153, 0.12) 0%,
+      transparent 40%
+    ) !important;
   position: relative;
   overflow: hidden;
   margin: 0;
   display: grid;
   place-items: center;
-  font-family: 'Outfit', sans-serif;
+  font-family: "Outfit", sans-serif;
   color: var(--text) !important;
   min-height: 100vh;
 }
@@ -28,7 +53,7 @@ body.sk-auth-body {
 /* Floating Particles (Animated Background Blobs) */
 body.sk-auth-body::before,
 body.sk-auth-body::after {
-  content: '';
+  content: "";
   position: absolute;
   border-radius: 50%;
   filter: blur(120px);
@@ -40,7 +65,12 @@ body.sk-auth-body::after {
 body.sk-auth-body::before {
   width: 400px;
   height: 400px;
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.25) 0%, rgba(139, 92, 246, 0.2) 70%, transparent 100%);
+  background: radial-gradient(
+    circle,
+    rgba(99, 102, 241, 0.25) 0%,
+    rgba(139, 92, 246, 0.2) 70%,
+    transparent 100%
+  );
   top: -10%;
   left: -10%;
   animation: floatBlob1 25s infinite alternate ease-in-out;
@@ -49,20 +79,33 @@ body.sk-auth-body::before {
 body.sk-auth-body::after {
   width: 500px;
   height: 500px;
-  background: radial-gradient(circle, rgba(236, 72, 153, 0.2) 0%, rgba(6, 182, 212, 0.15) 70%, transparent 100%);
+  background: radial-gradient(
+    circle,
+    rgba(236, 72, 153, 0.2) 0%,
+    rgba(6, 182, 212, 0.15) 70%,
+    transparent 100%
+  );
   bottom: -15%;
   right: -10%;
   animation: floatBlob2 30s infinite alternate ease-in-out;
 }
 
 @keyframes floatBlob1 {
-  0% { transform: translate(0, 0) scale(1); }
-  100% { transform: translate(80px, 60px) scale(1.1); }
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    transform: translate(80px, 60px) scale(1.1);
+  }
 }
 
 @keyframes floatBlob2 {
-  0% { transform: translate(0, 0) scale(1); }
-  100% { transform: translate(-90px, -50px) scale(1.15); }
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    transform: translate(-90px, -50px) scale(1.15);
+  }
 }
 
 /* Loader Styling */
@@ -101,8 +144,12 @@ body.sk-auth-body::after {
 }
 
 @keyframes rotateLED {
-  0% { --gradient-angle: 0deg; }
-  100% { --gradient-angle: 360deg; }
+  0% {
+    --gradient-angle: 0deg;
+  }
+  100% {
+    --gradient-angle: 360deg;
+  }
 }
 
 /* Glassmorphic Main Layout Card */
@@ -110,7 +157,9 @@ body.sk-auth-body::after {
   z-index: 1;
   background: rgba(17, 24, 39, 0.55) !important;
   backdrop-filter: blur(25px);
-  box-shadow: var(--shadow), 0 0 50px rgba(99, 102, 241, 0.25) !important;
+  box-shadow:
+    var(--shadow),
+    0 0 50px rgba(99, 102, 241, 0.25) !important;
   border-radius: var(--radius-xl) !important;
   min-height: 580px !important;
   width: 850px;
@@ -129,11 +178,20 @@ body.sk-auth-body::after {
   inset: 0;
   border-radius: inherit;
   padding: 2px; /* Border thickness */
-  background: conic-gradient(from var(--gradient-angle), 
-    #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000
+  background: conic-gradient(
+    from var(--gradient-angle),
+    #ff0000,
+    #ff7300,
+    #fffb00,
+    #48ff00,
+    #00ffd5,
+    #002bff,
+    #7a00ff,
+    #ff00c8,
+    #ff0000
   );
-  -webkit-mask: 
-    linear-gradient(#fff 0 0) content-box, 
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
     linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
@@ -144,7 +202,11 @@ body.sk-auth-body::after {
 
 /* Copywriting Panel Left */
 .sk-auth-panel.sk-auth-copy {
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(236, 72, 153, 0.05)) !important;
+  background: linear-gradient(
+    135deg,
+    rgba(99, 102, 241, 0.1),
+    rgba(236, 72, 153, 0.05)
+  ) !important;
   border-right: 1px solid rgba(99, 102, 241, 0.15) !important;
   padding: 40px 32px !important;
   display: flex;
@@ -159,7 +221,12 @@ body.sk-auth-body::after {
   line-height: 1.25 !important;
   color: var(--text-bright) !important;
   margin: 12px 0 !important;
-  background: linear-gradient(to right, #ffffff, var(--brand-light), var(--neon));
+  background: linear-gradient(
+    to right,
+    #ffffff,
+    var(--brand-light),
+    var(--neon)
+  );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -295,7 +362,12 @@ body.sk-auth-body::after {
   font-size: 28px !important;
   margin-bottom: 8px !important;
   text-align: center;
-  background: linear-gradient(135deg, #ffffff 30%, var(--brand-light) 75%, var(--neon) 100%) !important;
+  background: linear-gradient(
+    135deg,
+    #ffffff 30%,
+    var(--brand-light) 75%,
+    var(--neon) 100%
+  ) !important;
   -webkit-background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
   text-shadow: 0 0 30px rgba(99, 102, 241, 0.1);
@@ -364,7 +436,9 @@ body.sk-auth-body::after {
 .form-container input:focus {
   background: rgba(17, 24, 39, 0.8) !important;
   border-color: var(--brand) !important;
-  box-shadow: 0 0 0 3px var(--brand-soft), 0 0 20px var(--brand-glow) !important;
+  box-shadow:
+    0 0 0 3px var(--brand-soft),
+    0 0 20px var(--brand-glow) !important;
   outline: none;
 }
 
@@ -382,7 +456,9 @@ body.sk-auth-body::after {
 
 .form-container .sk-password-field:focus-within {
   border-color: var(--brand) !important;
-  box-shadow: 0 0 0 3px var(--brand-soft), 0 0 20px var(--brand-glow) !important;
+  box-shadow:
+    0 0 0 3px var(--brand-soft),
+    0 0 20px var(--brand-glow) !important;
 }
 
 .form-container .sk-password-field input {
@@ -450,7 +526,9 @@ body.sk-auth-body::after {
 
 .form-container .sk-btn.sk-btn-primary.btn-solid:hover {
   transform: translateY(-2.5px) scale(1.01) !important;
-  box-shadow: 0 8px 30px rgba(139, 92, 246, 0.55), 0 0 15px rgba(99, 102, 241, 0.3) !important;
+  box-shadow:
+    0 8px 30px rgba(139, 92, 246, 0.55),
+    0 0 15px rgba(99, 102, 241, 0.3) !important;
   background: linear-gradient(135deg, #6c6ff5, #b262fa) !important;
 }
 
@@ -481,8 +559,6 @@ body.sk-auth-body::after {
   transform: rotate(6deg) scale(1.08) !important;
   box-shadow: 0 0 15px var(--brand-glow) !important;
 }
-
-
 
 /* Switch Text */
 .mobile-switch-text {
@@ -543,12 +619,14 @@ body.sk-auth-body::after {
   align-items: center !important;
   gap: 12px !important;
   color: #f8fafc !important;
-  font-family: 'Outfit', sans-serif !important;
+  font-family: "Outfit", sans-serif !important;
   font-size: 13.5px !important;
   font-weight: 500 !important;
   line-height: 1.4 !important;
   transform: translateX(120%);
-  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease !important;
+  transition:
+    transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+    opacity 0.3s ease !important;
   opacity: 0;
   overflow: hidden;
 }
@@ -573,7 +651,9 @@ body.sk-auth-body::after {
 
 #auth-toast.success {
   border-left: 4px solid #10b981 !important;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 20px rgba(16, 185, 129, 0.15) !important;
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.5),
+    0 0 20px rgba(16, 185, 129, 0.15) !important;
 }
 
 #auth-toast.success .toast-icon {
@@ -582,7 +662,9 @@ body.sk-auth-body::after {
 
 #auth-toast.error {
   border-left: 4px solid #f43f5e !important;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 20px rgba(244, 63, 94, 0.15) !important;
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.5),
+    0 0 20px rgba(244, 63, 94, 0.15) !important;
 }
 
 #auth-toast.error .toast-icon {

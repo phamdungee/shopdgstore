@@ -360,38 +360,380 @@ function showOrderDetail(orderId) {
   const order = accountHistory.orders.find(item => String(item.id) === String(orderId));
   if (!order) return;
 
+  // ── Header
   document.getElementById('odModalCode').innerText = `Chi tiết đơn hàng #${order.code || '---'}`;
+
+  // ── Order info grid
   document.getElementById('odModalProduct').innerText = order.productName || '---';
-  document.getElementById('odModalVariant').innerText = order.variantName || '---';
-  document.getElementById('odModalQty').innerText = order.quantity || '1';
-  document.getElementById('odModalPrice').innerText = (order.totalPrice || 0).toLocaleString('vi-VN') + 'đ';
-  document.getElementById('odModalTime').innerText = formatDateTime(order.createdAt);
-  
+  document.getElementById('odModalVariant').innerText  = order.variantName || '---';
+  document.getElementById('odModalQty').innerText      = order.quantity || '1';
+  document.getElementById('odModalPrice').innerText    = (order.totalPrice || 0).toLocaleString('vi-VN') + 'đ';
+  document.getElementById('odModalTime').innerText     = formatDateTime(order.createdAt);
+
   const statusEl = document.getElementById('odModalStatus');
   if (statusEl) {
-    statusEl.innerText = orderStatusLabel(order.status);
-    statusEl.className = `badge-status ${order.status === 'completed' ? 'active' : 'locked'}`;
+    statusEl.innerText   = orderStatusLabel(order.status);
+    statusEl.className   = `sk-badge ${order.status === 'completed' ? 'sk-badge-success' : order.status === 'cancelled' ? 'sk-badge-danger' : 'sk-badge-warning'}`;
   }
 
-  document.getElementById('odModalDelivery').value = order.deliveryText || 'Đơn hàng đã được ghi nhận.';
-  
-  const modal = document.getElementById('order-detail-modal');
-  modal.classList.remove('opacity-0', 'pointer-events-none');
+  // ── Resolve deliveryJson — try multiple paths
+  let deliveryJson = null;
+
+  // Path 1: order.deliveryJson (direct from DB column)
+  if (order.deliveryJson) {
+    deliveryJson = typeof order.deliveryJson === 'string'
+      ? (() => { try { return JSON.parse(order.deliveryJson); } catch(e) { return null; } })()
+      : order.deliveryJson;
+  }
+
+  // Path 2: order.responseData contains deliveryJson
+  if (!deliveryJson && order.responseData) {
+    let resp = order.responseData;
+    if (typeof resp === 'string') { try { resp = JSON.parse(resp); } catch(e) {} }
+    if (resp && typeof resp === 'object') {
+      if (resp.deliveryJson) {
+        deliveryJson = resp.deliveryJson;
+      } else if (resp.items && Array.isArray(resp.items)) {
+        deliveryJson = resp;
+      } else if (resp.source === 'inventory') {
+        deliveryJson = resp;
+      }
+    }
+  }
+
+  // Path 3: parse raw deliveryText
+  if (!deliveryJson && order.deliveryText) {
+    if (window.FormatService && typeof window.FormatService.parseDeliveryText === 'function') {
+      deliveryJson = window.FormatService.parseDeliveryText(order.deliveryText);
+    }
+  }
+
+  // Safety: if deliveryJson exists but parsed_format is empty, auto-build it from item fields
+  if (deliveryJson && deliveryJson.items && deliveryJson.items.length > 0) {
+    if (!deliveryJson.parsed_format || deliveryJson.parsed_format.length === 0) {
+      const defaultLabels = {
+        mail:'Email / Tài khoản', email:'Email / Tài khoản',
+        pass:'Mật khẩu', password:'Mật khẩu',
+        uid:'UID / ID', cookie:'Cookie',
+        token:'Token', refresh_token:'Refresh Token',
+        client_id:'Client ID', client_secret:'Client Secret',
+        phone:'Số điện thoại', key:'Key kích hoạt',
+        proxy:'Proxy', note:'Ghi chú', backup_code:'Mã Backup'
+      };
+      const keysSet = new Set();
+      deliveryJson.items.forEach(item => {
+        const src = item.fields || item;
+        Object.keys(src).forEach(k => { if (!k.startsWith('_') && k !== 'extras' && k !== 'raw_text') keysSet.add(k); });
+      });
+      deliveryJson.parsed_format = Array.from(keysSet).map(k => ({
+        key: k,
+        label: defaultLabels[k.toLowerCase()] || (k.charAt(0).toUpperCase() + k.slice(1)),
+        hidden: false
+      }));
+    }
+  }
+
+  const container = document.getElementById('odModalDeliveryContainer');
+  const fallback  = document.getElementById('odModalFallback');
+  container.innerHTML = '';
+
+  if (deliveryJson && deliveryJson.items && deliveryJson.items.length > 0) {
+    if (fallback) fallback.style.display = 'none';
+    container.style.display = 'flex';
+
+    const parsedFormat = deliveryJson.parsed_format || [];
+
+    // ── Smart-merge: fill blank standard fields from positional extras
+    deliveryJson.items.forEach(item => {
+      if (!item.extras || !item.extras.length) return;
+      const remaining = [];
+      item.extras.forEach(ext => {
+        const pos = parseInt(ext.position);
+        if (!isNaN(pos) && pos > 0 && pos <= parsedFormat.length) {
+          const fd  = parsedFormat[pos - 1];
+          const cur = item.fields ? item.fields[fd.key] : item[fd.key];
+          if (!cur || cur === '(Trống)' || String(cur).trim() === '') {
+            if (item.fields) item.fields[fd.key] = ext.value;
+            else item[fd.key] = ext.value;
+            return;
+          }
+        }
+        remaining.push(ext);
+      });
+      item.extras = remaining;
+    });
+
+    // ── Collect all raw lines for copy/download
+    const allRaw = deliveryJson.items.map(i => i.raw_text || '').filter(Boolean).join('\n');
+    const rawStore = document.getElementById('odModalRawStore');
+    if (rawStore) rawStore.value = allRaw;
+
+    // ── Render each account
+    const emojiMap = {
+      mail:'📧', email:'📧', pass:'🔑', password:'🔑', uid:'🆔', cookie:'🍪',
+      token:'🔄', refresh_token:'🔄', client_id:'🆔', client_secret:'🔒',
+      phone:'📱', key:'🔑', proxy:'🌐', note:'📝', backup_code:'🔐'
+    };
+
+    deliveryJson.items.forEach((item, idx) => {
+      container.appendChild(renderOdAccountCard(item, idx, parsedFormat, emojiMap));
+    });
+
+  } else {
+    container.style.display = 'none';
+    if (fallback) fallback.style.display = 'block';
+    const rawStore = document.getElementById('odModalRawStore');
+    if (rawStore) rawStore.value = order.deliveryText || '';
+  }
+
+  // ── Show modal
+  document.getElementById('order-detail-modal').classList.remove('opacity-0', 'pointer-events-none');
+  const body = document.getElementById('odModalScrollBody');
+  if (body) body.scrollTop = 0;
 }
 
-function closeOrderDetailModal() {
-  const modal = document.getElementById('order-detail-modal');
-  modal.classList.add('opacity-0', 'pointer-events-none');
+function renderOdAccountCard(item, idx, parsedFormat, emojiMap) {
+  const card = document.createElement('div');
+  card.className = 'od-account-card';
+
+  const rawText = item.raw_text || '';
+
+  // ── Card header
+  const header = document.createElement('div');
+  header.className = 'od-account-card-header';
+  const title = document.createElement('span');
+  title.className = 'od-acc-title';
+  title.innerHTML = `📦 Tài khoản #${idx + 1}`;
+  const copyCardBtn = document.createElement('button');
+  copyCardBtn.className = 'od-fv-btn';
+  copyCardBtn.innerHTML = '<i class="fa-solid fa-copy"></i> Copy tài khoản';
+  copyCardBtn.onclick = (e) => { e.stopPropagation(); copyText(rawText || buildRawFromFields(item, parsedFormat)); };
+  header.appendChild(title);
+  header.appendChild(copyCardBtn);
+  card.appendChild(header);
+
+  // ── Standard fields
+  const fieldsWrap = document.createElement('div');
+  parsedFormat.forEach((f, fIdx) => {
+    if (f.hidden) return;
+    const val = (item.fields && item.fields[f.key]) || item[f.key] || '';
+    const emoji = emojiMap[f.key.toLowerCase()] || '🏷️';
+    const isPass  = f.key === 'pass' || f.key === 'password';
+    const isToken = f.key === 'token' || f.key === 'refresh_token' || f.key === 'cookie';
+    const uid = `odFV-${idx}-${fIdx}`;
+
+    const row = document.createElement('div');
+    row.className = 'od-field';
+
+    const label = document.createElement('div');
+    label.className = 'od-field-label';
+    label.textContent = `${emoji} ${f.label}`;
+    row.appendChild(label);
+
+    const box = document.createElement('div');
+    box.className = 'od-field-value-box';
+
+    const textSpan = document.createElement('span');
+    textSpan.className = 'od-fv-text';
+    textSpan.id = uid;
+    textSpan.setAttribute('data-raw', val);
+
+    if (!val.trim()) {
+      textSpan.classList.add('empty');
+      textSpan.textContent = '(Trống)';
+    } else if (isPass) {
+      textSpan.classList.add('masked');
+      textSpan.textContent = '●●●●●●●●';
+    } else if (isToken && val.length > 40) {
+      textSpan.classList.add('collapsed');
+      textSpan.textContent = val;
+    } else {
+      textSpan.textContent = val;
+    }
+
+    const actions = document.createElement('div');
+    actions.className = 'od-fv-actions';
+
+    if (isPass && val.trim()) {
+      const showBtn = document.createElement('button');
+      showBtn.className = 'od-fv-btn';
+      showBtn.innerHTML = '<i class="fa-solid fa-eye"></i> Hiện';
+      showBtn.onclick = (e) => { e.stopPropagation(); toggleOdFieldMask(uid, showBtn); };
+      actions.appendChild(showBtn);
+    }
+    if (isToken && val.length > 40) {
+      const expandBtn = document.createElement('button');
+      expandBtn.className = 'od-fv-btn';
+      expandBtn.innerHTML = '<i class="fa-solid fa-expand"></i> Đầy đủ';
+      expandBtn.onclick = (e) => { e.stopPropagation(); toggleOdFieldCollapse(uid, expandBtn); };
+      actions.appendChild(expandBtn);
+    }
+    if (val.trim()) {
+      const cpBtn = document.createElement('button');
+      cpBtn.className = 'od-fv-btn';
+      cpBtn.innerHTML = '<i class="fa-solid fa-copy"></i>';
+      cpBtn.onclick = (e) => { e.stopPropagation(); copyText(val); };
+      actions.appendChild(cpBtn);
+    }
+
+    box.appendChild(textSpan);
+    box.appendChild(actions);
+    row.appendChild(box);
+    fieldsWrap.appendChild(row);
+  });
+  card.appendChild(fieldsWrap);
+
+  // ── Extra fields
+  if (item.extras && item.extras.length > 0) {
+    const extSec = document.createElement('div');
+    extSec.className = 'od-extras-section';
+    const extLabel = document.createElement('div');
+    extLabel.className = 'od-extras-label';
+    extLabel.innerHTML = '<i class="fa-solid fa-box"></i> Dữ liệu ngoài định dạng';
+    extSec.appendChild(extLabel);
+
+    item.extras.forEach(ext => {
+      const row = document.createElement('div');
+      row.className = 'od-extra-item';
+
+      const pos = document.createElement('span');
+      pos.className = 'od-extra-pos';
+      pos.textContent = `Trường #${ext.position || '?'}`;
+
+      const val = document.createElement('span');
+      val.className = 'od-extra-val';
+      val.textContent = ext.value || '';
+
+      const cpBtn = document.createElement('button');
+      cpBtn.className = 'od-fv-btn';
+      cpBtn.style.flexShrink = '0';
+      cpBtn.innerHTML = '<i class="fa-solid fa-copy"></i>';
+      cpBtn.onclick = (e) => { e.stopPropagation(); copyText(ext.value || ''); };
+
+      row.appendChild(pos);
+      row.appendChild(val);
+      row.appendChild(cpBtn);
+      extSec.appendChild(row);
+    });
+
+    card.appendChild(extSec);
+  }
+
+  // ── Raw data collapse
+  if (rawText) {
+    const rawSec = document.createElement('div');
+    rawSec.className = 'od-raw-section';
+
+    const rawBoxId = `odRaw-${idx}`;
+    const toggleBtn = document.createElement('button');
+    toggleBtn.className = 'od-raw-toggle-btn';
+    toggleBtn.innerHTML = '<i class="fa-solid fa-chevron-right" style="font-size:9px;"></i> Hiện dữ liệu gốc';
+    toggleBtn.onclick = (e) => {
+      e.stopPropagation();
+      const box = document.getElementById(rawBoxId);
+      if (!box) return;
+      const isHidden = box.style.display === 'none';
+      box.style.display = isHidden ? 'block' : 'none';
+      toggleBtn.innerHTML = isHidden
+        ? '<i class="fa-solid fa-chevron-down" style="font-size:9px;"></i> Ẩn dữ liệu gốc'
+        : '<i class="fa-solid fa-chevron-right" style="font-size:9px;"></i> Hiện dữ liệu gốc';
+    };
+
+    const rawBox = document.createElement('div');
+    rawBox.className = 'od-raw-box';
+    rawBox.id = rawBoxId;
+    rawBox.style.display = 'none';
+
+    const rawContent = document.createElement('span');
+    rawContent.style.wordBreak = 'break-all';
+    rawContent.textContent = rawText;
+
+    const rawCpBtn = document.createElement('button');
+    rawCpBtn.className = 'od-fv-btn';
+    rawCpBtn.style.cssText = 'position:absolute; right:6px; top:6px;';
+    rawCpBtn.innerHTML = '<i class="fa-solid fa-copy"></i> Copy';
+    rawCpBtn.onclick = (e) => { e.stopPropagation(); copyText(rawText); };
+
+    rawBox.appendChild(rawContent);
+    rawBox.appendChild(rawCpBtn);
+    rawSec.appendChild(toggleBtn);
+    rawSec.appendChild(rawBox);
+    card.appendChild(rawSec);
+  }
+
+  return card;
 }
 
-function copyOrderDetailDelivery() {
-  const text = document.getElementById('odModalDelivery').value;
+function buildRawFromFields(item, parsedFormat) {
+  return parsedFormat.map(f => (item.fields && item.fields[f.key]) || item[f.key] || '').join('|');
+}
+
+function toggleOdFieldMask(uid, btn) {
+  const el = document.getElementById(uid);
+  if (!el) return;
+  const isMasked = el.classList.contains('masked');
+  const raw = el.getAttribute('data-raw');
+  if (isMasked) {
+    el.textContent = raw;
+    el.classList.remove('masked');
+    btn.innerHTML = '<i class="fa-solid fa-eye-slash"></i> Ẩn';
+  } else {
+    el.textContent = '●●●●●●●●';
+    el.classList.add('masked');
+    btn.innerHTML = '<i class="fa-solid fa-eye"></i> Hiện';
+  }
+}
+
+function toggleOdFieldCollapse(uid, btn) {
+  const el = document.getElementById(uid);
+  if (!el) return;
+  const isCollapsed = el.classList.contains('collapsed');
+  if (isCollapsed) {
+    el.classList.remove('collapsed');
+    btn.innerHTML = '<i class="fa-solid fa-compress"></i> Thu gọn';
+  } else {
+    el.classList.add('collapsed');
+    btn.innerHTML = '<i class="fa-solid fa-expand"></i> Đầy đủ';
+  }
+}
+
+function copyText(text) {
   if (!text) return;
   navigator.clipboard.writeText(text).then(() => {
-    alert('Đã sao chép thông tin tài khoản thành công!');
+    // subtle visual feedback — could be a toast; alert for now
+    const el = document.createElement('div');
+    el.textContent = '✓ Đã sao chép';
+    el.style.cssText = 'position:fixed;bottom:24px;right:24px;background:#22c55e;color:#fff;padding:8px 16px;border-radius:6px;font-weight:700;font-size:13px;z-index:9999;opacity:1;transition:opacity 0.4s;';
+    document.body.appendChild(el);
+    setTimeout(() => { el.style.opacity = '0'; setTimeout(() => el.remove(), 400); }, 1800);
   });
 }
 
+// Keep these for compatibility with other parts of the page
+function copySingleFieldValue(event, value) { if (event) { event.stopPropagation(); event.preventDefault(); } copyText(value); }
+
+function closeOrderDetailModal() {
+  document.getElementById('order-detail-modal').classList.add('opacity-0', 'pointer-events-none');
+}
+
+function copyOrderDetailDelivery() {
+  const store = document.getElementById('odModalRawStore');
+  const text  = store ? store.value : '';
+  copyText(text);
+}
+
+function exportOrderDetailTxt() {
+  const orderCode = (document.getElementById('odModalCode').innerText || '').replace('Chi tiết đơn hàng #', '').trim();
+  const store = document.getElementById('odModalRawStore');
+  const content = store ? store.value : '';
+  if (!content) return;
+  const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = `DGStore_DonHang_${orderCode}.txt`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
 function switchProfileTab(tabTarget) {
   document.querySelectorAll('.profile-tab-section').forEach(view => {
     view.classList.add('hidden');
@@ -440,18 +782,12 @@ function updateGlobalSidebarActive() {
     
     if (isProfilePage) {
       const isProfileLink = href === 'profile.html' || href === '/profile.html';
-      const isOrdersLink = href === 'profile.html#orders' || href === '/profile.html#orders' || href.includes('index.html#orders');
       const isPolicyLink = href === 'profile.html#policy' || href === '/profile.html#policy' || href === 'profile.html#security' || href === '/profile.html#security';
-      const isHistoryLink = href === 'profile.html#history' || href === '/profile.html#history' || href === 'profile.html#transactions' || href === '/profile.html#transactions';
 
-      if (isProfileLink && (!currentHash || currentHash === '#profile')) {
-        isMatch = true;
-      } else if (isOrdersLink && currentHash === '#orders') {
-        isMatch = true;
-      } else if (isPolicyLink && (currentHash === '#policy' || currentHash === '#security')) {
-        isMatch = true;
-      } else if (isHistoryLink && (currentHash === '#history' || currentHash === '#transactions')) {
-        isMatch = true;
+      if (currentHash === '#policy' || currentHash === '#security') {
+        isMatch = isPolicyLink;
+      } else {
+        isMatch = isProfileLink;
       }
     } else {
       isMatch = href.includes(currentPath);

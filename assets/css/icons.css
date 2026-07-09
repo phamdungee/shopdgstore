@@ -53,8 +53,12 @@
   animation: sk-spin 2s linear infinite;
 }
 @keyframes sk-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* 2. Hover Bounce (e.g., Navigation links) */
@@ -81,11 +85,16 @@
 
 /* 5. Heartbeat / Elastic (e.g., Likes, Support) */
 .sk-icon-heartbeat:hover svg {
-  animation: sk-heartbeat 0.8s cubic-bezier(0.25, 0.8, 0.25, 1) infinite alternate;
+  animation: sk-heartbeat 0.8s cubic-bezier(0.25, 0.8, 0.25, 1) infinite
+    alternate;
 }
 @keyframes sk-heartbeat {
-  0% { transform: scale(1); }
-  100% { transform: scale(1.2); }
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.2);
+  }
 }
 
 /* 6. Scan effect (e.g., Card scan) */
@@ -93,7 +102,7 @@
   position: relative;
 }
 .sk-icon-scan::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -109,6 +118,11 @@
   opacity: 1;
 }
 @keyframes sk-scan {
-  0%, 100% { top: 0%; }
-  50% { top: 100%; }
+  0%,
+  100% {
+    top: 0%;
+  }
+  50% {
+    top: 100%;
+  }
 }

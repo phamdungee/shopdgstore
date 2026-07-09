@@ -217,13 +217,23 @@ router.put('/:id', authMiddleware, adminMiddleware, async (req, res) => {
           }
         }
 
-        // Execute updates (using upsert or individual updates)
+        // Execute updates individually to avoid identity column insertion error
         if (updates.length > 0) {
-          const { error: upsertErr } = await supabase
-            .from('product_variants')
-            .upsert(updates, { onConflict: 'id' });
-          if (upsertErr) {
-            console.error('Upsert variants error:', upsertErr.message);
+          let hasUpdateError = false;
+          let updateErrorMessage = '';
+          for (const upd of updates) {
+            const { id: varId, ...updPayload } = upd;
+            const { error: updErr } = await supabase
+              .from('product_variants')
+              .update(updPayload)
+              .eq('id', varId);
+            if (updErr) {
+              hasUpdateError = true;
+              updateErrorMessage = updErr.message;
+            }
+          }
+          if (hasUpdateError) {
+            console.error('Upsert variants error:', updateErrorMessage);
           }
         }
 

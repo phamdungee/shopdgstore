@@ -1,21 +1,32 @@
-
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const path = require('path');
-const crypto = require('crypto');
-const axios = require('axios');
-const { authMiddleware } = require('../middlewares/authMiddleware');
+const path = require("path");
+const crypto = require("crypto");
+const axios = require("axios");
+const { authMiddleware } = require("../middlewares/authMiddleware");
 
 // --- WAYBILL TRACKING BOT INTEGRATION ---
-const fs = require('fs');
+const fs = require("fs");
 
 const SPX_SECRET = "MGViZmZmZTYzZDJhNDgxY2Y1N2ZlN2Q1ZWJkYzlmZDY=";
-const TRACKING_API = "https://spx.vn/api/v2/fleet_order/tracking/search?sls_tracking_number=";
-const GHN_API_BASE = "https://fe-online-gateway.ghn.vn/order-tracking/public-api/client";
+const TRACKING_API =
+  "https://spx.vn/api/v2/fleet_order/tracking/search?sls_tracking_number=";
+const GHN_API_BASE =
+  "https://fe-online-gateway.ghn.vn/order-tracking/public-api/client";
 
 const WATCH_FILE = path.join(__dirname, "..", "bottracking", "watchlist.json");
-const CONFIG_FILE = path.join(__dirname, "..", "bottracking", "bot-config.json");
-const TELEGRAM_STATE_FILE = path.join(__dirname, "..", "bottracking", "telegram-state.json");
+const CONFIG_FILE = path.join(
+  __dirname,
+  "..",
+  "bottracking",
+  "bot-config.json",
+);
+const TELEGRAM_STATE_FILE = path.join(
+  __dirname,
+  "..",
+  "bottracking",
+  "telegram-state.json",
+);
 const BOT_TICK_MS = 30 * 1000;
 const TELEGRAM_POLL_MS = 5 * 1000;
 
@@ -55,7 +66,9 @@ const TRACKING_STATUS_VI = {
 };
 
 function normalizeTrackingNumber(value) {
-  return String(value || "").trim().toUpperCase();
+  return String(value || "")
+    .trim()
+    .toUpperCase();
 }
 
 function signTrackingNumber(trackingNumber) {
@@ -115,9 +128,13 @@ function writeJsonFile(filePath, payload) {
 function loadConfig() {
   const config = readJsonFile(CONFIG_FILE, {});
   return {
-    telegramBotToken: process.env.TELEGRAM_BOT_TOKEN || config.telegramBotToken || "",
+    telegramBotToken:
+      process.env.TELEGRAM_BOT_TOKEN || config.telegramBotToken || "",
     telegramChatId: process.env.TELEGRAM_CHAT_ID || config.telegramChatId || "",
-    telegramPolling: process.env.TELEGRAM_POLLING === "0" ? false : config.telegramPolling !== false,
+    telegramPolling:
+      process.env.TELEGRAM_POLLING === "0"
+        ? false
+        : config.telegramPolling !== false,
   };
 }
 
@@ -140,30 +157,84 @@ function statusCategory(status, text = "", message = "") {
   const normalized = stripVietnamese(source);
   const statusOnly = String(status || "").toLowerCase();
 
-  if (statusOnly.includes("cancel") || /\b(cancel|canceled|cancelled|da huy|huy don|don huy)\b/.test(normalized)) return "cancel";
-  if (/\b(fail|failed|that bai|giao that bai|khong giao duoc)\b/.test(normalized)) return "failed";
+  if (
+    statusOnly.includes("cancel") ||
+    /\b(cancel|canceled|cancelled|da huy|huy don|don huy)\b/.test(normalized)
+  )
+    return "cancel";
+  if (
+    /\b(fail|failed|that bai|giao that bai|khong giao duoc)\b/.test(normalized)
+  )
+    return "failed";
   if (
     statusOnly === "sp_collection_collected" ||
     normalized.includes("delivered") ||
     normalized.includes("da giao") ||
     normalized.includes("giao thanh cong") ||
     normalized.includes("giao hang thanh cong")
-  ) return "delivered";
-  if (normalized.includes("delivering") || normalized.includes("dang giao") || normalized.includes("nhan vien giao")) return "delivering";
-  if (normalized.includes("den buu cuc giao") || normalized.includes("buu cuc giao") || normalized.includes("delivery hub")) return "at_delivery_hub";
-  if (normalized.includes("transporting") || normalized.includes("van chuyen") || normalized.includes("trung chuyen") || normalized.includes("ket noi")) return "transporting";
-  if (normalized.includes("storing") || normalized.includes("warehouse") || normalized.includes("kho") || normalized.includes("trung tam khai thac")) return "storing";
-  if (normalized.includes("lmhub") || normalized.includes("last mile")) return "at_delivery_hub";
-  if (normalized.includes("received") || normalized.includes("picked_to_storing") || normalized.includes("buu cuc")) return "picked_to_storing";
-  if (normalized.includes("pickup_done") || normalized.includes("picked") || normalized.includes("collected") || normalized.includes("da lay")) return "picked_to_storing";
-  if (normalized.includes("picking") || normalized.includes("dang lay")) return "ready_to_pick";
-  if (normalized.includes("ready") || normalized.includes("created") || normalized.includes("cho lay") || normalized.includes("cho lay hang") || normalized.includes("tao don")) return "ready_to_pick";
-  if (normalized.includes("return") || normalized.includes("hoan")) return "return";
+  )
+    return "delivered";
+  if (
+    normalized.includes("delivering") ||
+    normalized.includes("dang giao") ||
+    normalized.includes("nhan vien giao")
+  )
+    return "delivering";
+  if (
+    normalized.includes("den buu cuc giao") ||
+    normalized.includes("buu cuc giao") ||
+    normalized.includes("delivery hub")
+  )
+    return "at_delivery_hub";
+  if (
+    normalized.includes("transporting") ||
+    normalized.includes("van chuyen") ||
+    normalized.includes("trung chuyen") ||
+    normalized.includes("ket noi")
+  )
+    return "transporting";
+  if (
+    normalized.includes("storing") ||
+    normalized.includes("warehouse") ||
+    normalized.includes("kho") ||
+    normalized.includes("trung tam khai thac")
+  )
+    return "storing";
+  if (normalized.includes("lmhub") || normalized.includes("last mile"))
+    return "at_delivery_hub";
+  if (
+    normalized.includes("received") ||
+    normalized.includes("picked_to_storing") ||
+    normalized.includes("buu cuc")
+  )
+    return "picked_to_storing";
+  if (
+    normalized.includes("pickup_done") ||
+    normalized.includes("picked") ||
+    normalized.includes("collected") ||
+    normalized.includes("da lay")
+  )
+    return "picked_to_storing";
+  if (normalized.includes("picking") || normalized.includes("dang lay"))
+    return "ready_to_pick";
+  if (
+    normalized.includes("ready") ||
+    normalized.includes("created") ||
+    normalized.includes("cho lay") ||
+    normalized.includes("cho lay hang") ||
+    normalized.includes("tao don")
+  )
+    return "ready_to_pick";
+  if (normalized.includes("return") || normalized.includes("hoan"))
+    return "return";
   return "unknown";
 }
 
 function nextCheckAtFor(category) {
-  const interval = Object.prototype.hasOwnProperty.call(CHECK_INTERVALS, category)
+  const interval = Object.prototype.hasOwnProperty.call(
+    CHECK_INTERVALS,
+    category,
+  )
     ? CHECK_INTERVALS[category]
     : CHECK_INTERVALS.unknown;
   if (interval === null) return null;
@@ -172,7 +243,11 @@ function nextCheckAtFor(category) {
 
 function safeString(value) {
   if (value == null || value === "") return "-";
-  if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
+  if (
+    typeof value === "string" ||
+    typeof value === "number" ||
+    typeof value === "boolean"
+  ) {
     return String(value);
   }
   return JSON.stringify(value);
@@ -214,10 +289,12 @@ function formatShortDateTime(value) {
     hour: "2-digit",
     minute: "2-digit",
     hour12: false,
-  }).formatToParts(new Date(parsed)).reduce((result, part) => {
-    result[part.type] = part.value;
-    return result;
-  }, {});
+  })
+    .formatToParts(new Date(parsed))
+    .reduce((result, part) => {
+      result[part.type] = part.value;
+      return result;
+    }, {});
 
   return `${parts.hour}:${parts.minute} ${parts.day}/${parts.month}/${parts.year}`;
 }
@@ -228,43 +305,50 @@ function separator() {
 
 // category icons and labels
 function categoryIcon(category) {
-  return {
-    ready_to_pick: "📦",
-    picking: "👨‍💼",
-    picked: "✅",
-    picked_to_storing: "✅",
-    storing: "🏢",
-    transporting: "🚛",
-    at_delivery_hub: "🏬",
-    delivering: "🛵",
-    delivered: "🎉",
-    failed: "❌",
-    return: "↩️",
-    cancel: "❌",
-    unknown: "📦",
-  }[category || "unknown"] || "📦";
+  return (
+    {
+      ready_to_pick: "📦",
+      picking: "👨‍💼",
+      picked: "✅",
+      picked_to_storing: "✅",
+      storing: "🏢",
+      transporting: "🚛",
+      at_delivery_hub: "🏬",
+      delivering: "🛵",
+      delivered: "🎉",
+      failed: "❌",
+      return: "↩️",
+      cancel: "❌",
+      unknown: "📦",
+    }[category || "unknown"] || "📦"
+  );
 }
 
 function categoryLabel(category, fallback = "") {
-  return {
-    ready_to_pick: "Chờ lấy hàng",
-    picking: "Đang lấy hàng",
-    picked: "Đã lấy hàng",
-    picked_to_storing: "Đã lấy hàng",
-    storing: "Nhập kho",
-    transporting: "Trung chuyển",
-    at_delivery_hub: "Đến bưu cục giao",
-    delivering: "Đang giao hàng",
-    delivered: "Giao thành công",
-    failed: "Giao thất bại",
-    return: "Hoàn hàng",
-    cancel: "Đã hủy",
-    unknown: fallback || "Đang cập nhật",
-  }[category || "unknown"] || fallback || "Đang cập nhật";
+  return (
+    {
+      ready_to_pick: "Chờ lấy hàng",
+      picking: "Đang lấy hàng",
+      picked: "Đã lấy hàng",
+      picked_to_storing: "Đã lấy hàng",
+      storing: "Nhập kho",
+      transporting: "Trung chuyển",
+      at_delivery_hub: "Đến bưu cục giao",
+      delivering: "Đang giao hàng",
+      delivered: "Giao thành công",
+      failed: "Giao thất bại",
+      return: "Hoàn hàng",
+      cancel: "Đã hủy",
+      unknown: fallback || "Đang cập nhật",
+    }[category || "unknown"] ||
+    fallback ||
+    "Đang cập nhật"
+  );
 }
 
 function intervalLabel(category) {
-  const interval = CHECK_INTERVALS[category || "unknown"] ?? CHECK_INTERVALS.unknown;
+  const interval =
+    CHECK_INTERVALS[category || "unknown"] ?? CHECK_INTERVALS.unknown;
   if (interval === null) return "Ngừng theo dõi";
   if (interval === 5 * 60 * 1000) return "5 phút / lần";
   if (interval === 15 * 60 * 1000) return "15 phút / lần";
@@ -278,9 +362,13 @@ function displayStatus(statusTextValue, category) {
 }
 
 function sharedIntervalLabel(items) {
-  const activeItems = (items || []).filter((item) => item.active && !item.paused);
+  const activeItems = (items || []).filter(
+    (item) => item.active && !item.paused,
+  );
   if (!activeItems.length) return "đã ngừng";
-  const labels = [...new Set(activeItems.map((item) => intervalLabel(item.category)))];
+  const labels = [
+    ...new Set(activeItems.map((item) => intervalLabel(item.category))),
+  ];
   return labels.length === 1 ? labels[0] : "theo từng trạng thái";
 }
 
@@ -308,12 +396,14 @@ function todayNotificationCount(items) {
     if (!item.lastNotifiedAt) return false;
     const parsed = Date.parse(item.lastNotifiedAt);
     if (!Number.isFinite(parsed)) return false;
-    return new Intl.DateTimeFormat("en-CA", {
-      timeZone: "Asia/Ho_Chi_Minh",
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    }).format(new Date(parsed)) === today;
+    return (
+      new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Asia/Ho_Chi_Minh",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      }).format(new Date(parsed)) === today
+    );
   }).length;
 }
 
@@ -328,20 +418,35 @@ function extractLocationFromText(value) {
 
 function locationText(value) {
   if (!value) return "";
-  if (typeof value === "string" || typeof value === "number") return String(value);
+  if (typeof value === "string" || typeof value === "number")
+    return String(value);
   if (typeof value === "object") {
-    return value.address || value.name || value.warehouse_name || value.warehouseName || value.current_warehouse || "";
+    return (
+      value.address ||
+      value.name ||
+      value.warehouse_name ||
+      value.warehouseName ||
+      value.current_warehouse ||
+      ""
+    );
   }
   return "";
 }
 
 function commandCode(text) {
-  const parts = String(text || "").trim().split(/\s+/);
-  return extractTrackingCode(parts.slice(1).join(" ")) || extractTrackingCode(text);
+  const parts = String(text || "")
+    .trim()
+    .split(/\s+/);
+  return (
+    extractTrackingCode(parts.slice(1).join(" ")) || extractTrackingCode(text)
+  );
 }
 
 function commandPayload(text) {
-  return String(text || "").trim().replace(/^\/\S+\s*/i, "").trim();
+  return String(text || "")
+    .trim()
+    .replace(/^\/\S+\s*/i, "")
+    .trim();
 }
 
 function stripVietnamese(value) {
@@ -353,15 +458,39 @@ function stripVietnamese(value) {
 }
 
 function extractTrackingCode(text) {
-  const upper = normalizeTrackingNumber(String(text || "").replace(/[^\w\s-]/g, " "));
+  const upper = normalizeTrackingNumber(
+    String(text || "").replace(/[^\w\s-]/g, " "),
+  );
   const spx = upper.match(/\bSPX[A-Z0-9]{6,}\b/);
   if (spx) return spx[0];
 
   const blocked = new Set([
-    "START", "THEODOI", "DANHSACH", "KIEMTRA", "CHITIET", "TAMDUNG", "TIEPTUC",
-    "XOA", "THONGKE", "CAIDAT", "BATTHONGBAO", "TATTHONGBAO", "HELP", "LIST",
-    "REMOVE", "DELETE", "WATCH", "CHECK", "THEO", "DOI", "TRA", "CUU", "KIEM",
-    "HANG", "TRANG", "THAI"
+    "START",
+    "THEODOI",
+    "DANHSACH",
+    "KIEMTRA",
+    "CHITIET",
+    "TAMDUNG",
+    "TIEPTUC",
+    "XOA",
+    "THONGKE",
+    "CAIDAT",
+    "BATTHONGBAO",
+    "TATTHONGBAO",
+    "HELP",
+    "LIST",
+    "REMOVE",
+    "DELETE",
+    "WATCH",
+    "CHECK",
+    "THEO",
+    "DOI",
+    "TRA",
+    "CUU",
+    "KIEM",
+    "HANG",
+    "TRANG",
+    "THAI",
   ]);
 
   const generic = upper
@@ -393,7 +522,10 @@ function parseWatchEntries(text) {
       const codeIndex = parts.findIndex((part) => extractTrackingCode(part));
       if (codeIndex >= 0) {
         code = extractTrackingCode(parts[codeIndex]);
-        label = parts.filter((_, index) => index !== codeIndex).join(" - ").trim();
+        label = parts
+          .filter((_, index) => index !== codeIndex)
+          .join(" - ")
+          .trim();
       }
     }
 
@@ -427,11 +559,19 @@ function parseTelegramIntent(text) {
   const normalized = stripVietnamese(raw).toLowerCase();
   const command = normalized.split(/\s+/)[0] || "";
   const query = commandPayload(raw);
-  const code = command.startsWith("/") ? commandCode(raw) : extractTrackingCode(raw);
+  const code = command.startsWith("/")
+    ? commandCode(raw)
+    : extractTrackingCode(raw);
 
   if (!raw || command === "/start") return { action: "start", code, query };
-  if (command === "/help" || normalized === "help") return { action: "help", code, query };
-  if (command === "/danhsach" || command === "/list" || /\b(danh sach|list|dang theo doi)\b/.test(normalized)) return { action: "list", code, query };
+  if (command === "/help" || normalized === "help")
+    return { action: "help", code, query };
+  if (
+    command === "/danhsach" ||
+    command === "/list" ||
+    /\b(danh sach|list|dang theo doi)\b/.test(normalized)
+  )
+    return { action: "list", code, query };
   if (command === "/thongke") return { action: "stats", code, query };
   if (command === "/caidat") return { action: "settings", code, query };
   if (command === "/batthongbao") return { action: "notify_on", code, query };
@@ -439,16 +579,34 @@ function parseTelegramIntent(text) {
   if (command === "/chitiet") return { action: "detail", code, query };
   if (command === "/tamdung") return { action: "pause", code, query };
   if (command === "/tieptuc") return { action: "resume", code, query };
-  if (command === "/xoa" || command === "/remove" || command === "/delete" || /\b(xoa|bo theo doi|huy theo doi|ngung theo doi)\b/.test(normalized)) return { action: "remove", code, query };
-  if (command === "/theodoi" || command === "/watch" || /\b(theo doi|theodoi|bao khi|canh bao|them don)\b/.test(normalized)) return { action: "watch", code, query };
-  if (command === "/kiemtra" || command === "/check" || code || /\b(tra|kiem tra|check|hanh trinh|trang thai)\b/.test(normalized)) return { action: "check", code, query };
+  if (
+    command === "/xoa" ||
+    command === "/remove" ||
+    command === "/delete" ||
+    /\b(xoa|bo theo doi|huy theo doi|ngung theo doi)\b/.test(normalized)
+  )
+    return { action: "remove", code, query };
+  if (
+    command === "/theodoi" ||
+    command === "/watch" ||
+    /\b(theo doi|theodoi|bao khi|canh bao|them don)\b/.test(normalized)
+  )
+    return { action: "watch", code, query };
+  if (
+    command === "/kiemtra" ||
+    command === "/check" ||
+    code ||
+    /\b(tra|kiem tra|check|hanh trinh|trang thai)\b/.test(normalized)
+  )
+    return { action: "check", code, query };
 
   return { action: "unknown", code, query };
 }
 
 function eventTimeMs(value) {
   if (!value) return 0;
-  if (typeof value === "number") return value < 10000000000 ? value * 1000 : value;
+  if (typeof value === "number")
+    return value < 10000000000 ? value * 1000 : value;
   if (/^\d+$/.test(String(value))) {
     const numeric = Number(value);
     return numeric < 10000000000 ? numeric * 1000 : numeric;
@@ -482,14 +640,17 @@ async function fetchTracking(trackingNumber) {
     headers: {
       accept: "application/json,text/plain,*/*",
       referer: `https://spx.vn/track?tracking_number=${encodeURIComponent(trackingNumber)}`,
-      "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/125 Safari/537.36",
+      "user-agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/125 Safari/537.36",
       "x-language": "vi",
     },
   });
 
   const payload = response.data;
   if (payload.retcode !== 0 || !payload.data) {
-    throw new Error(payload.message || `SPX API tra ve retcode ${payload.retcode}`);
+    throw new Error(
+      payload.message || `SPX API tra ve retcode ${payload.retcode}`,
+    );
   }
 
   return payload.data;
@@ -498,7 +659,7 @@ async function fetchTracking(trackingNumber) {
 async function requestGhnJson(url, options = {}) {
   const response = await axios({
     url,
-    method: options.method || 'GET',
+    method: options.method || "GET",
     data: options.body ? JSON.parse(options.body) : undefined,
     headers: {
       accept: "application/json",
@@ -518,14 +679,18 @@ async function fetchGhnTracking(orderCode) {
   });
 
   if (tracking.code !== 200) {
-    throw new Error(tracking.code_message_value || tracking.message || `GHN API tra ve code ${tracking.code}`);
+    throw new Error(
+      tracking.code_message_value ||
+        tracking.message ||
+        `GHN API tra ve code ${tracking.code}`,
+    );
   }
 
   let orderLogs = null;
   try {
     orderLogs = await requestGhnJson(
       `${GHN_API_BASE}/order-logs?order_code=${encodeURIComponent(normalized)}`,
-      { method: "GET" }
+      { method: "GET" },
     );
   } catch (_) {
     orderLogs = null;
@@ -535,25 +700,40 @@ async function fetchGhnTracking(orderCode) {
 }
 
 function extractGhnLogs(data, orderLogs) {
-  const direct = data.tracking_logs || data.trackingLogs || data.logs || data.histories || (orderLogs && orderLogs.data && orderLogs.data.data);
+  const direct =
+    data.tracking_logs ||
+    data.trackingLogs ||
+    data.logs ||
+    data.histories ||
+    (orderLogs && orderLogs.data && orderLogs.data.data);
   if (Array.isArray(direct)) return direct;
 
   const candidates = [];
   collectArrays(data, candidates);
   collectArrays(orderLogs && orderLogs.data, candidates);
 
-  const named = candidates.find((item) => /tracking_logs|trackingLogs/i.test(item.name) && item.value.length) ||
-    candidates.find((item) => /log|tracking|history/i.test(item.name) && item.value.length) ||
+  const named =
+    candidates.find(
+      (item) =>
+        /tracking_logs|trackingLogs/i.test(item.name) && item.value.length,
+    ) ||
+    candidates.find(
+      (item) => /log|tracking|history/i.test(item.name) && item.value.length,
+    ) ||
     candidates.find((item) => /data/i.test(item.name) && item.value.length);
 
   return named ? named.value : [];
 }
 
 function snapshotSpx(code, data) {
-  const latest = Array.isArray(data.tracking_list) ? data.tracking_list[0] : null;
+  const latest = Array.isArray(data.tracking_list)
+    ? data.tracking_list[0]
+    : null;
   const status = data.current_status || (latest && latest.status) || "";
   const statusLabel = statusText(status);
-  const latestMessage = latest ? latest.message || statusText(latest.status) : "";
+  const latestMessage = latest
+    ? latest.message || statusText(latest.status)
+    : "";
   const category = statusCategory(status, statusLabel, latestMessage);
   const history = Array.isArray(data.tracking_list)
     ? data.tracking_list.map((item) => {
@@ -566,7 +746,9 @@ function snapshotSpx(code, data) {
           category: itemCategory,
           message,
           location: extractLocationFromText(message),
-          time: item.timestamp ? new Date(item.timestamp * 1000).toISOString() : "",
+          time: item.timestamp
+            ? new Date(item.timestamp * 1000).toISOString()
+            : "",
         };
       })
     : [];
@@ -577,7 +759,10 @@ function snapshotSpx(code, data) {
     status,
     statusLabel,
     category,
-    latestTime: latest && latest.timestamp ? new Date(latest.timestamp * 1000).toISOString() : "",
+    latestTime:
+      latest && latest.timestamp
+        ? new Date(latest.timestamp * 1000).toISOString()
+        : "",
     latestMessage,
     latestLocation: latest ? extractLocationFromText(latestMessage) : "-",
     history,
@@ -593,38 +778,173 @@ function snapshotGhn(code, payload) {
   const logs = extractGhnLogs(data, orderLogs);
   const sortedLogs = Array.isArray(logs)
     ? [...logs].sort((a, b) => {
-        const at = eventTimeMs(getField(a, ["action_at", "ACTION_AT", "datetime", "DATETIME", "created_at", "CREATED_AT", "updated_at", "UPDATED_AT", "time", "TIME", "timestamp"]));
-        const bt = eventTimeMs(getField(b, ["action_at", "ACTION_AT", "datetime", "DATETIME", "created_at", "CREATED_AT", "updated_at", "UPDATED_AT", "time", "TIME", "timestamp"]));
+        const at = eventTimeMs(
+          getField(a, [
+            "action_at",
+            "ACTION_AT",
+            "datetime",
+            "DATETIME",
+            "created_at",
+            "CREATED_AT",
+            "updated_at",
+            "UPDATED_AT",
+            "time",
+            "TIME",
+            "timestamp",
+          ]),
+        );
+        const bt = eventTimeMs(
+          getField(b, [
+            "action_at",
+            "ACTION_AT",
+            "datetime",
+            "DATETIME",
+            "created_at",
+            "CREATED_AT",
+            "updated_at",
+            "UPDATED_AT",
+            "time",
+            "TIME",
+            "timestamp",
+          ]),
+        );
         return bt - at;
       })
     : [];
   const latest = sortedLogs[0] || {};
-  const status = getField(latest, ["status", "STATUS", "status_code", "statusCode"]) || getField(orderInfo, ["status", "STATUS", "current_status", "currentStatus"]) || "";
-  const statusLabel = getField(latest, ["status_name", "statusName", "information", "INFORMATION", "action", "ACTION"]) || getField(orderInfo, ["status_name", "statusName", "status", "STATUS"]) || status || "Da nhan du lieu";
-  const latestMessage = getField(latest, ["content", "CONTENT", "message", "MESSAGE", "description", "DESCRIPTION", "reason", "REASON"]) || statusLabel;
-  const latestTime = getField(latest, ["action_at", "ACTION_AT", "datetime", "DATETIME", "created_at", "CREATED_AT", "updated_at", "UPDATED_AT", "time", "TIME", "timestamp"]) || getField(orderInfo, ["updated_date", "UPDATED_DATE", "created_date", "CREATED_DATE", "updated_at", "UPDATED_AT"]);
+  const status =
+    getField(latest, ["status", "STATUS", "status_code", "statusCode"]) ||
+    getField(orderInfo, [
+      "status",
+      "STATUS",
+      "current_status",
+      "currentStatus",
+    ]) ||
+    "";
+  const statusLabel =
+    getField(latest, [
+      "status_name",
+      "statusName",
+      "information",
+      "INFORMATION",
+      "action",
+      "ACTION",
+    ]) ||
+    getField(orderInfo, ["status_name", "statusName", "status", "STATUS"]) ||
+    status ||
+    "Da nhan du lieu";
+  const latestMessage =
+    getField(latest, [
+      "content",
+      "CONTENT",
+      "message",
+      "MESSAGE",
+      "description",
+      "DESCRIPTION",
+      "reason",
+      "REASON",
+    ]) || statusLabel;
+  const latestTime =
+    getField(latest, [
+      "action_at",
+      "ACTION_AT",
+      "datetime",
+      "DATETIME",
+      "created_at",
+      "CREATED_AT",
+      "updated_at",
+      "UPDATED_AT",
+      "time",
+      "TIME",
+      "timestamp",
+    ]) ||
+    getField(orderInfo, [
+      "updated_date",
+      "UPDATED_DATE",
+      "created_date",
+      "CREATED_DATE",
+      "updated_at",
+      "UPDATED_AT",
+    ]);
   const category = statusCategory(status, statusLabel, latestMessage);
   const history = sortedLogs.map((item) => {
-    const itemStatus = getField(item, ["status", "STATUS", "status_code", "statusCode"]);
-    const itemTitle = getField(item, ["status_name", "statusName", "information", "INFORMATION", "action", "ACTION"]) || itemStatus || "Cập nhật";
-    const itemMessage = getField(item, ["content", "CONTENT", "message", "MESSAGE", "description", "DESCRIPTION", "reason", "REASON"]) || itemTitle;
+    const itemStatus = getField(item, [
+      "status",
+      "STATUS",
+      "status_code",
+      "statusCode",
+    ]);
+    const itemTitle =
+      getField(item, [
+        "status_name",
+        "statusName",
+        "information",
+        "INFORMATION",
+        "action",
+        "ACTION",
+      ]) ||
+      itemStatus ||
+      "Cập nhật";
+    const itemMessage =
+      getField(item, [
+        "content",
+        "CONTENT",
+        "message",
+        "MESSAGE",
+        "description",
+        "DESCRIPTION",
+        "reason",
+        "REASON",
+      ]) || itemTitle;
     const itemCategory = statusCategory(itemStatus, itemTitle, itemMessage);
-    const itemTime = getField(item, ["action_at", "ACTION_AT", "datetime", "DATETIME", "created_at", "CREATED_AT", "updated_at", "UPDATED_AT", "time", "TIME", "timestamp"]);
+    const itemTime = getField(item, [
+      "action_at",
+      "ACTION_AT",
+      "datetime",
+      "DATETIME",
+      "created_at",
+      "CREATED_AT",
+      "updated_at",
+      "UPDATED_AT",
+      "time",
+      "TIME",
+      "timestamp",
+    ]);
 
     return {
       status: safeString(itemStatus),
       title: safeString(itemTitle),
       category: itemCategory,
       message: safeString(itemMessage),
-      location: locationText(getField(item, ["location", "LOCATION", "warehouse_name", "warehouseName", "current_warehouse"])) || extractLocationFromText(itemMessage),
+      location:
+        locationText(
+          getField(item, [
+            "location",
+            "LOCATION",
+            "warehouse_name",
+            "warehouseName",
+            "current_warehouse",
+          ]),
+        ) || extractLocationFromText(itemMessage),
       time: itemTime ? safeString(itemTime) : "",
     };
   });
-  const latestLocation = locationText(getField(latest, ["location", "LOCATION", "warehouse_name", "warehouseName", "current_warehouse"])) || extractLocationFromText(latestMessage);
+  const latestLocation =
+    locationText(
+      getField(latest, [
+        "location",
+        "LOCATION",
+        "warehouse_name",
+        "warehouseName",
+        "current_warehouse",
+      ]),
+    ) || extractLocationFromText(latestMessage);
 
   return {
     carrier: "ghn",
-    code: getField(orderInfo, ["order_code", "orderCode", "client_order_code"]) || normalizeTrackingNumber(code),
+    code:
+      getField(orderInfo, ["order_code", "orderCode", "client_order_code"]) ||
+      normalizeTrackingNumber(code),
     status,
     statusLabel: safeString(statusLabel),
     category,
@@ -718,12 +1038,16 @@ function trackingReply(snapshot) {
     snapshot.category === "delivered" || snapshot.category === "cancel"
       ? "Đã ngừng theo dõi"
       : formatClock(nextCheckAtFor(snapshot.category)),
-  ].filter(Boolean).join("\n");
+  ]
+    .filter(Boolean)
+    .join("\n");
 }
 
 function startMessage(name, chatId = "") {
   const items = chatId ? watchItemsForChat(chatId) : loadWatchlist();
-  const delivering = items.filter((item) => item.category === "delivering").length;
+  const delivering = items.filter(
+    (item) => item.category === "delivering",
+  ).length;
 
   return [
     "🤖 BOT THEO DÕI VẬN ĐƠN",
@@ -763,12 +1087,16 @@ function watchAddedMessage(item) {
     `📦 ${item.code}`,
     item.label ? `└ 🏷 ${item.label}` : "",
     `└ ${categoryIcon(item.category)} ${status}`,
-    item.lastLocation && item.lastLocation !== "-" ? `└ 📍 ${item.lastLocation}` : "",
+    item.lastLocation && item.lastLocation !== "-"
+      ? `└ 📍 ${item.lastLocation}`
+      : "",
     "",
     "━━━━━━━━━━━━━━",
     "",
     `⏱ Chu kỳ kiểm tra: ${intervalLabel(item.category)}`,
-  ].filter((line) => line !== "").join("\n");
+  ]
+    .filter((line) => line !== "")
+    .join("\n");
 }
 
 function batchWatchMessage(items, errors = []) {
@@ -794,17 +1122,23 @@ function batchWatchMessage(items, errors = []) {
     "━━━━━━━━━━━━━━",
     "",
     `⏱ Chu kỳ kiểm tra: ${sharedIntervalLabel(items)}`,
-  ].filter((line) => line !== "").join("\n");
+  ]
+    .filter((line) => line !== "")
+    .join("\n");
 }
 
 function detailMessage(snapshot) {
-  const events = Array.isArray(snapshot.history) ? snapshot.history.slice().reverse() : [];
+  const events = Array.isArray(snapshot.history)
+    ? snapshot.history.slice().reverse()
+    : [];
   const lines = [];
 
   if (events.length) {
     events.forEach((event, index) => {
       lines.push(`🕒 ${formatShortDateTime(event.time)}`);
-      lines.push(`${categoryIcon(event.category)} ${displayStatus(event.title, event.category)}`);
+      lines.push(
+        `${categoryIcon(event.category)} ${displayStatus(event.title, event.category)}`,
+      );
       if (index < events.length - 1) {
         lines.push("");
         lines.push("⬇️");
@@ -840,9 +1174,13 @@ async function telegramApi(method, body = {}) {
     throw new Error("Chua cau hinh TELEGRAM_BOT_TOKEN.");
   }
 
-  const response = await axios.post(`https://api.telegram.org/bot${token}/${method}`, body, {
-    headers: { "content-type": "application/json" }
-  });
+  const response = await axios.post(
+    `https://api.telegram.org/bot${token}/${method}`,
+    body,
+    {
+      headers: { "content-type": "application/json" },
+    },
+  );
 
   const payload = response.data;
   if (payload.ok !== true) {
@@ -888,7 +1226,10 @@ async function checkWatchItem(item, options = {}) {
 
   if (changed || (firstCheck && options.notifyFirstCheck)) {
     try {
-      await sendTelegram(telegramMessage(item, snapshot, changed ? oldStatusText : ""), item.chatId);
+      await sendTelegram(
+        telegramMessage(item, snapshot, changed ? oldStatusText : ""),
+        item.chatId,
+      );
       notified = true;
     } catch (error) {
       notifyError = error.message || "Loi gui Telegram";
@@ -928,10 +1269,11 @@ async function upsertWatchItem(inputItem, options = {}) {
   const items = loadWatchlist();
   const userId = inputItem.userId || "";
   const chatId = inputItem.chatId || "";
-  const existing = items.find((item) => 
-    item.code === code && 
-    item.carrier === carrier && 
-    (userId ? item.userId === userId : item.chatId === chatId)
+  const existing = items.find(
+    (item) =>
+      item.code === code &&
+      item.carrier === carrier &&
+      (userId ? item.userId === userId : item.chatId === chatId),
   );
   const base = existing || {
     id: crypto.randomUUID(),
@@ -980,8 +1322,10 @@ function removeWatchItem(code, carrier, chatId = "") {
   const detectedCarrier = detectCarrier(normalized, carrier || "auto");
   const items = loadWatchlist();
   const nextItems = items.filter((item) => {
-    const sameCode = item.code === normalized && item.carrier === detectedCarrier;
-    const sameChat = !chatId || !item.chatId || String(item.chatId) === String(chatId);
+    const sameCode =
+      item.code === normalized && item.carrier === detectedCarrier;
+    const sameChat =
+      !chatId || !item.chatId || String(item.chatId) === String(chatId);
     return !(sameCode && sameChat);
   });
 
@@ -997,8 +1341,10 @@ function updateWatchState(code, carrier, chatId, patch) {
   const detectedCarrier = detectCarrier(normalized, carrier || "auto");
   const items = loadWatchlist();
   const index = items.findIndex((item) => {
-    const sameCode = item.code === normalized && item.carrier === detectedCarrier;
-    const sameChat = !chatId || !item.chatId || String(item.chatId) === String(chatId);
+    const sameCode =
+      item.code === normalized && item.carrier === detectedCarrier;
+    const sameChat =
+      !chatId || !item.chatId || String(item.chatId) === String(chatId);
     return sameCode && sameChat;
   });
 
@@ -1026,21 +1372,27 @@ function normalizeLookup(value) {
 }
 
 function resolveWatchTarget(chatId, query, explicitCode = "") {
-  const code = normalizeTrackingNumber(explicitCode || extractTrackingCode(query));
+  const code = normalizeTrackingNumber(
+    explicitCode || extractTrackingCode(query),
+  );
   const lookup = normalizeLookup(query);
   const items = watchItemsForChat(chatId);
 
   if (code) {
-    const byCode = items.find((item) => item.code === code) || loadWatchlist().find((item) => item.code === code);
+    const byCode =
+      items.find((item) => item.code === code) ||
+      loadWatchlist().find((item) => item.code === code);
     return byCode || { code, carrier: detectCarrier(code, "auto") };
   }
 
   if (!lookup) return null;
 
-  return items.find((item) => normalizeLookup(item.label) === lookup) ||
+  return (
+    items.find((item) => normalizeLookup(item.label) === lookup) ||
     items.find((item) => normalizeLookup(item.label).includes(lookup)) ||
     items.find((item) => normalizeLookup(item.code).includes(lookup)) ||
-    null;
+    null
+  );
 }
 
 function watchListMessage(chatId) {
@@ -1062,7 +1414,9 @@ function watchListMessage(chatId) {
     "━━━━━━━━━━━━━━",
     "",
     ...pageItems.flatMap((item, index) => {
-      const status = item.paused ? "Đã tạm dừng" : displayStatus(item.lastStatusText, item.category);
+      const status = item.paused
+        ? "Đã tạm dừng"
+        : displayStatus(item.lastStatusText, item.category);
       return [
         `📦 ${item.code}`,
         item.label ? `└ 🏷 ${item.label}` : "",
@@ -1082,7 +1436,8 @@ function watchListMessage(chatId) {
 
 function statsMessage(chatId) {
   const items = watchItemsForChat(chatId);
-  const count = (category) => items.filter((item) => item.category === category).length;
+  const count = (category) =>
+    items.filter((item) => item.category === category).length;
   const warehouse = count("storing") + count("picked_to_storing");
   const transporting = count("transporting");
   const deliveryHub = count("at_delivery_hub");
@@ -1135,7 +1490,13 @@ function settingsMessage(chatId) {
 async function handleTelegramText(chatId, text, message = {}) {
   const intent = parseTelegramIntent(text);
   let code = intent.code;
-  const userName = (message.from && [message.from.first_name, message.from.last_name].filter(Boolean).join(" ")) || (message.chat && message.chat.first_name) || "bạn";
+  const userName =
+    (message.from &&
+      [message.from.first_name, message.from.last_name]
+        .filter(Boolean)
+        .join(" ")) ||
+    (message.chat && message.chat.first_name) ||
+    "bạn";
 
   if (intent.action === "start" || intent.action === "help") {
     await sendTelegram(startMessage(userName, chatId), chatId);
@@ -1154,18 +1515,41 @@ async function handleTelegramText(chatId, text, message = {}) {
     return;
   }
   if (intent.action === "notify_on") {
-    await sendTelegram(["🔔 THÔNG BÁO", separator(), "", "Đã bật thông báo trạng thái mới.", "", separator()].join("\n"), chatId);
+    await sendTelegram(
+      [
+        "🔔 THÔNG BÁO",
+        separator(),
+        "",
+        "Đã bật thông báo trạng thái mới.",
+        "",
+        separator(),
+      ].join("\n"),
+      chatId,
+    );
     return;
   }
   if (intent.action === "notify_off") {
-    await sendTelegram(["🔕 THÔNG BÁO", separator(), "", "Đã tắt thông báo trạng thái mới.", "", separator()].join("\n"), chatId);
+    await sendTelegram(
+      [
+        "🔕 THÔNG BÁO",
+        separator(),
+        "",
+        "Đã tắt thông báo trạng thái mới.",
+        "",
+        separator(),
+      ].join("\n"),
+      chatId,
+    );
     return;
   }
 
   if (intent.action === "watch") {
     const entries = parseWatchEntries(text);
     if (!entries.length) {
-      await sendTelegram("Bạn chưa nhập mã vận đơn.\n\nĐúng mẫu:\n/theodoi MÃ_VẬN_ĐƠN | BÍ_DANH\n\nVí dụ:\n/theodoi SPXVN060678551306 | Shopee khách A", chatId);
+      await sendTelegram(
+        "Bạn chưa nhập mã vận đơn.\n\nĐúng mẫu:\n/theodoi MÃ_VẬN_ĐƠN | BÍ_DANH\n\nVí dụ:\n/theodoi SPXVN060678551306 | Shopee khách A",
+        chatId,
+      );
       return;
     }
 
@@ -1176,7 +1560,10 @@ async function handleTelegramText(chatId, text, message = {}) {
         try {
           added.push(await upsertWatchItem({ ...entry, chatId }));
         } catch (error) {
-          errors.push({ code: entry.code, message: error.message || "Không thêm được vận đơn" });
+          errors.push({
+            code: entry.code,
+            message: error.message || "Không thêm được vận đơn",
+          });
         }
       }
       await sendTelegram(batchWatchMessage(added, errors), chatId);
@@ -1192,30 +1579,85 @@ async function handleTelegramText(chatId, text, message = {}) {
   if (target && target.code) code = target.code;
 
   if (!code) {
-    await sendTelegram("Bạn chưa nhập mã vận đơn hoặc bí danh.\n\nĐúng mẫu:\n/theodoi MÃ_VẬN_ĐƠN | BÍ_DANH\n/kiemtra MÃ_VẬN_ĐƠN\n/kiemtra BÍ_DANH", chatId);
+    await sendTelegram(
+      "Bạn chưa nhập mã vận đơn hoặc bí danh.\n\nĐúng mẫu:\n/theodoi MÃ_VẬN_ĐƠN | BÍ_DANH\n/kiemtra MÃ_VẬN_ĐƠN\n/kiemtra BÍ_DANH",
+      chatId,
+    );
     return;
   }
 
-  const carrier = detectCarrier(code, target && target.carrier ? target.carrier : "auto");
+  const carrier = detectCarrier(
+    code,
+    target && target.carrier ? target.carrier : "auto",
+  );
 
   if (intent.action === "remove") {
     const removed = removeWatchItem(code, carrier, chatId);
-    await sendTelegram(removed ? ["🗑 Đã xóa vận đơn khỏi danh sách theo dõi", separator(), "", `📦 ${code}`, "", separator()].join("\n") : `Không tìm thấy vận đơn ${code} trong danh sách theo dõi.`, chatId);
+    await sendTelegram(
+      removed
+        ? [
+            "🗑 Đã xóa vận đơn khỏi danh sách theo dõi",
+            separator(),
+            "",
+            `📦 ${code}`,
+            "",
+            separator(),
+          ].join("\n")
+        : `Không tìm thấy vận đơn ${code} trong danh sách theo dõi.`,
+      chatId,
+    );
     return;
   }
   if (intent.action === "pause") {
-    const item = updateWatchState(code, carrier, chatId, { active: false, paused: true, nextCheckAt: "" });
-    await sendTelegram(item ? ["⏸ Đã tạm dừng theo dõi", separator(), "", `📦 ${code}`, "", "Bot sẽ không kiểm tra vận đơn này cho đến khi bạn bật lại.", "", separator()].join("\n") : `Không tìm thấy vận đơn ${code} trong danh sách theo dõi.`, chatId);
+    const item = updateWatchState(code, carrier, chatId, {
+      active: false,
+      paused: true,
+      nextCheckAt: "",
+    });
+    await sendTelegram(
+      item
+        ? [
+            "⏸ Đã tạm dừng theo dõi",
+            separator(),
+            "",
+            `📦 ${code}`,
+            "",
+            "Bot sẽ không kiểm tra vận đơn này cho đến khi bạn bật lại.",
+            "",
+            separator(),
+          ].join("\n")
+        : `Không tìm thấy vận đơn ${code} trong danh sách theo dõi.`,
+      chatId,
+    );
     return;
   }
   if (intent.action === "resume") {
-    const current = updateWatchState(code, carrier, chatId, { paused: false, active: true });
+    const current = updateWatchState(code, carrier, chatId, {
+      paused: false,
+      active: true,
+    });
     if (!current) {
-      await sendTelegram(`Không tìm thấy vận đơn ${code} trong danh sách theo dõi.`, chatId);
+      await sendTelegram(
+        `Không tìm thấy vận đơn ${code} trong danh sách theo dõi.`,
+        chatId,
+      );
       return;
     }
     const item = await upsertWatchItem({ code, carrier, chatId });
-    await sendTelegram(["▶️ Đã tiếp tục theo dõi", separator(), "", `📦 ${item.code}`, "", "⏱ Chu kỳ kiểm tra:", intervalLabel(item.category), "", separator()].join("\n"), chatId);
+    await sendTelegram(
+      [
+        "▶️ Đã tiếp tục theo dõi",
+        separator(),
+        "",
+        `📦 ${item.code}`,
+        "",
+        "⏱ Chu kỳ kiểm tra:",
+        intervalLabel(item.category),
+        "",
+        separator(),
+      ].join("\n"),
+      chatId,
+    );
     return;
   }
   if (intent.action === "detail") {
@@ -1252,7 +1694,10 @@ async function pollTelegramUpdates() {
     try {
       await handleTelegramText(chatId, text, message);
     } catch (error) {
-      await sendTelegram(`Minh chua tra duoc don nay: ${error.message || "loi khong xac dinh"}`, chatId).catch(() => {});
+      await sendTelegram(
+        `Minh chua tra duoc don nay: ${error.message || "loi khong xac dinh"}`,
+        chatId,
+      ).catch(() => {});
     }
   }
 
@@ -1282,7 +1727,9 @@ async function runBotTick() {
         items[index] = {
           ...item,
           lastCheckedAt: nowIso(),
-          nextCheckAt: new Date(Date.now() + CHECK_INTERVALS.unknown).toISOString(),
+          nextCheckAt: new Date(
+            Date.now() + CHECK_INTERVALS.unknown,
+          ).toISOString(),
           lastError: error.message || "Loi kiem tra don hang",
           updatedAt: nowIso(),
         };
@@ -1299,9 +1746,13 @@ async function runBotTick() {
 }
 
 function startBotScheduler() {
-  runBotTick().catch((error) => console.error(`Bot tick loi: ${error.message}`));
+  runBotTick().catch((error) =>
+    console.error(`Bot tick loi: ${error.message}`),
+  );
   setInterval(() => {
-    runBotTick().catch((error) => console.error(`Bot tick loi: ${error.message}`));
+    runBotTick().catch((error) =>
+      console.error(`Bot tick loi: ${error.message}`),
+    );
   }, BOT_TICK_MS);
 }
 
@@ -1352,63 +1803,80 @@ function publicWatchItem(item) {
 }
 
 // REST API Endpoints for Tracking Dashboard
-router.get('/spx-track', authMiddleware, async (req, res) => {
+router.get("/spx-track", authMiddleware, async (req, res) => {
   try {
     const trackingNumber = normalizeTrackingNumber(req.query.code);
     if (!trackingNumber) {
-      return res.status(400).json({ ok: false, message: "Ban chua nhap ma van don." });
+      return res
+        .status(400)
+        .json({ ok: false, message: "Ban chua nhap ma van don." });
     }
     const data = await fetchTracking(trackingNumber);
     return res.json({ ok: true, data });
   } catch (error) {
     console.error("spx-track error:", error.message);
-    return res.status(500).json({ ok: false, message: error.message || "Co loi khi tra cuu don hang SPX." });
+    return res
+      .status(500)
+      .json({
+        ok: false,
+        message: error.message || "Co loi khi tra cuu don hang SPX.",
+      });
   }
 });
 
-router.get('/ghn-track', authMiddleware, async (req, res) => {
+router.get("/ghn-track", authMiddleware, async (req, res) => {
   try {
     const orderCode = normalizeTrackingNumber(req.query.code);
     if (!orderCode) {
-      return res.status(400).json({ ok: false, message: "Ban chua nhap ma van don." });
+      return res
+        .status(400)
+        .json({ ok: false, message: "Ban chua nhap ma van don." });
     }
     const data = await fetchGhnTracking(orderCode);
     return res.json({ ok: true, data });
   } catch (error) {
     console.error("ghn-track error:", error.message);
-    return res.status(500).json({ ok: false, message: error.message || "Co loi khi tra cuu don hang GHN." });
+    return res
+      .status(500)
+      .json({
+        ok: false,
+        message: error.message || "Co loi khi tra cuu don hang GHN.",
+      });
   }
 });
 
-router.get('/watch', authMiddleware, (req, res) => {
+router.get("/watch", authMiddleware, (req, res) => {
   try {
     const list = loadWatchlist()
-      .filter(item => item.userId === req.user.userId)
+      .filter((item) => item.userId === req.user.userId)
       .map(publicWatchItem);
     return res.json({ ok: true, data: list });
   } catch (error) {
-    return res.status(500).json({ ok: false, message: error.message || "Lỗi tải watchlist." });
+    return res
+      .status(500)
+      .json({ ok: false, message: error.message || "Lỗi tải watchlist." });
   }
 });
 
-router.post('/watch', authMiddleware, async (req, res) => {
+router.post("/watch", authMiddleware, async (req, res) => {
   try {
     const body = req.body;
-    const entries = Array.isArray(body.items) && body.items.length
-      ? body.items.map((item) => ({
-          code: item.code,
-          carrier: item.carrier || body.carrier || "auto",
-          label: item.label || "",
-          chatId: item.chatId || body.chatId || "",
-          userId: req.user.userId
-        }))
-      : parseWatchEntries(body.code || "").map((item) => ({
-          ...item,
-          carrier: body.carrier || item.carrier || "auto",
-          label: body.label || item.label || "",
-          chatId: body.chatId || "",
-          userId: req.user.userId
-        }));
+    const entries =
+      Array.isArray(body.items) && body.items.length
+        ? body.items.map((item) => ({
+            code: item.code,
+            carrier: item.carrier || body.carrier || "auto",
+            label: item.label || "",
+            chatId: item.chatId || body.chatId || "",
+            userId: req.user.userId,
+          }))
+        : parseWatchEntries(body.code || "").map((item) => ({
+            ...item,
+            carrier: body.carrier || item.carrier || "auto",
+            label: body.label || item.label || "",
+            chatId: body.chatId || "",
+            userId: req.user.userId,
+          }));
 
     if (!entries.length && body.code) {
       entries.push({
@@ -1416,12 +1884,14 @@ router.post('/watch', authMiddleware, async (req, res) => {
         carrier: body.carrier || "auto",
         label: body.label || "",
         chatId: body.chatId || "",
-        userId: req.user.userId
+        userId: req.user.userId,
       });
     }
 
     if (!entries.length) {
-      return res.status(400).json({ ok: false, message: "Ban chua nhap ma van don." });
+      return res
+        .status(400)
+        .json({ ok: false, message: "Ban chua nhap ma van don." });
     }
 
     const checkedItems = [];
@@ -1429,9 +1899,11 @@ router.post('/watch', authMiddleware, async (req, res) => {
 
     for (const entry of entries) {
       try {
-        checkedItems.push(await upsertWatchItem(entry, {
-          notifyFirstCheck: Boolean(body.notifyFirstCheck),
-        }));
+        checkedItems.push(
+          await upsertWatchItem(entry, {
+            notifyFirstCheck: Boolean(body.notifyFirstCheck),
+          }),
+        );
       } catch (error) {
         errors.push({
           code: entry.code || "",
@@ -1441,31 +1913,46 @@ router.post('/watch', authMiddleware, async (req, res) => {
     }
 
     if (!checkedItems.length && errors.length) {
-      return res.status(400).json({ ok: false, message: errors[0].message, errors });
+      return res
+        .status(400)
+        .json({ ok: false, message: errors[0].message, errors });
     }
 
     return res.json({
       ok: true,
-      data: checkedItems.length === 1 ? publicWatchItem(checkedItems[0]) : checkedItems.map(publicWatchItem),
+      data:
+        checkedItems.length === 1
+          ? publicWatchItem(checkedItems[0])
+          : checkedItems.map(publicWatchItem),
       errors,
     });
   } catch (error) {
-    return res.status(500).json({ ok: false, message: error.message || "Lỗi thêm đơn theo dõi." });
+    return res
+      .status(500)
+      .json({ ok: false, message: error.message || "Lỗi thêm đơn theo dõi." });
   }
 });
 
-router.post('/telegram/alert', authMiddleware, async (req, res) => {
+router.post("/telegram/alert", authMiddleware, async (req, res) => {
   try {
     const { serviceId, serviceName, link, quantity, errorDetail } = req.body;
-    const username = req.user ? (req.user.username || req.user.email) : 'Khách';
-    const userId = req.user ? req.user.userId : 'N/A';
+    const username = req.user ? req.user.username || req.user.email : "Khách";
+    const userId = req.user ? req.user.userId : "N/A";
 
     const config = loadConfig();
-    const adminChatId = process.env.TELEGRAM_ADMIN_CHAT_ID || config.telegramChatId;
+    const adminChatId =
+      process.env.TELEGRAM_ADMIN_CHAT_ID || config.telegramChatId;
 
     if (!adminChatId) {
-      console.error("Chua cau hinh TELEGRAM_CHAT_ID de nhan thong bao bao tri.");
-      return res.status(500).json({ ok: false, message: "Chưa cấu hình Telegram Chat ID cho Admin" });
+      console.error(
+        "Chua cau hinh TELEGRAM_CHAT_ID de nhan thong bao bao tri.",
+      );
+      return res
+        .status(500)
+        .json({
+          ok: false,
+          message: "Chưa cấu hình Telegram Chat ID cho Admin",
+        });
     }
 
     const text = `🚨 *[DG STORE ALERT] TƯƠNG TÁC MXH THẤT BẠI*
@@ -1473,87 +1960,162 @@ router.post('/telegram/alert', authMiddleware, async (req, res) => {
 🛑 *TRẠNG THÁI:* Đặt hàng thất bại, server đối tác có thể đang bảo trì!
 
 👤 *KHÁCH HÀNG:* \`${username}\` (ID: \`${userId}\`)
-📦 *DỊCH VỤ:* \`[ID: ${serviceId || 'N/A'}] ${serviceName || 'Chưa rõ'}\`
-🔗 *LIÊN KẾT:* \`${link || 'Chưa nhập'}\`
+📦 *DỊCH VỤ:* \`[ID: ${serviceId || "N/A"}] ${serviceName || "Chưa rõ"}\`
+🔗 *LIÊN KẾT:* \`${link || "Chưa nhập"}\`
 🔢 *SỐ LƯỢNG:* \`${quantity || 0}\`
-⚠️ *LỖI CHI TIẾT:* \`${errorDetail || 'Không rõ nguyên nhân'}\`
+⚠️ *LỖI CHI TIẾT:* \`${errorDetail || "Không rõ nguyên nhân"}\`
 ──────────────────────────────`;
 
-    await sendTelegram(text, adminChatId, 'Markdown');
+    await sendTelegram(text, adminChatId, "Markdown");
     return res.json({ ok: true });
   } catch (error) {
     console.error("Lỗi gửi cảnh báo Telegram:", error.message);
-    return res.status(500).json({ ok: false, message: error.message || "Lỗi gửi cảnh báo" });
+    return res
+      .status(500)
+      .json({ ok: false, message: error.message || "Lỗi gửi cảnh báo" });
   }
 });
 
-router.get('/trammmo/key', authMiddleware, async (req, res) => {
+router.get("/trammmo/key", authMiddleware, async (req, res) => {
   try {
-    const supabase = require('../config/supabase');
+    const supabase = require("../config/supabase");
     const { data: vendor, error } = await supabase
-      .from('vendors')
-      .select('api_key, api_url')
-      .eq('adapter_key', 'trammmo')
-      .eq('status', 'active')
+      .from("vendors")
+      .select("api_key, api_url")
+      .eq("adapter_key", "trammmo")
+      .eq("status", "active")
       .maybeSingle();
 
     if (error) {
-      console.error('Lỗi truy vấn key TramMMO:', error);
-      return res.status(500).json({ ok: false, message: 'Lỗi truy vấn database' });
+      console.error("Lỗi truy vấn key TramMMO:", error);
+      return res
+        .status(500)
+        .json({ ok: false, message: "Lỗi truy vấn database" });
     }
 
     if (!vendor) {
-      return res.status(404).json({ ok: false, message: 'Chưa cấu hình API Key cho TramMMO' });
+      return res
+        .status(404)
+        .json({ ok: false, message: "Chưa cấu hình API Key cho TramMMO" });
     }
 
-    return res.json({ ok: true, apiKey: vendor.api_key, apiUrl: vendor.api_url });
+    return res.json({
+      ok: true,
+      apiKey: vendor.api_key,
+      apiUrl: vendor.api_url,
+    });
   } catch (err) {
-    console.error('Lỗi lấy key TramMMO:', err);
-    return res.status(500).json({ ok: false, message: err.message || 'Lỗi server' });
+    console.error("Lỗi lấy key TramMMO:", err);
+    return res
+      .status(500)
+      .json({ ok: false, message: err.message || "Lỗi server" });
   }
 });
 
-router.delete('/watch/:id', authMiddleware, (req, res) => {
+router.post("/trammmo/proxy", authMiddleware, async (req, res) => {
+  try {
+    const supabase = require("../config/supabase");
+    const { data: vendor, error } = await supabase
+      .from("vendors")
+      .select("api_key, api_url")
+      .eq("adapter_key", "trammmo")
+      .eq("status", "active")
+      .maybeSingle();
+
+    if (error || !vendor) {
+      return res
+        .status(404)
+        .json({ ok: false, message: "Chưa cấu hình API Key cho TramMMO" });
+    }
+
+    const axios = require("axios");
+    const params = new URLSearchParams();
+    params.append("key", vendor.api_key);
+
+    for (const [key, val] of Object.entries(req.body)) {
+      if (key !== "key") {
+        params.append(key, val);
+      }
+    }
+
+    const response = await axios.post(
+      vendor.api_url || "https://trammmo.com/api/v2",
+      params,
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      },
+    );
+
+    return res.json(response.data);
+  } catch (err) {
+    console.error("Lỗi TramMMO Proxy:", err.message);
+    const status = err.response ? err.response.status : 500;
+    const errorData = err.response ? err.response.data : null;
+    return res
+      .status(status)
+      .json({
+        ok: false,
+        message: err.message || "Lỗi server",
+        details: errorData,
+      });
+  }
+});
+
+router.delete("/watch/:id", authMiddleware, (req, res) => {
   try {
     const id = req.params.id;
     const items = loadWatchlist();
     const existing = items.find((item) => item.id === id);
 
     if (!existing) {
-      return res.status(404).json({ ok: false, message: "Khong tim thay don theo doi." });
+      return res
+        .status(404)
+        .json({ ok: false, message: "Khong tim thay don theo doi." });
     }
 
     if (existing.userId !== req.user.userId) {
-      return res.status(403).json({ ok: false, message: "Ban khong co quyen xoa don nay." });
+      return res
+        .status(403)
+        .json({ ok: false, message: "Ban khong co quyen xoa don nay." });
     }
 
     const nextItems = items.filter((item) => item.id !== id);
     saveWatchlist(nextItems);
     return res.json({ ok: true });
   } catch (error) {
-    return res.status(500).json({ ok: false, message: error.message || "Lỗi xóa đơn theo dõi." });
+    return res
+      .status(500)
+      .json({ ok: false, message: error.message || "Lỗi xóa đơn theo dõi." });
   }
 });
 
-router.post('/watch/:id/check', authMiddleware, async (req, res) => {
+router.post("/watch/:id/check", authMiddleware, async (req, res) => {
   try {
     const id = req.params.id;
     const items = loadWatchlist();
     const index = items.findIndex((item) => item.id === id);
 
     if (index < 0) {
-      return res.status(404).json({ ok: false, message: "Khong tim thay don theo doi." });
+      return res
+        .status(404)
+        .json({ ok: false, message: "Khong tim thay don theo doi." });
     }
 
     if (items[index].userId !== req.user.userId) {
-      return res.status(403).json({ ok: false, message: "Ban khong co quyen kiem tra don nay." });
+      return res
+        .status(403)
+        .json({ ok: false, message: "Ban khong co quyen kiem tra don nay." });
     }
 
     items[index] = await checkWatchItem(items[index]);
     saveWatchlist(items);
     return res.json({ ok: true, data: publicWatchItem(items[index]) });
   } catch (error) {
-    return res.status(500).json({ ok: false, message: error.message || "Lỗi kiểm tra đơn hàng." });
+    return res
+      .status(500)
+      .json({ ok: false, message: error.message || "Lỗi kiểm tra đơn hàng." });
   }
 });
 
@@ -1563,5 +2125,5 @@ module.exports = {
   router,
   startBotScheduler,
   startTelegramPolling,
-  sendTelegram
+  sendTelegram,
 };

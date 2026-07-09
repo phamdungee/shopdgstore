@@ -229,6 +229,7 @@ function safeOrder(order) {
     totalPrice: Number(order.total_price || 0),
     status: order.status,
     deliveryText: order.delivery_text,
+    deliveryJson: order.delivery_json || null,
     responseData: order.response_data || null,
     costAmount: Number(order.cost_amount || 0),
     profit: Number(order.profit || 0),
@@ -252,7 +253,7 @@ function safeWalletTransaction(transaction) {
 }
 
 const USER_PUBLIC_SELECT = 'id, username, email, phone, full_name, role, balance, status, email_verified, avatar_url, created_at, last_login_at';
-const ORDER_PUBLIC_SELECT = 'id, order_code, product_slug, product_name, variant_name, quantity, unit_price, total_price, status, delivery_text, response_data, cost_amount, profit, created_at';
+const ORDER_PUBLIC_SELECT = 'id, order_code, product_slug, product_name, variant_name, quantity, unit_price, total_price, status, delivery_text, delivery_json, response_data, cost_amount, profit, created_at';
 
 async function deductUserBalance(userId, amount) {
   for (let attempt = 0; attempt < 3; attempt += 1) {

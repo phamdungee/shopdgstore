@@ -5,10 +5,23 @@
 
 /* Custom Scrollbar */
 @media (min-width: 992px) {
-  ::-webkit-scrollbar { width: 6px; height: 6px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 99px; }
-  ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.3); }
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 99px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
 }
 
 /* ── PROFILE LAYOUT ────────────────────────────────── */
@@ -48,7 +61,9 @@
   height: 90px;
   border-radius: 50%;
   flex-shrink: 0;
-  transition: transform var(--transition-smooth), box-shadow var(--transition-smooth);
+  transition:
+    transform var(--transition-smooth),
+    box-shadow var(--transition-smooth);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   overflow: hidden;
   padding: 3px;
@@ -59,7 +74,7 @@
 }
 
 .sk-avatar-wrapper::before {
-  content: '';
+  content: "";
   position: absolute;
   top: -50%;
   left: -50%;
@@ -72,7 +87,9 @@
 
 .sk-avatar-wrapper:hover {
   transform: scale(1.05);
-  box-shadow: 0 0 20px rgba(0, 243, 255, 0.5), 0 0 40px rgba(99, 102, 241, 0.3);
+  box-shadow:
+    0 0 20px rgba(0, 243, 255, 0.5),
+    0 0 40px rgba(99, 102, 241, 0.3);
 }
 
 .sk-avatar-wrapper .sk-avatar {
@@ -133,8 +150,13 @@
 }
 
 @keyframes ledRotate {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Menu section titles & items */
@@ -207,6 +229,8 @@
   flex-direction: column;
   gap: 20px;
   min-width: 0;
+  width: 100%;
+  max-width: 100%;
 }
 
 /* Premium Hero Title Card */
@@ -227,13 +251,17 @@
 }
 
 .sk-profile-hero::before {
-  content: '';
+  content: "";
   position: absolute;
   top: -50%;
   right: -10%;
   width: 400px;
   height: 400px;
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 60%);
+  background: radial-gradient(
+    circle,
+    rgba(99, 102, 241, 0.15) 0%,
+    transparent 60%
+  );
   pointer-events: none;
 }
 
@@ -286,7 +314,9 @@
   color: var(--text-bright);
 }
 
-.hero-badge i { color: var(--success); }
+.hero-badge i {
+  color: var(--success);
+}
 
 /* Metrics Dashboard grid */
 .sk-profile-metrics {
@@ -305,7 +335,9 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  transition: transform var(--transition-smooth), box-shadow var(--transition-smooth);
+  transition:
+    transform var(--transition-smooth),
+    box-shadow var(--transition-smooth);
 }
 
 .sk-stat:hover {
@@ -357,11 +389,21 @@
   box-shadow: var(--shadow-sm);
   overflow: hidden;
   animation: skTabFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 @keyframes skTabFadeIn {
-  from { opacity: 0; transform: translateY(15px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .sk-tab-head {
@@ -389,13 +431,20 @@
 
 .profile-tab-section .sk-tab-body {
   padding: 20px 24px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 /* Mobile Nav (Hidden on Desktop) */
-.mobile-profile-nav { 
+.mobile-profile-nav {
   display: none;
 }
-.mobile-subnav { display: none; }
+
+.mobile-subnav {
+  display: none;
+}
 
 /* ── DETAILS INFO GRID ────────────────────────────── */
 .sk-profile-info-grid {
@@ -528,7 +577,7 @@
 }
 
 .cyber-textarea-wrapper textarea {
-  background: rgba(0,0,0,0.3) !important;
+  background: rgba(0, 0, 0, 0.3) !important;
 }
 
 /* ── RESPONSIVE DESIGN (MOBILE & TABLET) ────────────── */
@@ -536,19 +585,22 @@
 /* Tablet (Max 1024px) */
 @media (max-width: 1024px) {
   .sk-profile-page {
-    grid-template-columns: 240px 1fr;
+    grid-template-columns: 240px minmax(0, 1fr);
     gap: 24px;
   }
+
   .profile-hero-inner {
     flex-wrap: wrap;
     gap: 16px;
   }
+
   .profile-hero-inner > div:last-child {
     margin-left: 0 !important;
     margin-top: 8px;
     width: 100%;
     display: flex;
   }
+
   .profile-hero-inner > div:last-child .sk-btn {
     flex: 1;
     justify-content: center;
@@ -558,7 +610,7 @@
 /* Mobile & Small Tablet (Max 980px) */
 @media (max-width: 980px) {
   .sk-profile-page {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     padding: 24px 16px;
   }
 
@@ -572,7 +624,7 @@
     padding: 24px;
     align-items: flex-start;
   }
-  
+
   .profile-hero-inner {
     flex-direction: column;
     align-items: flex-start;
@@ -582,7 +634,7 @@
     width: 80px;
     height: 80px;
   }
-  
+
   .sk-hero-avatar {
     width: 80px;
     height: 80px;
@@ -663,7 +715,7 @@
   .sk-profile-metrics {
     grid-template-columns: 1fr;
   }
-  
+
   .sk-profile-info-grid,
   .sk-policy-profile-grid {
     grid-template-columns: 1fr;
@@ -679,11 +731,13 @@
   .profile-tab-section .sk-tab-body {
     padding: 20px;
   }
+
   #tab-content-password form button[type="submit"] {
     width: 100%;
     justify-content: center;
   }
 }
+
 /* ── EDIT PROFILE MODAL ───────────────────────────── */
 .modern-edit-modal {
   background: var(--glass-bg);
@@ -718,6 +772,7 @@
   background: rgba(255, 255, 255, 0.02);
   color: var(--text-bright);
 }
+
 .upload-device-btn:hover {
   background: rgba(255, 255, 255, 0.05);
   border-color: var(--brand-light);
@@ -752,7 +807,9 @@
   object-fit: cover;
   cursor: pointer;
   border: 2px solid transparent;
-  transition: transform var(--transition-smooth), border-color var(--transition-smooth);
+  transition:
+    transform var(--transition-smooth),
+    border-color var(--transition-smooth);
 }
 
 .preset-avatar-item:hover {
@@ -822,13 +879,110 @@
     gap: 24px;
     padding: 24px;
   }
+
   .edit-modal-actions {
     width: 100%;
     display: flex;
     gap: 12px;
   }
+
   .edit-modal-actions .sk-btn {
     flex: 1;
     justify-content: center;
+  }
+}
+
+/* ── Horizontal Scroll Table (layout-safe) ── */
+@media (max-width: 980px) {
+  .profile-tab-section {
+    /* Ensure section never exceeds viewport width */
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+  }
+
+  .profile-tab-section .sk-tab-body {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+    box-sizing: border-box;
+  }
+
+  /* Swipe hint badge */
+  .profile-tab-section .sk-tab-head {
+    display: flex;
+    flex-direction: row !important;
+    justify-content: space-between;
+    align-items: center !important;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .profile-tab-section .sk-tab-head::after {
+    content: "↔ Vuốt để cuộn";
+    display: inline-flex;
+    align-items: center;
+    font-size: 10px;
+    font-weight: 800;
+    color: #00f3ff;
+    background: rgba(0, 243, 255, 0.08);
+    border: 1px solid rgba(0, 243, 255, 0.2);
+    padding: 4px 10px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    animation: skPulseSwipe 2s infinite;
+  }
+
+  .profile-tab-section .sk-table {
+    width: max-content !important;
+    min-width: 100% !important;
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
+  .profile-tab-section .sk-table th,
+  .profile-tab-section .sk-table td {
+    white-space: nowrap;
+  }
+
+  #ordersTabBody .sk-table td:nth-child(2) {
+    white-space: normal;
+    min-width: 200px;
+  }
+
+  #transactionsTabBody .sk-table td:nth-child(4) {
+    white-space: normal;
+    min-width: 220px;
+  }
+
+  .profile-tab-section .sk-table-wrap {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 10px;
+    margin-bottom: 12px;
+    background: transparent;
+  }
+}
+
+@keyframes skPulseSwipe {
+  0% {
+    opacity: 0.7;
+    transform: scale(0.98);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.02);
+    box-shadow: 0 0 12px rgba(0, 243, 255, 0.25);
+  }
+
+  100% {
+    opacity: 0.7;
+    transform: scale(0.98);
   }
 }

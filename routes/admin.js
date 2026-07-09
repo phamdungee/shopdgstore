@@ -5,6 +5,7 @@ const path = require('path');
 const supabase = require('../config/supabase');
 const { authMiddleware, adminMiddleware } = require('../middlewares/authMiddleware');
 const { safeUser, moneyValue } = require('../services/storeService');
+const FormatService = require('../assets/js/formatService');
 
 function firstDefined(...values) {
   return values.find(value => value !== undefined);
@@ -128,6 +129,9 @@ function productPayload(body, options = {}) {
   if (!partial || hasAnyKey(body, ['fallback_mode', 'fallbackMode'])) {
     payload.fallback_mode = normalizeText(firstDefined(body.fallback_mode, body.fallbackMode), 'api_when_out_of_stock');
   }
+  if (!partial || hasAnyKey(body, ['data_format', 'dataFormat'])) {
+    payload.data_format = normalizeText(firstDefined(body.data_format, body.dataFormat), 'mail|pass');
+  }
 
   return payload;
 }
@@ -227,11 +231,26 @@ router.post('/products', authMiddleware, adminMiddleware, async (req, res) => {
       return res.status(400).json({ ok: false, message: 'Thiếu thông tin danh mục, slug hoặc tên sản phẩm' });
     }
 
-    const { data: newProduct, error } = await supabase
+    let result = await supabase
       .from('products')
       .insert(payload)
       .select('*')
       .single();
+
+    let newProduct = result.data;
+    let error = result.error;
+
+    if (error && error.message && error.message.includes('data_format')) {
+      console.warn('data_format column is missing in database. Retrying product insert without data_format...');
+      delete payload.data_format;
+      const retryResult = await supabase
+        .from('products')
+        .insert(payload)
+        .select('*')
+        .single();
+      newProduct = retryResult.data;
+      error = retryResult.error;
+    }
 
     if (error) {
       console.error('Create product error:', error);
@@ -299,12 +318,28 @@ router.put('/products/:id', authMiddleware, adminMiddleware, async (req, res) =>
       return res.status(400).json({ ok: false, message: 'Thiếu thông tin danh mục, slug hoặc tên sản phẩm' });
     }
 
-    const { data: updatedProduct, error } = await supabase
+    let result = await supabase
       .from('products')
       .update(updatePayload)
       .eq('id', id)
       .select('*')
       .single();
+
+    let updatedProduct = result.data;
+    let error = result.error;
+
+    if (error && error.message && error.message.includes('data_format')) {
+      console.warn('data_format column is missing in database. Retrying product update without data_format...');
+      delete updatePayload.data_format;
+      const retryResult = await supabase
+        .from('products')
+        .update(updatePayload)
+        .eq('id', id)
+        .select('*')
+        .single();
+      updatedProduct = retryResult.data;
+      error = retryResult.error;
+    }
 
     if (error) {
       console.error('Update product error:', error);
@@ -372,13 +407,23 @@ router.put('/products/:id', authMiddleware, adminMiddleware, async (req, res) =>
           }
         }
 
-        // Execute updates (using upsert or individual updates)
+        // Execute updates individually to avoid identity column insertion error
         if (updates.length > 0) {
-          const { error: upsertErr } = await supabase
-            .from('product_variants')
-            .upsert(updates, { onConflict: 'id' });
-          if (upsertErr) {
-            console.error('Upsert variants error:', upsertErr.message);
+          let hasUpdateError = false;
+          let updateErrorMessage = '';
+          for (const upd of updates) {
+            const { id: varId, ...updPayload } = upd;
+            const { error: updErr } = await supabase
+              .from('product_variants')
+              .update(updPayload)
+              .eq('id', varId);
+            if (updErr) {
+              hasUpdateError = true;
+              updateErrorMessage = updErr.message;
+            }
+          }
+          if (hasUpdateError) {
+            console.error('Upsert variants error:', updateErrorMessage);
           }
         }
 
@@ -1110,46 +1155,71 @@ router.delete('/vendor-products/:id', authMiddleware, adminMiddleware, async (re
 
 router.post('/inventory/preview', authMiddleware, adminMiddleware, async (req, res) => {
   try {
-    const { content_raw } = req.body;
+    const { content_raw, product_id } = req.body;
     if (!content_raw) {
       return res.status(400).json({ ok: false, message: 'Nội dung nhập kho trống' });
     }
 
-    const lines = content_raw.split('\n').map(l => l.trim()).filter(Boolean);
+    // Get product's data_format
+    let dataFormat = 'mail|pass';
+    if (product_id) {
+      const { data: product } = await supabase
+        .from('products')
+        .select('*')
+        .eq('id', product_id)
+        .maybeSingle();
+      if (product && product.data_format) {
+        dataFormat = product.data_format;
+      }
+    }
+
+    const rawLines = content_raw.split('\n').map(l => l.trim()).filter(Boolean);
     const report = {
-      valid: [],
-      invalidCount: 0,
-      duplicateInFileCount: 0,
+      totalLines: rawLines.length,
+      validCount: 0,
       duplicateInDbCount: 0,
-      totalLines: lines.length
+      duplicateInFileCount: 0,
+      lines: []
     };
 
     const seenInFile = new Set();
+    const crypto = require('crypto');
 
-    for (const line of lines) {
-      const parts = line.split('|');
-      let contentJson = null;
-
-      if (parts.length >= 2) {
-        contentJson = { email: parts[0].trim(), password: parts[1].trim() };
-      } else if (line.length >= 4) {
-        contentJson = { key: line };
-      }
-
-      if (!contentJson) {
-        report.invalidCount++;
+    for (let i = 0; i < rawLines.length; i++) {
+      const line = rawLines[i];
+      const lineNum = i + 1;
+      
+      // Validate structure using FormatService
+      const validation = FormatService.validateAccountLine(line, dataFormat);
+      
+      if (validation.status === 'error_invalid') {
+        report.lines.push({
+          lineNum,
+          text: line,
+          status: 'error_invalid',
+          message: validation.message
+        });
         continue;
       }
 
+      // Check duplicates in current file upload
       if (seenInFile.has(line)) {
         report.duplicateInFileCount++;
+        report.lines.push({
+          lineNum,
+          text: line,
+          status: 'duplicate_file',
+          message: 'Trùng lặp dòng trong tệp tin'
+        });
         continue;
       }
       seenInFile.add(line);
 
-      const crypto = require('crypto');
-      const contentHash = crypto.createHash('md5').update(JSON.stringify(contentJson)).digest('hex');
+      // Parse line to get content structure
+      const parsed = FormatService.parseAccountLine(line, dataFormat);
+      const contentHash = crypto.createHash('md5').update(JSON.stringify(parsed)).digest('hex');
 
+      // Check duplicate in Database
       const { data: dbMatches } = await supabase
         .from('inventory_items')
         .select('id')
@@ -1159,12 +1229,22 @@ router.post('/inventory/preview', authMiddleware, adminMiddleware, async (req, r
 
       if (dbMatches && dbMatches.length > 0) {
         report.duplicateInDbCount++;
+        report.lines.push({
+          lineNum,
+          text: line,
+          status: 'duplicate_db',
+          message: 'Tài khoản đã tồn tại trong hệ thống (Trùng DB)'
+        });
         continue;
       }
 
-      report.valid.push({
-        line,
-        content: contentJson
+      // If valid (either success or warning_extra/warning_missing)
+      report.validCount++;
+      report.lines.push({
+        lineNum,
+        text: line,
+        status: validation.status,
+        message: validation.message
       });
     }
 
@@ -1184,10 +1264,23 @@ router.post('/inventory/import', authMiddleware, adminMiddleware, async (req, re
       return res.status(400).json({ ok: false, message: 'Thiếu thông tin sản phẩm, phân loại, đợt nhập hoặc tài khoản' });
     }
 
-    const lines = content_raw.split('\n').map(l => l.trim()).filter(Boolean);
-    if (lines.length === 0) {
+    const rawLines = content_raw.split('\n').map(l => l.trim()).filter(Boolean);
+    if (rawLines.length === 0) {
       return res.status(400).json({ ok: false, message: 'Nội dung nhập kho trống' });
     }
+
+    // Get product's data_format
+    const { data: product, error: prodErr } = await supabase
+      .from('products')
+      .select('*')
+      .eq('id', product_id)
+      .single();
+
+    if (prodErr || !product) {
+      return res.status(404).json({ ok: false, message: 'Không tìm thấy thông tin định dạng sản phẩm' });
+    }
+
+    const dataFormat = product.data_format || 'mail|pass';
 
     const { data: batch, error: batchErr } = await supabase
       .from('inventory_batches')
@@ -1217,21 +1310,12 @@ router.post('/inventory/import', authMiddleware, adminMiddleware, async (req, re
     };
 
     const policy = duplicate_policy || 'skip';
+    const crypto = require('crypto');
 
-    for (const line of lines) {
-      const parts = line.split('|');
-      let contentJson = null;
-
-      if (parts.length >= 2) {
-        contentJson = { email: parts[0].trim(), password: parts[1].trim() };
-        if (parts.length >= 3) contentJson.phone = parts[2].trim();
-        if (parts.length >= 4) contentJson.cookie = parts.slice(3).join('|').trim();
-        contentJson.raw_text = line;
-      } else if (line.length >= 4) {
-        contentJson = { key: line, raw_text: line };
-      }
-
-      if (!contentJson) {
+    for (const line of rawLines) {
+      // Validate using FormatService
+      const validation = FormatService.validateAccountLine(line, dataFormat);
+      if (validation.status === 'error_invalid') {
         report.invalidCount++;
         continue;
       }
@@ -1242,7 +1326,8 @@ router.post('/inventory/import', authMiddleware, adminMiddleware, async (req, re
       }
       seenInFile.add(line);
 
-      const crypto = require('crypto');
+      // Parse line to get content structure { fields, extras, raw_text }
+      const contentJson = FormatService.parseAccountLine(line, dataFormat);
       const contentHash = crypto.createHash('md5').update(JSON.stringify(contentJson)).digest('hex');
 
       const { data: dbMatches } = await supabase
@@ -1267,6 +1352,7 @@ router.post('/inventory/import', authMiddleware, adminMiddleware, async (req, re
               product_id,
               variant_id,
               status: 'available',
+              content: contentJson, // Save updated content JSON structure
               content_hash: contentHash,
               updated_at: new Date().toISOString()
             })

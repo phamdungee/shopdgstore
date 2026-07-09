@@ -73,7 +73,9 @@
 .sk-deposit-memo-card {
   border: 1px solid rgba(245, 158, 11, 0.25) !important;
   background: rgba(245, 158, 11, 0.03) !important;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), 0 0 15px rgba(245, 158, 11, 0.05) !important;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.2),
+    0 0 15px rgba(245, 158, 11, 0.05) !important;
 }
 
 .sk-deposit-memo-card .sk-kicker {
@@ -150,7 +152,9 @@
 
 .sk-deposit-amount-input:focus {
   border-color: var(--brand) !important;
-  box-shadow: 0 0 0 3px var(--brand-soft), 0 0 20px var(--brand-glow) !important;
+  box-shadow:
+    0 0 0 3px var(--brand-soft),
+    0 0 20px var(--brand-glow) !important;
   outline: none;
   background: rgba(17, 24, 39, 0.8) !important;
 }
@@ -241,7 +245,12 @@
   position: relative;
   overflow: hidden;
   padding: 14px 18px;
-  background: linear-gradient(90deg, rgba(8, 18, 48, 0.92), rgba(10, 36, 76, 0.88), rgba(12, 54, 110, 0.9)) !important;
+  background: linear-gradient(
+    90deg,
+    rgba(8, 18, 48, 0.92),
+    rgba(10, 36, 76, 0.88),
+    rgba(12, 54, 110, 0.9)
+  ) !important;
   border: 1px solid rgba(56, 189, 248, 0.28) !important;
   border-radius: var(--radius-lg);
   margin-bottom: 24px;
@@ -257,10 +266,15 @@
 }
 
 .sk-deposit-live-status-bar::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, transparent, rgba(34, 211, 238, 0.06), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(34, 211, 238, 0.06),
+    transparent
+  );
   transform: translateX(-120%);
   animation: statusShimmer 3.2s linear infinite;
 }
@@ -289,15 +303,33 @@
 }
 
 @keyframes statusPulse {
-  0% { transform: scale(0.9); opacity: 0.65; }
-  50% { transform: scale(1.15); opacity: 1; box-shadow: 0 0 0 8px rgba(56, 189, 248, 0.06), 0 0 14px rgba(56, 189, 248, 0.8); }
-  100% { transform: scale(0.9); opacity: 0.65; }
+  0% {
+    transform: scale(0.9);
+    opacity: 0.65;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 1;
+    box-shadow:
+      0 0 0 8px rgba(56, 189, 248, 0.06),
+      0 0 14px rgba(56, 189, 248, 0.8);
+  }
+  100% {
+    transform: scale(0.9);
+    opacity: 0.65;
+  }
 }
 
 @keyframes statusShimmer {
-  0% { transform: translateX(-120%); }
-  50% { transform: translateX(120%); }
-  100% { transform: translateX(120%); }
+  0% {
+    transform: translateX(-120%);
+  }
+  50% {
+    transform: translateX(120%);
+  }
+  100% {
+    transform: translateX(120%);
+  }
 }
 
 .status-status-text {
@@ -348,7 +380,11 @@
 .sk-confirm-panel {
   width: min(430px, 100%);
   background:
-    radial-gradient(circle at top, rgba(15, 23, 42, 0.98), rgba(5, 10, 22, 0.98)),
+    radial-gradient(
+      circle at top,
+      rgba(15, 23, 42, 0.98),
+      rgba(5, 10, 22, 0.98)
+    ),
     linear-gradient(180deg, rgba(8, 15, 30, 0.98), rgba(6, 9, 20, 0.98));
   border: 1px solid rgba(56, 189, 248, 0.18);
   box-shadow:
@@ -364,25 +400,42 @@
 }
 
 .sk-confirm-panel::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: -30%;
   width: 60%;
   height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.9), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(56, 189, 248, 0.9),
+    transparent
+  );
   animation: confirmGlow 4s linear infinite;
 }
 
 @keyframes confirmIn {
-  from { opacity: 0; transform: translateY(14px) scale(0.96); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 @keyframes confirmGlow {
-  0% { left: -30%; }
-  50% { left: 70%; }
-  100% { left: 130%; }
+  0% {
+    left: -30%;
+  }
+  50% {
+    left: 70%;
+  }
+  100% {
+    left: 130%;
+  }
 }
 
 .sk-confirm-icon {
@@ -393,7 +446,11 @@
   margin: 0 auto 12px;
   border-radius: 999px;
   background:
-    radial-gradient(circle at 30% 30%, rgba(251, 146, 60, 0.2), transparent 40%),
+    radial-gradient(
+      circle at 30% 30%,
+      rgba(251, 146, 60, 0.2),
+      transparent 40%
+    ),
     linear-gradient(180deg, rgba(249, 115, 22, 0.18), rgba(239, 68, 68, 0.08));
   color: #fbbf24;
   font-size: 24px;
@@ -404,8 +461,13 @@
 }
 
 @keyframes warningPulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.04); }
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.04);
+  }
 }
 
 .sk-confirm-panel h3 {
@@ -436,7 +498,10 @@
   font-size: 13px;
   font-weight: 800;
   border-radius: 999px;
-  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    background 0.18s ease;
 }
 
 .sk-confirm-btn:hover {
@@ -444,13 +509,23 @@
 }
 
 .sk-confirm-btn-cancel {
-  background: linear-gradient(180deg, rgba(71, 85, 105, 0.92), rgba(51, 65, 85, 0.88));
+  background: linear-gradient(
+    180deg,
+    rgba(71, 85, 105, 0.92),
+    rgba(51, 65, 85, 0.88)
+  );
   color: #eff6ff;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 6px 16px rgba(15, 23, 42, 0.35);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 6px 16px rgba(15, 23, 42, 0.35);
 }
 
 .sk-confirm-btn-cancel:hover {
-  background: linear-gradient(180deg, rgba(100, 116, 139, 0.96), rgba(71, 85, 105, 0.9));
+  background: linear-gradient(
+    180deg,
+    rgba(100, 116, 139, 0.96),
+    rgba(71, 85, 105, 0.9)
+  );
 }
 
 .sk-confirm-btn-ok {
@@ -628,7 +703,7 @@
   color: var(--warning);
   font-size: 11px;
   font-weight: 800;
-  letter-spacing: .08em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
@@ -637,7 +712,7 @@
   color: var(--danger);
   font-size: clamp(24px, 4vw, 32px);
   font-weight: 900;
-  letter-spacing: .04em;
+  letter-spacing: 0.04em;
   text-shadow: 0 0 12px rgba(239, 68, 68, 0.2);
 }
 
@@ -681,7 +756,7 @@
   color: var(--muted);
   font-size: 11px;
   font-weight: 800;
-  letter-spacing: .06em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
@@ -715,7 +790,9 @@
   backdrop-filter: blur(16px);
   border: 1px solid rgba(99, 102, 241, 0.2);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow), 0 0 25px rgba(99, 102, 241, 0.15);
+  box-shadow:
+    var(--shadow),
+    0 0 25px rgba(99, 102, 241, 0.15);
   overflow: hidden;
   left: auto;
   position: fixed;
@@ -792,21 +869,21 @@
 }
 /* 1. Căn giữa logo bên trong khối badge */
 .sk-bank-badge {
-    display: flex;
-    justify-content: center;  /* Căn giữa theo chiều ngang */
-    align-items: center;      /* Căn giữa theo chiều dọc */
-    width: 70%;              /* Bằng chiều rộng của card cha */
-    margin-top: 12px;         /* Tạo khoảng cách vừa phải với chữ "Ngân hàng nhận" */
-    padding: 20px;            /* Tạo không gian thở xung quanh logo */
-    background: rgba(255, 255, 255, 0.03); /* Đệm một lớp nền mờ nhẹ (tùy chọn) */
-    border-radius: 12px;
+  display: flex;
+  justify-content: center; /* Căn giữa theo chiều ngang */
+  align-items: center; /* Căn giữa theo chiều dọc */
+  width: 70%; /* Bằng chiều rộng của card cha */
+  margin-top: 12px; /* Tạo khoảng cách vừa phải với chữ "Ngân hàng nhận" */
+  padding: 20px; /* Tạo không gian thở xung quanh logo */
+  background: rgba(255, 255, 255, 0.03); /* Đệm một lớp nền mờ nhẹ (tùy chọn) */
+  border-radius: 12px;
 }
 
 /* 2. Kiểm soát kích thước logo không bịa quá to hoặc méo */
 .sk-bank-logo {
-    max-height: 35px;         /* Giới hạn chiều cao logo vừa vặn */
-    width: auto;              /* Tự động tỷ lệ lại chiều rộng */
-    object-fit: contain;      /* Giữ nguyên tỉ lệ ảnh không bị móp */
+  max-height: 35px; /* Giới hạn chiều cao logo vừa vặn */
+  width: auto; /* Tự động tỷ lệ lại chiều rộng */
+  object-fit: contain; /* Giữ nguyên tỉ lệ ảnh không bị móp */
 }
 
 /* ── RESPONSIVE OPTIMIZATIONS ────────────────── */
@@ -827,7 +904,7 @@
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 8px !important;
   }
-  
+
   .preset-buttons-grid .sk-btn-soft {
     width: 100% !important;
     padding: 10px 8px !important;
@@ -835,7 +912,7 @@
     border-radius: 8px !important;
     text-align: center !important;
   }
-  
+
   /* Make the 5th preset button (500k) span full width for symmetry */
   .preset-buttons-grid .sk-btn-soft:last-child {
     grid-column: span 2 !important;
@@ -844,17 +921,17 @@
 
 /* Collapse text in header actions to prevent overflow on extra small mobile screens */
 @media (max-width: 480px) {
-  .sk-actions .sk-btn .btn-text {
+  .sk-topbar .sk-actions .sk-btn .btn-text {
     display: none !important;
   }
-  
-  .sk-actions .sk-btn,
-  .sk-actions .sk-badge {
+
+  .sk-topbar .sk-actions .sk-btn,
+  .sk-topbar .sk-actions .sk-badge {
     padding: 0 10px !important;
     height: 34px !important;
   }
-  
-  .sk-actions {
+
+  .sk-topbar .sk-actions {
     gap: 6px !important;
   }
 }

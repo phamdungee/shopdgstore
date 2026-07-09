@@ -1,7 +1,13 @@
 // assets/js/admin.js
 // Dashboard riêng cho tài khoản admin.
 
-const ADMIN_API_BASE = window.DG_API_BASE || window.SKYNET_API_BASE || (window.location.protocol === 'file:' ? 'http://localhost:3000/api' : '/api');
+const isLocalHost = ['localhost', '127.0.0.1', '::1'].includes(window.location.hostname);
+const isNotServerPort = window.location.port !== '3000';
+const ADMIN_API_BASE = window.DG_API_BASE || window.SKYNET_API_BASE || (
+  (window.location.protocol === 'file:' || (isLocalHost && isNotServerPort))
+    ? 'http://localhost:3000/api'
+    : '/api'
+);
 let adminUsers = [];
 let adminLoginLogs = [];
 const ADMIN_PRODUCT_CATEGORIES = [
@@ -40,8 +46,17 @@ function escapeAdminHtml(value) {
 function adminImageSrc(value) {
   const image = String(value || '').trim();
   if (!image) return '';
-  if (/^(https?:|\/)/i.test(image)) return image;
-  return `/${image}`;
+  let url = image;
+  if (!/^(https?:|\/)/i.test(url)) {
+    url = `/${url}`;
+  }
+  const isLocalHost = ['localhost', '127.0.0.1', '::1'].includes(window.location.hostname);
+  const isNotServerPort = window.location.port !== '3000';
+  const isLocalDev = window.location.protocol === 'file:' || (isLocalHost && isNotServerPort);
+  if (isLocalDev && !/^https?:/i.test(url)) {
+    url = `http://localhost:3000${url}`;
+  }
+  return encodeURI(url);
 }
 
 function safeAdminIconClass(value) {
@@ -85,12 +100,96 @@ function populateProductCategoryDropdown(selectedValue = '') {
   const select = document.getElementById('prodCat');
   if (!select) return;
 
-  select.innerHTML = ADMIN_PRODUCT_CATEGORIES
+  // Collect unique categories from existing products
+  const existingCats = new Set();
+  if (Array.isArray(adminProducts)) {
+    adminProducts.forEach(p => {
+      if (p.cat) {
+        existingCats.add(p.cat.trim());
+      }
+    });
+  }
+
+  // Combine defaults and existing ones
+  const categories = [...ADMIN_PRODUCT_CATEGORIES];
+  existingCats.forEach(cat => {
+    if (!categories.some(c => c.value.toLowerCase() === cat.toLowerCase())) {
+      categories.push({ value: cat, label: cat });
+    }
+  });
+
+  // If selectedValue is not in categories and is not empty, add it to list
+  if (selectedValue && !categories.some(c => c.value.toLowerCase() === selectedValue.trim().toLowerCase())) {
+    categories.push({ value: selectedValue.trim(), label: selectedValue.trim() });
+  }
+
+  select.innerHTML = categories
     .map(category => `<option value="${escapeAdminHtml(category.value)}">${escapeAdminHtml(category.label)}</option>`)
     .join('');
 
-  if (selectedValue && ADMIN_PRODUCT_CATEGORIES.some(category => category.value === selectedValue)) {
+  if (selectedValue) {
     select.value = selectedValue;
+  } else if (categories.length > 0) {
+    select.value = categories[0].value;
+  }
+}
+
+function promptAddCategory() {
+  const select = document.getElementById('prodCat');
+  if (!select) return;
+
+  const name = prompt('Nhập tên danh mục mới:');
+  if (!name) return;
+  const trimmed = name.trim();
+  if (!trimmed) return;
+
+  // Check if it already exists
+  let exists = false;
+  for (let i = 0; i < select.options.length; i++) {
+    if (select.options[i].value.toLowerCase() === trimmed.toLowerCase()) {
+      select.selectedIndex = i;
+      exists = true;
+      break;
+    }
+  }
+
+  if (!exists) {
+    const opt = document.createElement('option');
+    opt.value = trimmed;
+    opt.text = trimmed;
+    select.appendChild(opt);
+    select.value = trimmed;
+  }
+}
+
+function promptEditCategory() {
+  const select = document.getElementById('prodCat');
+  if (!select) return;
+
+  const currentValue = select.value;
+  if (!currentValue) {
+    alert('Vui lòng chọn một danh mục để chỉnh sửa.');
+    return;
+  }
+
+  const name = prompt(`Nhập tên mới cho danh mục "${currentValue}":`, currentValue);
+  if (!name) return;
+  const trimmed = name.trim();
+  if (!trimmed || trimmed === currentValue) return;
+
+  // Update in select options
+  let updated = false;
+  for (let i = 0; i < select.options.length; i++) {
+    if (select.options[i].value === currentValue) {
+      select.options[i].value = trimmed;
+      select.options[i].text = trimmed;
+      updated = true;
+      break;
+    }
+  }
+
+  if (updated) {
+    select.value = trimmed;
   }
 }
 
@@ -509,6 +608,10 @@ function openProductModal(prodId = '') {
     document.getElementById('prodDeliveryType').value = prod.delivery_type || 'hybrid';
     document.getElementById('prodFallbackMode').value = prod.fallback_mode || 'api_when_out_of_stock';
     
+    document.getElementById('prodDataFormat').value = prod.data_format || 'mail|pass';
+    document.getElementById('prodSampleData').value = '';
+    updateFormatPreview();
+    
     if (select && prod.image) {
       select.value = prod.image;
     }
@@ -522,6 +625,9 @@ function openProductModal(prodId = '') {
     title.innerText = 'Thêm sản phẩm mới';
     document.getElementById('prodId').value = '';
     populateProductCategoryDropdown('netflix');
+    document.getElementById('prodDataFormat').value = 'mail|pass';
+    document.getElementById('prodSampleData').value = '';
+    updateFormatPreview();
     addVariantRow();
   }
   
@@ -602,6 +708,7 @@ async function saveProduct(event) {
   const longDesc = document.getElementById('prodLongDesc').value.trim();
   const deliveryType = document.getElementById('prodDeliveryType').value;
   const fallbackMode = document.getElementById('prodFallbackMode').value;
+  const dataFormat = document.getElementById('prodDataFormat').value.trim();
   const variants = getVariantsData();
 
   const body = {
@@ -616,6 +723,7 @@ async function saveProduct(event) {
     price,
     delivery_type: deliveryType,
     fallback_mode: fallbackMode,
+    data_format: dataFormat,
     variants
   };
   const method = id ? 'PUT' : 'POST';
@@ -1291,6 +1399,7 @@ async function triggerImportPreview() {
   const content = document.getElementById('importContentRaw').value.trim();
   const previewCard = document.getElementById('importPreviewCard');
   const btn = document.getElementById('btnSubmitImport');
+  const product_id = document.getElementById('importProdSelect').value;
   
   if (!content) {
     if (previewCard) previewCard.style.display = 'none';
@@ -1306,18 +1415,66 @@ async function triggerImportPreview() {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`
       },
-      body: JSON.stringify({ content_raw: content })
+      body: JSON.stringify({ content_raw: content, product_id })
     });
     
     const data = await res.json();
     if (data.ok && data.report) {
       if (previewCard) previewCard.style.display = 'block';
       document.getElementById('previewTotal').innerText = data.report.totalLines;
-      document.getElementById('previewValid').innerText = data.report.valid.length;
+      document.getElementById('previewValid').innerText = data.report.validCount;
       document.getElementById('previewDupDb').innerText = data.report.duplicateInDbCount;
       document.getElementById('previewDupFile').innerText = data.report.duplicateInFileCount;
 
-      if (btn) btn.disabled = data.report.valid.length === 0;
+      const tableBody = document.getElementById('importPreviewTableBody');
+      if (tableBody) {
+        let tbodyHtml = '';
+        const lines = data.report.lines || [];
+        lines.forEach(line => {
+          let dot = '🔴';
+          let textColor = '#ef4444';
+          
+          if (line.status === 'success') {
+            dot = '🟢';
+            textColor = 'var(--success)';
+          } else if (line.status === 'warning_extra') {
+            dot = '🟡';
+            textColor = 'var(--warning)';
+          } else if (line.status === 'warning_missing') {
+            dot = '🟠';
+            textColor = '#f97316';
+          } else if (line.status === 'duplicate_file') {
+            dot = '🟡';
+            textColor = 'var(--warning)';
+          } else if (line.status === 'duplicate_db') {
+            dot = '🔴';
+            textColor = 'var(--danger)';
+          }
+          
+          tbodyHtml += `
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.03);">
+              <td style="padding: 6px 10px; color: var(--muted);">${line.lineNum}</td>
+              <td style="padding: 6px 10px; text-align: center; font-size: 14px;" title="${escapeAdminHtml(line.status)}">${dot}</td>
+              <td style="padding: 6px 10px; color: ${textColor}; word-break: break-all;">
+                ${escapeAdminHtml(line.message)} 
+                <span style="display:block; font-size:10px; color:var(--muted); font-family:monospace; margin-top:2px;">
+                  ${escapeAdminHtml(line.text.substring(0, 60))}${line.text.length > 60 ? '...' : ''}
+                </span>
+              </td>
+            </tr>
+          `;
+        });
+        
+        if (lines.length === 0) {
+          tbodyHtml = '<tr><td colspan="3" style="text-align:center; padding:12px; color:var(--muted);">Không có dữ liệu hợp lệ</td></tr>';
+        }
+        tableBody.innerHTML = tbodyHtml;
+      }
+
+      if (btn) {
+        const importableCount = (data.report.lines || []).filter(l => ['success', 'warning_extra', 'warning_missing'].includes(l.status)).length;
+        btn.disabled = importableCount === 0;
+      }
     }
   } catch (err) {
     console.error('Preview error:', err);
@@ -1489,19 +1646,70 @@ async function saveMapping(e) {
   }
 }
 
+async function compressImage(file, { maxWidth = 1200, quality = 0.75 } = {}) {
+  return new Promise((resolve) => {
+    if (!file.type.startsWith('image/')) {
+      return resolve(file);
+    }
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (e) => {
+      const img = new Image();
+      img.src = e.target.result;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+
+        if (width > maxWidth) {
+          height = Math.round((height * maxWidth) / width);
+          width = maxWidth;
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              const compressedFile = new File([blob], file.name.replace(/\.[^/.]+$/, "") + ".jpg", {
+                type: 'image/jpeg',
+                lastModified: Date.now()
+              });
+              resolve(compressedFile);
+            } else {
+              resolve(file);
+            }
+          },
+          'image/jpeg',
+          quality
+        );
+      };
+      img.onerror = () => resolve(file);
+    };
+    reader.onerror = () => resolve(file);
+  });
+}
+
 async function uploadProductImage(event) {
-  const file = event.target.files[0];
+  let file = event.target.files[0];
   if (!file) return;
 
   const btn = event.target.previousElementSibling;
   const originalHTML = btn.innerHTML;
   btn.disabled = true;
-  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Loading...';
-
-  const formData = new FormData();
-  formData.append('image', file);
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Compressing...';
 
   try {
+    file = await compressImage(file, { maxWidth: 1200, quality: 0.75 });
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Loading...';
+
+    const formData = new FormData();
+    formData.append('image', file);
+
     const token = adminToken();
     const res = await fetch(`${ADMIN_API_BASE}/upload?folder=products`, {
       method: 'POST',
@@ -1537,6 +1745,92 @@ async function uploadProductImage(event) {
     btn.disabled = false;
     btn.innerHTML = originalHTML;
     event.target.value = ''; // Reset file input
+  }
+}
+
+function updateFormatPreview() {
+  const formatInput = document.getElementById('prodDataFormat');
+  const sampleInput = document.getElementById('prodSampleData');
+  const container = document.getElementById('formatPreviewContainer');
+  const content = document.getElementById('formatPreviewContent');
+  
+  if (!formatInput || !container || !content) return;
+  
+  const formatStr = formatInput.value.trim();
+  const sampleStr = sampleInput ? sampleInput.value.trim() : '';
+  
+  if (!formatStr) {
+    container.style.display = 'none';
+    return;
+  }
+  
+  container.style.display = 'block';
+  
+  const fields = window.FormatService ? window.FormatService.parseDataFormat(formatStr) : [];
+  const sampleParts = sampleStr ? sampleStr.split('|').map(p => p.trim()) : [];
+  
+  const emojiMap = {
+    mail: '📧', email: '📧',
+    pass: '🔑', password: '🔑',
+    uid: '🆔', cookie: '🍪',
+    token: '🔄', refresh_token: '🔄',
+    client_id: '🆔', client_secret: '🔒',
+    phone: '📱', key: '🔑',
+    proxy: '🌐', note: '📝', backup_code: '🔐'
+  };
+  
+  let html = '';
+  fields.forEach((field, idx) => {
+    const value = sampleParts[idx] || `[Ví dụ: ${field.label}]`;
+    const isPlaceholder = !sampleParts[idx];
+    const emoji = emojiMap[field.key.toLowerCase()] || '🏷️';
+    const hiddenBadge = field.hidden ? '<span class="sk-badge" style="background:rgba(239,68,68,0.15); color:var(--danger); border-color:rgba(239,68,68,0.3); font-size:9px; padding:2px 4px; margin-left:6px;">Ẩn (Hidden)</span>' : '';
+    
+    html += `
+      <div style="display: flex; flex-direction: column; gap: 2px; padding: 6px; background: rgba(255,255,255,0.02); border-radius: 4px; border: 1px solid rgba(255,255,255,0.05);">
+        <span style="font-weight: 700; color: #aaa; font-size: 11px; display: inline-flex; align-items: center;">
+          ${emoji} ${escapeAdminHtml(field.label)} ${hiddenBadge}
+        </span>
+        <span style="font-family: monospace; word-break: break-all; color: ${isPlaceholder ? 'var(--muted)' : '#fff'}; font-size: 12px; margin-top: 2px;">
+          ${escapeAdminHtml(value)}
+        </span>
+      </div>
+    `;
+  });
+  
+  if (sampleParts.length > fields.length) {
+    for (let i = fields.length; i < sampleParts.length; i++) {
+      html += `
+        <div style="display: flex; flex-direction: column; gap: 2px; padding: 6px; background: rgba(249,115,22,0.05); border-radius: 4px; border: 1px dashed rgba(249,115,22,0.2);">
+          <span style="font-weight: 700; color: var(--warning); font-size: 11px;">
+            📦 Trường #${i + 1} (Dữ liệu bổ sung)
+          </span>
+          <span style="font-family: monospace; word-break: break-all; color: #fff; font-size: 12px; margin-top: 2px;">
+            ${escapeAdminHtml(sampleParts[i])}
+          </span>
+        </div>
+      `;
+    }
+  }
+  
+  content.innerHTML = html;
+}
+
+function autoDetectFormat() {
+  const sampleInput = document.getElementById('prodSampleData');
+  const formatInput = document.getElementById('prodDataFormat');
+  if (!sampleInput || !formatInput) return;
+  
+  const sampleStr = sampleInput.value.trim();
+  if (!sampleStr) {
+    alert('Vui lòng nhập một dòng dữ liệu mẫu vào ô bên phải trước khi tự động nhận diện.');
+    return;
+  }
+  
+  if (window.FormatService) {
+    const suggestion = window.FormatService.autoDetectFormat(sampleStr);
+    formatInput.value = suggestion;
+    updateFormatPreview();
   }
 }
 

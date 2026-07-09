@@ -1,4 +1,5 @@
 const { useVendorAdapter } = require('./index');
+const FormatService = require('../assets/js/formatService');
 
 function normalizeKey(value) {
   return String(value || '')
@@ -363,26 +364,97 @@ async function reserveInventoryAdapter({ supabase, productId, variantId, quantit
 
     const totalCost = reservedItems.reduce((sum, item) => sum + Number(item.cost_price || 0), 0);
 
+    // Get product's format
+    const { data: product } = await supabase
+      .from('products')
+      .select('*')
+      .eq('id', productId)
+      .single();
+
+    const rawFormat = (product && product.data_format) || 'mail|pass';
+    const parsedFormat = FormatService.parseDataFormat(rawFormat);
+
     const formattedItems = reservedItems.map(item => {
       let contentObj = {};
       try {
         contentObj = typeof item.content === 'string' ? JSON.parse(item.content) : item.content;
-      } catch {
-        contentObj = { data: item.content };
+      } catch (err) {
+        contentObj = { raw_text: String(item.content || '') };
       }
+      
+      // If it is the new structure
+      if (contentObj.fields && typeof contentObj.fields === 'object') {
+        return {
+          serial: item.serial || `INV${item.id}`,
+          fields: contentObj.fields,
+          extras: contentObj.extras || [],
+          raw_text: contentObj.raw_text || ''
+        };
+      }
+      
+      // Fallback for old structure
+      const fields = {};
+      const extras = [];
+      const rawText = contentObj.raw_text || '';
+      
+      if (rawText) {
+        const parsedLine = FormatService.parseAccountLine(rawText, rawFormat);
+        return {
+          serial: item.serial || `INV${item.id}`,
+          fields: parsedLine.fields,
+          extras: parsedLine.extras,
+          raw_text: rawText
+        };
+      }
+      
+      parsedFormat.forEach(f => {
+        const foundKey = Object.keys(contentObj).find(k => k.toLowerCase() === f.key.toLowerCase());
+        fields[f.key] = foundKey ? contentObj[foundKey] : '';
+      });
+      
       return {
         serial: item.serial || `INV${item.id}`,
-        ...contentObj
+        fields,
+        extras,
+        raw_text: JSON.stringify(contentObj)
       };
     });
 
+    const emojiMap = {
+      mail: '📧', email: '📧',
+      pass: '🔑', password: '🔑',
+      uid: '🆔', cookie: '🍪',
+      token: '🔄', refresh_token: '🔄',
+      client_id: '🆔', client_secret: '🔒',
+      phone: '📱', key: '🔑',
+      proxy: '🌐', note: '📝', backup_code: '🔐'
+    };
+
     const deliveryText = `Cảm ơn bạn đã mua hàng! Dưới đây là thông tin tài khoản của bạn:\n\n` +
-      formattedItems.map(item => {
-        if (item.raw_text) return item.raw_text;
-        if (item.email && item.password) return `Email: ${item.email} | Pass: ${item.password}`;
-        if (item.key) return `Key: ${item.key}`;
-        return JSON.stringify(item);
-      }).join('\n');
+      formattedItems.map((item, index) => {
+        let block = `=== Tài khoản #${index + 1} ===\n`;
+        
+        parsedFormat.forEach(f => {
+          if (!f.hidden) {
+            const val = item.fields[f.key] || '(Trống)';
+            const emoji = emojiMap[f.key.toLowerCase()] || '🏷️';
+            block += `${emoji} ${f.label}: ${val}\n`;
+          }
+        });
+        
+        if (item.extras && item.extras.length > 0) {
+          block += `\n📦 Dữ liệu ngoài định dạng:\n`;
+          item.extras.forEach(ext => {
+            block += `Trường #${ext.position}: ${ext.value}\n`;
+          });
+        }
+        
+        if (item.raw_text) {
+          block += `\n📄 Dữ liệu gốc:\n${item.raw_text}\n`;
+        }
+        
+        return block;
+      }).join('\n──────────────────────────────\n\n');
 
     return {
       ok: true,
@@ -391,6 +463,8 @@ async function reserveInventoryAdapter({ supabase, productId, variantId, quantit
       totalCost,
       deliveryJson: {
         source: 'inventory',
+        raw_data_format: rawFormat,
+        parsed_format: parsedFormat,
         items: formattedItems
       },
       stockIds: itemIds
