@@ -1,4 +1,4 @@
-async function verifyGithubCode(code) {
+async function verifyGithubCode(code, redirectUri) {
   // Exchange code for access token
   const tokenRes = await fetch('https://github.com/login/oauth/access_token', {
     method: 'POST',
@@ -9,7 +9,8 @@ async function verifyGithubCode(code) {
     body: JSON.stringify({
       client_id: process.env.GITHUB_CLIENT_ID,
       client_secret: process.env.GITHUB_CLIENT_SECRET,
-      code
+      code,
+      ...(redirectUri ? { redirect_uri: redirectUri } : {})
     })
   });
 

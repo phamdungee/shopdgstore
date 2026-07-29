@@ -96,6 +96,19 @@ app.use(express.static(path.join(__dirname), {
 
 registerRoutes(app);
 
+// Keep API failures machine-readable so the login page can show the real cause.
+app.use('/api', (err, req, res, next) => {
+  if (res.headersSent) return next(err);
+  const requestId = require('crypto').randomBytes(5).toString('hex');
+  const status = err && err.status >= 400 && err.status < 600 ? err.status : 500;
+  console.error(`[API ${requestId}] ${req.method} ${req.originalUrl}:`, err);
+  return res.status(status).json({
+    ok: false,
+    message: status === 400 ? 'Dữ liệu gửi lên máy chủ không hợp lệ' : 'Máy chủ gặp lỗi khi xử lý yêu cầu',
+    requestId
+  });
+});
+
 const isVercel = process.env.VERCEL === '1';
 
 if (!isVercel) {

@@ -311,24 +311,53 @@ window.handleGithubCustomLogin = function() {
 
 async function handleGithubOAuthLogin(code) {
   try {
+    const redirectUri = `${window.location.origin}/login.html`;
     const res = await fetch(`${API_BASE}/auth/github`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ code })
+      body: JSON.stringify({ code, redirectUri })
     });
-    
-    const data = await res.json();
+
+    const data = await readOAuthResponse(res, 'GitHub');
     if (!res.ok || data.ok === false) {
       console.error('GitHub login error response:', data);
-      showMessage(data.message || 'Lỗi đăng nhập GitHub');
+      showMessage(formatOAuthError(data, 'Lỗi đăng nhập GitHub'));
       return;
     }
 
     saveLoginSession(data);
   } catch (err) {
-    console.error(err);
-    showMessage('Lỗi kết nối khi xác thực GitHub');
+    console.error('GitHub OAuth request failed:', err);
+    showMessage(err.message || 'Không thể kết nối máy chủ để xác thực GitHub');
   }
+}
+
+async function readOAuthResponse(response, provider) {
+  const contentType = response.headers.get('content-type') || '';
+  const rawBody = await response.text();
+
+  if (!contentType.includes('application/json')) {
+    console.error(`${provider} OAuth returned a non-JSON response`, {
+      status: response.status,
+      contentType,
+      body: rawBody.slice(0, 500)
+    });
+    throw new Error(
+      `Máy chủ ${provider} trả về phản hồi không hợp lệ (HTTP ${response.status}). Vui lòng thử lại.`
+    );
+  }
+
+  try {
+    return rawBody ? JSON.parse(rawBody) : {};
+  } catch (error) {
+    console.error(`${provider} OAuth returned invalid JSON`, error);
+    throw new Error(`Không đọc được phản hồi xác thực ${provider} từ máy chủ.`);
+  }
+}
+
+function formatOAuthError(data, fallback) {
+  const message = data && (data.message || data.error) ? (data.message || data.error) : fallback;
+  return data && data.requestId ? `${message} (Mã lỗi: ${data.requestId})` : message;
 }
 
 function saveLoginSession(data) {
@@ -396,17 +425,17 @@ async function initOAuth() {
                       body: JSON.stringify({ accessToken })
                     });
                     
-                    const data2 = await res2.json();
+                    const data2 = await readOAuthResponse(res2, 'Google');
                     if (!res2.ok || data2.ok === false) {
                       console.error('Google login error response:', data2);
-                      showMessage((data2.message || 'Lỗi đăng nhập Google') + (data2.error ? `: ${data2.error}` : ''));
+                      showMessage(formatOAuthError(data2, 'Lỗi đăng nhập Google'));
                       return;
                     }
 
                     saveLoginSession(data2);
                   } catch (err) {
-                    console.error(err);
-                    showMessage('Lỗi kết nối khi xác thực Google');
+                    console.error('Google OAuth request failed:', err);
+                    showMessage(err.message || 'Không thể kết nối máy chủ để xác thực Google');
                   }
                 }
               }

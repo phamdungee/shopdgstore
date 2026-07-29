@@ -4,32 +4,48 @@ const { createToken, writeLoginLog, safeUser } = require('../services/storeServi
 const { verifyGoogleToken } = require('../services/googleAuth');
 const { verifyGithubCode } = require('../services/githubAuth');
 const { verifyFacebookToken } = require('../services/facebookAuth');
+const crypto = require('crypto');
 
-async function handleOAuthSuccess(req, res, { email, name, picture, provider }) {
+function oauthRequestId() {
+  return crypto.randomBytes(5).toString('hex');
+}
+
+async function handleOAuthSuccess(req, res, { email, name, picture, provider, requestId }) {
   try {
-    const { data: users, error } = await supabase
-      .from('users')
-      .select('id, username, email, full_name, role, status, email_verified, avatar_url, balance')
-      .eq('email', email);
-
-    if (error) {
-      console.error(`${provider} OAuth database error:`, error);
-      return res.status(500).json({ ok: false, message: 'Database error' });
+    const normalizedEmail = String(email || '').trim().toLowerCase();
+    if (!normalizedEmail) {
+      return res.status(400).json({ ok: false, message: `${provider} không cung cấp email hợp lệ`, requestId });
     }
 
-    let user = users && users.length > 0 ? users[0] : null;
+    const { data: userByEmail, error } = await supabase
+      .from('users')
+      .select('id, username, email, full_name, role, status, email_verified, avatar_url, balance')
+      .eq('email', normalizedEmail)
+      .maybeSingle();
+
+    if (error) {
+      console.error(`[OAuth ${requestId}] ${provider} database lookup error:`, error);
+      return res.status(500).json({ ok: false, message: 'Không thể kiểm tra tài khoản trong cơ sở dữ liệu', requestId });
+    }
+
+    let user = userByEmail;
 
     if (!user) {
       // Create new user. Since password_hash column is NOT NULL in database schema,
       // we generate a secure hashed random placeholder password.
-      const randomPassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8);
+      const randomPassword = crypto.randomBytes(32).toString('base64url');
       const passwordHash = await bcrypt.hash(randomPassword, 10);
+      const usernameBase = normalizedEmail
+        .split('@')[0]
+        .replace(/[^a-zA-Z0-9_.-]/g, '_')
+        .slice(0, 38) || 'oauth_user';
+      const username = `${usernameBase}_${crypto.randomBytes(4).toString('hex')}`;
 
       const { data: newUser, error: insertError } = await supabase
         .from('users')
         .insert({
-          username: email.split('@')[0] + '_' + Math.floor(Math.random() * 10000),
-          email: email,
+          username,
+          email: normalizedEmail,
           full_name: name,
           avatar_url: picture,
           password_hash: passwordHash,
@@ -42,13 +58,13 @@ async function handleOAuthSuccess(req, res, { email, name, picture, provider }) 
         .single();
 
       if (insertError) {
-        console.error(`${provider} OAuth insert error:`, insertError);
-        return res.status(500).json({ ok: false, message: 'Could not create account', error: insertError.message });
+        console.error(`[OAuth ${requestId}] ${provider} account insert error:`, insertError);
+        return res.status(500).json({ ok: false, message: 'Không thể tạo tài khoản đăng nhập xã hội', requestId });
       }
       user = newUser;
     } else {
-      if (user.status === 'banned') {
-        return res.status(403).json({ ok: false, message: 'Tài khoản của bạn đã bị khoá.' });
+      if (user.status !== 'active') {
+        return res.status(403).json({ ok: false, message: 'Tài khoản đang bị khoá hoặc chưa được kích hoạt.', requestId });
       }
       // Update avatar if not set
       if (!user.avatar_url && picture) {
@@ -64,39 +80,42 @@ async function handleOAuthSuccess(req, res, { email, name, picture, provider }) 
       ok: true,
       message: `Đăng nhập ${provider} thành công`,
       token,
-      user: safeUser(user)
+      user: safeUser(user),
+      requestId
     });
   } catch (err) {
-    console.error(`${provider} OAuth completion error:`, err);
-    return res.status(500).json({ ok: false, message: 'Internal server error during login' });
+    console.error(`[OAuth ${requestId}] ${provider} completion error:`, err);
+    return res.status(500).json({ ok: false, message: 'Máy chủ gặp lỗi khi hoàn tất đăng nhập', requestId });
   }
 }
 
 async function googleLogin(req, res) {
+  const requestId = oauthRequestId();
   try {
     const { credential, accessToken } = req.body;
     if (!credential && !accessToken) {
-      return res.status(400).json({ ok: false, message: 'Missing Google credential or accessToken' });
+      return res.status(400).json({ ok: false, message: 'Missing Google credential or accessToken', requestId });
     }
     const profile = await verifyGoogleToken(credential || accessToken, !!accessToken);
-    return handleOAuthSuccess(req, res, { ...profile, provider: 'Google' });
+    return handleOAuthSuccess(req, res, { ...profile, provider: 'Google', requestId });
   } catch (err) {
-    console.error('Google Login controller error:', err);
-    return res.status(500).json({ ok: false, message: 'Google authentication failed', error: err.message });
+    console.error(`[OAuth ${requestId}] Google Login controller error:`, err);
+    return res.status(401).json({ ok: false, message: 'Google authentication failed', error: err.message, requestId });
   }
 }
 
 async function githubLogin(req, res) {
+  const requestId = oauthRequestId();
   try {
-    const { code } = req.body;
+    const { code, redirectUri } = req.body;
     if (!code) {
-      return res.status(400).json({ ok: false, message: 'Missing GitHub authorization code' });
+      return res.status(400).json({ ok: false, message: 'Missing GitHub authorization code', requestId });
     }
-    const profile = await verifyGithubCode(code);
-    return handleOAuthSuccess(req, res, { ...profile, provider: 'GitHub' });
+    const profile = await verifyGithubCode(code, redirectUri);
+    return handleOAuthSuccess(req, res, { ...profile, provider: 'GitHub', requestId });
   } catch (err) {
-    console.error('GitHub Login controller error:', err);
-    return res.status(500).json({ ok: false, message: 'GitHub authentication failed', error: err.message });
+    console.error(`[OAuth ${requestId}] GitHub Login controller error:`, err);
+    return res.status(401).json({ ok: false, message: 'GitHub authentication failed', error: err.message, requestId });
   }
 }
 
