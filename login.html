@@ -1,29 +1,50 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" data-theme="light">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Đăng nhập | DG Store</title>
+  <link rel="icon" type="image/webp" href="/assets/img/%E1%BA%A3nh%20s%E1%BA%A3n%20ph%E1%BA%A9m/ChatGPT%20Image%2023_52_48%2012%20thg%207%2C%202026_11zon.webp" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
   <link href="assets/css/common.css" rel="stylesheet" />
-  <link href="assets/css/icons.css" rel="stylesheet" />
-  <link href="assets/css/login.css" rel="stylesheet" />
+  <link href="assets/css/storefront-flat.css" rel="stylesheet" />
+<link href="assets/css/login.css" rel="stylesheet" />
+<link href="assets/css/light-theme-polish.css?v=20260729.5" rel="stylesheet" />
+  <link href="assets/css/login-recovery-sync.css?v=20260729.1" rel="stylesheet" />
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
+
 <body class="sk-auth-body">
+  <div class="recovery-ambient auth-ambient" aria-hidden="true">
+    <span></span><span></span><span></span>
+  </div>
+
   <div id="loader">
     <div class="shape-shape-alt-16"></div>
   </div>
 
-  <a class="sk-btn sk-btn-soft sk-auth-back back-home-btn" href="index.html">
-    <i class="fa-solid fa-arrow-left"></i>
-    Về trang chủ
-  </a>
+  <header class="recovery-header auth-header">
+    <a class="recovery-brand" href="index.html" aria-label="DG Store - Trang chủ">
+      <img src="assets/img/%E1%BA%A3nh%20s%E1%BA%A3n%20ph%E1%BA%A9m/ChatGPT%20Image%2023_52_48%2012%20thg%207%2C%202026_11zon.webp" alt="" />
+      <span><b>DG Store</b><small>Account Access</small></span>
+    </a>
+    <div class="recovery-header-actions">
+      <button class="sk-theme-toggle recovery-theme-toggle" type="button" aria-label="Bật giao diện tối">
+        <i class="fa-solid fa-moon" aria-hidden="true"></i>
+      </button>
+      <a class="recovery-login-link auth-home-link" href="index.html">
+        <i class="fa-solid fa-house"></i><span>Trang chủ</span>
+      </a>
+    </div>
+  </header>
 
+  <div class="auth-shell">
   <main class="sk-auth-card container" id="container">
     <section class="sk-auth-panel sk-auth-copy">
       <span class="sk-badge sk-badge-accent"><i class="fa-solid fa-shield-halved"></i> Auto delivery 24/7</span>
@@ -50,8 +71,10 @@
         <form action="#" id="form-signup">
           <span class="sk-kicker">Tạo tài khoản</span>
           <div class="sk-auth-selector">
-            <button type="button" class="selector-btn" onclick="document.getElementById('container').classList.remove('active')">Đăng nhập</button>
-            <button type="button" class="selector-btn active" onclick="document.getElementById('container').classList.add('active')">Đăng ký</button>
+            <button type="button" class="selector-btn"
+              onclick="document.getElementById('container').classList.remove('active')">Đăng nhập</button>
+            <button type="button" class="selector-btn active"
+              onclick="document.getElementById('container').classList.add('active')">Đăng ký</button>
           </div>
           <h1>Đăng ký DG Store</h1>
           <div class="social-icons">
@@ -61,14 +84,17 @@
           <samp>Hoặc dùng email để tạo tài khoản thành viên.</samp>
           <input id="signup-name" placeholder="Tên hiển thị" required type="text" />
           <input id="signup-email" placeholder="Địa chỉ email" required type="email" />
-          
+
           <div class="sk-password-field">
             <input id="signup-password" placeholder="Mật khẩu" required type="password" />
             <button type="button" aria-label="Hiện mật khẩu"><i class="fa-solid fa-eye"></i></button>
           </div>
           <div class="password-strength-container" style="margin-bottom:8px; width:100%;">
-            <div id="password-strength-bar" style="height:4px; width:0%; background:var(--danger); border-radius:2px; transition:all 0.3s ease;"></div>
-            <span id="password-strength-text" style="font-size:11px; color:var(--muted); display:block; margin-top:2px;"></span>
+            <div id="password-strength-bar"
+              style="height:4px; width:0%; background:var(--danger); border-radius:2px; transition:all 0.3s ease;">
+            </div>
+            <span id="password-strength-text"
+              style="font-size:11px; color:var(--muted); display:block; margin-top:2px;"></span>
           </div>
 
           <div class="sk-password-field">
@@ -78,11 +104,12 @@
           <div style="margin-bottom:8px; width:100%; text-align:left;">
             <span id="password-match-text" style="font-size:11px; display:block; margin-top:2px;"></span>
           </div>
-          
-          
+
+
           <!-- Turnstile Container -->
-          <div id="signup-turnstile" style="margin-bottom: 10px; width: 100%; display: flex; justify-content: center;"></div>
-          
+          <div id="signup-turnstile" style="margin-bottom: 10px; width: 100%; display: flex; justify-content: center;">
+          </div>
+
           <button class="sk-btn sk-btn-primary btn-solid" type="submit">Đăng ký</button>
           <p class="mobile-switch-text">Đã có tài khoản? <a href="#" id="mobile-to-login">Đăng nhập ngay</a></p>
         </form>
@@ -92,8 +119,10 @@
         <form action="#" id="form-signin">
           <span class="sk-kicker">Chào mừng trở lại</span>
           <div class="sk-auth-selector">
-            <button type="button" class="selector-btn active" onclick="document.getElementById('container').classList.remove('active')">Đăng nhập</button>
-            <button type="button" class="selector-btn" onclick="document.getElementById('container').classList.add('active')">Đăng ký</button>
+            <button type="button" class="selector-btn active"
+              onclick="document.getElementById('container').classList.remove('active')">Đăng nhập</button>
+            <button type="button" class="selector-btn"
+              onclick="document.getElementById('container').classList.add('active')">Đăng ký</button>
           </div>
           <h1>Đăng nhập</h1>
           <div class="social-icons">
@@ -101,16 +130,17 @@
             <a class="icon btn-github-login-custom" href="#" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
           </div>
           <samp>Hoặc sử dụng tài khoản DG Store đã tạo.</samp>
-          <input id="signin-uid" placeholder="Tên tài khoản hoặc email" required type="text" />
+          <input id="signin-uid" placeholder="Email" required type="text" />
           <div class="sk-password-field">
             <input id="signin-password" placeholder="Mật khẩu" required type="password" />
             <button type="button" aria-label="Hiện mật khẩu"><i class="fa-solid fa-eye"></i></button>
           </div>
-          <a class="fp" href="forgot-password.html">Quên mật khẩu?</a>
-          
+          <a class="fp" href="reset-password.html">Quên mật khẩu?</a>
+
           <!-- Turnstile Container -->
-          <div id="signin-turnstile" style="margin-bottom: 10px; width: 100%; display: flex; justify-content: center;"></div>
-          
+          <div id="signin-turnstile" style="margin-bottom: 10px; width: 100%; display: flex; justify-content: center;">
+          </div>
+
           <button class="sk-btn sk-btn-primary btn-solid" type="submit">Đăng nhập</button>
           <p class="mobile-switch-text">Thành viên mới? <a href="#" id="mobile-to-register">Đăng ký tài khoản</a></p>
         </form>
@@ -132,8 +162,10 @@
       </div>
     </div>
   </main>
+  </div>
 
-  <script src="assets/js/icons.js"></script>
   <script src="assets/js/login.js"></script>
+  <script src="assets/js/common.js"></script>
 </body>
+
 </html>

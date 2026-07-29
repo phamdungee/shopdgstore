@@ -5,6 +5,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>DG Store — Hệ Sinh Thái Tài Khoản Số Tự Động 24/7</title>
+  <link rel="icon" type="image/webp" href="/assets/img/%E1%BA%A3nh%20s%E1%BA%A3n%20ph%E1%BA%A9m/ChatGPT%20Image%2023_52_48%2012%20thg%207%2C%202026_11zon.webp" />
   <meta name="description"
     content="DG Store - Hệ sinh thái tài khoản số bản quyền hàng đầu Việt Nam. ChatGPT Plus, Netflix 4K, Canva Pro, Adobe CC giao tự động 24/7." />
 
@@ -455,41 +456,59 @@
     .nav-brand {
       display: inline-flex !important;
       align-items: center !important;
-      gap: 12px !important;
+      gap: 0 !important;
       text-decoration: none;
+      position: relative;
+      z-index: 10;
     }
 
     /* DG Brand Logo Style */
     .dg-logo-mark {
-      width: 38px;
-      height: 38px;
+      width: 48px;
+      height: 48px;
+      min-width: 48px;
       display: flex !important;
       align-items: center;
       justify-content: center;
       border-radius: 50% !important;
-      background: radial-gradient(circle, #101629 60%, var(--brand-dark) 100%) !important;
       border: 2px solid rgba(99, 102, 241, 0.4) !important;
       box-shadow: 0 0 15px rgba(99, 102, 241, 0.4), inset 0 0 10px rgba(99, 102, 241, 0.5) !important;
       position: relative;
       overflow: visible !important;
-      z-index: 1;
+      z-index: 10;
       transform-style: preserve-3d !important;
       perspective: 500px !important;
-      transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.5s, box-shadow 0.5s !important;
+      transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.5s, box-shadow 0.5s !important;
+      flex-shrink: 0;
+    }
+
+    .dg-logo-img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      display: block;
+      position: relative;
+      z-index: 10;
     }
 
     .dg-logo-text {
-      font-family: 'Outfit', 'Inter', sans-serif;
-      font-weight: 900;
-      font-size: 14px;
+      display: none !important;
+    }
+
+    .nav-brand-txt {
+      font-size: 18px;
+      font-weight: 850;
       letter-spacing: -0.5px;
-      background: linear-gradient(135deg, #ffffff 20%, var(--brand-light) 65%, var(--accent) 100%) !important;
-      -webkit-background-clip: text !important;
-      -webkit-text-fill-color: transparent !important;
-      z-index: 2;
-      transform: translateZ(8px) !important;
-      text-shadow: 0 1px 0 #cbd5e1, 0 2px 3px rgba(0, 0, 0, 0.5), 0 0 8px rgba(99, 102, 241, 0.4) !important;
-      line-height: 1 !important;
+      color: #ffffff !important;
+      -webkit-text-fill-color: #ffffff !important;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.25) !important;
+      white-space: nowrap;
+      margin-left: 16px;
+      display: flex;
+      align-items: center;
+      z-index: 1;
+      position: relative;
     }
 
     .dg-logo-ring {
@@ -515,22 +534,22 @@
     }
 
     .nav-brand:hover .dg-logo-mark {
-      transform: scale(1.1) rotateX(15deg) rotateY(20deg) !important;
+      transform: scale(1.18) !important;
       border-color: var(--accent) !important;
-      box-shadow: 0 5px 20px rgba(6, 182, 212, 0.4), inset 0 0 15px rgba(6, 182, 212, 0.4) !important;
-    }
-
-    .nav-brand:hover .dg-logo-text {
-      transform: translateZ(12px) !important;
-      text-shadow: 0 1px 0 var(--accent), 0 2px 4px rgba(0, 0, 0, 0.6), 0 0 12px rgba(6, 182, 212, 0.6) !important;
+      box-shadow:
+        0 0 30px rgba(6, 182, 212, 0.5),
+        0 0 60px rgba(99, 102, 241, 0.4),
+        inset 0 0 20px rgba(6, 182, 212, 0.4) !important;
+      filter: brightness(1.25) contrast(1.1);
     }
 
     .nav-brand:hover .dg-logo-ring {
-      opacity: 0.95;
-      border-style: solid;
-      border-color: var(--accent);
-      animation-duration: 4s !important;
-      inset: -7px !important;
+      opacity: 0 !important;
+      border-style: solid !important;
+      border-width: 2px !important;
+      border-color: var(--accent) !important;
+      transform: scale(1.8) !important;
+      transition: transform 0.6s cubic-bezier(0.1, 0.8, 0.3, 1), opacity 0.5s ease-out !important;
     }
 
     .ft-brand:hover .dg-logo-mark {
@@ -545,14 +564,6 @@
       animation-duration: 3s;
     }
 
-    .nav-brand-txt {
-      font-size: 18px;
-      font-weight: 850;
-      letter-spacing: -0.5px;
-      color: #ffffff !important;
-      -webkit-text-fill-color: #ffffff !important;
-      text-shadow: 0 0 10px rgba(255, 255, 255, 0.25) !important;
-    }
 
     .nav-links {
       display: flex;
@@ -911,7 +922,7 @@
       position: absolute;
       inset: 0;
       z-index: 0;
-      background: url('assets/img/gear5-luffy.jpg') center center / cover no-repeat;
+      background: url('assets/img/gear5-luffy_11zon.webp') center center / cover no-repeat;
       will-change: transform;
       transition: transform 0.1s linear;
     }
@@ -1712,11 +1723,11 @@
       position: fixed;
       inset: 0;
       z-index: 99999;
-      background: var(--bg);
+      background: #020208;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: opacity 0.5s ease, visibility 0.5s;
+      transition: opacity 0.6s cubic-bezier(0.25, 1, 0.5, 1), visibility 0.6s;
     }
 
     #preloader.opacity-0 {
@@ -1729,92 +1740,158 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 20px;
+      gap: 24px;
       text-align: center;
     }
 
     .preloader-logo {
       position: relative;
-      width: 80px;
-      height: 80px;
+      width: 100px;
+      height: 100px;
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
     .preloader-bolt {
-      width: 50px;
-      height: 50px;
-      border-radius: 14px;
-      background: var(--brand-grad);
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      border: 2px solid rgba(99, 102, 241, 0.5);
+      box-shadow: 0 0 30px rgba(99, 102, 241, 0.4), inset 0 0 15px rgba(99, 102, 241, 0.3);
+      animation: logoPulse 2s infinite ease-in-out;
+      z-index: 2;
+      overflow: hidden;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #fff;
-      font-size: 24px;
-      box-shadow: var(--glow-brand);
-      animation: pulseGlow 2s ease-in-out infinite;
-      z-index: 2;
+    }
+
+    .preloader-logo-img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      display: block;
     }
 
     .preloader-ring {
       position: absolute;
       inset: -10px;
-      border: 3px solid transparent;
+      border: 2px solid transparent;
       border-top-color: var(--accent);
-      border-bottom-color: var(--accent2);
+      border-bottom-color: var(--brand);
       border-radius: 50%;
-      animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+      animation: spin 1.5s linear infinite;
       z-index: 1;
     }
 
-    .preloader-text {
-      font-family: 'Outfit', sans-serif;
-      font-size: 18px;
-      font-weight: 900;
-      letter-spacing: 2px;
-      background: var(--brand-grad);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      text-transform: uppercase;
-      margin: 0;
-    }
-
-    .preloader-subtext {
-      margin: 0;
-      font-size: 13px;
-      color: var(--text-muted);
-      font-weight: 600;
-      animation: pulseOpacity 2s ease-in-out infinite;
-    }
-
-    .preloader-bar {
-      width: 140px;
-      height: 4px;
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: var(--r-full);
-      overflow: hidden;
-      position: relative;
-    }
-
-    .preloader-progress {
-      width: 100%;
-      height: 100%;
-      background: var(--brand-grad);
-      border-radius: var(--r-full);
+    .preloader-logo::before,
+    .preloader-logo::after {
+      content: '';
       position: absolute;
-      left: -100%;
-      animation: loadingBar 1.8s ease-in-out infinite;
+      inset: -20px;
+      border: 1px solid rgba(6, 182, 212, 0.2);
+      border-radius: 50%;
+      animation: radarPulse 2s infinite cubic-bezier(0.215, 0.610, 0.355, 1);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 0;
     }
 
-    @keyframes loadingBar {
-      0% {
-        left: -100%;
+    .preloader-logo::after {
+      animation-delay: 1s;
+    }
+
+    @keyframes logoPulse {
+
+      0%,
+      100% {
+        transform: scale(0.98);
+        border-color: rgba(99, 102, 241, 0.5);
+        box-shadow: 0 0 25px rgba(99, 102, 241, 0.4);
       }
 
       50% {
-        left: 0;
+        transform: scale(1.05);
+        border-color: var(--accent);
+        box-shadow: 0 0 45px var(--accent-glow);
+      }
+    }
+
+    @keyframes radarPulse {
+      0% {
+        transform: scale(0.6);
+        opacity: 0.8;
+      }
+
+      100% {
+        transform: scale(1.4);
+        opacity: 0;
+      }
+    }
+
+    @keyframes spin {
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    .preloader-text {
+      font-family: "Outfit", "Inter", sans-serif;
+      font-size: 24px;
+      font-weight: 900;
+      letter-spacing: 0.05em;
+      background: linear-gradient(135deg, #ffffff 40%, var(--brand-light) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-transform: uppercase;
+      margin: 0;
+      text-shadow: 0 4px 20px rgba(99, 102, 241, 0.35);
+    }
+
+    .preloader-subtext {
+      font-size: 13.5px;
+      color: var(--text-muted);
+      font-weight: 500;
+      margin: 0;
+      letter-spacing: 0.02em;
+      animation: textBreathe 1.5s ease-in-out infinite alternate;
+    }
+
+    @keyframes textBreathe {
+      0% {
+        opacity: 0.6;
+      }
+
+      100% {
+        opacity: 1;
+        color: var(--text-bright);
+      }
+    }
+
+    .preloader-bar {
+      width: 160px;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 4px;
+      overflow: hidden;
+      position: relative;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .preloader-progress {
+      position: absolute;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, var(--accent), var(--brand), transparent);
+      animation: loadingScan 1.6s infinite cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes loadingScan {
+      0% {
+        left: -100%;
       }
 
       100% {
@@ -2207,6 +2284,9 @@
       }
     }
   </style>
+<link href="assets/css/storefront-flat.css" rel="stylesheet" />
+<link href="assets/css/light-theme-polish.css?v=20260729.5" rel="stylesheet" />
+  <link href="/assets/css/site-recovery-theme.css?v=20260729.5" rel="stylesheet" />
 </head>
 
 <body>
@@ -2214,7 +2294,11 @@
   <div id="preloader">
     <div class="preloader-container">
       <div class="preloader-logo">
-        <div class="preloader-bolt"><span class="dg-logo-text" style="font-size: 20px;">DG</span></div>
+        <div class="preloader-bolt">
+          <img
+            src="/assets/img/%E1%BA%A3nh%20s%E1%BA%A3n%20ph%E1%BA%A9m/ChatGPT%20Image%2023_52_48%2012%20thg%207%2C%202026_11zon.webp"
+            alt="DG Store" class="preloader-logo-img">
+        </div>
         <div class="preloader-ring"></div>
       </div>
       <p class="preloader-text">DG Store</p>
@@ -2230,7 +2314,9 @@
     <div class="nav-in">
       <a class="nav-brand" href="home.html">
         <div class="nav-brand-ic dg-logo-mark">
-          <span class="dg-logo-text">DG</span>
+          <img
+            src="/assets/img/%E1%BA%A3nh%20s%E1%BA%A3n%20ph%E1%BA%A9m/ChatGPT%20Image%2023_52_48%2012%20thg%207%2C%202026_11zon.webp"
+            alt="DG Store" class="dg-logo-img">
           <span class="dg-logo-ring"></span>
         </div>
         <span class="nav-brand-txt">DG Store</span>
@@ -2239,9 +2325,11 @@
         <a class="nav-lk" href="index.html"><i class="fa-solid fa-store"></i> Cửa hàng</a>
         <a class="nav-lk" href="profile.html"><i class="fa-solid fa-user"></i> Tài khoản</a>
         <a class="nav-lk" href="nap-tien.html"><i class="fa-solid fa-wallet"></i> Nạp tiền</a>
-        <a class="nav-lk" href="tracking.html"><i class="fa-solid fa-truck-fast"></i> Vận đơn</a>
       </div>
       <div class="nav-acts">
+        <button class="btn-theme-toggle" id="homeThemeToggle" type="button" aria-label="Bật giao diện sáng" title="Đổi giao diện">
+          <i class="fa-solid fa-sun"></i>
+        </button>
         <div id="headerAuthActions">
           <a class="btn-login" href="login.html"><i class="fa-solid fa-right-to-bracket"></i> <span
               class="btn-text">Đăng ký / Đăng nhập</span></a>
@@ -2259,7 +2347,6 @@
         <a class="mob-lk" href="index.html"><i class="fa-solid fa-store"></i> Cửa hàng</a>
         <a class="mob-lk" href="profile.html"><i class="fa-solid fa-user"></i> Tài khoản</a>
         <a class="mob-lk" href="nap-tien.html"><i class="fa-solid fa-wallet"></i> Nạp tiền</a>
-        <a class="mob-lk" href="tracking.html"><i class="fa-solid fa-truck-fast"></i> Vận đơn</a>
       </div>
     </div>
   </div>
@@ -2449,7 +2536,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
   <script>
-    const API_BASE = window.DG_API_BASE || window.SKYNET_API_BASE || '/api';
+    const API_BASE = window.DG_API_BASE || window.SKYNET_API_BASE || (window.location.protocol === 'file:' ? 'http://localhost:3000/api' : '/api');
     function formatMoney(v) { return `${Number(v || 0).toLocaleString('vi-VN')}đ`; }
     function getStoredUser() { try { return JSON.parse(localStorage.getItem('user') || 'null'); } catch { return null; } }
     function clearAuthSession() { localStorage.removeItem('token'); localStorage.removeItem('user'); localStorage.removeItem('isLoggedIn'); }
@@ -2508,9 +2595,23 @@
     }
     function handleHeaderLogout() { clearAuthSession(); renderHeaderLoggedOut(); }
 
-    // Theme Toggle Disabled (Defaulting to Dark Theme)
-    localStorage.removeItem('theme');
-    document.body.classList.remove('light-mode');
+    // Theme preference shared with the storefront pages.
+    const homeThemeToggle = document.getElementById('homeThemeToggle');
+    function applyHomeTheme(theme) {
+      const isLight = theme === 'light';
+      document.body.classList.toggle('light-mode', isLight);
+      document.documentElement.dataset.theme = isLight ? 'light' : 'dark';
+      localStorage.setItem('dg-theme', isLight ? 'light' : 'dark');
+      if (homeThemeToggle) {
+        homeThemeToggle.setAttribute('aria-label', isLight ? 'Bật giao diện tối' : 'Bật giao diện sáng');
+        homeThemeToggle.innerHTML = `<i class="fa-solid ${isLight ? 'fa-moon' : 'fa-sun'}"></i>`;
+      }
+    }
+    const savedHomeTheme = localStorage.getItem('dg-theme');
+    applyHomeTheme(savedHomeTheme || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'));
+    homeThemeToggle?.addEventListener('click', () => {
+      applyHomeTheme(document.body.classList.contains('light-mode') ? 'dark' : 'light');
+    });
 
     // Mobile Nav Toggle
     const mobToggle = document.getElementById('mobToggle');

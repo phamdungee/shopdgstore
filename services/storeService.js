@@ -1,7 +1,6 @@
 
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
-const path = require('path');
 const supabase = require('../config/supabase');
 const {
   JWT_SECRET,
@@ -10,7 +9,7 @@ const {
   DEPOSIT_MEMO_PREFIX,
   DEPOSIT_TTL_MS
 } = require('../config/env');
-const { sendTelegram } = require('../routes/tracking');
+const { sendOperationalAlert } = require('./notificationBot');
 
 function normalizeString(value) {
   return String(value || '').trim();
@@ -191,29 +190,28 @@ async function expireOldPendingDeposits(userId = null) {
   if (error) throw error;
 }
 
-function writeDepositWebhookLog(entry) {
+async function writeDepositWebhookLog(entry) {
   const payload = {
     time: new Date().toISOString(),
     ...entry
   };
 
-  const isVercel = process.env.VERCEL === '1';
-  if (isVercel) {
-    console.log('[Webhook Log]', JSON.stringify(payload));
-    return;
-  }
-
   try {
-    const fs = require('fs');
-    const logDir = path.join(__dirname, '..', 'logs');
-    if (!fs.existsSync(logDir)) fs.mkdirSync(logDir, { recursive: true });
-    fs.appendFileSync(
-      path.join(logDir, 'deposit-webhooks.jsonl'),
-      `${JSON.stringify(payload)}\n`,
-      'utf8'
-    );
+    const { error } = await supabase.from('webhook_histories').insert({
+      provider: String(entry.source || 'casso').slice(0, 100),
+      webhook_id: String(entry.webhookId || entry.externalRef || '').slice(0, 500) || null,
+      request_id: String(entry.requestId || '').slice(0, 500) || null,
+      status: String(entry.status || 'received').slice(0, 100),
+      reason: String(entry.reason || entry.error || '').slice(0, 2000) || null,
+      endpoint: String(entry.endpoint || '').slice(0, 1000) || null,
+      http_status: Number.isInteger(entry.httpStatus) ? entry.httpStatus : null,
+      transaction_count: Number.isInteger(entry.transactionCount) ? entry.transactionCount : null,
+      processed_count: Number.isInteger(entry.processedCount) ? entry.processedCount : null,
+      payload
+    });
+    if (error) throw error;
   } catch (err) {
-    console.error('Cannot write deposit webhook log:', err.message);
+    console.error('Cannot save deposit webhook history:', err.message);
   }
 }
 
@@ -233,7 +231,8 @@ function safeOrder(order) {
     responseData: order.response_data || null,
     costAmount: Number(order.cost_amount || 0),
     profit: Number(order.profit || 0),
-    createdAt: order.created_at
+    createdAt: order.created_at,
+    completedAt: order.completed_at || (order.status === 'completed' ? order.created_at : null)
   };
 }
 
@@ -253,7 +252,16 @@ function safeWalletTransaction(transaction) {
 }
 
 const USER_PUBLIC_SELECT = 'id, username, email, phone, full_name, role, balance, status, email_verified, avatar_url, created_at, last_login_at';
+// Legacy-safe projection: completed_at is added by the latest migration, but
+// production must continue to read existing orders before that migration runs.
 const ORDER_PUBLIC_SELECT = 'id, order_code, product_slug, product_name, variant_name, quantity, unit_price, total_price, status, delivery_text, delivery_json, response_data, cost_amount, profit, created_at';
+const ORDER_PUBLIC_SELECT_WITH_COMPLETED = `${ORDER_PUBLIC_SELECT}, completed_at`;
+
+function isMissingColumnError(error, columnName) {
+  if (!error) return false;
+  const message = `${error.message || ''} ${error.details || ''} ${error.hint || ''}`.toLowerCase();
+  return ['42703', 'PGRST204'].includes(error.code) || message.includes(String(columnName || '').toLowerCase());
+}
 
 async function deductUserBalance(userId, amount) {
   for (let attempt = 0; attempt < 3; attempt += 1) {
@@ -462,22 +470,7 @@ async function notifyPurchaseFailure({ user, product, variantName, quantity, ord
 💡 *ĐIỀU HƯỚNG:* Sếp vui lòng kiểm tra tài khoản và nạp thêm tiền cho đối tác để thông luồng đơn hàng!`;
 
   try {
-    let adminChatId = process.env.TELEGRAM_ADMIN_CHAT_ID;
-    if (!adminChatId) {
-      try {
-        const fs = require('fs');
-        const botConfigPath = path.join(__dirname, '..', 'bottracking', 'bot-config.json');
-        if (fs.existsSync(botConfigPath)) {
-          const config = JSON.parse(fs.readFileSync(botConfigPath, 'utf8'));
-          adminChatId = config.telegramChatId;
-        }
-      } catch (_) {}
-    }
-    if (!adminChatId) {
-      adminChatId = process.env.TELEGRAM_CHAT_ID;
-    }
-
-    await sendTelegram(text, adminChatId, 'Markdown');
+    await sendOperationalAlert(text);
   } catch (err) {
     console.error('Telegram purchase failure alert warning:', err.message);
   }
@@ -522,6 +515,8 @@ module.exports = {
   safeWalletTransaction,
   USER_PUBLIC_SELECT,
   ORDER_PUBLIC_SELECT,
+  ORDER_PUBLIC_SELECT_WITH_COMPLETED,
+  isMissingColumnError,
   deductUserBalance,
   addUserBalance,
   writeWalletTransaction,

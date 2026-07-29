@@ -7,6 +7,14 @@ const { authMiddleware, adminMiddleware } = require('../middlewares/authMiddlewa
 const { safeUser, moneyValue } = require('../services/storeService');
 const FormatService = require('../assets/js/formatService');
 
+// Admin screens must always reflect the latest database state.
+router.use((req, res, next) => {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  next();
+});
+
 function firstDefined(...values) {
   return values.find(value => value !== undefined);
 }
@@ -136,6 +144,38 @@ function productPayload(body, options = {}) {
   return payload;
 }
 
+function formatDatabaseProduct(product) {
+  const variants = Array.isArray(product?.product_variants)
+    ? product.product_variants
+    : [];
+
+  return {
+    ...product,
+    variants: variants.map(variant => ({
+      id: variant.id,
+      name: variant.name,
+      price: variant.price,
+      cost_price: variant.cost_price,
+      stock: variant.stock_cache,
+      vendor_product_code: variant.vendor_product_code,
+      vendor_id: variant.vendor_id,
+      delivery_type: variant.delivery_type,
+      fallback_mode: variant.fallback_mode
+    })),
+    stock: product?.stock_cache
+  };
+}
+
+async function fetchDatabaseProducts() {
+  const { data, error } = await supabase
+    .from('products')
+    .select('*, product_variants(*)')
+    .order('created_at', { ascending: true });
+
+  if (error) throw error;
+  return (data || []).map(formatDatabaseProduct);
+}
+
 // =================================================================
 // PUBLIC ROUTES (No Auth/Admin validation required)
 // =================================================================
@@ -164,6 +204,93 @@ router.get('/announcement/public', (req, res) => {
 // =================================================================
 router.use(authMiddleware);
 router.use(adminMiddleware);
+
+// GET /api/admin/orders - compact, read-only order feed and 30-day analytics.
+router.get('/orders', async (req, res) => {
+  try {
+    const since = new Date();
+    since.setUTCDate(since.getUTCDate() - 29);
+    since.setUTCHours(0, 0, 0, 0);
+
+    const { data: orders, error } = await supabase
+      .from('store_orders')
+      .select('id, user_id, order_code, product_name, variant_name, quantity, total_price, cost_amount, profit, status, created_at')
+      .order('created_at', { ascending: false })
+      .limit(250);
+
+    if (error) throw error;
+
+    const userIds = [...new Set((orders || []).map(order => order.user_id).filter(Boolean))];
+    const userMap = new Map();
+    if (userIds.length > 0) {
+      const { data: users, error: usersError } = await supabase
+        .from('users')
+        .select('id, username, email')
+        .in('id', userIds);
+      if (usersError) console.error('Admin order users query warning:', usersError.message);
+      (users || []).forEach(user => userMap.set(String(user.id), user));
+    }
+
+    const dailyMap = new Map();
+    for (let offset = 0; offset < 30; offset += 1) {
+      const day = new Date(since);
+      day.setUTCDate(since.getUTCDate() + offset);
+      dailyMap.set(day.toISOString().slice(0, 10), { revenue: 0, profit: 0, orders: 0 });
+    }
+
+    const statuses = { pending: 0, processing: 0, completed: 0, failed: 0, refunded: 0 };
+    (orders || []).forEach(order => {
+      if (Object.prototype.hasOwnProperty.call(statuses, order.status)) statuses[order.status] += 1;
+      const dateKey = String(order.created_at || '').slice(0, 10);
+      if (order.status === 'completed' && dailyMap.has(dateKey)) {
+        const day = dailyMap.get(dateKey);
+        day.revenue += Number(order.total_price || 0);
+        day.profit += Number(order.profit || 0);
+        day.orders += 1;
+      }
+    });
+
+    return res.json({
+      ok: true,
+      orders: (orders || []).map(order => ({
+        id: order.id,
+        code: order.order_code,
+        customer: userMap.get(String(order.user_id)) || null,
+        productName: order.product_name,
+        variantName: order.variant_name,
+        quantity: Number(order.quantity || 0),
+        totalPrice: Number(order.total_price || 0),
+        costAmount: Number(order.cost_amount || 0),
+        profit: Number(order.profit || 0),
+        status: order.status,
+        createdAt: order.created_at
+      })),
+      analytics: {
+        statuses,
+        daily: [...dailyMap.entries()].map(([date, values]) => ({ date, ...values }))
+      },
+      syncedAt: new Date().toISOString()
+    });
+  } catch (err) {
+    console.error('Admin orders query error:', err);
+    return res.status(500).json({ ok: false, message: 'Không lấy được dữ liệu đơn hàng' });
+  }
+});
+
+// GET /api/admin/products - authoritative product data for the admin screen.
+router.get('/products', async (req, res) => {
+  try {
+    const products = await fetchDatabaseProducts();
+    return res.json({
+      ok: true,
+      products,
+      syncedAt: new Date().toISOString()
+    });
+  } catch (err) {
+    console.error('Admin products query error:', err);
+    return res.status(500).json({ ok: false, message: 'Không lấy được danh sách sản phẩm từ database' });
+  }
+});
 
 router.get('/dashboard', authMiddleware, adminMiddleware, async (req, res) => {
   try {
@@ -194,6 +321,23 @@ router.get('/dashboard', authMiddleware, adminMiddleware, async (req, res) => {
     }
 
     const safeUsers = (users || []).map(safeUser);
+
+    let totalRevenue = 0;
+    try {
+      const { data: completedOrdersData, error: ordersError } = await supabase
+        .from('store_orders')
+        .select('total_price')
+        .eq('status', 'completed');
+      
+      if (ordersError) {
+        console.error('Admin revenue query warning:', ordersError.message);
+      } else if (completedOrdersData) {
+        totalRevenue = completedOrdersData.reduce((sum, order) => sum + Number(order.total_price || 0), 0);
+      }
+    } catch (err) {
+      console.error('Admin revenue query warning:', err.message);
+    }
+
     const stats = safeUsers.reduce((acc, user) => {
       acc.totalUsers += 1;
       acc.totalBalance += Number(user.balance || 0);
@@ -206,14 +350,36 @@ router.get('/dashboard', authMiddleware, adminMiddleware, async (req, res) => {
       activeUsers: 0,
       lockedUsers: 0,
       adminUsers: 0,
-      totalBalance: 0
+      totalBalance: 0,
+      totalRevenue: totalRevenue
+    });
+
+    const userDailyMap = new Map();
+    const userSince = new Date();
+    userSince.setUTCDate(userSince.getUTCDate() - 29);
+    userSince.setUTCHours(0, 0, 0, 0);
+    for (let offset = 0; offset < 30; offset += 1) {
+      const day = new Date(userSince);
+      day.setUTCDate(userSince.getUTCDate() + offset);
+      userDailyMap.set(day.toISOString().slice(0, 10), { registrations: 0, active: 0 });
+    }
+    safeUsers.forEach(user => {
+      const dateKey = String(user.createdAt || '').slice(0, 10);
+      if (!userDailyMap.has(dateKey)) return;
+      const day = userDailyMap.get(dateKey);
+      day.registrations += 1;
+      if (user.status === 'active') day.active += 1;
     });
 
     return res.json({
       ok: true,
       stats,
       users: safeUsers,
-      loginLogs
+      loginLogs,
+      analytics: {
+        usersDaily: [...userDailyMap.entries()].map(([date, values]) => ({ date, ...values }))
+      },
+      syncedAt: new Date().toISOString()
     });
   } catch (err) {
     console.error('Admin dashboard error:', err);
@@ -1396,6 +1562,106 @@ router.post('/inventory/import', authMiddleware, adminMiddleware, async (req, re
   }
 });
 
+
+async function fetchAllInventoryStockRows(productId) {
+  const pageSize = 1000;
+  const rows = [];
+
+  for (let from = 0; ; from += pageSize) {
+    let query = supabase
+      .from('inventory_items')
+      .select('id, product_id, variant_id, status, product_variants(id, name, delivery_type)')
+      .order('id', { ascending: true })
+      .range(from, from + pageSize - 1);
+
+    if (productId) query = query.eq('product_id', productId);
+
+    const { data, error } = await query;
+    if (error) throw error;
+
+    rows.push(...(data || []));
+    if (!data || data.length < pageSize) break;
+  }
+
+  return rows;
+}
+
+// GET /api/admin/inventory/stock-summary - Real actual stock counts from DB (not stock_cache)
+router.get('/inventory/stock-summary', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const { product_id } = req.query;
+
+    // Supabase/PostgREST commonly caps one response at 1,000 rows, so page through
+    // the complete inventory instead of silently under-counting a large warehouse.
+    const items = await fetchAllInventoryStockRows(product_id);
+
+    // Aggregate counts by variant
+    const variantMap = {};
+    const productMap = {};
+    for (const item of (items || [])) {
+      const productKey = String(item.product_id || '__none__');
+      const variantKey = `${productKey}:${String(item.variant_id || '__none__')}`;
+
+      if (!productMap[productKey]) {
+        productMap[productKey] = {
+          product_id: item.product_id,
+          available: 0,
+          reserved: 0,
+          sold: 0,
+          total: 0
+        };
+      }
+
+      if (!variantMap[variantKey]) {
+        variantMap[variantKey] = {
+          product_id: item.product_id,
+          variant_id: item.variant_id,
+          variant_name: item.product_variants?.name || null,
+          delivery_type: item.product_variants?.delivery_type || 'hybrid',
+          available: 0,
+          reserved: 0,
+          sold: 0,
+          total: 0
+        };
+      }
+
+      variantMap[variantKey].total++;
+      productMap[productKey].total++;
+
+      if (item.status === 'available') {
+        variantMap[variantKey].available++;
+        productMap[productKey].available++;
+      } else if (item.status === 'reserved') {
+        variantMap[variantKey].reserved++;
+        productMap[productKey].reserved++;
+      } else if (item.status === 'sold') {
+        variantMap[variantKey].sold++;
+        productMap[productKey].sold++;
+      }
+    }
+
+    // Also compute product-level totals
+    const productTotals = { available: 0, reserved: 0, sold: 0, total: 0 };
+    for (const v of Object.values(variantMap)) {
+      productTotals.available += v.available;
+      productTotals.reserved += v.reserved;
+      productTotals.sold += v.sold;
+      productTotals.total += v.total;
+    }
+
+    return res.json({
+      ok: true,
+      productTotals,
+      productSummary: Object.values(productMap),
+      variantSummary: Object.values(variantMap),
+      syncedAt: new Date().toISOString()
+    });
+  } catch (err) {
+    console.error('Stock summary error:', err);
+    return res.status(500).json({ ok: false, message: 'Lỗi server khi tính tồn kho' });
+  }
+});
+
 router.get('/inventory/items', authMiddleware, adminMiddleware, async (req, res) => {
   try {
     const { product_id, variant_id, status } = req.query;
@@ -1409,7 +1675,7 @@ router.get('/inventory/items', authMiddleware, adminMiddleware, async (req, res)
 
     const { data, error } = await query
       .order('created_at', { ascending: false })
-      .limit(100);
+      .limit(500);
 
     if (error) throw error;
     return res.json({ ok: true, items: data || [] });

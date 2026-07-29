@@ -10,6 +10,16 @@ const ADMIN_API_BASE = window.DG_API_BASE || window.SKYNET_API_BASE || (
 );
 let adminUsers = [];
 let adminLoginLogs = [];
+let adminOrders = [];
+let adminOrderAnalytics = { statuses: {}, daily: [] };
+let adminUserAnalytics = { usersDaily: [] };
+let adminRevenueChart = null;
+let adminOrderStatusChart = null;
+let adminUserChart = null;
+const ADMIN_SYNC_INTERVAL_MS = 30000;
+let adminSyncPromise = null;
+let adminSyncTimer = null;
+let adminLastSyncAt = null;
 const ADMIN_PRODUCT_CATEGORIES = [
   { value: 'netflix', label: 'Netflix / TV' },
   { value: 'ai', label: 'Trí tuệ nhân tạo (AI)' },
@@ -20,6 +30,30 @@ const ADMIN_PRODUCT_CATEGORIES = [
 
 function adminToken() {
   return localStorage.getItem('token');
+}
+
+function applyAdminTheme(theme) {
+  const normalized = theme === 'dark' ? 'dark' : 'light';
+  document.documentElement.dataset.theme = normalized;
+  localStorage.setItem('dg-admin-theme', normalized);
+  const icon = document.querySelector('#adminThemeToggle i');
+  if (icon) {
+    icon.className = normalized === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+  }
+  const button = document.getElementById('adminThemeToggle');
+  if (button) button.setAttribute('aria-pressed', String(normalized === 'dark'));
+}
+
+function toggleAdminTheme() {
+  const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+  applyAdminTheme(next);
+  renderAdminCharts();
+}
+
+function initializeAdminTheme() {
+  const saved = localStorage.getItem('dg-admin-theme');
+  const preferred = window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  applyAdminTheme(saved || preferred);
 }
 
 function formatAdminMoney(value) {
@@ -211,7 +245,7 @@ function hideAdminPreloader() {
   setTimeout(() => preloader.remove(), 350);
 }
 
-async function adminFetch(path) {
+async function adminFetch(path, options = {}) {
   const token = adminToken();
   if (!token) {
     window.location.href = 'login.html';
@@ -219,7 +253,12 @@ async function adminFetch(path) {
   }
 
   const res = await fetch(`${ADMIN_API_BASE}${path}`, {
-    headers: { Authorization: `Bearer ${token}` }
+    cache: 'no-store',
+    ...options,
+    headers: {
+      ...(options.headers || {}),
+      Authorization: `Bearer ${token}`
+    }
   });
   const data = await res.json().catch(() => ({}));
 
@@ -242,11 +281,190 @@ async function adminFetch(path) {
   return data;
 }
 
+function setAdminSyncStatus(state, message) {
+  const status = document.getElementById('adminSyncStatus');
+  const button = document.getElementById('adminSyncButton');
+
+  if (status) {
+    status.dataset.state = state;
+    status.textContent = message;
+  }
+
+  if (button) {
+    button.disabled = state === 'syncing';
+    button.classList.toggle('is-syncing', state === 'syncing');
+  }
+}
+
+function formatAdminSyncTime(value) {
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) return 'vừa xong';
+  return date.toLocaleTimeString('vi-VN', {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit'
+  });
+}
+
 function renderAdminStats(stats) {
-  document.getElementById('statTotalUsers').innerText = Number(stats.totalUsers || 0).toLocaleString('vi-VN');
-  document.getElementById('statActiveUsers').innerText = Number(stats.activeUsers || 0).toLocaleString('vi-VN');
-  document.getElementById('statAdminUsers').innerText = Number(stats.adminUsers || 0).toLocaleString('vi-VN');
-  document.getElementById('statTotalBalance').innerText = formatAdminMoney(stats.totalBalance);
+  const statTotalUsers = document.getElementById('statTotalUsers');
+  if (statTotalUsers) statTotalUsers.innerText = Number(stats.totalUsers || 0).toLocaleString('vi-VN');
+  const statActiveUsers = document.getElementById('statActiveUsers');
+  if (statActiveUsers) statActiveUsers.innerText = Number(stats.activeUsers || 0).toLocaleString('vi-VN');
+  const statAdminUsers = document.getElementById('statAdminUsers');
+  if (statAdminUsers) statAdminUsers.innerText = Number(stats.adminUsers || 0).toLocaleString('vi-VN');
+  const revenueEl = document.getElementById('statTotalRevenue');
+  if (revenueEl) revenueEl.innerText = formatAdminMoney(stats.totalRevenue);
+}
+
+const ADMIN_ORDER_STATUS_LABELS = {
+  pending: 'Chờ xử lý',
+  processing: 'Đang xử lý',
+  completed: 'Hoàn thành',
+  failed: 'Thất bại',
+  refunded: 'Hoàn tiền'
+};
+
+function renderAdminOrders() {
+  const table = document.getElementById('adminOrdersTable');
+  if (!table) return;
+  const query = (document.getElementById('adminOrderSearch')?.value || '').trim().toLowerCase();
+  const status = document.getElementById('adminOrderStatusFilter')?.value || '';
+  const list = adminOrders.filter(order => {
+    const customer = order.customer || {};
+    const haystack = `${order.code || ''} ${order.productName || ''} ${order.variantName || ''} ${customer.username || ''} ${customer.email || ''}`.toLowerCase();
+    return (!status || order.status === status) && haystack.includes(query);
+  });
+
+  table.innerHTML = list.map(order => {
+    const customer = order.customer || {};
+    const statusLabel = ADMIN_ORDER_STATUS_LABELS[order.status] || order.status || '---';
+    return `
+      <tr>
+        <td><code>${escapeAdminHtml(order.code || order.id || '---')}</code></td>
+        <td><b>${escapeAdminHtml(customer.username || 'Khách hàng')}</b><div style="font-size:11px;color:var(--admin-muted)">${escapeAdminHtml(customer.email || '---')}</div></td>
+        <td><b>${escapeAdminHtml(order.productName || '---')}</b><div style="font-size:11px;color:var(--admin-muted)">${escapeAdminHtml(order.variantName || '')}</div></td>
+        <td>${Number(order.quantity || 0).toLocaleString('vi-VN')}</td>
+        <td class="sk-price"><b>${formatAdminMoney(order.totalPrice)}</b></td>
+        <td>${formatAdminMoney(order.profit)}</td>
+        <td><span class="admin-order-status ${escapeAdminHtml(order.status || '')}">${escapeAdminHtml(statusLabel)}</span></td>
+        <td>${formatAdminDate(order.createdAt)}</td>
+      </tr>
+    `;
+  }).join('') || '<tr><td colspan="8" class="admin-empty">Không có đơn hàng phù hợp.</td></tr>';
+}
+
+function renderAdminOrderStats() {
+  const statuses = adminOrderAnalytics.statuses || {};
+  const assignments = {
+    orderStatPending: statuses.pending,
+    orderStatProcessing: statuses.processing,
+    orderStatCompleted: statuses.completed,
+    orderStatFailed: Number(statuses.failed || 0) + Number(statuses.refunded || 0)
+  };
+  Object.entries(assignments).forEach(([id, value]) => {
+    const element = document.getElementById(id);
+    if (element) element.textContent = Number(value || 0).toLocaleString('vi-VN');
+  });
+}
+
+function renderAdminCharts() {
+  if (!window.Chart) {
+    console.error('Chart.js không tải được. Kiểm tra Content-Security-Policy hoặc kết nối CDN.');
+    ['adminRevenueChart', 'adminUserChart', 'adminOrderStatusChart'].forEach(id => {
+      const canvas = document.getElementById(id);
+      const frame = canvas?.parentElement;
+      if (!canvas || !frame || frame.querySelector('.admin-chart-load-error')) return;
+      canvas.hidden = true;
+      const message = document.createElement('div');
+      message.className = 'admin-chart-load-error admin-empty';
+      message.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Không tải được thư viện biểu đồ. Vui lòng tải lại trang.';
+      frame.appendChild(message);
+    });
+    return;
+  }
+  const daily = Array.isArray(adminOrderAnalytics.daily) ? adminOrderAnalytics.daily : [];
+  const statuses = adminOrderAnalytics.statuses || {};
+  const isDark = document.documentElement.dataset.theme === 'dark';
+  const textColor = isDark ? '#a7b0bc' : '#667085';
+  const gridColor = isDark ? '#30363d' : '#e5e7eb';
+  const revenueTotal = daily.reduce((sum, item) => sum + Number(item.revenue || 0), 0);
+  const totalElement = document.getElementById('revenueChartTotal');
+  if (totalElement) totalElement.textContent = formatAdminMoney(revenueTotal);
+
+  if (adminRevenueChart) adminRevenueChart.destroy();
+  const revenueCanvas = document.getElementById('adminRevenueChart');
+  if (revenueCanvas) {
+    adminRevenueChart = new window.Chart(revenueCanvas, {
+      type: 'bar',
+      data: {
+        labels: daily.map(item => new Date(`${item.date}T00:00:00`).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' })),
+        datasets: [
+          { label: 'Doanh thu', data: daily.map(item => Number(item.revenue || 0)), backgroundColor: '#4f7cff', borderRadius: 7, borderSkipped: false },
+          { label: 'Lợi nhuận', data: daily.map(item => Number(item.profit || 0)), backgroundColor: '#20a86b', borderRadius: 7, borderSkipped: false }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { intersect: false, mode: 'index' },
+        plugins: { legend: { labels: { color: textColor, usePointStyle: true } } },
+        scales: {
+          x: { ticks: { color: textColor, maxTicksLimit: 10 }, grid: { display: false } },
+          y: { beginAtZero: true, ticks: { color: textColor, callback: value => `${Number(value).toLocaleString('vi-VN')}đ` }, grid: { color: gridColor } }
+        }
+      }
+    });
+  }
+
+  if (adminUserChart) adminUserChart.destroy();
+  const userCanvas = document.getElementById('adminUserChart');
+  const usersDaily = Array.isArray(adminUserAnalytics.usersDaily) ? adminUserAnalytics.usersDaily : [];
+  if (userCanvas) {
+    adminUserChart = new window.Chart(userCanvas, {
+      type: 'bar',
+      data: {
+        labels: usersDaily.map(item => new Date(`${item.date}T00:00:00`).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' })),
+        datasets: [
+          { label: 'User mới', data: usersDaily.map(item => Number(item.registrations || 0)), backgroundColor: '#8b5cf6', borderRadius: 7, borderSkipped: false },
+          { label: 'Đang hoạt động', data: usersDaily.map(item => Number(item.active || 0)), backgroundColor: '#22b8cf', borderRadius: 7, borderSkipped: false }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { intersect: false, mode: 'index' },
+        plugins: { legend: { labels: { color: textColor, usePointStyle: true } } },
+        scales: {
+          x: { ticks: { color: textColor, maxTicksLimit: 10 }, grid: { display: false } },
+          y: { beginAtZero: true, ticks: { color: textColor, precision: 0 }, grid: { color: gridColor } }
+        }
+      }
+    });
+  }
+
+  if (adminOrderStatusChart) adminOrderStatusChart.destroy();
+  const statusCanvas = document.getElementById('adminOrderStatusChart');
+  if (statusCanvas) {
+    adminOrderStatusChart = new window.Chart(statusCanvas, {
+      type: 'doughnut',
+      data: {
+        labels: Object.keys(ADMIN_ORDER_STATUS_LABELS).map(key => ADMIN_ORDER_STATUS_LABELS[key]),
+        datasets: [{ data: Object.keys(ADMIN_ORDER_STATUS_LABELS).map(key => Number(statuses[key] || 0)), backgroundColor: ['#f0aa55', '#7aa2ff', '#62c981', '#ff8585', '#a78bfa'], borderWidth: 0 }]
+      },
+      options: { responsive: true, maintainAspectRatio: false, cutout: '68%', plugins: { legend: { position: 'bottom', labels: { color: textColor, usePointStyle: true } } } }
+    });
+  }
+}
+
+async function loadAdminOrders() {
+  const data = await adminFetch('/admin/orders');
+  adminOrders = data.orders || [];
+  adminOrderAnalytics = data.analytics || { statuses: {}, daily: [] };
+  renderAdminOrders();
+  renderAdminOrderStats();
+  renderAdminCharts();
+  return data;
 }
 
 function renderAdminUsers() {
@@ -530,11 +748,13 @@ function renderAdminProducts() {
 
 async function loadAdminProducts() {
   try {
-    const data = await adminFetch('/products');
+    const data = await adminFetch('/admin/products');
     adminProducts = data.products || [];
     renderAdminProducts();
+    return data;
   } catch (err) {
     console.error('Error loading products:', err);
+    throw err;
   }
 }
 
@@ -558,12 +778,15 @@ function switchAdminTab(tabId) {
     loadWarehouseData();
   } else if (tabId === 'vendors') {
     loadVendorsData();
+  } else if (tabId === 'orders') {
+    renderAdminOrders();
+    renderAdminCharts();
   }
 }
 
 function handleHashChange() {
   const hash = window.location.hash.slice(1) || 'overview';
-  if (['overview', 'users', 'products', 'warehouse', 'vendors', 'security', 'announcement'].includes(hash)) {
+  if (['overview', 'users', 'orders', 'products', 'warehouse', 'vendors', 'security', 'announcement'].includes(hash)) {
     switchAdminTab(hash);
   }
 }
@@ -575,6 +798,7 @@ function openProductModal(prodId = '') {
   const form = document.getElementById('productForm');
   const title = document.getElementById('modalTitle');
   const container = document.getElementById('variantsContainer');
+  if (!modal || !form || !container) return;
   
   form.reset();
   container.innerHTML = '';
@@ -588,28 +812,28 @@ function openProductModal(prodId = '') {
   }
   
   if (prodId) {
-    title.innerText = 'Chỉnh sửa sản phẩm';
+    if (title) title.innerText = 'Chỉnh sửa sản phẩm';
     const prod = adminProducts.find(p => String(p.id) === String(prodId));
     if (!prod) return;
     
-    document.getElementById('prodId').value = prod.id;
-    document.getElementById('prodName').value = prod.name;
-    document.getElementById('prodSlug').value = prod.slug;
+    const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
+    setVal('prodId', prod.id);
+    setVal('prodName', prod.name);
+    setVal('prodSlug', prod.slug);
     populateProductCategoryDropdown(prod.cat);
-    document.getElementById('prodIcon').value = prod.icon || 'fa-box';
+    setVal('prodIcon', prod.icon || 'fa-box');
     {
       const rateValue = numberOrEmpty(prod.rate);
-      document.getElementById('prodRate').value = rateValue === '' ? 5.0 : rateValue;
+      setVal('prodRate', rateValue === '' ? 5.0 : rateValue);
     }
-    document.getElementById('prodImage').value = prod.image || '';
-    document.getElementById('prodPrice').value = numberOrEmpty(prod.price);
-    document.getElementById('prodDesc').value = prod.desc || '';
-    document.getElementById('prodLongDesc').value = prod.long_desc || '';
-    document.getElementById('prodDeliveryType').value = prod.delivery_type || 'hybrid';
-    document.getElementById('prodFallbackMode').value = prod.fallback_mode || 'api_when_out_of_stock';
-    
-    document.getElementById('prodDataFormat').value = prod.data_format || 'mail|pass';
-    document.getElementById('prodSampleData').value = '';
+    setVal('prodImage', prod.image || '');
+    setVal('prodPrice', numberOrEmpty(prod.price));
+    setVal('prodDesc', prod.desc || '');
+    setVal('prodLongDesc', prod.long_desc || '');
+    setVal('prodDeliveryType', prod.delivery_type || 'hybrid');
+    setVal('prodFallbackMode', prod.fallback_mode || 'api_when_out_of_stock');
+    setVal('prodDataFormat', prod.data_format || 'mail|pass');
+    setVal('prodSampleData', '');
     updateFormatPreview();
     
     if (select && prod.image) {
@@ -622,11 +846,12 @@ function openProductModal(prodId = '') {
       addVariantRow();
     }
   } else {
-    title.innerText = 'Thêm sản phẩm mới';
-    document.getElementById('prodId').value = '';
+    if (title) title.innerText = 'Thêm sản phẩm mới';
+    const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
+    setVal('prodId', '');
     populateProductCategoryDropdown('netflix');
-    document.getElementById('prodDataFormat').value = 'mail|pass';
-    document.getElementById('prodSampleData').value = '';
+    setVal('prodDataFormat', 'mail|pass');
+    setVal('prodSampleData', '');
     updateFormatPreview();
     addVariantRow();
   }
@@ -644,7 +869,7 @@ function onImageSelectChange() {
 
 function closeProductModal() {
   const modal = document.getElementById('productModal');
-  modal.classList.add('opacity-0', 'pointer-events-none');
+  if (modal) modal.classList.add('opacity-0', 'pointer-events-none');
 }
 
 function addVariantRow(variant = {}) {
@@ -746,7 +971,7 @@ async function saveProduct(event) {
 
     alert(id ? 'Cập nhật sản phẩm thành công!' : 'Thêm sản phẩm thành công!');
     closeProductModal();
-    loadAdminProducts();
+    await refreshAdminData({ silent: true });
   } catch (err) {
     alert(err.message);
   }
@@ -775,7 +1000,7 @@ async function deleteProduct(prodId) {
     }
 
     alert('Đã xóa sản phẩm thành công!');
-    loadAdminProducts();
+    await refreshAdminData({ silent: true });
   } catch (err) {
     alert(err.message);
   }
@@ -792,6 +1017,93 @@ async function loadAdminImages() {
   }
 }
 
+async function refreshAdminData({ silent = false, includeActiveSection = true } = {}) {
+  if (adminSyncPromise) {
+    try {
+      return await adminSyncPromise;
+    } catch (err) {
+      if (!silent) throw err;
+      return null;
+    }
+  }
+
+  setAdminSyncStatus('syncing', 'Đang đồng bộ database...');
+
+  adminSyncPromise = (async () => {
+    const [dashboardData, productsData, ordersData] = await Promise.all([
+      adminFetch('/admin/dashboard'),
+      adminFetch('/admin/products'),
+      adminFetch('/admin/orders').catch(err => {
+        console.error('Admin orders sync warning:', err);
+        return { orders: [], analytics: { statuses: {}, daily: [] } };
+      })
+    ]);
+
+    adminUsers = dashboardData.users || [];
+    adminUserAnalytics = dashboardData.analytics || { usersDaily: [] };
+    adminLoginLogs = dashboardData.loginLogs || [];
+    adminProducts = productsData.products || [];
+    adminOrders = ordersData.orders || [];
+    adminOrderAnalytics = ordersData.analytics || { statuses: {}, daily: [] };
+
+    renderAdminStats(dashboardData.stats || {});
+    renderAdminUsers();
+    renderOverviewUsers();
+    renderAdminLoginLogs();
+    renderAdminProducts();
+    renderAdminOrders();
+    renderAdminOrderStats();
+    renderAdminCharts();
+
+    if (includeActiveSection) {
+      const activeTab = window.location.hash.slice(1) || 'overview';
+      if (activeTab === 'warehouse') {
+        await loadWarehouseData();
+      } else if (activeTab === 'vendors') {
+        await loadVendorsData();
+      }
+    }
+
+    const serverSyncTime = dashboardData.syncedAt || productsData.syncedAt || ordersData.syncedAt || Date.now();
+    adminLastSyncAt = new Date(serverSyncTime);
+    setAdminSyncStatus('success', `Đã đồng bộ lúc ${formatAdminSyncTime(adminLastSyncAt)}`);
+
+    return { dashboardData, productsData, ordersData };
+  })();
+
+  try {
+    return await adminSyncPromise;
+  } catch (err) {
+    console.error('Admin database sync error:', err);
+    setAdminSyncStatus('error', 'Đồng bộ thất bại — bấm để thử lại');
+    if (!silent) throw err;
+    return null;
+  } finally {
+    adminSyncPromise = null;
+  }
+}
+
+async function manualRefreshAdminData() {
+  try {
+    await refreshAdminData();
+  } catch (err) {
+    if (!['UNAUTHENTICATED', 'FORBIDDEN'].includes(err.message)) {
+      alert(err.message);
+    }
+  }
+}
+
+function startAdminAutoSync() {
+  if (adminSyncTimer) clearInterval(adminSyncTimer);
+  adminSyncTimer = setInterval(() => {
+    if (document.visibilityState === 'visible') {
+      // Keep the current warehouse detail, filters and scroll position intact.
+      // Active-section data is refreshed only by an explicit user action.
+      refreshAdminData({ silent: true, includeActiveSection: false }).catch(() => {});
+    }
+  }, ADMIN_SYNC_INTERVAL_MS);
+}
+
 async function loadAdminDashboard() {
   try {
     const me = await adminFetch('/me');
@@ -801,24 +1113,17 @@ async function loadAdminDashboard() {
       return;
     }
 
-    document.getElementById('adminName').innerText = me.user.fullName || me.user.username || 'Admin';
-    const data = await adminFetch('/admin/dashboard');
-    adminUsers = data.users || [];
-    adminLoginLogs = data.loginLogs || [];
-    renderAdminStats(data.stats || {});
-    renderAdminUsers();
-    renderOverviewUsers();
-    renderAdminLoginLogs();
-    
-    // Load products list
-    await loadAdminProducts();
-    // Load images list
-    await loadAdminImages();
-    // Load system announcement configuration
-    await loadAnnouncement();
+    const adminNameEl = document.getElementById('adminName');
+    if (adminNameEl) adminNameEl.innerText = me.user.fullName || me.user.username || 'Admin';
+    await Promise.all([
+      refreshAdminData({ includeActiveSection: false }),
+      loadAdminImages(),
+      loadAnnouncement()
+    ]);
     
     // Setup tab views based on current URL hash
     handleHashChange();
+    startAdminAutoSync();
   } catch (err) {
     console.error(err);
     if (!['UNAUTHENTICATED', 'FORBIDDEN'].includes(err.message)) alert(err.message);
@@ -832,9 +1137,12 @@ async function loadAnnouncement() {
     const res = await fetch(`${ADMIN_API_BASE}/admin/announcement/public`);
     const data = await res.json().catch(() => ({}));
     if (data.ok && data.announcement) {
-      document.getElementById('announceTitle').value = data.announcement.title || '';
-      document.getElementById('announceContent').value = data.announcement.content || '';
-      document.getElementById('announceActive').checked = !!data.announcement.active;
+      const announceTitleEl = document.getElementById('announceTitle');
+      if (announceTitleEl) announceTitleEl.value = data.announcement.title || '';
+      const announceContentEl = document.getElementById('announceContent');
+      if (announceContentEl) announceContentEl.value = data.announcement.content || '';
+      const announceActiveEl = document.getElementById('announceActive');
+      if (announceActiveEl) announceActiveEl.checked = !!data.announcement.active;
     }
   } catch (err) {
     console.error('Error loading announcement:', err);
@@ -845,9 +1153,12 @@ async function saveAnnouncement() {
   const token = adminToken();
   if (!token) return;
 
-  const title = document.getElementById('announceTitle').value.trim();
-  const content = document.getElementById('announceContent').value.trim();
-  const active = document.getElementById('announceActive').checked;
+  const titleEl = document.getElementById('announceTitle');
+  const contentEl = document.getElementById('announceContent');
+  const activeEl = document.getElementById('announceActive');
+  const title = titleEl ? titleEl.value.trim() : '';
+  const content = contentEl ? contentEl.value.trim() : '';
+  const active = activeEl ? activeEl.checked : false;
 
   try {
     const res = await fetch(`${ADMIN_API_BASE}/admin/announcement`, {
@@ -880,89 +1191,156 @@ async function loadWarehouseData() {
   try {
     const res = await adminFetch('/admin/dashboard-stats');
     if (res.ok && res.stats) {
-      document.getElementById('whStatAvailable').innerText = res.stats.totalStock;
-      document.getElementById('whStatReserved').innerText = res.stats.reserved;
-      document.getElementById('whStatActiveBatches').innerText = res.stats.totalVendors; // Mock or count batches
-      document.getElementById('whStatLowWarning').innerText = res.stats.lowStock ? res.stats.lowStock.length : 0;
+      const whStatAvailable = document.getElementById('whStatAvailable');
+      if (whStatAvailable) whStatAvailable.innerText = res.stats.totalStock;
+      const whStatReserved = document.getElementById('whStatReserved');
+      if (whStatReserved) whStatReserved.innerText = res.stats.reserved;
+      const whStatActiveBatches = document.getElementById('whStatActiveBatches');
+      if (whStatActiveBatches) whStatActiveBatches.innerText = res.stats.totalVendors;
+      const whStatLowWarning = document.getElementById('whStatLowWarning');
+      if (whStatLowWarning) whStatLowWarning.innerText = res.stats.lowStock ? res.stats.lowStock.length : 0;
     }
   } catch (err) {
     console.error('Stats load warning:', err.message);
   }
   
-  // Populate filter dropdowns
-  populateWarehouseFilterDropdowns();
-  loadInventoryItems();
-  loadInventoryBatches();
-  loadInventoryHistories();
+  const activeProductId = selectedWarehouseProductId;
+  const activeProductStillExists = activeProductId &&
+    adminProducts.some(product => String(product.id) === String(activeProductId));
+
+  if (activeProductStillExists) {
+    await openWarehouseProductDetails(activeProductId);
+  } else {
+    closeWarehouseProductDetails();
+  }
+
+  await Promise.all([
+    loadInventoryBatches(),
+    loadInventoryHistories()
+  ]);
 }
 
 function switchWarehouseSubTab(tab) {
   document.querySelectorAll('.wh-subtab-view').forEach(view => view.style.display = 'none');
-  document.getElementById(`wh-${tab}-subtab`).style.display = 'block';
+  const targetView = document.getElementById(`wh-${tab}-subtab`);
+  if (targetView) targetView.style.display = 'block';
   
   // Active class update
   const btnContainer = document.querySelector('#warehouse-section div[style*="border-bottom"]');
   if (btnContainer) {
     btnContainer.querySelectorAll('.sk-btn').forEach((btn, index) => {
-      const active = (tab === 'items' && index === 0) || (tab === 'batches' && index === 1) || (tab === 'history' && index === 2);
+      const active = (tab === 'stock' && index === 0) ||
+                     (tab === 'batches' && index === 1) ||
+                     (tab === 'history' && index === 2);
       btn.classList.toggle('active', active);
     });
   }
 }
 
-function switchVendorsSubTab(tab) {
-  document.querySelectorAll('.vd-subtab-view').forEach(view => view.style.display = 'none');
-  document.getElementById(`vd-${tab}-subtab`).style.display = 'block';
-  
-  const btnContainer = document.querySelector('#vendors-section div[style*="border-bottom"]');
-  if (btnContainer) {
-    btnContainer.querySelectorAll('.sk-btn').forEach((btn, index) => {
-      const active = (tab === 'list' && index === 0) || (tab === 'mapping' && index === 1) || (tab === 'logs' && index === 2);
-      btn.classList.toggle('active', active);
-    });
-  }
+function copyToClipboard(text) {
+  navigator.clipboard.writeText(text).then(() => {
+    alert('Đã sao chép thành công!');
+  }).catch(err => {
+    console.error('Cannot copy:', err);
+  });
 }
 
-function populateWarehouseFilterDropdowns() {
-  const prodSelect = document.getElementById('whFilterProduct');
-  if (!prodSelect) return;
-  
-  prodSelect.innerHTML = '<option value="">-- Tất cả sản phẩm --</option>' +
-    adminProducts.map(p => `<option value="${p.id}">${escapeAdminHtml(p.name)}</option>`).join('');
-  
-  onWhFilterProductChange();
-}
+let selectedWarehouseProductId = null;
 
-function onWhFilterProductChange() {
-  const prodId = document.getElementById('whFilterProduct').value;
-  const varSelect = document.getElementById('whFilterVariant');
-  if (!varSelect) return;
+async function openWarehouseProductDetails(productId) {
+  selectedWarehouseProductId = productId;
+  const prod = adminProducts.find(p => String(p.id) === String(productId));
+  if (!prod) return;
 
-  if (!prodId) {
-    varSelect.innerHTML = '<option value="">-- Tất cả gói --</option>';
-    loadInventoryItems();
-    return;
+  const nameEl = document.getElementById('whDetailsProductName');
+  if (nameEl) nameEl.innerText = prod.name;
+  
+  const slugEl = document.getElementById('whDetailsProductSlug');
+  if (slugEl) slugEl.innerText = prod.slug;
+  
+  const importBtn = document.getElementById('whDetailsImportBtn');
+  if (importBtn) {
+    importBtn.onclick = () => {
+      openImportStockModal(prod.id);
+    };
   }
 
-  const prod = adminProducts.find(p => p.id === prodId);
-  const variants = prod ? prod.variants : [];
+  const variants = Array.isArray(prod.variants) ? prod.variants : [];
+
+  // Populate variant filter dropdown from product data
+  const varFilterSelect = document.getElementById('whDetailsFilterVariant');
+  if (varFilterSelect) {
+    varFilterSelect.innerHTML = '<option value="">-- Tất cả phân loại gói --</option>' +
+      variants.map(v => `<option value="${v.id}">${escapeAdminHtml(v.name)}</option>`).join('');
+  }
+
+  const prodView = document.getElementById('wh-stock-products-view');
+  if (prodView) prodView.style.display = 'none';
   
-  varSelect.innerHTML = '<option value="">-- Tất cả gói --</option>' +
-    variants.map(v => `<option value="${v.id}">${escapeAdminHtml(v.name)}</option>`).join('');
-  
-  loadInventoryItems();
+  const detailsView = document.getElementById('wh-stock-details-view');
+  if (detailsView) detailsView.style.display = 'block';
+
+  // Show loading in summary bar
+  const summaryEl = document.getElementById('whDetailsVariantsSummary');
+  if (summaryEl) summaryEl.innerHTML = '<span style="color: var(--muted); font-size: 12px;"><i class="fa-solid fa-spinner fa-spin"></i> Đang tải số liệu thực từ database...</span>';
+
+  // Fetch real stock counts from DB
+  try {
+    const stockRes = await adminFetch(`/admin/inventory/stock-summary?product_id=${productId}`);
+    if (summaryEl) {
+      if (stockRes.ok && stockRes.variantSummary && stockRes.variantSummary.length > 0) {
+        summaryEl.innerHTML = stockRes.variantSummary.map(vs => {
+          const isApi = vs.delivery_type === 'api';
+          const availDisplay = isApi ? '∞ (API)' : vs.available.toLocaleString('vi-VN');
+          return `
+            <div style="padding: 6px 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; font-size: 12px;">
+              <b style="color: var(--brand-light);">${escapeAdminHtml(vs.variant_name || 'Không có gói')}:</b>
+              <span style="font-weight: 800; color: #10b981;"><i class="fa-solid fa-box"></i> Còn ${availDisplay}</span>
+              <span style="font-weight: 700; color: #f59e0b; margin-left: 8px;"><i class="fa-solid fa-clock"></i> Giữ ${vs.reserved}</span>
+              <span style="font-weight: 700; color: #ef4444; margin-left: 8px;"><i class="fa-solid fa-circle-check"></i> Đã bán ${vs.sold}</span>
+            </div>
+          `;
+        }).join('');
+      } else if (variants.length === 0) {
+        summaryEl.innerHTML = '<span style="color: var(--muted); font-size: 12px; font-style: italic;">Sản phẩm này chưa cấu hình phân loại gói.</span>';
+      } else {
+        summaryEl.innerHTML = '<span style="color: var(--muted); font-size: 12px; font-style: italic;">Chưa có tài khoản nào trong kho của sản phẩm này.</span>';
+      }
+    }
+  } catch (err) {
+    if (summaryEl) summaryEl.innerHTML = `<span style="color: var(--danger); font-size: 12px;">Lỗi tải số liệu: ${escapeAdminHtml(err.message)}</span>`;
+  }
+
+  loadWarehouseProductItems();
 }
 
-async function loadInventoryItems() {
-  const prodId = document.getElementById('whFilterProduct')?.value || '';
-  const varId = document.getElementById('whFilterVariant')?.value || '';
-  const query = (document.getElementById('whItemSearch')?.value || '').trim().toLowerCase();
+function closeWarehouseProductDetails() {
+  selectedWarehouseProductId = null;
+  const detailsView = document.getElementById('wh-stock-details-view');
+  if (detailsView) detailsView.style.display = 'none';
   
-  const tbody = document.getElementById('whItemsTable');
+  const prodView = document.getElementById('wh-stock-products-view');
+  if (prodView) prodView.style.display = 'block';
+  
+  renderWarehouseProducts();
+}
+
+async function loadWarehouseProductItems() {
+  if (!selectedWarehouseProductId) return;
+  
+  const varId = document.getElementById('whDetailsFilterVariant')?.value || '';
+  const status = document.getElementById('whDetailsFilterStatus')?.value || '';
+  const query = (document.getElementById('whDetailsSearch')?.value || '').trim().toLowerCase();
+  const tbody = document.getElementById('whDetailsItemsTable');
   if (!tbody) return;
   
   try {
-    const res = await adminFetch(`/admin/inventory/items?product_id=${prodId}&variant_id=${varId}`);
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center"><i class="fa-solid fa-spinner fa-spin"></i> Đang tải dữ liệu...</td></tr>';
+    
+    const params = new URLSearchParams({ product_id: selectedWarehouseProductId });
+    if (varId) params.set('variant_id', varId);
+    if (status) params.set('status', status);
+    const res = await adminFetch(`/admin/inventory/items?${params.toString()}`);
     const items = res.items || [];
     
     const filtered = items.filter(item => {
@@ -971,28 +1349,199 @@ async function loadInventoryItems() {
     });
 
     tbody.innerHTML = filtered.map(item => {
-      let contentStr = '';
-      if (item.content?.email) {
-        contentStr = `Email: ${escapeAdminHtml(item.content.email)} | Pass: ${escapeAdminHtml(item.content.password)}`;
-      } else if (item.content?.key) {
-        contentStr = `Key: ${escapeAdminHtml(item.content.key)}`;
+      let contentHtml = '';
+      let rawText = '';
+      if (item.content && typeof item.content === 'object') {
+        const entries = Object.entries(item.content);
+        if (entries.length > 0) {
+          contentHtml = entries
+            .map(([k, v]) => `<span class="sk-content-pill"><b>${escapeAdminHtml(k)}:</b> ${escapeAdminHtml(String(v))}</span>`)
+            .join(' ');
+          rawText = entries.map(([k, v]) => String(v)).join('|');
+        } else {
+          contentHtml = `<code>{}</code>`;
+          rawText = '{}';
+        }
       } else {
-        contentStr = JSON.stringify(item.content);
+        const textVal = String(item.content || '');
+        contentHtml = `<code>${escapeAdminHtml(textVal)}</code>`;
+        rawText = textVal;
       }
+      
+      const escapedRawText = rawText.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+      const copyButton = `<button class="sk-btn-copy" onclick="copyToClipboard('${escapedRawText}')" title="Sao chép tài khoản"><i class="fa-regular fa-copy"></i></button>`;
+
+      const statusMeta = {
+        available: { label: 'Còn trong kho', icon: 'fa-box' },
+        reserved: { label: 'Đang giữ', icon: 'fa-clock' },
+        sold: { label: 'Đã bán', icon: 'fa-circle-check' }
+      }[item.status] || { label: item.status || 'Không xác định', icon: 'fa-circle-question' };
+      const orderText = item.sold_order_id
+        ? `<span style="font-size:11px; font-weight:700;">#${escapeAdminHtml(String(item.sold_order_id).slice(0, 8))}</span>`
+        : '<span style="color:var(--muted)">Chưa bán</span>';
 
       return `
         <tr>
-          <td><b>${escapeAdminHtml(item.products?.name || 'Sản phẩm')}</b><br><span style="font-size:11px; color:var(--muted)">${escapeAdminHtml(item.product_variants?.name || 'Gói')}</span></td>
-          <td><code>${contentStr}</code></td>
-          <td><span class="badge-status ${item.status}">${escapeAdminHtml(item.status)}</span></td>
+          <td><span style="font-size:13px; font-weight:600; color:var(--brand-light)">${escapeAdminHtml(item.product_variants?.name || 'Gói')}</span></td>
+          <td>
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+              <div style="display:flex; flex-wrap:wrap; gap:4px;">${contentHtml}</div>
+              ${copyButton}
+            </div>
+          </td>
+          <td><span class="badge-status ${escapeAdminHtml(item.status)}"><i class="fa-solid ${statusMeta.icon}" style="margin-right:5px"></i>${escapeAdminHtml(statusMeta.label)}</span></td>
           <td>${formatAdminMoney(item.cost_price)}</td>
-          <td>${item.sold_order_id ? `<span style="font-size:11px">Order UUID: ${item.sold_order_id.slice(0,8)}...</span>` : '---'}</td>
+          <td>${orderText}</td>
           <td>${formatAdminDate(item.created_at)}</td>
         </tr>
       `;
-    }).join('') || '<tr><td colspan="6">Không tìm thấy tài khoản nào trong kho.</td></tr>';
+    }).join('') || '<tr><td colspan="6" style="text-align:center">Không tìm thấy tài khoản nào trong kho của sản phẩm này.</td></tr>';
   } catch (err) {
-    tbody.innerHTML = `<tr><td colspan="6" style="color:var(--danger)">Lỗi: ${escapeAdminHtml(err.message)}</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="6" style="color:var(--danger); text-align:center">Lỗi: ${escapeAdminHtml(err.message)}</td></tr>`;
+  }
+}
+
+async function renderWarehouseProducts() {
+  const grid = document.getElementById('whProductsGrid');
+  if (!grid) return;
+  
+  const query = (document.getElementById('whProductSearch')?.value || '').trim().toLowerCase();
+  
+  const filtered = adminProducts.filter(prod => {
+    const haystack = `${prod.name || ''} ${prod.slug || ''} ${prod.cat || ''}`.toLowerCase();
+    return haystack.includes(query);
+  });
+  
+  // Show loading state first
+  grid.innerHTML = `<div style="text-align: center; padding: 40px; color: var(--muted); grid-column: 1 / -1;"><i class="fa-solid fa-spinner fa-spin" style="font-size: 24px; display: block; margin-bottom: 8px;"></i> Đang tải dữ liệu kho từ database...</div>`;
+
+  // Fetch an authoritative aggregate from the database. The backend paginates
+  // every inventory row, so this remains correct beyond PostgREST's row limit.
+  const stockMap = {};
+  let stockSummaryLoaded = false;
+  try {
+    const summaryRes = await adminFetch('/admin/inventory/stock-summary');
+    if (summaryRes.ok && Array.isArray(summaryRes.productSummary)) {
+      stockSummaryLoaded = true;
+
+      // Initialize all products to zero. A missing aggregate means the product
+      // genuinely has no inventory, not that stock_cache should be trusted.
+      for (const product of adminProducts) {
+        stockMap[String(product.id)] = { available: 0, reserved: 0, sold: 0, total: 0 };
+      }
+
+      for (const summary of summaryRes.productSummary) {
+        stockMap[String(summary.product_id)] = {
+          available: Number(summary.available || 0),
+          reserved: Number(summary.reserved || 0),
+          sold: Number(summary.sold || 0),
+          total: Number(summary.total || 0)
+        };
+      }
+    }
+  } catch (err) {
+    console.warn('Could not load real stock data:', err.message);
+  }
+  
+  if (filtered.length === 0) {
+    grid.innerHTML = '<div style="text-align: center; padding: 32px; color: var(--muted); grid-column: 1 / -1;"><i class="fa-solid fa-folder-open" style="font-size: 24px; display: block; margin-bottom: 8px;"></i> Không tìm thấy sản phẩm nào.</div>';
+    return;
+  }
+
+  grid.innerHTML = filtered.map(prod => {
+    const variants = Array.isArray(prod.variants) ? prod.variants : [];
+    const iconClass = safeAdminIconClass(prod.icon);
+    const isApiOnly = prod.delivery_type === 'api' || (variants.length > 0 && variants.every(v => v.delivery_type === 'api'));
+    
+    // Use real DB stock if available, otherwise fall back to stock_cache
+    const realStock = stockMap[String(prod.id)];
+    let stockDisplay;
+    let reservedDisplay = 0;
+    let soldDisplay = 0;
+    if (isApiOnly) {
+      stockDisplay = '∞ (API)';
+    } else if (stockSummaryLoaded && realStock) {
+      stockDisplay = realStock.available.toLocaleString('vi-VN');
+      reservedDisplay = realStock.reserved;
+      soldDisplay = realStock.sold;
+    } else {
+      // Fallback to stock_cache sum
+      let totalFromCache = 0;
+      variants.forEach(v => { if (v.delivery_type !== 'api') totalFromCache += Number(v.stock || 0); });
+      if (variants.length === 0) totalFromCache = prod.stock || 0;
+      stockDisplay = totalFromCache.toLocaleString('vi-VN');
+    }
+    
+    const imageSrc = adminImageSrc(prod.image);
+    const imgHtml = imageSrc
+      ? `<img src="${escapeAdminHtml(imageSrc)}" alt="${escapeAdminHtml(prod.name || 'Sản phẩm')}" data-fallback-icon="${escapeAdminHtml(iconClass)}" class="sk-prod-avatar" style="width:40px; height:40px; margin-right:0;"/>`
+      : adminProductIconFallback(iconClass).replace(/style="[^"]*"/, 'class="sk-prod-avatar" style="width:40px; height:40px; font-size:18px; margin-right:0;"');
+
+    return `
+      <div class="sk-product-admin-card" style="margin: 0; display: flex; flex-direction: column; justify-content: space-between; min-height: 180px;">
+        <div>
+          <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 12px;">
+            ${imgHtml}
+            <div>
+              <h3 style="margin: 0; font-size: 15px; font-weight: 800; color: var(--text-bright);">${escapeAdminHtml(prod.name)}</h3>
+              <span class="sk-badge ${escapeAdminHtml(prod.cat)}" style="font-size: 9px; padding: 2px 6px; text-transform: uppercase;">${escapeAdminHtml(prod.cat)}</span>
+            </div>
+          </div>
+          <div style="background: rgba(255,255,255,0.02); padding: 8px 12px; border-radius: 6px; margin-bottom: 15px; font-size: 12px; border: 1px solid rgba(255,255,255,0.04);">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+              <span style="color: var(--muted);">Còn trong kho:</span>
+              <b style="color: #10b981;">${stockDisplay}</b>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+              <span style="color: var(--muted);">Đang giữ:</span>
+              <b style="color: #f59e0b;">${reservedDisplay.toLocaleString('vi-VN')}</b>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+              <span style="color: var(--muted);">Đã bán:</span>
+              <b style="color: #ef4444;">${soldDisplay.toLocaleString('vi-VN')}</b>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span style="color: var(--muted);">Phân loại gói:</span>
+              <span style="font-weight:600; color:var(--brand-light);">${variants.length} gói</span>
+            </div>
+          </div>
+        </div>
+        <button class="sk-btn sk-btn-soft" onclick="openWarehouseProductDetails('${prod.id}')" style="width: 100%; justify-content: center; font-size: 12px; height: 32px; font-weight: 700;">
+          <i class="fa-solid fa-folder-open"></i> Xem chi tiết kho
+        </button>
+      </div>
+    `;
+  }).join('');
+  
+  const gridNode = document.getElementById('whProductsGrid');
+  if (gridNode) {
+    gridNode.querySelectorAll('img.sk-prod-avatar').forEach(image => {
+      image.addEventListener('error', () => {
+        const wrapper = document.createElement('div');
+        wrapper.innerHTML = adminProductIconFallback(image.dataset.fallbackIcon);
+        const fallbackNode = wrapper.firstElementChild;
+        fallbackNode.classList.add('sk-prod-avatar');
+        fallbackNode.style.width = '40px';
+        fallbackNode.style.height = '40px';
+        fallbackNode.style.fontSize = '18px';
+        fallbackNode.style.marginRight = '0';
+        image.replaceWith(fallbackNode);
+      }, { once: true });
+    });
+  }
+}
+
+function switchVendorsSubTab(tab) {
+  document.querySelectorAll('.vd-subtab-view').forEach(view => view.style.display = 'none');
+  const targetVdView = document.getElementById(`vd-${tab}-subtab`);
+  if (targetVdView) targetVdView.style.display = 'block';
+  
+  const btnContainer = document.querySelector('#vendors-section div[style*="border-bottom"]');
+  if (btnContainer) {
+    btnContainer.querySelectorAll('.sk-btn').forEach((btn, index) => {
+      const active = (tab === 'list' && index === 0) || (tab === 'mapping' && index === 1) || (tab === 'logs' && index === 2);
+      btn.classList.toggle('active', active);
+    });
   }
 }
 
@@ -1017,22 +1566,73 @@ async function loadInventoryBatches() {
   }
 }
 
+function inventoryStatusMeta(status) {
+  const normalized = String(status || '').toLowerCase();
+  return {
+    available: { label: 'Còn trong kho', icon: 'fa-box', className: 'available' },
+    reserved: { label: 'Đang giữ', icon: 'fa-clock', className: 'reserved' },
+    sold: { label: 'Đã bán', icon: 'fa-circle-check', className: 'sold' }
+  }[normalized] || {
+    label: status || 'Chưa xác định',
+    icon: 'fa-circle-question',
+    className: 'warning'
+  };
+}
+
+function inventoryActionMeta(action) {
+  const normalized = String(action || '').toLowerCase();
+  return {
+    import: { label: 'Nhập kho', icon: 'fa-file-import', color: '#10b981' },
+    imported: { label: 'Nhập kho', icon: 'fa-file-import', color: '#10b981' },
+    reserve: { label: 'Giữ cho đơn', icon: 'fa-clock', color: '#f59e0b' },
+    reserved: { label: 'Giữ cho đơn', icon: 'fa-clock', color: '#f59e0b' },
+    sell: { label: 'Xuất bán', icon: 'fa-cart-shopping', color: '#ef4444' },
+    sold: { label: 'Xuất bán', icon: 'fa-cart-shopping', color: '#ef4444' },
+    release: { label: 'Trả lại kho', icon: 'fa-rotate-left', color: '#3b82f6' },
+    released: { label: 'Trả lại kho', icon: 'fa-rotate-left', color: '#3b82f6' },
+    update: { label: 'Cập nhật', icon: 'fa-pen', color: '#8b5cf6' },
+    delete: { label: 'Xóa khỏi kho', icon: 'fa-trash', color: '#ef4444' }
+  }[normalized] || {
+    label: action || 'Thay đổi',
+    icon: 'fa-pen-to-square',
+    color: 'var(--muted)'
+  };
+}
+
+function renderInventorySnapshot(snapshot) {
+  if (!snapshot || typeof snapshot !== 'object') {
+    return `<span style="color:var(--muted)">${escapeAdminHtml(snapshot || 'Không có dữ liệu')}</span>`;
+  }
+
+  const entries = Object.entries(snapshot);
+  if (!entries.length) return '<span style="color:var(--muted)">Không có dữ liệu</span>';
+  return `<div style="display:flex; flex-wrap:wrap; gap:5px;">${entries.map(([key, value]) =>
+    `<span class="sk-content-pill"><b>${escapeAdminHtml(key)}:</b> ${escapeAdminHtml(String(value ?? ''))}</span>`
+  ).join('')}</div>`;
+}
+
 async function loadInventoryHistories() {
   const tbody = document.getElementById('whHistoryTable');
   if (!tbody) return;
   try {
     const res = await adminFetch('/admin/inventory/histories');
-    tbody.innerHTML = (res.histories || []).map(h => `
-      <tr>
-        <td>${h.id}</td>
-        <td><span class="sk-badge">${escapeAdminHtml(h.action.toUpperCase())}</span></td>
-        <td><b>${escapeAdminHtml(h.product_name)}</b><br><span style="font-size:11px; color:var(--muted)">${escapeAdminHtml(h.variant_name)}</span></td>
-        <td><code>${escapeAdminHtml(h.status_before || '---')}</code></td>
-        <td><code>${escapeAdminHtml(h.status_after || '---')}</code></td>
-        <td><code style="font-size:11px;">${JSON.stringify(h.content_snapshot || {})}</code></td>
-        <td>${formatAdminDate(h.created_at)}</td>
-      </tr>
-    `).join('') || '<tr><td colspan="7">Chưa có nhật ký hoạt động nào.</td></tr>';
+    tbody.innerHTML = (res.histories || []).map(h => {
+      const action = inventoryActionMeta(h.action);
+      const before = inventoryStatusMeta(h.status_before);
+      const after = inventoryStatusMeta(h.status_after);
+      const shortId = String(h.id || '').slice(0, 8);
+      return `
+        <tr>
+          <td><code title="${escapeAdminHtml(h.id || '')}">#${escapeAdminHtml(shortId || '---')}</code></td>
+          <td><span class="sk-badge" style="color:${action.color}; border-color:color-mix(in srgb, ${action.color} 30%, transparent);"><i class="fa-solid ${action.icon}" style="margin-right:5px"></i>${escapeAdminHtml(action.label)}</span></td>
+          <td><b>${escapeAdminHtml(h.product_name)}</b><br><span style="font-size:11px; color:var(--muted)">${escapeAdminHtml(h.variant_name)}</span></td>
+          <td><span class="badge-status ${before.className}"><i class="fa-solid ${before.icon}" style="margin-right:5px"></i>${escapeAdminHtml(before.label)}</span></td>
+          <td><span class="badge-status ${after.className}"><i class="fa-solid ${after.icon}" style="margin-right:5px"></i>${escapeAdminHtml(after.label)}</span></td>
+          <td>${renderInventorySnapshot(h.content_snapshot)}</td>
+          <td><b>${formatAdminDate(h.created_at)}</b></td>
+        </tr>
+      `;
+    }).join('') || '<tr><td colspan="7" style="text-align:center; color:var(--muted)">Chưa có thay đổi kho nào được ghi nhận.</td></tr>';
   } catch (err) {
     tbody.innerHTML = `<tr><td colspan="7">Lỗi tải lịch sử kho</td></tr>`;
   }
@@ -1421,10 +2021,14 @@ async function triggerImportPreview() {
     const data = await res.json();
     if (data.ok && data.report) {
       if (previewCard) previewCard.style.display = 'block';
-      document.getElementById('previewTotal').innerText = data.report.totalLines;
-      document.getElementById('previewValid').innerText = data.report.validCount;
-      document.getElementById('previewDupDb').innerText = data.report.duplicateInDbCount;
-      document.getElementById('previewDupFile').innerText = data.report.duplicateInFileCount;
+      const previewTotalEl = document.getElementById('previewTotal');
+      if (previewTotalEl) previewTotalEl.innerText = data.report.totalLines;
+      const previewValidEl = document.getElementById('previewValid');
+      if (previewValidEl) previewValidEl.innerText = data.report.validCount;
+      const previewDupDbEl = document.getElementById('previewDupDb');
+      if (previewDupDbEl) previewDupDbEl.innerText = data.report.duplicateInDbCount;
+      const previewDupFileEl = document.getElementById('previewDupFile');
+      if (previewDupFileEl) previewDupFileEl.innerText = data.report.duplicateInFileCount;
 
       const tableBody = document.getElementById('importPreviewTableBody');
       if (tableBody) {
@@ -1482,21 +2086,37 @@ async function triggerImportPreview() {
 }
 
 // Modals toggling
-function openImportStockModal() {
+function openImportStockModal(productId = '', variantId = '') {
   const modal = document.getElementById('importStockModal');
-  document.getElementById('importStockForm').reset();
-  document.getElementById('importPreviewCard').style.display = 'none';
-  document.getElementById('btnSubmitImport').disabled = true;
+  if (!modal) return;
+  const importStockForm = document.getElementById('importStockForm');
+  if (importStockForm) importStockForm.reset();
+  const importPreviewCard = document.getElementById('importPreviewCard');
+  if (importPreviewCard) importPreviewCard.style.display = 'none';
+  const btnSubmitImport = document.getElementById('btnSubmitImport');
+  if (btnSubmitImport) btnSubmitImport.disabled = true;
   
   loadDropdownProducts('importProdSelect');
-  onImportProductSelectChange();
+  
+  if (productId) {
+    const importProdSelect = document.getElementById('importProdSelect');
+    if (importProdSelect) importProdSelect.value = productId;
+    onImportProductSelectChange();
+    if (variantId) {
+      const importVarSelect = document.getElementById('importVarSelect');
+      if (importVarSelect) importVarSelect.value = variantId;
+    }
+  } else {
+    onImportProductSelectChange();
+  }
   setupImportDragDrop();
   
   modal.classList.remove('opacity-0', 'pointer-events-none');
 }
 
 function closeImportStockModal() {
-  document.getElementById('importStockModal').classList.add('opacity-0', 'pointer-events-none');
+  const importStockModal = document.getElementById('importStockModal');
+  if (importStockModal) importStockModal.classList.add('opacity-0', 'pointer-events-none');
 }
 
 async function submitImportStock(event) {
@@ -1527,7 +2147,7 @@ async function submitImportStock(event) {
     if (res.ok) {
       alert(`Ghi nhận nhập kho thành công!\n✓ Thành công: ${data.report?.successCount || 0}\n✗ Bỏ qua: ${data.report?.duplicateCount || 0}`);
       closeImportStockModal();
-      loadWarehouseData();
+      await refreshAdminData({ silent: true });
     } else {
       throw new Error(data.message || 'Lỗi nhập hàng');
     }
@@ -1538,27 +2158,37 @@ async function submitImportStock(event) {
 
 function openVendorModal(id = '') {
   const modal = document.getElementById('vendorModal');
-  document.getElementById('vendorForm').reset();
-  document.getElementById('vendorId').value = id;
+  if (!modal) return;
+  const vendorForm = document.getElementById('vendorForm');
+  if (vendorForm) vendorForm.reset();
+  const vendorIdEl = document.getElementById('vendorId');
+  if (vendorIdEl) vendorIdEl.value = id;
+  const vendorModalTitle = document.getElementById('vendorModalTitle');
   
   if (id) {
-    document.getElementById('vendorModalTitle').innerText = 'Chỉnh sửa nhà cung cấp';
+    if (vendorModalTitle) vendorModalTitle.innerText = 'Chỉnh sửa nhà cung cấp';
     const v = allVendors.find(item => Number(item.id) === Number(id));
     if (v) {
-      document.getElementById('vendorName').value = v.name || '';
-      document.getElementById('vendorApiUrl').value = v.api_url || '';
-      document.getElementById('vendorApiKey').value = v.api_key || '';
-      document.getElementById('vendorAdapterKey').value = v.adapter_key || 'botmmo';
-      document.getElementById('vendorStatus').value = v.status || 'active';
+      const vendorName = document.getElementById('vendorName');
+      if (vendorName) vendorName.value = v.name || '';
+      const vendorApiUrl = document.getElementById('vendorApiUrl');
+      if (vendorApiUrl) vendorApiUrl.value = v.api_url || '';
+      const vendorApiKey = document.getElementById('vendorApiKey');
+      if (vendorApiKey) vendorApiKey.value = v.api_key || '';
+      const vendorAdapterKey = document.getElementById('vendorAdapterKey');
+      if (vendorAdapterKey) vendorAdapterKey.value = v.adapter_key || 'botmmo';
+      const vendorStatus = document.getElementById('vendorStatus');
+      if (vendorStatus) vendorStatus.value = v.status || 'active';
     }
   } else {
-    document.getElementById('vendorModalTitle').innerText = 'Thêm nhà cung cấp API';
+    if (vendorModalTitle) vendorModalTitle.innerText = 'Thêm nhà cung cấp API';
   }
   modal.classList.remove('opacity-0', 'pointer-events-none');
 }
 
 function closeVendorModal() {
-  document.getElementById('vendorModal').classList.add('opacity-0', 'pointer-events-none');
+  const vendorModalEl = document.getElementById('vendorModal');
+  if (vendorModalEl) vendorModalEl.classList.add('opacity-0', 'pointer-events-none');
 }
 
 async function saveVendor(e) {
@@ -1566,12 +2196,13 @@ async function saveVendor(e) {
   const token = adminToken();
   if (!token) return;
 
-  const id = document.getElementById('vendorId').value;
-  const name = document.getElementById('vendorName').value.trim();
-  const api_url = document.getElementById('vendorApiUrl').value.trim();
-  const api_key = document.getElementById('vendorApiKey').value.trim();
-  const adapter_key = document.getElementById('vendorAdapterKey').value;
-  const status = document.getElementById('vendorStatus').value;
+  const getVal = (id) => { const el = document.getElementById(id); return el ? el.value : ''; };
+  const id = getVal('vendorId');
+  const name = getVal('vendorName').trim();
+  const api_url = getVal('vendorApiUrl').trim();
+  const api_key = getVal('vendorApiKey').trim();
+  const adapter_key = getVal('vendorAdapterKey');
+  const status = getVal('vendorStatus');
 
   const method = id ? 'PUT' : 'POST';
   const url = id ? `/admin/vendors/${id}` : '/admin/vendors';
@@ -1597,7 +2228,9 @@ async function saveVendor(e) {
 
 function openMappingModal() {
   const modal = document.getElementById('mappingModal');
-  document.getElementById('mappingForm').reset();
+  if (!modal) return;
+  const mappingFormEl = document.getElementById('mappingForm');
+  if (mappingFormEl) mappingFormEl.reset();
   
   loadDropdownProducts('mapProdSelect');
   onMapProductSelectChange();
@@ -1612,7 +2245,8 @@ function openMappingModal() {
 }
 
 function closeMappingModal() {
-  document.getElementById('mappingModal').classList.add('opacity-0', 'pointer-events-none');
+  const mappingModalEl = document.getElementById('mappingModal');
+  if (mappingModalEl) mappingModalEl.classList.add('opacity-0', 'pointer-events-none');
 }
 
 async function saveMapping(e) {
@@ -1620,12 +2254,14 @@ async function saveMapping(e) {
   const token = adminToken();
   if (!token) return;
 
-  const vendor_id = document.getElementById('mapVendorSelect').value;
-  const product_id = document.getElementById('mapProdSelect').value;
-  const variant_id = document.getElementById('mapVarSelect').value;
-  const vendor_product_code = document.getElementById('mapVendorProductCode').value;
-  const priority = document.getElementById('mapPriority').value;
-  const enabled = document.getElementById('mapEnabled').checked;
+  const getVal2 = (id) => { const el = document.getElementById(id); return el ? el.value : ''; };
+  const vendor_id = getVal2('mapVendorSelect');
+  const product_id = getVal2('mapProdSelect');
+  const variant_id = getVal2('mapVarSelect');
+  const vendor_product_code = getVal2('mapVendorProductCode');
+  const priority = getVal2('mapPriority');
+  const mapEnabledEl = document.getElementById('mapEnabled');
+  const enabled = mapEnabledEl ? mapEnabledEl.checked : false;
 
   try {
     const res = await fetch(`${ADMIN_API_BASE}/admin/vendor-products`, {
@@ -1725,7 +2361,8 @@ async function uploadProductImage(event) {
     }
 
     // Set URL into the text input
-    document.getElementById('prodImage').value = data.url;
+    const prodImageEl = document.getElementById('prodImage');
+    if (prodImageEl) prodImageEl.value = data.url;
     
     // Add to library dropdown if possible
     const select = document.getElementById('prodImageSelect');
@@ -1834,4 +2471,18 @@ function autoDetectFormat() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', loadAdminDashboard);
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState !== 'visible' || !adminLastSyncAt) return;
+  if (Date.now() - adminLastSyncAt.getTime() >= ADMIN_SYNC_INTERVAL_MS) {
+    refreshAdminData({ silent: true, includeActiveSection: false }).catch(() => {});
+  }
+});
+
+window.addEventListener('beforeunload', () => {
+  if (adminSyncTimer) clearInterval(adminSyncTimer);
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  initializeAdminTheme();
+  loadAdminDashboard();
+});

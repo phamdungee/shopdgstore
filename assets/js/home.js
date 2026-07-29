@@ -1,4 +1,4 @@
-    const API_BASE = window.DG_API_BASE || window.SKYNET_API_BASE || '/api';
+    const API_BASE = window.DG_API_BASE || window.SKYNET_API_BASE || (window.location.protocol === 'file:' ? 'http://localhost:3000/api' : '/api');
     function formatMoney(v) { return `${Number(v || 0).toLocaleString('vi-VN')}đ`; }
     function getStoredUser() { try { return JSON.parse(localStorage.getItem('user') || 'null'); } catch { return null; } }
     function clearAuthSession() { localStorage.removeItem('token'); localStorage.removeItem('user'); localStorage.removeItem('isLoggedIn'); }

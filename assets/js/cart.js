@@ -290,6 +290,10 @@ function resetModalFlow(item) {
   document.getElementById('deliveryResultText').value = '';
   document.getElementById('errorResultBox').style.display = 'none';
   document.getElementById('errorDetailText').innerText = '';
+  const depBtn = document.getElementById('depositErrorBtn');
+  if (depBtn) depBtn.style.display = 'none';
+  const guideText = document.getElementById('errorGuideText');
+  if (guideText) guideText.innerHTML = 'Vui lòng liên hệ <b>Admin</b> để được hỗ trợ.';
 
   // Reset and render Turnstile widget
   const container = document.getElementById('checkout-turnstile');
@@ -481,8 +485,19 @@ async function checkoutCart() {
 
         const errorBox = document.getElementById('errorResultBox');
         const errorDetail = document.getElementById('errorDetailText');
-        if (errorDetail) errorDetail.innerText = orderError.message || 'Lỗi không xác định';
+        const errorMsg = orderError.message || 'Lỗi không xác định';
+        if (errorDetail) errorDetail.innerText = errorMsg;
         if (errorBox) errorBox.style.display = 'block';
+
+        const depBtn = document.getElementById('depositErrorBtn');
+        const guideText = document.getElementById('errorGuideText');
+        const isBalanceError = errorMsg.includes('Số dư không đủ') || errorMsg.toLowerCase().includes('không đủ số dư') || errorMsg.toLowerCase().includes('số dư của bạn không đủ');
+        if (depBtn) {
+          depBtn.style.display = isBalanceError ? 'inline-flex' : 'none';
+        }
+        if (guideText) {
+          guideText.innerHTML = isBalanceError ? 'Vui lòng <b>nạp tiền</b> để tiếp tục thanh toán.' : 'Vui lòng liên hệ <b>Admin</b> để được hỗ trợ.';
+        }
 
         document.getElementById('modalFooterActions').style.display = 'none';
 

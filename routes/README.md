@@ -11,7 +11,8 @@ products.js  -> GET /api/products, GET /api/products/:slug
 orders.js    -> POST /api/orders
 deposits.js  -> /api/deposits/* va webhook Casso
 admin.js     -> /api/admin/*
-tracking.js  -> /api/spx-track, /api/ghn-track, /api/watch va Telegram scheduler
+upload.js    -> upload/delete Cloudflare R2 co xac thuc va ownership
+support.js   -> ticket ho tro va dieu kien bao hanh 48 gio
 pages.js     -> HTML page routes
 ```
 
@@ -24,6 +25,7 @@ San pham public         -> products.js
 Mua hang/checkout       -> orders.js
 Nap tien/Casso          -> deposits.js
 Quan tri                -> admin.js
-Van don/Telegram bot    -> tracking.js
+Anh R2                  -> upload.js
+Ho tro/bao hanh         -> support.js
 Trang HTML              -> pages.js
 ```

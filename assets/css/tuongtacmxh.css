@@ -30,7 +30,9 @@
   border-radius: var(--radius-lg);
   margin-bottom: 20px;
   backdrop-filter: var(--glass-blur);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), 0 0 15px rgba(14, 165, 233, 0.05);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.2),
+    0 0 15px rgba(14, 165, 233, 0.05);
 }
 
 .balance-card h3 {
@@ -318,7 +320,9 @@
 .dynamic-field-block input:focus,
 .dynamic-field-block textarea:focus {
   border-color: var(--warning) !important;
-  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1), 0 0 12px rgba(245, 158, 11, 0.2) !important;
+  box-shadow:
+    0 0 0 3px rgba(245, 158, 11, 0.1),
+    0 0 12px rgba(245, 158, 11, 0.2) !important;
 }
 
 /* Status color labels */
@@ -339,7 +343,9 @@
   background: rgba(34, 197, 94, 0.02);
   border-radius: var(--radius-lg);
   border: 1px solid rgba(34, 197, 94, 0.15);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15), 0 0 15px rgba(34, 197, 94, 0.02);
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.15),
+    0 0 15px rgba(34, 197, 94, 0.02);
 }
 
 .pulse-dot {
@@ -445,7 +451,9 @@ tbody tr.is-selected {
 .custom-dropdown-btn:focus,
 .custom-dropdown.is-open .custom-dropdown-btn {
   border-color: var(--brand);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1), 0 0 12px var(--brand-glow);
+  box-shadow:
+    0 0 0 3px rgba(99, 102, 241, 0.1),
+    0 0 12px var(--brand-glow);
 }
 
 .dropdown-selected-val {
@@ -489,7 +497,9 @@ tbody tr.is-selected {
   z-index: 1000;
   max-height: 250px;
   overflow-y: auto;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(99, 102, 241, 0.05);
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.5),
+    0 0 15px rgba(99, 102, 241, 0.05);
   backdrop-filter: blur(20px);
   opacity: 0;
   transform: translateY(-8px);
@@ -546,7 +556,7 @@ tbody tr.is-selected {
     max-height: calc(100vh - 120px) !important;
     overflow-y: auto !important;
   }
-  
+
   /* Styling custom slim scrollbar for orderPanel container */
   .sk-social-sidebar #orderPanel::-webkit-scrollbar {
     width: 4px;
@@ -570,20 +580,20 @@ tbody tr.is-selected {
     overflow-x: visible !important;
     border-radius: 0;
   }
-  
-  .sk-table, 
-  .sk-table thead, 
-  .sk-table tbody, 
-  .sk-table tr, 
+
+  .sk-table,
+  .sk-table thead,
+  .sk-table tbody,
+  .sk-table tr,
   .sk-table td {
     display: block !important;
     width: 100% !important;
   }
-  
+
   .sk-table thead {
     display: none !important;
   }
-  
+
   .sk-table tbody tr {
     position: relative;
     padding: 16px !important;
@@ -597,25 +607,25 @@ tbody tr.is-selected {
     cursor: pointer;
     transition: all var(--transition) !important;
   }
-  
+
   .sk-table tbody tr:hover {
     background: rgba(99, 102, 241, 0.08) !important;
     border-color: var(--line-strong) !important;
   }
-  
+
   .sk-table tbody tr.is-selected {
     background: var(--brand-soft) !important;
     border-left: 4px solid var(--brand) !important;
     border-color: var(--brand) !important;
     box-shadow: 0 0 15px rgba(99, 102, 241, 0.15);
   }
-  
+
   .sk-table td {
     padding: 0 !important;
     border: none !important;
     text-align: left !important;
   }
-  
+
   /* Column 1: Service ID Badge */
   .sk-table td:nth-child(1) {
     display: inline-flex !important;
@@ -629,32 +639,32 @@ tbody tr.is-selected {
     width: max-content !important;
     border: 1px solid rgba(99, 102, 241, 0.2) !important;
   }
-  
+
   .sk-table td:nth-child(1)::before {
     content: "MÃ DỊCH VỤ: ";
     color: var(--muted);
     font-weight: 700;
     margin-right: 4px;
   }
-  
+
   /* Column 2: Name and description */
   .sk-table td:nth-child(2) {
     margin-top: 2px;
   }
-  
+
   .sk-table td:nth-child(2) strong {
     font-size: 14.5px !important;
     line-height: 1.4 !important;
     display: block;
     color: var(--text-bright) !important;
   }
-  
+
   .sk-table td:nth-child(2) .desc-text {
     margin-top: 8px !important;
     font-size: 11px !important;
     display: block !important;
   }
-  
+
   /* Column 3: Rate per 1000 */
   .sk-table td:nth-child(3) {
     display: flex !important;
@@ -665,14 +675,14 @@ tbody tr.is-selected {
     color: var(--success) !important;
     margin-top: 4px;
   }
-  
+
   .sk-table td:nth-child(3)::before {
     content: "Giá sl 1000:";
     color: var(--muted);
     font-size: 12px;
     font-weight: 600;
   }
-  
+
   /* Column 4: Min / Max */
   .sk-table td:nth-child(4) {
     display: flex !important;
@@ -682,15 +692,14 @@ tbody tr.is-selected {
     color: var(--text) !important;
     margin-top: 2px;
   }
-  
+
   .sk-table td:nth-child(4)::before {
     content: "Tối thiểu/Tối đa:";
     color: var(--muted);
     font-size: 12px;
     font-weight: 600;
   }
-  
-  
+
   /* Override styles for .sk-history-table on mobile to fix labels and layout */
   .sk-history-table tbody tr {
     cursor: default !important;
@@ -823,7 +832,10 @@ tbody tr.is-selected {
     border-top: 1px dashed var(--line) !important;
     padding-top: 10px !important;
   }
-  #recent-orders-wrapper .sk-history-table td:nth-child(6) .sk-order-check-badge-btn {
+  #recent-orders-wrapper
+    .sk-history-table
+    td:nth-child(6)
+    .sk-order-check-badge-btn {
     width: 100% !important;
     display: block !important;
     text-align: center !important;
@@ -850,7 +862,7 @@ tbody tr.is-selected {
     gap: 12px !important;
     padding: 16px !important;
   }
-  
+
   .filter-group {
     width: 100% !important;
     min-width: 0 !important;

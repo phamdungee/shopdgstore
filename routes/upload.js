@@ -1,131 +1,142 @@
 const express = require('express');
-const router = express.Router();
 const multer = require('multer');
-const { v4: uuidv4 } = require('uuid');
-const path = require('path');
-const fs = require('fs');
-const { PutObjectCommand } = require('@aws-sdk/client-s3');
+const crypto = require('crypto');
+const { PutObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');
 
+const supabase = require('../config/supabase');
 const { authMiddleware } = require('../middlewares/authMiddleware');
 const env = require('../config/env');
 const { r2Client, isConfigured: isR2Configured } = require('../config/r2');
 
-let sharp = null;
-try {
-  sharp = require('sharp');
-} catch (err) {
-  console.warn('[Upload Router] Sharp could not be loaded. Images will be saved without WebP conversion.');
-}
+const router = express.Router();
+const allowedMimeTypes = new Set(['image/jpeg', 'image/png', 'image/webp']);
+const allowedFolders = new Set(['avatars', 'products', 'banners', 'categories']);
 
-// Multer memory storage configuration
-const storage = multer.memoryStorage();
 const upload = multer({
-  storage: storage,
-  limits: {
-    fileSize: 10 * 1024 * 1024, // 10MB limit
-  },
-  fileFilter: (req, file, cb) => {
-    const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml'];
-    if (allowedMimeTypes.includes(file.mimetype)) {
-      cb(null, true);
-    } else {
-      cb(new Error('Chỉ chấp nhận các định dạng ảnh: JPEG, PNG, WEBP, GIF, SVG.'));
-    }
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024, files: 1 },
+  fileFilter(req, file, callback) {
+    callback(null, allowedMimeTypes.has(file.mimetype));
   }
 }).single('image');
 
-router.post('/upload', authMiddleware, (req, res) => {
-  upload(req, res, async (err) => {
-    if (err) {
-      return res.status(400).json({ ok: false, message: err.message });
-    }
+function publicUrlFor(key) {
+  const domain = String(env.R2_CUSTOM_DOMAIN || '').replace(/^https?:\/\//, '').replace(/\/$/, '');
+  return `https://${domain}/${key.split('/').map(encodeURIComponent).join('/')}`;
+}
 
-    if (!req.file) {
-      return res.status(400).json({ ok: false, message: 'Vui lòng chọn một tệp ảnh để tải lên.' });
-    }
-
-    try {
-      const userRole = req.user?.role || 'user'; // 'admin', 'seller', 'user'
-      
-      const ALLOWED_FOLDERS = {
-        admin: ['products', 'avatars', 'banners', 'categories'],
-        seller: ['products', 'avatars', 'banners', 'categories'],
-        user: ['avatars']
-      };
-
-      const permittedFolders = ALLOWED_FOLDERS[userRole] || ALLOWED_FOLDERS.user;
-      let folder = permittedFolders[0] || 'avatars';
-      if (req.query.folder && permittedFolders.includes(req.query.folder)) {
-        folder = req.query.folder;
-      }
-
-      // Specific size limits by folder
-      const maxAvatarSize = 2 * 1024 * 1024; // 2MB
-      if (folder === 'avatars' && req.file.size > maxAvatarSize) {
-        return res.status(400).json({ ok: false, message: 'Ảnh đại diện (avatar) không được vượt quá 2MB.' });
-      }
-
-      let fileBuffer = req.file.buffer;
-      let filename = uuidv4();
-      let extension = path.extname(req.file.originalname).toLowerCase() || '.png';
-      let mimeType = req.file.mimetype;
-
-      // Convert JPEG/PNG to WebP if sharp is available
-      if (sharp && ['image/jpeg', 'image/png'].includes(mimeType)) {
-        try {
-          fileBuffer = await sharp(fileBuffer).webp({ quality: 85 }).toBuffer();
-          extension = '.webp';
-          mimeType = 'image/webp';
-        } catch (sharpError) {
-          console.error('[Upload Router] Sharp conversion error, uploading original:', sharpError.message);
-        }
-      }
-
-      const key = `${folder}/${filename}${extension}`;
-
-      if (isR2Configured && r2Client) {
-        // Upload to Cloudflare R2
-        const uploadParams = {
-          Bucket: env.R2_BUCKET_NAME,
-          Key: key,
-          Body: fileBuffer,
-          ContentType: mimeType,
-        };
-
-        await r2Client.send(new PutObjectCommand(uploadParams));
-
-        const publicUrl = `https://${env.R2_CUSTOM_DOMAIN || 'cdn.otuck.vn'}/${key}`;
-        return res.json({
-          ok: true,
-          message: 'Tải ảnh lên Cloudflare R2 thành công.',
-          url: publicUrl,
-          key: key
-        });
-      } else {
-        // Fallback to local storage if R2 is not configured
-        console.log('[Upload Router] R2 is not configured. Saving file to local storage.');
-        const localDir = path.join(__dirname, '..', 'assets', 'img', 'ảnh sản phẩm');
-        
-        if (!fs.existsSync(localDir)) {
-          fs.mkdirSync(localDir, { recursive: true });
-        }
-
-        const localFilePath = path.join(localDir, `${filename}${extension}`);
-        fs.writeFileSync(localFilePath, fileBuffer);
-
-        const localUrl = `/assets/img/ảnh sản phẩm/${filename}${extension}`;
-        return res.json({
-          ok: true,
-          message: 'Tải ảnh lên máy chủ cục bộ thành công (R2 chưa cấu hình).',
-          url: localUrl,
-          key: `local/${filename}${extension}`
-        });
-      }
-    } catch (uploadErr) {
-      console.error('[Upload Router] Upload error:', uploadErr);
-      return res.status(500).json({ ok: false, message: 'Lỗi máy chủ khi xử lý và tải ảnh lên.' });
-    }
+function runUpload(req, res) {
+  return new Promise((resolve, reject) => {
+    upload(req, res, error => error ? reject(error) : resolve());
   });
+}
+
+async function normalizeImage(file, folder) {
+  const sharp = require('sharp');
+  const image = sharp(file.buffer, { failOn: 'error', limitInputPixels: 40_000_000 });
+  const metadata = await image.metadata();
+  if (!['jpeg', 'png', 'webp'].includes(metadata.format)) throw new Error('Định dạng ảnh không hợp lệ.');
+  if (!metadata.width || !metadata.height || metadata.width > 8000 || metadata.height > 8000) {
+    throw new Error('Kích thước ảnh không hợp lệ.');
+  }
+  const maxEdge = folder === 'avatars' ? 1024 : 2400;
+  const buffer = await image
+    .rotate()
+    .resize({ width: maxEdge, height: maxEdge, fit: 'inside', withoutEnlargement: true })
+    .webp({ quality: folder === 'avatars' ? 82 : 86 })
+    .toBuffer();
+  return { buffer, width: metadata.width, height: metadata.height };
+}
+
+router.post('/upload', authMiddleware, async (req, res) => {
+  try {
+    await runUpload(req, res);
+    if (!req.file) return res.status(400).json({ ok: false, message: 'Chỉ chấp nhận ảnh JPEG, PNG hoặc WebP.' });
+    if (!isR2Configured || !r2Client || !env.R2_CUSTOM_DOMAIN) {
+      return res.status(503).json({ ok: false, message: 'Kho ảnh Cloudflare R2 chưa được cấu hình.' });
+    }
+
+    const folder = String(req.query.folder || 'avatars').toLowerCase();
+    if (!allowedFolders.has(folder)) return res.status(400).json({ ok: false, message: 'Thư mục ảnh không hợp lệ.' });
+    const isAdmin = req.user.role === 'admin';
+    if (folder !== 'avatars' && !isAdmin) return res.status(403).json({ ok: false, message: 'Bạn không có quyền tải loại ảnh này.' });
+    if (folder === 'avatars' && req.file.size > 2 * 1024 * 1024) {
+      return res.status(400).json({ ok: false, message: 'Ảnh đại diện không được vượt quá 2 MB.' });
+    }
+
+    const normalized = await normalizeImage(req.file, folder);
+    const ownerSegment = folder === 'avatars' ? `users/${req.user.userId}` : 'catalog';
+    const key = `${ownerSegment}/${folder}/${crypto.randomUUID()}.webp`;
+    const url = publicUrlFor(key);
+
+    await r2Client.send(new PutObjectCommand({
+      Bucket: env.R2_BUCKET_NAME,
+      Key: key,
+      Body: normalized.buffer,
+      ContentType: 'image/webp',
+      CacheControl: 'public, max-age=31536000, immutable',
+      Metadata: { owner: String(req.user.userId), folder }
+    }));
+
+    const { data: asset, error: dbError } = await supabase
+      .from('image_assets')
+      .insert({
+        owner_id: req.user.userId,
+        object_key: key,
+        public_url: url,
+        purpose: folder,
+        mime_type: 'image/webp',
+        byte_size: normalized.buffer.length
+      })
+      .select('id, object_key, public_url, purpose, created_at')
+      .single();
+
+    if (dbError || !asset) {
+      await r2Client.send(new DeleteObjectCommand({ Bucket: env.R2_BUCKET_NAME, Key: key })).catch(() => {});
+      console.error('[Upload] Could not persist image metadata:', dbError);
+      return res.status(500).json({ ok: false, message: 'Không thể lưu thông tin ảnh.' });
+    }
+
+    return res.status(201).json({
+      ok: true,
+      message: 'Tải ảnh thành công.',
+      assetId: asset.id,
+      key: asset.object_key,
+      url: asset.public_url
+    });
+  } catch (error) {
+    const clientError = error instanceof multer.MulterError || /ảnh|image|format|size|pixel/i.test(error.message);
+    console.error('[Upload] Error:', error.message);
+    return res.status(clientError ? 400 : 500).json({ ok: false, message: clientError ? error.message : 'Không thể tải ảnh lúc này.' });
+  }
+});
+
+router.delete('/uploads/:id', authMiddleware, async (req, res) => {
+  try {
+    const { data: asset, error } = await supabase
+      .from('image_assets')
+      .select('id, owner_id, object_key, public_url, purpose')
+      .eq('id', req.params.id)
+      .is('deleted_at', null)
+      .maybeSingle();
+    if (error) throw error;
+    if (!asset) return res.status(404).json({ ok: false, message: 'Không tìm thấy ảnh.' });
+    if (String(asset.owner_id) !== String(req.user.userId) && req.user.role !== 'admin') {
+      return res.status(403).json({ ok: false, message: 'Bạn không có quyền xóa ảnh này.' });
+    }
+
+    await r2Client.send(new DeleteObjectCommand({ Bucket: env.R2_BUCKET_NAME, Key: asset.object_key }));
+    const deletedAt = new Date().toISOString();
+    const { error: markError } = await supabase.from('image_assets').update({ deleted_at: deletedAt }).eq('id', asset.id);
+    if (markError) throw markError;
+    if (asset.purpose === 'avatars') {
+      await supabase.from('users').update({ avatar_url: null }).eq('id', asset.owner_id).eq('avatar_url', asset.public_url);
+    }
+    return res.json({ ok: true, message: 'Đã xóa ảnh.' });
+  } catch (error) {
+    console.error('[Upload delete] Error:', error.message);
+    return res.status(500).json({ ok: false, message: 'Không thể xóa ảnh lúc này.' });
+  }
 });
 
 module.exports = router;

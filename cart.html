@@ -4,21 +4,42 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Giỏ hàng | DG Store</title>
+  <link rel="icon" type="image/webp" href="/assets/img/%E1%BA%A3nh%20s%E1%BA%A3n%20ph%E1%BA%A9m/ChatGPT%20Image%2023_52_48%2012%20thg%207%2C%202026_11zon.webp" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
   <link href="assets/css/common.css" rel="stylesheet" />
-  <link href="assets/css/icons.css" rel="stylesheet" />
+  <link href="assets/css/storefront-flat.css?v=20260722.2" rel="stylesheet" />
   <link href="assets/css/cart.css" rel="stylesheet" />
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+  <link href="assets/css/storefront-flat.css?v=20260722.2" rel="stylesheet" />
+<link href="assets/css/checkout-flow-polish.css?v=20260729.2" rel="stylesheet" />
+<link href="assets/css/light-theme-polish.css?v=20260729.5" rel="stylesheet" />
+  <link href="/assets/css/site-recovery-theme.css?v=20260729.5" rel="stylesheet" />
 </head>
 <body>
   <!-- PRELOADER -->
   <div id="preloader" data-auto-hide="false">
     <div class="preloader-container">
       <div class="preloader-logo">
-        <div class="preloader-bolt"><span class="dg-logo-text" style="font-size: 20px;">DG</span></div>
+        <div class="preloader-bolt">
+          <svg class="dg-logo-svg" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="preGrad0" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#818cf8"/>
+                <stop offset="50%" stop-color="#6366f1"/>
+                <stop offset="100%" stop-color="#22d3ee"/>
+              </linearGradient>
+              <filter id="preGlow0" x="-30%" y="-30%" width="160%" height="160%">
+                <feGaussianBlur stdDeviation="1.5" result="blur"/>
+                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+            </defs>
+            <text x="2" y="28" font-family="Outfit,Inter,sans-serif" font-weight="900" font-size="20" fill="url(#preGrad0)" filter="url(#preGlow0)" letter-spacing="-1">DG</text>
+            <path d="M29 6 L24 18 L27.5 18 L22 34 L33 19 L28.5 19 L33 6 Z" fill="url(#preGrad0)" filter="url(#preGlow0)" opacity="0.9"/>
+          </svg>
+        </div>
         <div class="preloader-ring"></div>
       </div>
       <p class="preloader-text">DG Store</p>
@@ -36,12 +57,26 @@
       <div class="sk-topbar-inner">
         <a class="sk-brand" href="/index.html">
           <span class="sk-brand-mark dg-logo-mark">
-            <span class="dg-logo-text">DG</span>
+            <svg class="dg-logo-svg" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="dgGrad" x1="0" y1="0" x2="30" y2="30" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stop-color="#a5b4fc"/>
+                  <stop offset="55%" stop-color="#6366f1"/>
+                  <stop offset="100%" stop-color="#22d3ee"/>
+                </linearGradient>
+                <filter id="dgGlow" x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur stdDeviation="0.8" result="blur"/>
+                  <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                </filter>
+              </defs>
+              <text x="1" y="21" font-family="Outfit,Inter,sans-serif" font-weight="900" font-size="15" fill="url(#dgGrad)" filter="url(#dgGlow)" letter-spacing="-0.5">DG</text>
+              <path d="M22 4 L18 13 L20.5 13 L16 26 L25 15 L21.5 15 L25 4 Z" fill="url(#dgGrad)" filter="url(#dgGlow)" opacity="0.85"/>
+            </svg>
             <span class="dg-logo-ring"></span>
           </span>
           <span>
             <span class="sk-brand-title">DG Store</span>
-            <span class="sk-brand-subtitle">Tài khoản bản quyền</span>
+            <span class="sk-brand-subtitle">Chuyên tài khoản số</span>
           </span>
         </a>
 
@@ -72,7 +107,7 @@
           <span class="nav-label">Sản phẩm</span>
         </a>
         <a href="/index.html#shopee" class="nav-item" data-tooltip="Shopee">
-          <img src="/assets/img/ảnh sản phẩm/logo-shopee-inkythuatso-2-01-24-14-52-10.jpg" alt="Shopee">
+          <i class="fa-solid fa-bag-shopping" aria-hidden="true"></i>
           <span class="nav-label">Shopee</span>
         </a>
         <a href="/tuongtacmxh.html" class="nav-item" data-tooltip="Tương tác MXH">
@@ -183,7 +218,7 @@
   <div class="sk-modal-backdrop" id="checkoutFlowModalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
     <div class="sk-flow-modal">
       <header class="sk-modal-header">
-        <h3 id="modalTitle"><i class="fa-solid fa-bolt"></i> Thanh toán tự động 3 giai đoạn</h3>
+        <h3 id="modalTitle"><i class="fa-solid fa-bolt"></i> Thanh toán tự động 3 giai đoạn <i class="fa-solid fa-shield-halved sk-flow-title-security" aria-hidden="true"></i></h3>
         <button class="sk-modal-close-btn" onclick="closeCheckoutModal()" aria-label="Đóng hộp thoại">&times;</button>
       </header>
       <div class="sk-modal-body">
@@ -274,14 +309,14 @@
             <i class="fa-solid fa-triangle-exclamation"></i>
           </div>
           <h4>Thanh toán thất bại</h4>
-          <p>Đơn hàng không thể hoàn tất do sản phẩm <b>hết hàng</b> hoặc <b>nguồn hàng lỗi</b>.<br>Số dư đã được hoàn lại vào ví của bạn.</p>
           <div class="sk-error-detail-box">
             <i class="fa-solid fa-circle-info"></i>
             <span id="errorDetailText">Chi tiết lỗi sẽ hiển thị ở đây.</span>
           </div>
-          <p style="margin-top:14px; font-size:11.5px;">Vui lòng chờ <b>Admin cập nhật nguồn hàng</b> hoặc liên hệ hỗ trợ qua Zalo.</p>
+          <p id="errorGuideText" style="margin-top:14px; font-size:11.5px;">Vui lòng liên hệ <b>Admin</b> để được hỗ trợ.</p>
           <div class="sk-error-actions">
             <button class="sk-btn" type="button" onclick="closeCheckoutModal()"><i class="fa-solid fa-xmark"></i> Đóng</button>
+            <a id="depositErrorBtn" class="sk-btn sk-btn-primary" href="/nap-tien.html" style="display: none;"><i class="fa-solid fa-wallet"></i> Nạp tiền</a>
             <a class="sk-btn sk-btn-soft" href="https://zalo.me/0774391888" target="_blank"><i class="fa-solid fa-headset"></i> Liên hệ hỗ trợ</a>
           </div>
         </div>
@@ -310,9 +345,8 @@
     </div>
   </div>
 
-  <script src="assets/js/icons.js"></script>
-  <script src="assets/js/common.js"></script>
-  <script src="assets/js/cart.js"></script>
+  <script defer src="assets/js/common.js"></script>
+  <script defer src="assets/js/cart.js"></script>
   </div>
 </body>
 </html>

@@ -7,12 +7,13 @@ const path = require('path');
 const fs = require('fs');
 const http = require('http');
 const https = require('https');
+const compression = require('compression');
 const { PORT, CORS_ALLOWED_ORIGINS } = require('./config/env');
 const registerRoutes = require('./routes');
 const { startCassoAutoPolling } = require('./routes/deposits');
-const { startBotScheduler, startTelegramPolling } = require('./routes/tracking');
 
 const app = express();
+app.use(compression());
 app.set('trust proxy', 1);
 
 const allowedOrigins = new Set([
@@ -62,26 +63,43 @@ app.use((req, res, next) => {
 });
 
 app.use(cors({
-  origin: true,
+  origin(origin, callback) {
+    if (isAllowedOrigin(origin)) return callback(null, true);
+    return callback(new Error('Origin is not allowed by CORS'));
+  },
   credentials: true
 }));
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true }));
+
+// Keep fingerprint-free CSS/JS fresh while caching immutable media efficiently.
+app.use('/assets', express.static(path.join(__dirname, 'assets'), {
+  setHeaders: (res, filepath) => {
+    if (/\.(?:css|js)$/i.test(filepath)) {
+      res.setHeader('Cache-Control', 'no-cache, must-revalidate');
+    } else {
+      res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    }
+  }
+}));
+
+// Serving HTML or root files with no-cache (prevent stale pages)
 app.use(express.static(path.join(__dirname), {
   index: false,
-  extensions: ['html']
+  extensions: ['html'],
+  setHeaders: (res, filepath) => {
+    if (filepath.endsWith('.html')) {
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    }
+  }
 }));
+
 registerRoutes(app);
 
 const isVercel = process.env.VERCEL === '1';
 
 if (!isVercel) {
   try {
-    startBotScheduler();
-    console.log('Waybill tracking scheduler started.');
-    startTelegramPolling();
-    console.log('Telegram polling started.');
-
     // Fallback Background Cron Scheduler: release expired inventory reservations
     const supabase = require('./config/supabase');
     setInterval(async () => {
@@ -98,7 +116,7 @@ if (!isVercel) {
     }, 300000); // Check every 5 minutes
     console.log('Reservation cleanup scheduler started (5m interval).');
   } catch (err) {
-    console.error('Cannot start tracking background jobs:', err.message);
+    console.error('Cannot start background jobs:', err.message);
   }
 
   // ── HTTPS Support (fixes Cloudflare Error 525) ──────────────────────────────

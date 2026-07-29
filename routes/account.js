@@ -10,7 +10,9 @@ const {
   makeDepositMemo,
   safeOrder,
   safeWalletTransaction,
-  ORDER_PUBLIC_SELECT
+  ORDER_PUBLIC_SELECT,
+  ORDER_PUBLIC_SELECT_WITH_COMPLETED,
+  isMissingColumnError
 } = require('../services/storeService');
 
 router.get('/me', authMiddleware, async (req, res) => {
@@ -77,7 +79,23 @@ router.patch('/profile', authMiddleware, async (req, res) => {
     };
 
     if (avatarUrl !== undefined) {
-      updateData.avatar_url = avatarUrl || null;
+      if (!avatarUrl) {
+        updateData.avatar_url = null;
+      } else {
+        const { data: ownedAvatar, error: avatarError } = await supabase
+          .from('image_assets')
+          .select('id, public_url')
+          .in('owner_id', [String(req.user.userId), 'system-presets'])
+          .eq('public_url', avatarUrl)
+          .eq('purpose', 'avatars')
+          .is('deleted_at', null)
+          .maybeSingle();
+        if (avatarError) throw avatarError;
+        if (!ownedAvatar) {
+          return res.status(400).json({ ok: false, message: 'Ảnh đại diện phải là ảnh bạn đã tải lên DG Store.' });
+        }
+        updateData.avatar_url = ownedAvatar.public_url;
+      }
     }
 
     const { data: user, error } = await supabase
@@ -162,12 +180,23 @@ router.get('/account/history', authMiddleware, async (req, res) => {
   try {
     const userId = req.user.userId;
 
-    const { data: orders, error: ordersError } = await supabase
+    let { data: orders, error: ordersError } = await supabase
       .from('store_orders')
-      .select(ORDER_PUBLIC_SELECT)
+      .select(ORDER_PUBLIC_SELECT_WITH_COMPLETED)
       .eq('user_id', userId)
       .order('created_at', { ascending: false })
       .limit(50);
+
+    if (ordersError && isMissingColumnError(ordersError, 'completed_at')) {
+      const legacyResult = await supabase
+        .from('store_orders')
+        .select(ORDER_PUBLIC_SELECT)
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(50);
+      orders = legacyResult.data;
+      ordersError = legacyResult.error;
+    }
 
     if (ordersError) {
       console.error('Account orders query error:', ordersError);
@@ -178,16 +207,21 @@ router.get('/account/history', authMiddleware, async (req, res) => {
       .from('wallet_transactions')
       .select('id, transaction_code, type, amount, balance_before, balance_after, content, status, external_ref, created_at')
       .eq('user_id', userId)
-      .eq('status', 'paid')
       .order('created_at', { ascending: false })
-      .limit(80);
+      .limit(200);
 
     if (transactionsError) {
       console.error('Account wallet_transactions query error:', transactionsError);
       return res.status(500).json({ ok: false, message: 'Chưa đọc được bảng wallet_transactions. Hãy chạy file database-history.sql trong Supabase.' });
     }
 
-    const stats = (transactions || []).reduce((acc, item) => {
+    // Return persisted database rows only. Pending requests whose balance did
+    // not change are omitted; the stored signed `amount` remains untouched.
+    const balanceChanges = (transactions || []).filter(item =>
+      Number(item.balance_after || 0) !== Number(item.balance_before || 0)
+    );
+
+    const stats = balanceChanges.reduce((acc, item) => {
       const amount = Number(item.amount || 0);
       if (item.type === 'deposit' && item.status === 'paid' && amount > 0) acc.totalDeposit += amount;
       return acc;
@@ -199,7 +233,7 @@ router.get('/account/history', authMiddleware, async (req, res) => {
     return res.json({
       ok: true,
       orders: (orders || []).map(safeOrder),
-      transactions: (transactions || []).map(safeWalletTransaction),
+      transactions: balanceChanges.map(safeWalletTransaction),
       stats
     });
   } catch (err) {

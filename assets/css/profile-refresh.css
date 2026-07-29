@@ -1,0 +1,58 @@
+/* Profile refresh: structured, colorful and readable in both themes. */
+.sk-profile-page { align-items: start; gap: 22px !important; }
+.sk-profile-sidebar { position: sticky; top: 88px; overflow: hidden; border: 1px solid var(--line) !important; }
+.sk-profile-sidebar::before { content: ""; display: block; height: 5px; background: linear-gradient(90deg, #4f7cff, #8b5cf6, #22b8cf); }
+.sk-profile-sidebar .sidebar-item { min-height: 48px; border-left: 3px solid transparent; }
+.sk-profile-sidebar .sidebar-item:nth-child(1) i { color: #4f7cff; }
+.sk-profile-sidebar .sidebar-item:nth-child(2) i { color: #14a38b; }
+.sk-profile-sidebar .sidebar-item:nth-child(3) i { color: #ef6c75; }
+.sk-profile-sidebar #menu-orders i { color: #f59e0b; }
+.sk-profile-sidebar #menu-transactions i { color: #20a86b; }
+.sk-profile-sidebar .sidebar-item.is-active { background: var(--brand-soft) !important; border-left-color: var(--brand); color: var(--text-bright) !important; }
+.sk-profile-hero { overflow: hidden; border: 1px solid color-mix(in srgb, var(--brand) 38%, var(--line)) !important; background: linear-gradient(125deg, var(--surface) 55%, color-mix(in srgb, var(--brand-soft) 78%, var(--surface))) !important; }
+.sk-profile-hero::after { content: ""; position: absolute; width: 260px; height: 260px; right: -90px; top: -150px; border-radius: 50%; background: color-mix(in srgb, var(--accent) 18%, transparent); pointer-events: none; }
+.sk-hero-avatar { border: 4px solid color-mix(in srgb, var(--brand) 32%, var(--surface)) !important; background: var(--brand-soft) !important; }
+.hero-badge { background: var(--surface) !important; border-color: var(--line-strong) !important; }
+.sk-profile-metrics { gap: 14px !important; }
+.sk-profile-metrics .sk-stat { position: relative; overflow: hidden; border-width: 1px !important; }
+.sk-profile-metrics .sk-stat:nth-child(1) { border-top: 4px solid #4f7cff !important; }
+.sk-profile-metrics .sk-stat:nth-child(2) { border-top: 4px solid #20a86b !important; }
+.sk-profile-metrics .sk-stat:nth-child(3) { border-top: 4px solid #8b5cf6 !important; }
+.profile-tab-section { overflow: hidden; border: 1px solid var(--line) !important; border-radius: 16px !important; background: var(--surface) !important; }
+.profile-tab-section .sk-tab-head { background: color-mix(in srgb, var(--surface-soft) 70%, var(--surface)) !important; border-bottom: 1px solid var(--line) !important; }
+.sk-profile-info-grid { gap: 12px !important; }
+.sk-profile-info-grid .sk-info-cell { min-height: 108px; border: 1px solid var(--line) !important; border-left: 4px solid var(--brand) !important; background: var(--surface-soft) !important; }
+.sk-profile-info-grid .sk-info-cell:nth-child(3n + 2) { border-left-color: #20a86b !important; }
+.sk-profile-info-grid .sk-info-cell:nth-child(3n) { border-left-color: #8b5cf6 !important; }
+.sk-policy-profile-grid .sk-info-cell:nth-child(1) { border-top: 4px solid #4f7cff !important; }
+.sk-policy-profile-grid .sk-info-cell:nth-child(2) { border-top: 4px solid #20a86b !important; }
+.sk-policy-profile-grid .sk-info-cell:nth-child(3) { border-top: 4px solid #f59e0b !important; }
+.sk-policy-profile-grid .sk-info-cell:nth-child(4) { border-top: 4px solid #ef6c75 !important; }
+html[data-theme="light"] .sk-profile-hero { background: linear-gradient(125deg, #ffffff 48%, #eef2ff 100%) !important; }
+html[data-theme="light"] .profile-tab-section,
+html[data-theme="light"] .sk-profile-sidebar { background: #ffffff !important; }
+html[data-theme="light"] .sk-profile-info-grid .sk-info-cell { background: #f8fafc !important; color: #263449 !important; }
+@media (max-width: 980px) { .sk-profile-sidebar { position: static; } }
+@media (max-width: 680px) { .profile-hero-inner { align-items: flex-start !important; } .profile-hero-inner > div:last-child { width: 100%; margin-left: 0 !important; } }
+.sk-balance-change-positive {
+  color: #16a34a;
+  font-weight: 900;
+}
+
+.sk-balance-change-negative {
+  color: #dc2626;
+  font-weight: 900;
+}
+
+.sk-balance-change-neutral {
+  color: var(--muted);
+  font-weight: 800;
+}
+
+[data-theme="dark"] .sk-balance-change-positive {
+  color: #4ade80;
+}
+
+[data-theme="dark"] .sk-balance-change-negative {
+  color: #f87171;
+}

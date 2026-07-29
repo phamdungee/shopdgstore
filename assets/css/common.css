@@ -318,20 +318,26 @@ img {
 .sk-brand {
   display: inline-flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
   min-width: max-content;
   font-weight: 800;
   letter-spacing: 0.02em;
-  transition: transform var(--transition);
+  transition: transform 0.3s ease;
 }
 
 .sk-brand:hover {
-  transform: scale(1.02);
+  transform: scale(1.02) translateY(-0.5px);
+}
+
+.sk-brand > span:not(.sk-brand-mark) {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .sk-brand-mark {
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
   display: grid;
   place-items: center;
   color: #fff;
@@ -375,155 +381,177 @@ img {
 
 .sk-brand-title {
   display: block;
-  font-size: 16px;
-  font-weight: 800;
+  font-size: 17.5px;
+  font-weight: 900;
   line-height: 1.1;
   color: var(--text-bright);
-  letter-spacing: 0.04em;
+  letter-spacing: 0.03em;
+  transition: color 0.3s ease, text-shadow 0.3s ease;
 }
 
 .sk-brand-subtitle {
   display: block;
-  margin-top: 3px;
+  margin-top: 4px;
   color: var(--muted);
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.16em;
   text-transform: uppercase;
+  transition: color 0.3s ease;
+}
+
+.sk-brand:hover .sk-brand-title {
+  color: #ffffff;
+  text-shadow: 0 0 10px rgba(99, 102, 241, 0.4);
+}
+
+.sk-brand:hover .sk-brand-subtitle {
+  color: var(--accent-light);
 }
 
 /* ── DG LOGO MARK STYLING ── */
 .dg-logo-mark {
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
   flex-shrink: 0 !important;
   display: flex !important;
   align-items: center;
   justify-content: center;
-  border-radius: 50% !important;
-  background: radial-gradient(
-    circle,
-    #101629 60%,
-    var(--brand-dark) 100%
-  ) !important;
-  border: 2px solid rgba(99, 102, 241, 0.4) !important;
+  border-radius: 14px !important;
+  background-color: #03070d !important;
+  background-image: url("/assets/img/%E1%BA%A3nh%20s%E1%BA%A3n%20ph%E1%BA%A9m/ChatGPT%20Image%2023_52_48%2012%20thg%207%2C%202026_11zon.webp") !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-size: cover !important;
+  border: 1.5px solid rgba(99, 102, 241, 0.5) !important;
   box-shadow:
-    0 0 15px var(--brand-glow),
-    inset 0 0 10px rgba(99, 102, 241, 0.5) !important;
+    0 0 18px rgba(99, 102, 241, 0.35),
+    0 0 40px rgba(99, 102, 241, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
   position: relative;
   overflow: visible !important;
   z-index: 1;
   transition:
     transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
-    border-color 0.5s !important;
+    border-color 0.4s,
+    box-shadow 0.4s !important;
 }
 
-.dg-logo-mark::before,
+/* Inner glow layer */
+.dg-logo-mark::before {
+  content: "" !important;
+  display: block !important;
+  position: absolute;
+  inset: 0;
+  border-radius: 13px;
+  background: radial-gradient(ellipse at 40% 30%, rgba(99,102,241,0.18) 0%, transparent 65%);
+  pointer-events: none;
+  z-index: 0;
+  animation: none !important;
+  clip-path: none !important;
+  filter: none !important;
+  width: auto !important;
+  height: auto !important;
+  top: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  left: 0 !important;
+}
+
+/* Star sparkle top-right */
 .dg-logo-mark::after {
   content: "" !important;
   display: block !important;
   position: absolute;
-  background: #ffffff;
+  width: 8px;
+  height: 8px;
+  top: -4px;
+  right: -4px;
+  background: #fff;
   pointer-events: none;
-  z-index: 5;
+  z-index: 6;
   clip-path: polygon(
-    50% 0%,
-    62% 38%,
-    100% 50%,
-    62% 62%,
-    50% 100%,
-    38% 62%,
-    0% 50%,
-    38% 38%
+    50% 0%, 61% 35%, 98% 35%, 68% 57%,
+    79% 91%, 50% 70%, 21% 91%, 32% 57%,
+    2% 35%, 39% 35%
   );
-  filter: drop-shadow(0 0 4px var(--accent-light))
-    drop-shadow(0 0 8px var(--brand-light));
-  animation: logoStarBlink 3s ease-in-out infinite;
-}
-
-.dg-logo-mark::before {
-  width: 9px;
-  height: 9px;
-  top: -3px;
-  right: -3px;
-  animation-delay: 0s;
-}
-
-.dg-logo-mark::after {
-  width: 7px;
-  height: 7px;
-  bottom: -2px;
-  left: -2px;
-  animation-delay: 1.5s;
+  filter: drop-shadow(0 0 4px var(--accent-light)) drop-shadow(0 0 8px var(--brand-light));
+  animation: logoStarBlink 3.5s ease-in-out infinite;
+  bottom: auto !important;
+  left: auto !important;
+  inset: auto !important;
+  border-radius: 0 !important;
 }
 
 @keyframes logoStarBlink {
-  0%,
-  100% {
-    transform: scale(0) rotate(0deg);
-    opacity: 0;
-  }
+  0%, 100% { transform: scale(0) rotate(0deg); opacity: 0; }
+  45%, 55% { transform: scale(1) rotate(180deg); opacity: 1; }
+}
 
-  50% {
-    transform: scale(1) rotate(180deg);
-    opacity: 1;
-  }
+/* SVG logo inside mark */
+.dg-logo-svg {
+  position: relative;
+  z-index: 2;
+  width: 30px;
+  height: 30px;
+  display: block;
+  flex-shrink: 0;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .dg-logo-text {
-  font-family: "Outfit", "Inter", sans-serif;
-  font-weight: 900;
-  font-size: 15px;
-  letter-spacing: -0.5px;
-  background: linear-gradient(135deg, #ffffff 35%, #a5b4fc 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  z-index: 2;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-  line-height: 1 !important;
+  display: none !important;
 }
 
 .dg-logo-ring {
   position: absolute;
-  inset: -5px;
-  border: 1px dashed var(--accent-light);
-  border-radius: 50%;
-  opacity: 0.5;
-  animation: logoSpin 12s linear infinite;
+  inset: -6px;
+  border: 1.5px dashed rgba(6, 182, 212, 0.45);
+  border-radius: 18px;
+  opacity: 0.6;
+  animation: logoSpin 14s linear infinite;
   pointer-events: none;
-  transition: all 0.3s ease;
+  transition: all 0.4s ease;
+  z-index: 3;
 }
 
 @keyframes logoSpin {
-  0% {
-    transform: rotate(0deg);
-  }
-
-  100% {
-    transform: rotate(360deg);
-  }
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 /* Hover effects */
 .sk-brand:hover .dg-logo-mark {
-  transform: scale(1.1) rotate(5deg);
-  border-color: var(--accent-light) !important;
+  transform: scale(1.12) translateY(-1px);
+  border-color: rgba(99, 102, 241, 0.8) !important;
   box-shadow:
-    0 0 25px var(--accent-glow),
-    inset 0 0 15px var(--accent-glow) !important;
+    0 0 28px rgba(99, 102, 241, 0.55),
+    0 0 60px rgba(99, 102, 241, 0.2),
+    0 0 15px rgba(6, 182, 212, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
 }
 
 .sk-brand:hover .dg-logo-ring {
-  opacity: 0.95;
+  opacity: 0;
   border-style: solid;
+  border-width: 2px;
   border-color: var(--accent-light);
-  animation-duration: 3s;
-  inset: -6px;
+  transform: scale(1.7);
+  transition: transform 0.55s cubic-bezier(0.1, 0.8, 0.3, 1), opacity 0.45s ease-out !important;
 }
 
 /* Compatibility alias / footer logo support */
+.dg-logo-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+}
+
 .ft-brand:hover .dg-logo-mark {
-  transform: scale(1.1) rotate(5deg);
+  transform: scale(1.1) rotate(3deg);
   border-color: var(--accent-light) !important;
 }
 
@@ -539,32 +567,37 @@ img {
   display: flex !important;
   align-items: center;
   justify-content: center;
-  border-radius: 50% !important;
-  background: radial-gradient(
-    circle,
-    #101629 60%,
-    var(--brand-dark) 100%
-  ) !important;
-  border: 2px solid rgba(99, 102, 241, 0.4) !important;
+  border-radius: 20px !important;
+  background-color: #03070d !important;
+  background-image: url("/assets/img/%E1%BA%A3nh%20s%E1%BA%A3n%20ph%E1%BA%A9m/ChatGPT%20Image%2023_52_48%2012%20thg%207%2C%202026_11zon.webp") !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-size: cover !important;
+  border: 1.5px solid rgba(99, 102, 241, 0.5) !important;
   box-shadow:
-    0 0 20px var(--brand-glow),
-    inset 0 0 10px rgba(99, 102, 241, 0.5) !important;
+    0 0 28px rgba(99, 102, 241, 0.4),
+    0 0 60px rgba(99, 102, 241, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
   position: relative;
-  width: 54px !important;
-  height: 54px !important;
-  animation: logoPulse 2s ease-in-out infinite;
+  width: 68px !important;
+  height: 68px !important;
+  animation: logoPulse 2.2s ease-in-out infinite;
+  overflow: visible !important;
+}
+
+.preloader-bolt .dg-logo-svg {
+  width: 40px !important;
+  height: 40px !important;
 }
 
 @keyframes logoPulse {
-  0%,
-  100% {
+  0%, 100% {
     transform: scale(1);
-    filter: brightness(1);
+    box-shadow: 0 0 25px rgba(99, 102, 241, 0.4), inset 0 0 15px rgba(99, 102, 241, 0.15);
   }
-
   50% {
-    transform: scale(1.05);
-    filter: brightness(1.25);
+    transform: scale(1.06);
+    box-shadow: 0 0 45px rgba(99, 102, 241, 0.6), 0 0 80px rgba(6, 182, 212, 0.2), inset 0 0 25px rgba(99, 102, 241, 0.25);
   }
 }
 
@@ -2291,13 +2324,11 @@ body.light-mode .sk-product-card-vertical > a {
   position: fixed;
   inset: 0;
   z-index: 99999;
-  background: var(--bg);
+  background: #020208;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition:
-    opacity 0.5s ease,
-    visibility 0.5s;
+  transition: opacity 0.6s cubic-bezier(0.25, 1, 0.5, 1), visibility 0.6s;
 }
 
 #preloader.opacity-0 {
@@ -2310,94 +2341,154 @@ body.light-mode .sk-product-card-vertical > a {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
+  gap: 24px;
   text-align: center;
 }
 
 .preloader-logo {
   position: relative;
-  width: 80px;
-  height: 80px;
+  width: 100px;
+  height: 100px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .preloader-bolt {
-  width: 50px;
-  height: 50px;
-  border-radius: 14px;
-  background: var(--brand-gradient);
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  border: 2px solid rgba(99, 102, 241, 0.5);
+  box-shadow: 0 0 30px rgba(99, 102, 241, 0.4), inset 0 0 15px rgba(99, 102, 241, 0.3);
+  animation: logoPulse 2s infinite ease-in-out;
+  z-index: 2;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
-  font-size: 24px;
-  box-shadow: 0 0 25px var(--brand-glow);
-  animation: pulseGlow 2s ease-in-out infinite;
-  z-index: 2;
+}
+
+.preloader-logo-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
 }
 
 .preloader-ring {
   position: absolute;
   inset: -10px;
-  border: 3px solid transparent;
+  border: 2px solid transparent;
   border-top-color: var(--accent);
-  border-bottom-color: var(--accent2, #f472b6);
+  border-bottom-color: var(--brand);
   border-radius: 50%;
-  animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+  animation: spin 1.5s linear infinite;
   z-index: 1;
 }
 
+.preloader-logo::before,
+.preloader-logo::after {
+  content: '';
+  position: absolute;
+  inset: -20px;
+  border: 1px solid rgba(6, 182, 212, 0.2);
+  border-radius: 50%;
+  animation: radarPulse 2s infinite cubic-bezier(0.215, 0.610, 0.355, 1);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.preloader-logo::after {
+  animation-delay: 1s;
+}
+
+@keyframes logoPulse {
+  0%, 100% {
+    transform: scale(0.98);
+    border-color: rgba(99, 102, 241, 0.5);
+    box-shadow: 0 0 25px rgba(99, 102, 241, 0.4);
+  }
+  50% {
+    transform: scale(1.05);
+    border-color: var(--accent);
+    box-shadow: 0 0 45px var(--accent-glow);
+  }
+}
+
+@keyframes radarPulse {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1.4);
+    opacity: 0;
+  }
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 .preloader-text {
-  font-family: "Outfit", sans-serif;
-  font-size: 18px;
+  font-family: "Outfit", "Inter", sans-serif;
+  font-size: 24px;
   font-weight: 900;
-  letter-spacing: 2px;
-  background: var(--brand-gradient);
+  letter-spacing: 0.05em;
+  background: linear-gradient(135deg, #ffffff 40%, var(--brand-light) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  background-clip: text;
   text-transform: uppercase;
   margin: 0;
+  text-shadow: 0 4px 20px rgba(99, 102, 241, 0.35);
 }
 
 .preloader-subtext {
-  margin: 0;
-  font-size: 13px;
+  font-size: 13.5px;
   color: var(--muted);
-  font-weight: 600;
-  animation: pulseOpacity 2s ease-in-out infinite;
+  font-weight: 500;
+  margin: 0;
+  letter-spacing: 0.02em;
+  animation: textBreathe 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes textBreathe {
+  0% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 1;
+    color: var(--text-bright);
+  }
 }
 
 .preloader-bar {
-  width: 140px;
-  height: 4px;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: var(--radius-full);
+  width: 160px;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 4px;
   overflow: hidden;
   position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .preloader-progress {
-  width: 100%;
-  height: 100%;
-  background: var(--brand-gradient);
-  border-radius: var(--radius-full);
   position: absolute;
   left: -100%;
-  animation: loadingBar 1.8s ease-in-out infinite;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, var(--accent), var(--brand), transparent);
+  animation: loadingScan 1.6s infinite cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-@keyframes loadingBar {
+@keyframes loadingScan {
   0% {
     left: -100%;
   }
-
-  50% {
-    left: 0;
-  }
-
   100% {
     left: 100%;
   }
@@ -2849,11 +2940,28 @@ body.light-mode .sk-product-card-vertical > a {
   align-items: center;
   margin: 0 20px;
   overflow-x: auto;
-  scrollbar-width: none;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(99, 102, 241, 0.4) transparent;
+  padding-bottom: 6px; /* spacing for scrollbar */
 }
 
 .sk-admin-nav::-webkit-scrollbar {
-  display: none;
+  height: 4px;
+  display: block;
+}
+
+.sk-admin-nav::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 4px;
+}
+
+.sk-admin-nav::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, var(--brand), var(--accent));
+  border-radius: 4px;
+}
+
+.sk-admin-nav::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(90deg, var(--brand-light), var(--accent-light));
 }
 
 .sk-admin-nav .sk-nav-link {
@@ -3331,12 +3439,17 @@ body.light-mode .shopee-card-inner {
 
 /* ── DETAIL MEDIA ─────────────────────────────── */
 .sk-detail-media {
-  max-width: 200px;
+  width: fit-content;
+  max-width: 100%;
 }
 
 .sk-detail-media img {
   border-radius: var(--radius);
   border: 1px solid var(--line);
+  max-width: 100%;
+  height: auto;
+  display: block;
+  object-fit: contain;
 }
 
 /* ── FORM GROUP ───────────────────────────────── */

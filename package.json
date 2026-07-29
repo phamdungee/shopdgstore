@@ -5,13 +5,17 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "node server.js"
+    "dev": "node server.js",
+    "lint": "node scripts/validate-project.js",
+    "test": "node scripts/validate-project.js && node scripts/test-password-recovery.js",
+    "build": "node scripts/validate-project.js"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1077.0",
     "@supabase/supabase-js": "^2.49.1",
     "axios": "^1.17.0",
     "bcrypt": "^5.1.1",
+    "compression": "^1.8.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
@@ -19,6 +23,7 @@
     "google-auth-library": "^10.9.0",
     "jsonwebtoken": "^9.0.2",
     "multer": "^2.2.0",
+    "resend": "^6.18.0",
     "sharp": "^0.35.2",
     "uuid": "^14.0.1"
   }

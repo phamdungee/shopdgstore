@@ -913,11 +913,28 @@ const processedWebhooks = new Set();
 const handleCassoWebhook = async (req, res) => {
   const requestId = crypto.randomUUID();
   const webhookId = req.headers['x-casso-webhook-id'] || req.headers['casso-webhook-id'] || req.header('x-casso-webhook-id') || req.header('casso-webhook-id') || requestId;
+  await writeDepositWebhookLog({
+    requestId,
+    webhookId,
+    status: 'received',
+    source: 'casso',
+    endpoint: req.originalUrl || req.url,
+    payload: req.body
+  });
   console.log(`[Webhook ${requestId}] Received`);
   
   // Kiểm tra webhook đã được xử lý chưa
   if (processedWebhooks.has(webhookId)) {
     console.log(`[Webhook ${requestId}] ⚠️ Duplicate webhook: ${webhookId}`);
+    await writeDepositWebhookLog({
+      requestId,
+      webhookId,
+      status: 'duplicate',
+      reason: 'already_processed',
+      source: 'casso',
+      endpoint: req.originalUrl || req.url,
+      httpStatus: 200
+    });
     return res.status(200).json({
       code: 200,
       message: 'already_processed',
@@ -987,6 +1004,16 @@ const handleCassoWebhook = async (req, res) => {
     setTimeout(() => processedWebhooks.delete(webhookId), 86400000);
 
     console.log(`[Webhook ${requestId}] ✅ Processed successfully: ${processedCount} transactions`);
+    await writeDepositWebhookLog({
+      requestId,
+      webhookId,
+      status: 'processed',
+      source: 'casso',
+      endpoint: req.originalUrl || req.url,
+      httpStatus: 200,
+      transactionCount: transactionsList.length,
+      processedCount
+    });
     return res.status(200).json({
       code: 200,
       message: 'success',
@@ -994,6 +1021,15 @@ const handleCassoWebhook = async (req, res) => {
     });
   } catch (error) {
     console.error(`[Webhook ${requestId}] ❌ Error:`, error);
+    await writeDepositWebhookLog({
+      requestId,
+      webhookId,
+      status: 'failed',
+      reason: error.message,
+      source: 'casso',
+      endpoint: req.originalUrl || req.url,
+      httpStatus: 500
+    });
     return res.status(500).json({
       code: 500,
       error: 'Something went wrong, please try again!'

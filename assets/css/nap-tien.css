@@ -994,3 +994,41 @@
     justify-content: center !important;
   }
 }
+
+/* Bank receiver: no white frame, logo centered in both themes. */
+.sk-deposit-sidebar section:has(> #display-bank-name-badge) {
+  text-align: center;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.sk-deposit-sidebar section:has(> #display-bank-name-badge) > .sk-kicker {
+  display: block;
+  text-align: center;
+}
+
+.sk-deposit-sidebar #display-bank-name-badge {
+  width: 100% !important;
+  min-height: 58px;
+  margin: 10px auto 0 !important;
+  padding: 8px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.sk-deposit-sidebar #display-bank-name-badge .sk-bank-logo {
+  display: block;
+  width: auto !important;
+  max-width: min(170px, 90%) !important;
+  height: auto !important;
+  max-height: 44px !important;
+  margin: 0 auto !important;
+  object-fit: contain !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}

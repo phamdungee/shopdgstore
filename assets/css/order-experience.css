@@ -1,0 +1,61 @@
+/* Shared order actions and detail modal for home/profile in both themes. */
+.sk-order-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 9px; }
+.sk-badge-success {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 6px;
+  min-height: 30px;
+  padding: 5px 11px !important;
+  border: 1px solid rgba(52, 211, 153, .5) !important;
+  border-radius: 999px !important;
+  background: linear-gradient(135deg, #047857, #059669) !important;
+  color: #fff !important;
+  font-weight: 850 !important;
+  box-shadow: 0 6px 16px rgba(5, 150, 105, .24) !important;
+}
+.sk-badge-success::before {
+  content: "✓";
+  display: inline-grid;
+  place-items: center;
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .18);
+  color: #fff;
+  font-size: 10px;
+  line-height: 1;
+}
+.sk-order-actions .sk-btn-success { position: relative; min-height: 46px; padding: 0 20px !important; overflow: hidden; border: 1px solid rgba(167,243,208,.62) !important; border-radius: 13px !important; background: linear-gradient(135deg,#047857 0%,#059669 52%,#10b981 100%) !important; color: #fff !important; font-weight: 850 !important; letter-spacing: .01em; box-shadow: 0 10px 24px rgba(5,150,105,.3) !important; isolation: isolate; }
+.sk-order-actions .sk-btn-success::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(110deg,transparent 20%,rgba(255,255,255,.28) 48%,transparent 72%); transform: translateX(-120%); transition: transform .55s ease; }
+.sk-order-actions .sk-btn-success:hover::before { transform: translateX(120%); }
+.sk-order-actions .sk-btn-success:hover { transform: translateY(-2px) scale(1.015) !important; box-shadow: 0 14px 30px rgba(5,150,105,.4) !important; }
+.sk-order-actions .sk-btn-success:focus-visible { outline: 3px solid rgba(52,211,153,.28) !important; outline-offset: 3px; }
+.sk-order-actions .sk-btn-success > i { width: 27px; height: 27px; display: inline-grid; place-items: center; border-radius: 8px; background: rgba(255,255,255,.2); }
+
+#order-detail-modal { --od-panel:#fff; --od-panel-soft:#f5f7fb; --od-panel-muted:#edf1f7; --od-text:#172033; --od-muted:#66758b; --od-line:#dce3ed; --od-accent:#4f46e5; align-items:center !important; justify-content:center !important; padding:18px !important; border:0 !important; background:rgba(15,23,42,.48) !important; backdrop-filter:blur(8px) !important; }
+html[data-theme="dark"] #order-detail-modal { --od-panel:#171b22; --od-panel-soft:#1f252e; --od-panel-muted:#272e38; --od-text:#f4f7fb; --od-muted:#a9b4c4; --od-line:#343d49; --od-accent:#8aa5ff; background:rgba(2,6,16,.72) !important; }
+#order-detail-modal .cyberpunk-modal-card { width:min(720px,100%) !important; max-height:min(88vh,820px) !important; padding:20px !important; border:1px solid var(--od-line) !important; border-radius:20px !important; background:var(--od-panel) !important; color:var(--od-text) !important; box-shadow:0 24px 70px rgba(15,23,42,.25) !important; }
+#order-detail-modal .cyberpunk-modal-card::before { height:3px !important; border-radius:20px 20px 0 0; background:linear-gradient(90deg,#2563eb,#7c3aed,#ec4899,#f59e0b) !important; }
+#order-detail-modal .sk-section-head { min-height:48px; border-color:var(--od-line) !important; }
+#order-detail-modal #odModalCode { color:var(--od-accent) !important; text-shadow:none !important; text-transform:none !important; letter-spacing:-.01em !important; }
+#order-detail-modal .close-modal-cyber { color:var(--od-muted) !important; background:var(--od-panel-soft) !important; border:1px solid var(--od-line) !important; }
+#order-detail-modal .od-section-label { margin-bottom:10px; }
+#order-detail-modal .od-section-label.primary { color:var(--od-accent) !important; text-shadow:none !important; }
+#order-detail-modal .od-info-list { padding:14px 16px !important; border:1px solid var(--od-line) !important; border-radius:13px !important; background:var(--od-panel-soft) !important; }
+#order-detail-modal .od-info-list > div { border-color:var(--od-line) !important; }
+#order-detail-modal .od-info-list span { color:var(--od-muted) !important; }
+#order-detail-modal .od-info-list span[id] { color:var(--od-text) !important; }
+#order-detail-modal #odModalPrice { color:#0f9f6e !important; text-shadow:none !important; }
+#order-detail-modal .od-account-card { border:1px solid var(--od-line) !important; border-radius:14px !important; background:var(--od-panel-soft) !important; box-shadow:none !important; }
+#order-detail-modal .od-account-card-header { border-color:var(--od-line) !important; background:color-mix(in srgb,var(--od-panel-soft) 82%,var(--od-accent) 18%) !important; }
+#order-detail-modal .od-acc-title { color:var(--od-accent) !important; }
+#order-detail-modal .od-field { border-color:var(--od-line) !important; }
+#order-detail-modal .od-field-label { color:var(--od-muted) !important; }
+#order-detail-modal .od-field-value-box, #order-detail-modal .od-extra-item, #order-detail-modal .od-raw-box { border-color:var(--od-line) !important; background:var(--od-panel) !important; box-shadow:none !important; }
+#order-detail-modal .od-fv-text, #order-detail-modal .od-extra-val { color:var(--od-text) !important; }
+#order-detail-modal .od-fv-btn { color:var(--od-accent) !important; border-color:var(--od-line) !important; background:var(--od-panel-muted) !important; }
+#order-detail-modal .sk-actions { border-color:var(--od-line) !important; }
+#order-detail-modal #btnDownloadTxt, #order-detail-modal .sk-btn-cyber-outline { color:var(--od-text) !important; border:1px solid var(--od-line) !important; background:var(--od-panel-soft) !important; box-shadow:none !important; }
+#order-detail-modal #btnCopyAllDetails { border:0 !important; background:linear-gradient(135deg,#2563eb,#4f46e5) !important; box-shadow:0 8px 18px rgba(79,70,229,.24) !important; }
+@media (max-width:620px) { #order-detail-modal { align-items:flex-end !important; padding:8px !important; } #order-detail-modal .cyberpunk-modal-card { max-height:92vh !important; padding:15px !important; border-radius:18px 18px 12px 12px !important; } #order-detail-modal #odModalCode { font-size:16px !important; } #order-detail-modal .od-info-list { padding:12px !important; } #order-detail-modal .sk-actions { display:grid !important; grid-template-columns:1fr 1fr; } #order-detail-modal #btnCopyAllDetails { grid-column:1 / -1; } }
+@media (prefers-reduced-motion:reduce) { .sk-order-actions .sk-btn-success::before { display:none; } }

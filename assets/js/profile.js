@@ -274,6 +274,14 @@ function orderStatusLabel(status) {
   return labels[status] || status || '---';
 }
 
+function warrantyEligible(order) {
+  if (!order || order.status !== 'completed') return false;
+  const timestamp = order.completedAt || order.completed_at || order.createdAt || order.created_at;
+  const completedTime = new Date(timestamp).getTime();
+  const elapsed = Date.now() - completedTime;
+  return Number.isFinite(completedTime) && elapsed >= 0 && elapsed <= 2 * 24 * 60 * 60 * 1000;
+}
+
 function renderOrders(orders) {
   const ordersBody = document.getElementById('ordersTabBody');
   if (!ordersBody) return;
@@ -306,9 +314,10 @@ function renderOrders(orders) {
               <td class="sk-price">${formatMoney(order.totalPrice)}</td>
               <td>${formatDateTime(order.createdAt)}</td>
               <td><span class="sk-badge sk-badge-success" style="background: var(--success-soft); color: var(--success); border-color: rgba(41, 226, 125, 0.2);">${escapeHtml(orderStatusLabel(order.status))}</span></td>
-              <td>
-                <button class="sk-btn sk-btn-success" style="background: var(--success); color: #fff; border: 0; font-weight: 700; font-size: 12px; padding: 6px 12px; display: inline-flex; align-items: center; gap: 4px;" type="button" onclick="showOrderDetail('${escapeHtml(order.id)}')"><i class="fa-solid fa-key"></i> Lấy tài khoản</button>
-              </td>
+              <td><div class="sk-order-actions">
+                <button class="sk-btn sk-btn-success" type="button" onclick="showOrderDetail('${escapeHtml(order.id)}')"><i class="fa-solid fa-key"></i> Lấy tài khoản</button>
+                ${warrantyEligible(order) ? `<button class="sk-btn sk-warranty-btn" type="button" onclick="openWarrantyRequest('${escapeHtml(order.id)}','${escapeHtml(order.code || order.id)}')"><i class="fa-solid fa-shield-halved"></i> Bảo hành</button>` : ''}
+              </div></td>
             </tr>
           `).join('')}
         </tbody>
@@ -339,11 +348,15 @@ function renderTransactions(transactions) {
         <tbody>
           ${transactions.map(item => {
             const amount = Number(item.amount || 0);
-            const color = amount >= 0 ? 'var(--success)' : 'var(--danger)';
+            const amountClass = amount > 0
+              ? 'sk-balance-change-positive'
+              : amount < 0
+                ? 'sk-balance-change-negative'
+                : 'sk-balance-change-neutral';
             return `
               <tr>
                 <td>#${escapeHtml(item.code || item.id || '---')}</td>
-                <td style="color:${color}; font-weight:900">${formatSignedMoney(amount)}</td>
+                <td><strong class="${amountClass}">${formatSignedMoney(amount)}</strong></td>
                 <td>${formatMoney(item.balanceAfter)}</td>
                 <td>${escapeHtml(item.content || 'Biến động số dư')}</td>
                 <td>${formatDateTime(item.createdAt)}</td>
@@ -960,6 +973,7 @@ function togglePasswordVisibility(inputId, button) {
 }
 
 let tempAvatarUrl = null;
+let avatarUploadPending = false;
 
 function updateModalAvatarPreview(url) {
   const previewContainer = document.getElementById('modal-avatar-preview');
@@ -975,17 +989,11 @@ function updateModalAvatarPreview(url) {
 }
 
 window.selectPresetAvatar = function(src) {
-  let relativeSrc = src;
-  if (src.includes('assets/img/')) {
-    relativeSrc = src.substring(src.indexOf('assets/img/'));
-  }
-  
-  tempAvatarUrl = relativeSrc;
+  tempAvatarUrl = src;
   updateModalAvatarPreview(tempAvatarUrl);
   
-  document.querySelectorAll('.pf-preset').forEach(img => {
-    let imgRelative = img.getAttribute('src');
-    if (imgRelative === relativeSrc) {
+  document.querySelectorAll('.preset-avatar-item').forEach(img => {
+    if (img.src === src) {
       img.classList.add('active');
     } else {
       img.classList.remove('active');
@@ -993,52 +1001,63 @@ window.selectPresetAvatar = function(src) {
   });
 };
 
-function handleAvatarFileSelect(event) {
+async function handleAvatarFileSelect(event) {
   const file = event.target.files[0];
   if (!file) return;
 
-  if (!file.type.startsWith('image/')) {
-    alert('Vui lòng chọn tệp hình ảnh hợp lệ.');
+  if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+    showProfileMessage('Chỉ chấp nhận ảnh JPEG, PNG hoặc WebP.');
+    event.target.value = '';
+    return;
+  }
+  if (file.size > 2 * 1024 * 1024) {
+    showProfileMessage('Ảnh đại diện không được vượt quá 2 MB.');
+    event.target.value = '';
     return;
   }
 
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    const img = new Image();
-    img.onload = function() {
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      const maxDim = 150;
-      
-      let width = img.width;
-      let height = img.height;
-      
-      if (width > height) {
-        if (width > maxDim) {
-          height = Math.round((height * maxDim) / width);
-          width = maxDim;
-        }
-      } else {
-        if (height > maxDim) {
-          width = Math.round((width * maxDim) / height);
-          height = maxDim;
-        }
-      }
-      
-      canvas.width = width;
-      canvas.height = height;
-      ctx.drawImage(img, 0, 0, width, height);
-      
-      const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
-      
-      tempAvatarUrl = compressedDataUrl;
-      updateModalAvatarPreview(tempAvatarUrl);
-      
-      document.querySelectorAll('.pf-preset').forEach(el => el.classList.remove('active'));
-    };
-    img.src = e.target.result;
-  };
-  reader.readAsDataURL(file);
+  const token = getToken();
+  if (!token) {
+    clearSession();
+    window.location.href = 'login.html';
+    return;
+  }
+
+  avatarUploadPending = true;
+  const uploadButton = document.querySelector('.upload-device-btn');
+  if (uploadButton) {
+    uploadButton.disabled = true;
+    uploadButton.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang tải lên R2...';
+  }
+
+  try {
+    const formData = new FormData();
+    formData.append('image', file);
+    const response = await fetch(`${API_BASE}/upload?folder=avatars`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+      body: formData
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || data.ok === false || !data.url) {
+      throw new Error(data.message || 'Không thể tải ảnh lên R2.');
+    }
+
+    tempAvatarUrl = data.url;
+    updateModalAvatarPreview(tempAvatarUrl);
+    document.querySelectorAll('.preset-avatar-item').forEach(el => el.classList.remove('active'));
+    showProfileMessage('Ảnh đã được tải lên R2. Nhấn Lưu thay đổi để sử dụng.');
+  } catch (err) {
+    console.error(err);
+    showProfileMessage(err.message || 'Không thể tải ảnh lên R2.');
+    event.target.value = '';
+  } finally {
+    avatarUploadPending = false;
+    if (uploadButton) {
+      uploadButton.disabled = false;
+      uploadButton.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Tải ảnh thiết bị';
+    }
+  }
 }
 
 function openEditModal() {
@@ -1055,9 +1074,8 @@ function openEditModal() {
   tempAvatarUrl = currentUser?.avatarUrl || null;
   updateModalAvatarPreview(tempAvatarUrl);
   
-  document.querySelectorAll('.pf-preset').forEach(img => {
-    let imgRelative = img.getAttribute('src');
-    if (tempAvatarUrl && tempAvatarUrl === imgRelative) {
+  document.querySelectorAll('.preset-avatar-item').forEach(img => {
+    if (tempAvatarUrl && tempAvatarUrl === img.src) {
       img.classList.add('active');
     } else {
       img.classList.remove('active');
@@ -1075,6 +1093,11 @@ function closeEditModal() {
 }
 
 async function saveProfileChanges() {
+  if (avatarUploadPending) {
+    showProfileMessage('Vui lòng chờ ảnh tải lên R2 hoàn tất.');
+    return;
+  }
+
   const phone = document.getElementById('input-phone')?.value.trim() || '';
   const fullName = document.getElementById('input-fullname')?.value.trim() || '';
 

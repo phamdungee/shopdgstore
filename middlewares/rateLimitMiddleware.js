@@ -42,6 +42,49 @@ const registerLimiter = rateLimit({
   validate: sharedValidate,
 });
 
+// Password recovery: keep send limits strict and verification attempts bounded.
+const resetOtpSendLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 3,
+  message: {
+    ok: false,
+    success: false,
+    message: 'Bạn đã gửi quá nhiều yêu cầu OTP. Vui lòng thử lại sau 1 phút.'
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: cfKeyGenerator,
+  validate: sharedValidate,
+});
+
+const resetOtpVerifyLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 10,
+  message: {
+    ok: false,
+    success: false,
+    message: 'Bạn đã thử mã OTP quá nhiều lần. Vui lòng chờ trước khi thử lại.'
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: cfKeyGenerator,
+  validate: sharedValidate,
+});
+
+const resetPasswordLimiter = rateLimit({
+  windowMs: 10 * 60 * 1000,
+  max: 5,
+  message: {
+    ok: false,
+    success: false,
+    message: 'Quá nhiều yêu cầu đổi mật khẩu. Vui lòng thử lại sau.'
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: cfKeyGenerator,
+  validate: sharedValidate,
+});
+
 // 10 requests/min/IP
 const uploadLimiter = rateLimit({
   windowMs: 60 * 1000,
@@ -78,8 +121,10 @@ const defaultLimiter = rateLimit({
 module.exports = {
   loginLimiter,
   registerLimiter,
+  resetOtpSendLimiter,
+  resetOtpVerifyLimiter,
+  resetPasswordLimiter,
   uploadLimiter,
   checkoutLimiter,
   defaultLimiter
 };
-

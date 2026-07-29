@@ -23,7 +23,15 @@ async function authMiddleware(req, res, next) {
       .eq('id', payload.userId)
       .single();
 
-    if (error || !user) {
+    if (error) {
+      console.error('Auth user lookup error:', error);
+      return res.status(503).json({
+        ok: false,
+        message: 'Tam thoi khong ket noi duoc database, vui long thu lai'
+      });
+    }
+
+    if (!user) {
       return res.status(401).json({ ok: false, message: 'Tai khoan khong ton tai hoac token da het hieu luc' });
     }
 

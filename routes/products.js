@@ -98,12 +98,40 @@ function productUpdatePayload(body) {
   return payload;
 }
 
+async function completedSalesByProduct() {
+  const pageSize = 1000;
+  const sales = new Map();
+
+  for (let from = 0; ; from += pageSize) {
+    const { data, error } = await supabase
+      .from('store_orders')
+      .select('product_slug, quantity')
+      .eq('status', 'completed')
+      .range(from, from + pageSize - 1);
+    if (error) throw error;
+
+    for (const order of data || []) {
+      const slug = String(order.product_slug || '').trim();
+      if (!slug) continue;
+      const quantity = Math.max(0, Number(order.quantity || 0));
+      sales.set(slug, (sales.get(slug) || 0) + quantity);
+    }
+
+    if (!data || data.length < pageSize) break;
+  }
+
+  return sales;
+}
+
 router.get('/', async (req, res) => {
   try {
-    const { data: products, error } = await supabase
-      .from('products')
-      .select('*, product_variants(*)')
-      .order('created_at', { ascending: true });
+    const [{ data: products, error }, soldByProduct] = await Promise.all([
+      supabase
+        .from('products')
+        .select('*, product_variants(*)')
+        .order('created_at', { ascending: true }),
+      completedSalesByProduct()
+    ]);
 
     if (error) {
       console.error('Fetch products error:', error);
@@ -122,8 +150,9 @@ router.get('/', async (req, res) => {
         vendor_id: v.vendor_id,
         delivery_type: v.delivery_type,
         fallback_mode: v.fallback_mode
-      })),
-      stock: p.stock_cache
+      })), 
+      stock: p.stock_cache,
+      sold_count: soldByProduct.get(String(p.slug || '')) || 0
     }));
 
     return res.json({ ok: true, products: formattedProducts });

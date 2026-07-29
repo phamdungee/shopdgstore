@@ -11,16 +11,7 @@ DG_STORE/
 |       |-- login.js                # login.html register/login UI
 |       |-- nap-tien.js             # nap-tien.html QR, countdown, polling
 |       |-- profile.js              # profile.html account, orders, wallet history
-|       `-- tracking.js             # tracking.html waybill lookup/watchlist UI
-|
-|-- bottracking/                    # Telegram bot and waybill watch state
-|   |-- watchlist.json              # SPX/GHN codes watched in background
-|   |-- telegram-state.json         # Telegram polling offset/state
-|   |-- bot-config.json             # Bot config fallback
-|   `-- spx-track.js                # Standalone tracking helper/script
-|
-|-- logs/                           # Runtime logs
-|   `-- deposit-webhooks.jsonl      # Casso reconciliation log
+|       `-- password-recovery.js    # recovery request/reset UI
 |
 |-- product/                        # Product-specific public page assets
 |   `-- sanpham/
@@ -40,15 +31,18 @@ DG_STORE/
 |   |-- products.js                 # Public product API
 |   |-- orders.js                   # Checkout, wallet deduction, fulfillment
 |   |-- deposits.js                 # Deposit bills, Casso webhook/sync, wallet credit
-|   |-- admin.js                    # Admin dashboard, product CRUD, image list
-|   |-- tracking.js                 # SPX/GHN lookup, watchlist, Telegram bot scheduler
+|   |-- admin.js                    # Admin dashboard, inventory, vendors and analytics
+|   |-- upload.js                   # Authenticated R2 image lifecycle
+|   |-- support.js                  # Support tickets and warranty eligibility
 |   `-- pages.js                    # HTML page routes
 |
 |-- middlewares/                    # Security/access filters
 |   `-- authMiddleware.js           # JWT auth and admin guard
 |
 |-- services/                       # Shared backend business helpers
-|   `-- storeService.js             # User presenters, wallet helpers, code/money/order helpers
+|   |-- storeService.js             # User presenters, wallet helpers, code/money/order helpers
+|   |-- emailService.js             # Resend transactional email
+|   `-- notificationBot.js          # Stateless operational notifications
 |
 |-- config/                         # Runtime configuration
 |   |-- env.js                      # Validates and exports .env values
@@ -61,7 +55,7 @@ DG_STORE/
 |-- nap-tien.html                   # Deposit QR UI
 |-- profile.html                    # User profile/history UI
 |-- admin.html                      # Admin UI
-|-- tracking.html                   # SPX/GHN tracking UI
+|-- reset-password.html             # Account recovery UI
 |
 |-- .env                            # Secrets and runtime keys
 |-- server.js                       # Express bootstrap only
@@ -80,7 +74,7 @@ DG_STORE/
 ## Route mount map
 
 ```txt
-/api                  -> health.js, auth.js, account.js, orders.js, tracking.js
+/api                  -> health.js, auth.js, account.js, orders.js, upload.js, support.js
 /api/products         -> products.js
 /api/deposits         -> deposits.js
 /api/admin            -> admin.js
@@ -97,5 +91,5 @@ Browser HTML/JS
     -> middlewares/authMiddleware.js when token/admin is required
     -> services/storeService.js for shared user/wallet/order helpers
     -> fulfillment/* when an order needs product delivery
-    -> Supabase/Casso/SPX/GHN/Telegram external services
+    -> Supabase, Cloudflare R2, Resend, Casso and notification services
 ```

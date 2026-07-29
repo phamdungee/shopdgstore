@@ -1,7 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
+const crypto = require('crypto');
 const supabase = require('../config/supabase');
+const { APP_BASE_URL, PASSWORD_RESET_TTL_MINUTES } = require('../config/env');
+const { sendPasswordResetEmail } = require('../services/emailService');
 const { googleLogin, githubLogin } = require('../controllers/authController');
 const { loginLimiter, registerLimiter } = require('../middlewares/rateLimitMiddleware');
 const verifyTurnstile = require('../middlewares/turnstileMiddleware');
@@ -200,18 +203,30 @@ router.post('/request-password-reset', async (req, res) => {
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return res.status(400).json({ ok: false, message: 'Email không hợp lệ' });
     }
-
-    const redirectTo = String(req.body.redirectTo || `${req.protocol}://${req.get('host')}/reset-password.html`);
-    const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo });
-
-    if (error) {
-      console.error('Request password reset error:', error);
-    }
-
-    return res.json({
+    if (isAuthRateLimited(req, 'password-reset', email)) return res.status(429).json({ ok: false, message: 'Quá nhiều yêu cầu. Vui lòng thử lại sau.' });
+    const response = {
       ok: true,
       message: 'Nếu email tồn tại trong hệ thống, bạn sẽ nhận được liên kết đặt lại mật khẩu trong vài phút.'
+    };
+    const { data: user, error: userError } = await supabase.from('users').select('id, email, status').ilike('email', email).maybeSingle();
+    if (userError) throw userError;
+    if (!user || user.status !== 'active') return res.json(response);
+    const rawToken = crypto.randomBytes(32).toString('base64url');
+    const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
+    await supabase.from('password_reset_tokens').delete().eq('user_id', String(user.id));
+    const { error: tokenError } = await supabase.from('password_reset_tokens').insert({
+      user_id: String(user.id), token_hash: tokenHash,
+      expires_at: new Date(Date.now() + PASSWORD_RESET_TTL_MINUTES * 60000).toISOString(),
+      request_ip: authClientIp(req)
     });
+    if (tokenError) throw tokenError;
+    try {
+      await sendPasswordResetEmail({ email: user.email, resetUrl: `${APP_BASE_URL}/reset-password.html?token=${encodeURIComponent(rawToken)}` });
+    } catch (emailError) {
+      await supabase.from('password_reset_tokens').delete().eq('token_hash', tokenHash);
+      throw emailError;
+    }
+    return res.json(response);
   } catch (err) {
     console.error('Request password reset error:', err);
     return res.status(500).json({ ok: false, message: 'Không thể gửi email đặt lại mật khẩu lúc này.' });
@@ -221,33 +236,32 @@ router.post('/request-password-reset', async (req, res) => {
 router.post('/reset-password', async (req, res) => {
   try {
     const password = String(req.body.password || '');
-    const tokenHash = String(req.body.tokenHash || req.body.token_hash || '');
+    const rawToken = String(req.body.token || '');
 
     if (!password || password.length < 8) {
       return res.status(400).json({ ok: false, message: 'Mật khẩu phải có ít nhất 8 ký tự.' });
     }
 
-    if (!tokenHash) {
+    if (!rawToken || rawToken.length > 200) {
       return res.status(400).json({ ok: false, message: 'Liên kết đặt lại mật khẩu không hợp lệ hoặc đã hết hạn.' });
     }
-
-    const { data: authData, error: verifyError } = await supabase.auth.verifyOtp({
-      token_hash: tokenHash,
-      type: 'recovery'
-    });
-
-    if (verifyError || !authData?.user?.id) {
-      console.error('Verify recovery token error:', verifyError);
+    const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
+    const { data: resetToken, error: verifyError } = await supabase.from('password_reset_tokens')
+      .select('id, user_id, expires_at, used_at').eq('token_hash', tokenHash).maybeSingle();
+    if (verifyError || !resetToken || resetToken.used_at || new Date(resetToken.expires_at).getTime() <= Date.now()) {
       return res.status(400).json({ ok: false, message: 'Liên kết đặt lại mật khẩu không hợp lệ hoặc đã hết hạn.' });
     }
-
-    const { error: updateError } = await supabase.auth.admin.updateUserById(authData.user.id, { password });
+    const { data: claimedToken, error: consumeError } = await supabase.from('password_reset_tokens')
+      .update({ used_at: new Date().toISOString() }).eq('id', resetToken.id).is('used_at', null).select('id').maybeSingle();
+    if (consumeError) throw consumeError;
+    if (!claimedToken) return res.status(400).json({ ok: false, message: 'Liên kết đặt lại mật khẩu đã được sử dụng.' });
+    const passwordHash = await bcrypt.hash(password, 12);
+    const { error: updateError } = await supabase.from('users').update({ password_hash: passwordHash }).eq('id', resetToken.user_id).eq('status', 'active');
 
     if (updateError) {
       console.error('Update password error:', updateError);
       return res.status(400).json({ ok: false, message: 'Không thể cập nhật mật khẩu. Vui lòng thử lại.' });
     }
-
     return res.json({ ok: true, message: 'Đặt lại mật khẩu thành công.' });
   } catch (err) {
     console.error('Reset password error:', err);

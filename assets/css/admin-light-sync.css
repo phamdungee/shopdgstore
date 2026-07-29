@@ -1,0 +1,74 @@
+/* Admin light synchronization; loaded after legacy inline rules. */
+html:not([data-theme="dark"]) {
+  color-scheme:light;
+  --admin-bg:#f3f6fa; --admin-surface:#fff; --admin-surface-muted:#f6f8fb;
+  --admin-text:#1d2939; --admin-muted:#66758a; --admin-line:#d8e1ec;
+  --admin-accent:#4f46e5; --admin-accent-soft:#eeedff;
+  --bg:var(--admin-bg); --bg-gradient:var(--admin-bg);
+  --surface:var(--admin-surface); --surface-solid:var(--admin-surface);
+  --surface-soft:var(--admin-surface-muted); --surface-strong:#e9eef5;
+  --text:var(--admin-text); --text-bright:#101828; --muted:var(--admin-muted);
+  --line:var(--admin-line); --line-strong:#b7c4d5;
+  --brand:var(--admin-accent); --brand-light:#635bff;
+  --brand-soft:var(--admin-accent-soft); --brand-glow:transparent; --glass-blur:none;
+}
+html:not([data-theme="dark"]) :where(body,.sk-shell) { background:var(--admin-bg)!important; color:var(--admin-text)!important; }
+html:not([data-theme="dark"]) :where(.sk-topbar,.sk-sidebar-new) { background:#fff!important; border-color:var(--admin-line)!important; box-shadow:none!important; }
+html:not([data-theme="dark"]) :where(.sk-card,.sk-stat,.product-form-card,.sk-product-admin-card,.admin-card,.chart-card,.warehouse-card,.modal-content,.cyberpunk-modal-card) {
+  background:#fff!important; border-color:var(--admin-line)!important; color:var(--admin-text)!important;
+  box-shadow:0 1px 2px rgba(16,24,40,.04),0 8px 24px rgba(16,24,40,.055)!important; backdrop-filter:none!important;
+}
+html:not([data-theme="dark"]) :where(.sk-card,.sk-stat,.product-form-card,.sk-product-admin-card,.admin-card,.warehouse-card):hover {
+  border-color:#b5c2d3!important; box-shadow:0 10px 28px rgba(16,24,40,.08)!important;
+}
+html:not([data-theme="dark"]) :where(h1,h2,h3,h4,label,strong,b,.sk-page-title h1,.sk-card h2,.sk-card h3,.sk-stat b,.modal-title,.product-name) { color:#172033!important; text-shadow:none!important; }
+html:not([data-theme="dark"]) :where(p,small,.sk-page-title p,.sk-stat p,.sk-kicker,.admin-sync-status,.sidebar-title,.product-slug) { color:var(--admin-muted)!important; }
+html:not([data-theme="dark"]) :where(.sk-nav-link,.sk-sidebar-new .nav-item) { color:#526176!important; border-color:transparent!important; }
+html:not([data-theme="dark"]) :where(.sk-nav-link,.sk-sidebar-new .nav-item):hover,
+html:not([data-theme="dark"]) :where(.sk-nav-link.active,.sk-sidebar-new .nav-item.active) { background:var(--admin-accent-soft)!important; border-color:#d7d3ff!important; color:#3730a3!important; }
+html:not([data-theme="dark"]) :where(input,select,textarea,.sk-input) { background:#fff!important; border:1px solid #cfd9e6!important; color:#172033!important; box-shadow:0 1px 2px rgba(16,24,40,.035)!important; }
+html:not([data-theme="dark"]) :where(input,textarea)::placeholder { color:#8a96a8!important; opacity:1; }
+html:not([data-theme="dark"]) :where(input,select,textarea):focus { border-color:var(--admin-accent)!important; box-shadow:0 0 0 3px rgba(79,70,229,.13)!important; }
+html:not([data-theme="dark"]) :where(.sk-btn,.sk-icon-btn,button) { box-shadow:none!important; }
+html:not([data-theme="dark"]) :where(.sk-btn:not(.sk-btn-primary):not(.sk-btn-danger),.sk-icon-btn) { background:#fff!important; border-color:var(--admin-line)!important; color:#344054!important; }
+html:not([data-theme="dark"]) :where(.sk-btn:not(.sk-btn-primary):not(.sk-btn-danger),.sk-icon-btn):hover { background:#f6f8fb!important; border-color:#aebccd!important; color:#172033!important; }
+html:not([data-theme="dark"]) :where(.sk-btn-primary,.admin-primary-action) { background:var(--admin-accent)!important; border-color:var(--admin-accent)!important; color:#fff!important; }
+html:not([data-theme="dark"]) :where(.sk-table-wrap,.sk-table,table) { background:#fff!important; border-color:var(--admin-line)!important; }
+html:not([data-theme="dark"]) :where(.sk-table th,thead th) { background:#f0f4f8!important; color:#344054!important; border-color:var(--admin-line)!important; }
+html:not([data-theme="dark"]) :where(.sk-table td,tbody td) { background:#fff!important; color:#344054!important; border-color:#e4eaf1!important; }
+html:not([data-theme="dark"]) tbody tr:hover td { background:#f8faff!important; }
+html:not([data-theme="dark"]) :where(.variant-stock-list,.variant-stock-item,.warehouse-details,.warehouse-summary,.admin-filter-bar,.form-section,.modal-section,.admin-info-row) {
+  background:var(--admin-surface-muted)!important; border-color:var(--admin-line)!important; color:var(--admin-text)!important;
+}
+html:not([data-theme="dark"]) :where(.sk-modal,.modal,.cyberpunk-modal) { background:rgba(15,23,42,.46)!important; }
+html:not([data-theme="dark"]) :where(.modal-content,.cyberpunk-modal-card) { background:#fff!important; border-color:var(--admin-line)!important; color:var(--admin-text)!important; box-shadow:0 24px 60px rgba(16,24,40,.2)!important; }
+html:not([data-theme="dark"]) :where(.stock-code-item,code,pre) { background:#eef2f7!important; border-color:#d6dfe9!important; color:#344054!important; }
+html:not([data-theme="dark"]) body .sk-sidebar-new .nav-item,
+html:not([data-theme="dark"]) body .sk-nav-link {
+  color:#526176!important; text-shadow:none!important;
+}
+html:not([data-theme="dark"]) body .sk-sidebar-new .nav-item:hover,
+html:not([data-theme="dark"]) body .sk-nav-link:hover,
+html:not([data-theme="dark"]) body .sk-sidebar-new .nav-item.active,
+html:not([data-theme="dark"]) body .sk-nav-link.active {
+  background:#eeedff!important; border-color:#d7d3ff!important; color:#3730a3!important;
+}
+html:not([data-theme="dark"]) body :where(
+  .sk-content h1,.sk-content h2,.sk-content h3,.sk-content h4,
+  .sk-card h2,.sk-card h3,.sk-stat b,.product-name,
+  .modal-content h2,.modal-content h3,.cyberpunk-modal-card h2
+) {
+  color:#172033!important; text-shadow:none!important;
+}
+html:not([data-theme="dark"]) body :where(
+  .sk-content p,.sk-content small,.sk-card p,.sk-stat p,
+  .product-slug,.admin-sync-status,.modal-content p
+) {
+  color:#66758a!important; text-shadow:none!important;
+}
+html:not([data-theme="dark"]) body :where(.sk-table td,.sk-table th,table td,table th) {
+  color:#344054!important; text-shadow:none!important;
+}
+html:not([data-theme="dark"]) body :where(.form-label,.field-label,label) {
+  color:#344054!important; text-shadow:none!important;
+}

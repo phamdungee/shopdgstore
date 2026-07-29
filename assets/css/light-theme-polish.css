@@ -1,0 +1,182 @@
+/* Shared light-theme finishing layer. Loaded last so every page uses the same
+   readable surfaces, controls, interaction states and semantic colors. */
+html[data-theme="light"],
+body.light-mode {
+  color-scheme: light;
+  --bg: #f4f7fb;
+  --bg-gradient: linear-gradient(180deg, #f8faff 0%, #f2f5fa 100%);
+  --surface: #ffffff;
+  --surface-solid: #ffffff;
+  --surface-soft: #f7f9fc;
+  --surface-strong: #edf2f7;
+  --glass-bg: #ffffff;
+  --line: #d9e1ec;
+  --line-strong: #b8c5d6;
+  --border: #d9e1ec;
+  --glass-border: 1px solid #d9e1ec;
+  --text: #27364a;
+  --text-bright: #101828;
+  --muted: #66758a;
+  --muted-dark: #7b8798;
+  --brand: #4f46e5;
+  --brand-light: #635bff;
+  --brand-dark: #3730a3;
+  --brand-soft: #eeedff;
+  --accent: #087f8c;
+  --accent-soft: #e3f7f8;
+  --success: #16803c;
+  --success-soft: #e7f7ed;
+  --warning: #a85d08;
+  --warning-soft: #fff4dc;
+  --danger: #c6283d;
+  --danger-soft: #ffeaed;
+  --card-shadow: 0 1px 2px rgba(16, 24, 40, .04), 0 8px 24px rgba(16, 24, 40, .06);
+  --shadow: 0 18px 48px rgba(16, 24, 40, .14);
+  --shadow-sm: 0 6px 18px rgba(16, 24, 40, .08);
+}
+
+html[data-theme="light"] body,
+body.light-mode {
+  background: var(--bg-gradient) !important;
+  color: var(--text) !important;
+}
+
+html[data-theme="light"] body::before,
+body.light-mode::before {
+  opacity: .35;
+}
+
+html[data-theme="light"] :where(.sk-topbar, .nav-in),
+body.light-mode :where(.sk-topbar, .nav-in) {
+  background: rgba(255, 255, 255, .96) !important;
+  border-color: var(--line) !important;
+}
+
+html[data-theme="light"] :where(
+  .sk-card, .sk-stat, .sk-sidebar-new, .sk-product-card-vertical,
+  .shopee-product-card, .glass-card, .feat-card, .cta-box,
+  .sk-cart-drawer, .modal-content, .sk-modal-card, .cyberpunk-modal-card,
+  .product-form-card, .sk-product-admin-card
+),
+body.light-mode :where(
+  .sk-card, .sk-stat, .sk-sidebar-new, .sk-product-card-vertical,
+  .shopee-product-card, .glass-card, .feat-card, .cta-box,
+  .sk-cart-drawer, .modal-content, .sk-modal-card, .cyberpunk-modal-card
+) {
+  background: var(--surface) !important;
+  border-color: var(--line) !important;
+  color: var(--text) !important;
+  box-shadow: var(--card-shadow) !important;
+}
+
+html[data-theme="light"] :where(.sk-card, .sk-stat, .sk-product-card-vertical, .shopee-product-card, .glass-card, .feat-card):hover,
+body.light-mode :where(.sk-card, .sk-stat, .sk-product-card-vertical, .shopee-product-card, .glass-card, .feat-card):hover {
+  border-color: var(--line-strong) !important;
+  box-shadow: 0 10px 28px rgba(16, 24, 40, .09) !important;
+}
+
+html[data-theme="light"] :where(h1, h2, h3, h4, strong, b, th, label),
+body.light-mode :where(h1, h2, h3, h4, strong, b, th, label) {
+  color: var(--text-bright);
+}
+
+html[data-theme="light"] :where(p, small, .sk-kicker, .sk-user-meta small, .sk-stat p, .sidebar-title),
+body.light-mode :where(p, small, .sk-kicker, .sk-user-meta small, .sk-stat p, .sidebar-title) {
+  color: var(--muted);
+}
+
+html[data-theme="light"] :where(input, select, textarea, .sk-input),
+body.light-mode :where(input, select, textarea, .sk-input) {
+  background: #fff !important;
+  border: 1px solid var(--line) !important;
+  color: var(--text-bright) !important;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, .03) !important;
+}
+
+html[data-theme="light"] :where(input, textarea)::placeholder,
+body.light-mode :where(input, textarea)::placeholder {
+  color: #8a96a8 !important;
+  opacity: 1;
+}
+
+html[data-theme="light"] :where(input, select, textarea, button, a):focus-visible,
+body.light-mode :where(input, select, textarea, button, a):focus-visible {
+  outline: 3px solid rgba(79, 70, 229, .22) !important;
+  outline-offset: 2px;
+}
+
+html[data-theme="light"] :where(input, select, textarea):focus,
+body.light-mode :where(input, select, textarea):focus {
+  border-color: var(--brand) !important;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, .12) !important;
+}
+
+html[data-theme="light"] :where(.sk-btn, .sk-icon-btn, .btn, button),
+body.light-mode :where(.sk-btn, .sk-icon-btn, .btn, button) {
+  border-color: var(--line);
+}
+
+html[data-theme="light"] :where(.sk-btn:not(.sk-btn-primary):not(.sk-btn-accent), .sk-icon-btn),
+body.light-mode :where(.sk-btn:not(.sk-btn-primary):not(.sk-btn-accent), .sk-icon-btn) {
+  background: #fff !important;
+  color: var(--text) !important;
+}
+
+html[data-theme="light"] :where(.sk-btn:not(.sk-btn-primary):not(.sk-btn-accent), .sk-icon-btn):hover,
+body.light-mode :where(.sk-btn:not(.sk-btn-primary):not(.sk-btn-accent), .sk-icon-btn):hover {
+  background: var(--surface-soft) !important;
+  border-color: var(--line-strong) !important;
+  color: var(--text-bright) !important;
+}
+
+html[data-theme="light"] :where(.sk-btn-primary, .sk-btn-accent),
+body.light-mode :where(.sk-btn-primary, .sk-btn-accent) {
+  background: var(--brand) !important;
+  border-color: var(--brand) !important;
+  color: #fff !important;
+}
+
+html[data-theme="light"] :where(.sk-btn-primary, .sk-btn-accent):hover,
+body.light-mode :where(.sk-btn-primary, .sk-btn-accent):hover {
+  background: var(--brand-dark) !important;
+  border-color: var(--brand-dark) !important;
+}
+
+html[data-theme="light"] :where(.sk-table-wrap, table),
+body.light-mode :where(.sk-table-wrap, table) {
+  background: #fff !important;
+  border-color: var(--line) !important;
+}
+
+html[data-theme="light"] :where(th, thead),
+body.light-mode :where(th, thead) {
+  background: #f1f5f9 !important;
+}
+
+html[data-theme="light"] td,
+body.light-mode td {
+  border-color: #e5eaf1 !important;
+  color: var(--text) !important;
+}
+
+html[data-theme="light"] tbody tr:hover td,
+body.light-mode tbody tr:hover td {
+  background: #f8faff !important;
+}
+
+html[data-theme="light"] :where(.sk-modal, .modal, .cyberpunk-modal),
+body.light-mode :where(.sk-modal, .modal, .cyberpunk-modal) {
+  background: rgba(15, 23, 42, .48) !important;
+}
+
+html[data-theme="light"] :where(.sk-toast, .alert, .notice),
+body.light-mode :where(.sk-toast, .alert, .notice) {
+  border-color: var(--line) !important;
+  color: var(--text) !important;
+}
+
+html[data-theme="light"] ::selection,
+body.light-mode ::selection {
+  background: rgba(79, 70, 229, .2);
+  color: #1e1b4b;
+}

@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin Dashboard | DG Store</title>
+    <link rel="icon" type="image/webp" href="/assets/img/%E1%BA%A3nh%20s%E1%BA%A3n%20ph%E1%BA%A9m/ChatGPT%20Image%2023_52_48%2012%20thg%207%2C%202026_11zon.webp" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -14,8 +15,9 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
       rel="stylesheet"
     />
-    <link href="assets/css/common.css" rel="stylesheet" />
-    <link href="assets/css/icons.css" rel="stylesheet" />
+    <link href="assets/css/common.css?v=20260716.3" rel="stylesheet" />
+  <link href="assets/css/admin.css?v=20260722.1" rel="stylesheet" />
+<link href="assets/css/light-theme-polish.css?v=20260729.5" rel="stylesheet" />
     <style>
       /* Custom admin panel styling for dark premium glass */
       .admin-section {
@@ -122,6 +124,65 @@
         box-shadow: 0 0 10px rgba(239, 68, 68, 0.15);
       }
 
+      .badge-status.available {
+        background: rgba(16, 185, 129, 0.1);
+        color: #10b981;
+        border-color: rgba(16, 185, 129, 0.2);
+      }
+      .badge-status.reserved {
+        background: rgba(245, 158, 11, 0.1);
+        color: #f59e0b;
+        border-color: rgba(245, 158, 11, 0.2);
+      }
+      .badge-status.sold {
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+        border-color: rgba(239, 68, 68, 0.25);
+      }
+      .badge-status.api {
+        background: rgba(99, 102, 241, 0.1);
+        color: #818cf8;
+        border-color: rgba(99, 102, 241, 0.2);
+      }
+      .badge-status.warning {
+        background: rgba(245, 158, 11, 0.15);
+        color: #fbbf24;
+        border-color: rgba(245, 158, 11, 0.25);
+      }
+
+      .sk-content-pill {
+        display: inline-block;
+        padding: 2px 6px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 4px;
+        font-size: 11px;
+        color: #e5e7eb;
+        margin-right: 4px;
+        margin-bottom: 4px;
+      }
+      .sk-content-pill b {
+        color: #9ca3af;
+        font-weight: 600;
+        margin-right: 2px;
+      }
+
+      .sk-btn-copy {
+        background: transparent;
+        border: none;
+        color: var(--muted);
+        cursor: pointer;
+        padding: 4px;
+        font-size: 12px;
+        transition: color 0.2s;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .sk-btn-copy:hover {
+        color: var(--brand-light);
+      }
+
       .badge-role {
         display: inline-flex;
         align-items: center;
@@ -153,16 +214,32 @@
         align-items: center;
         margin: 0 20px;
         overflow-x: auto;
-        scrollbar-width: none;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(99, 102, 241, 0.4) transparent;
         background: rgba(17, 24, 39, 0.4);
-        padding: 4px 6px;
+        padding: 6px 8px 8px 8px;
         border-radius: 10px;
         border: 1px solid rgba(255, 255, 255, 0.05);
         backdrop-filter: blur(5px);
       }
 
       .sk-admin-nav::-webkit-scrollbar {
-        display: none;
+        height: 4px;
+        display: block;
+      }
+
+      .sk-admin-nav::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.02);
+        border-radius: 4px;
+      }
+
+      .sk-admin-nav::-webkit-scrollbar-thumb {
+        background: linear-gradient(90deg, var(--brand), var(--accent));
+        border-radius: 4px;
+      }
+
+      .sk-admin-nav::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(90deg, var(--brand-light), var(--accent-light));
       }
 
       .sk-admin-nav .sk-nav-link {
@@ -781,16 +858,53 @@
         padding: 6px 10px;
         font-size: 13px;
       }
+
+      .admin-sync-controls {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 7px;
+      }
+
+      .admin-sync-status {
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 700;
+        white-space: nowrap;
+      }
+
+      .admin-sync-status[data-state="success"] {
+        color: var(--success);
+      }
+
+      .admin-sync-status[data-state="error"] {
+        color: var(--danger);
+      }
+
+      #adminSyncButton.is-syncing i {
+        animation: fa-spin 1s linear infinite;
+      }
+
+      @media (max-width: 640px) {
+        .admin-sync-controls {
+          width: 100%;
+          align-items: stretch;
+        }
+
+        .admin-sync-status {
+          text-align: center;
+        }
+      }
     </style>
-  </head>
+    <link href="assets/css/admin-light-sync.css?v=20260729.3" rel="stylesheet" />
+  <link href="/assets/css/site-recovery-theme.css?v=20260729.5" rel="stylesheet" />
+</head>
 
   <body>
     <div id="preloader" data-auto-hide="false">
       <div class="preloader-container">
         <div class="preloader-logo">
-          <div class="preloader-bolt">
-            <span class="dg-logo-text" style="font-size: 20px">DG</span>
-          </div>
+          <div class="preloader-bolt" aria-label="DG Store"></div>
           <div class="preloader-ring"></div>
         </div>
         <p class="preloader-text">DG Admin</p>
@@ -805,10 +919,7 @@
       <header class="sk-topbar">
         <div class="sk-topbar-inner">
           <a class="sk-brand" href="admin.html">
-            <span class="sk-brand-mark dg-logo-mark">
-              <span class="dg-logo-text">DG</span>
-              <span class="dg-logo-ring"></span>
-            </span>
+            <span class="sk-brand-mark dg-logo-mark" aria-label="DG Store"></span>
             <span>
               <span class="sk-brand-title">DG Admin</span>
               <span class="sk-brand-subtitle">Control panel</span>
@@ -820,6 +931,9 @@
             >
             <a class="sk-nav-link" href="#users"
               ><i class="fa-solid fa-users"></i> Tài khoản</a
+            >
+            <a class="sk-nav-link" href="#orders"
+              ><i class="fa-solid fa-receipt"></i> Đơn hàng</a
             >
             <a class="sk-nav-link" href="#products"
               ><i class="fa-solid fa-layer-group"></i> Sản phẩm</a
@@ -839,6 +953,16 @@
           </nav>
           <div style="flex: 1 1 auto"></div>
           <div class="sk-actions">
+            <button
+              id="adminThemeToggle"
+              class="sk-icon-btn"
+              type="button"
+              onclick="toggleAdminTheme()"
+              aria-label="Chuyển giao diện sáng/tối"
+              title="Chuyển giao diện sáng/tối"
+            >
+              <i class="fa-solid fa-moon" aria-hidden="true"></i>
+            </button>
             <span class="sk-badge"
               ><i class="fa-solid fa-user-shield"></i>
               <span id="adminName">Admin</span></span
@@ -882,10 +1006,7 @@
             <span class="nav-label">Sản phẩm</span>
           </a>
           <a href="/index.html#shopee" class="nav-item" data-tooltip="Shopee">
-            <img
-              src="/assets/img/ảnh sản phẩm/logo-shopee-inkythuatso-2-01-24-14-52-10.jpg"
-              alt="Shopee"
-            />
+            <i class="fa-solid fa-bag-shopping" aria-hidden="true"></i>
             <span class="nav-label">Shopee</span>
           </a>
           <a
@@ -969,13 +1090,22 @@
                   database Supabase.
                 </p>
               </div>
-              <button
-                class="sk-btn sk-btn-accent"
-                type="button"
-                onclick="loadAdminDashboard()"
-              >
-                <i class="fa-solid fa-rotate"></i> Tải lại
-              </button>
+              <div class="admin-sync-controls">
+                <span
+                  id="adminSyncStatus"
+                  class="admin-sync-status"
+                  data-state="idle"
+                  aria-live="polite"
+                >Chưa đồng bộ</span>
+                <button
+                  id="adminSyncButton"
+                  class="sk-btn sk-btn-accent"
+                  type="button"
+                  onclick="manualRefreshAdminData()"
+                >
+                  <i class="fa-solid fa-rotate"></i> Đồng bộ database
+                </button>
+              </div>
             </section>
 
             <section class="sk-grid sk-grid-4">
@@ -1008,16 +1138,53 @@
               </div>
               <div class="sk-stat">
                 <span class="sk-stat-icon"
-                  ><i class="fa-solid fa-wallet"></i
+                  ><i class="fa-solid fa-sack-dollar"></i
                 ></span>
                 <div>
-                  <p>Tổng số dư</p>
-                  <b id="statTotalBalance">0đ</b>
+                  <p>Doanh thu</p>
+                  <b id="statTotalRevenue">0đ</b>
                 </div>
               </div>
             </section>
 
             <!-- Lưới Dashboard: Thành viên thực tế + Nhật ký bảo mật -->
+            <div class="admin-chart-grid">
+              <section class="sk-card admin-chart-wide">
+                <div class="sk-section-head">
+                  <div>
+                    <span class="sk-kicker">Revenue analytics</span>
+                    <h2>Doanh thu 30 ngày gần nhất</h2>
+                  </div>
+                  <span id="revenueChartTotal" class="sk-badge">0đ</span>
+                </div>
+                <div class="admin-chart-frame">
+                  <canvas id="adminRevenueChart" aria-label="Biểu đồ doanh thu 30 ngày" role="img"></canvas>
+                </div>
+              </section>
+              <section class="sk-card">
+                <div class="sk-section-head">
+                  <div>
+                    <span class="sk-kicker">User analytics</span>
+                    <h2>User đăng ký theo thời gian</h2>
+                  </div>
+                </div>
+                <div class="admin-chart-frame">
+                  <canvas id="adminUserChart" aria-label="Biểu đồ user đăng ký 30 ngày" role="img"></canvas>
+                </div>
+              </section>
+              <section class="sk-card">
+                <div class="sk-section-head">
+                  <div>
+                    <span class="sk-kicker">Order health</span>
+                    <h2>Trạng thái đơn hàng</h2>
+                  </div>
+                </div>
+                <div class="admin-chart-frame">
+                  <canvas id="adminOrderStatusChart" aria-label="Biểu đồ trạng thái đơn hàng" role="img"></canvas>
+                </div>
+              </section>
+            </div>
+
             <div class="sk-dashboard-grid">
               <!-- Cột 1: Thành viên mới gần đây -->
               <section class="sk-card">
@@ -1088,6 +1255,47 @@
           </div>
 
           <!-- TAB 2: TÀI KHOẢN -->
+          <div id="orders-section" class="admin-section" style="display: none">
+            <section class="sk-page-title">
+              <div>
+                <span class="sk-badge sk-badge-accent"><i class="fa-solid fa-receipt"></i> Orders</span>
+                <h1 style="margin-top: 12px">Quản lý đơn hàng</h1>
+                <p>Theo dõi trạng thái giao hàng, doanh thu và lợi nhuận của cửa hàng.</p>
+              </div>
+            </section>
+            <section class="sk-grid sk-grid-4" style="margin-bottom: 16px">
+              <div class="sk-stat"><span class="sk-stat-icon"><i class="fa-solid fa-clock"></i></span><div><p>Chờ xử lý</p><b id="orderStatPending">0</b></div></div>
+              <div class="sk-stat"><span class="sk-stat-icon"><i class="fa-solid fa-spinner"></i></span><div><p>Đang xử lý</p><b id="orderStatProcessing">0</b></div></div>
+              <div class="sk-stat"><span class="sk-stat-icon"><i class="fa-solid fa-circle-check"></i></span><div><p>Hoàn thành</p><b id="orderStatCompleted">0</b></div></div>
+              <div class="sk-stat"><span class="sk-stat-icon"><i class="fa-solid fa-triangle-exclamation"></i></span><div><p>Lỗi / hoàn tiền</p><b id="orderStatFailed">0</b></div></div>
+            </section>
+            <section class="sk-card">
+              <div class="admin-toolbar" style="margin-bottom: 14px">
+                <div>
+                  <span class="sk-kicker">Order database</span>
+                  <h2>Đơn hàng gần đây</h2>
+                </div>
+                <div class="admin-toolbar-group">
+                  <select class="sk-input" id="adminOrderStatusFilter" onchange="renderAdminOrders()" aria-label="Lọc theo trạng thái">
+                    <option value="">Tất cả trạng thái</option>
+                    <option value="pending">Chờ xử lý</option>
+                    <option value="processing">Đang xử lý</option>
+                    <option value="completed">Hoàn thành</option>
+                    <option value="failed">Thất bại</option>
+                    <option value="refunded">Hoàn tiền</option>
+                  </select>
+                  <input class="sk-input" id="adminOrderSearch" placeholder="Tìm mã đơn, sản phẩm..." oninput="renderAdminOrders()" />
+                </div>
+              </div>
+              <div class="sk-table-wrap">
+                <table class="sk-table">
+                  <thead><tr><th>Mã đơn</th><th>Khách hàng</th><th>Sản phẩm</th><th>Số lượng</th><th>Doanh thu</th><th>Lợi nhuận</th><th>Trạng thái</th><th>Thời gian</th></tr></thead>
+                  <tbody id="adminOrdersTable"><tr><td colspan="8">Đang tải...</td></tr></tbody>
+                </table>
+              </div>
+            </section>
+          </div>
+
           <div id="users-section" class="admin-section" style="display: none">
             <section class="sk-page-title">
               <div>
@@ -1309,7 +1517,7 @@
               <button
                 class="sk-btn sk-btn-soft active"
                 type="button"
-                onclick="switchWarehouseSubTab('items')"
+                onclick="switchWarehouseSubTab('stock')"
               >
                 Tồn kho hiện tại
               </button>
@@ -1329,54 +1537,94 @@
               </button>
             </div>
 
-            <!-- Sub tab 1: Items table -->
-            <div id="wh-items-subtab" class="wh-subtab-view">
-              <section class="sk-card">
-                <div class="sk-section-head">
-                  <h2>Danh sách tồn kho chi tiết</h2>
-                  <div style="display: flex; gap: 10px">
-                    <select
-                      class="sk-input"
-                      id="whFilterProduct"
-                      style="max-width: 180px"
-                      onchange="onWhFilterProductChange()"
-                    ></select>
-                    <select
-                      class="sk-input"
-                      id="whFilterVariant"
-                      style="max-width: 180px"
-                      onchange="loadInventoryItems()"
-                    ></select>
+            <!-- Sub tab 1: Current Stock with Drill-down -->
+            <div id="wh-stock-subtab" class="wh-subtab-view">
+              <!-- Level 1: Products List View -->
+              <div id="wh-stock-products-view">
+                <section class="sk-card">
+                  <div class="sk-section-head">
+                    <div>
+                      <span class="sk-kicker">Shop products</span>
+                      <h2 style="margin-top: 4px">Sản phẩm đang bán tại Shop</h2>
+                    </div>
                     <input
                       class="sk-input"
-                      id="whItemSearch"
-                      placeholder="Tìm tài khoản/email/serial..."
-                      style="max-width: 200px"
-                      oninput="loadInventoryItems()"
+                      id="whProductSearch"
+                      placeholder="Tìm kiếm sản phẩm..."
+                      style="max-width: 280px"
+                      oninput="renderWarehouseProducts()"
                     />
                   </div>
-                </div>
-                <div class="sk-table-wrap">
-                  <table class="sk-table">
-                    <thead>
-                      <tr>
-                        <th>Sản phẩm / Phân loại</th>
-                        <th>Nội dung</th>
-                        <th>Trạng thái</th>
-                        <th>Giá vốn</th>
-                        <th>Đơn hàng</th>
-                        <th>Thời gian nhập</th>
-                      </tr>
-                    </thead>
-                    <tbody id="whItemsTable">
-                      <tr>
-                        <td colspan="6">Đang tải dữ liệu...</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </section>
+
+                  <div id="whProductsGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; padding-top: 15px;">
+                    <!-- Rendered dynamically -->
+                  </div>
+                </section>
+              </div>
+
+              <!-- Level 2: Detailed Account Items of selected Product -->
+              <div id="wh-stock-details-view" style="display: none">
+                <section class="sk-card">
+                  <div class="sk-section-head" style="align-items: center; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 15px; margin-bottom: 15px;">
+                    <div style="display: flex; align-items: center; gap: 15px">
+                      <button class="sk-btn sk-btn-soft" onclick="closeWarehouseProductDetails()" style="padding: 6px 12px; font-size: 13px;">
+                        <i class="fa-solid fa-arrow-left"></i> Quay lại
+                      </button>
+                      <div>
+                        <h2 id="whDetailsProductName" style="margin: 0; font-size: 20px;">Tên sản phẩm</h2>
+                        <span id="whDetailsProductSlug" style="font-size: 11px; color: var(--muted); background: rgba(255,255,255,0.05); padding: 2px 6px; border-radius: 4px; font-family: monospace;">slug</span>
+                      </div>
+                    </div>
+                    <div>
+                      <button class="sk-btn sk-btn-primary" id="whDetailsImportBtn" type="button">
+                        <i class="fa-solid fa-file-import"></i> Nhập kho
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Variants Stock Summary Bar -->
+                  <div id="whDetailsVariantsSummary" style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; padding: 12px; background: rgba(255,255,255,0.02); border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+                    <!-- e.g. "Gói 1 tháng: 12 khả dụng" -->
+                  </div>
+
+                  <!-- Filter controls -->
+                  <div style="display: flex; justify-content: space-between; align-items: center; gap: 15px; margin-bottom: 15px; flex-wrap: wrap;">
+                    <h3 style="margin: 0; font-size: 15px; font-weight: 700;">Danh sách tài khoản trong kho</h3>
+                    <div style="display: flex; gap: 10px; width: 100%; max-width: 720px; flex-wrap: wrap;">
+                      <select class="sk-input" id="whDetailsFilterVariant" onchange="loadWarehouseProductItems()" style="flex: 1; min-width: 150px;"></select>
+                      <select class="sk-input" id="whDetailsFilterStatus" onchange="loadWarehouseProductItems()" style="flex: 1; min-width: 150px;">
+                        <option value="">Tất cả trạng thái</option>
+                        <option value="available">Còn trong kho</option>
+                        <option value="reserved">Đang giữ</option>
+                        <option value="sold">Đã bán</option>
+                      </select>
+                      <input class="sk-input" id="whDetailsSearch" placeholder="Tìm tài khoản/email/serial..." oninput="loadWarehouseProductItems()" style="flex: 1.5; min-width: 180px;"/>
+                    </div>
+                  </div>
+
+                  <div class="sk-table-wrap">
+                    <table class="sk-table">
+                      <thead>
+                        <tr>
+                          <th>Phân loại / Gói</th>
+                          <th>Nội dung tài khoản</th>
+                          <th>Trạng thái</th>
+                          <th>Giá vốn</th>
+                          <th>Đơn hàng</th>
+                          <th>Ngày nhập</th>
+                        </tr>
+                      </thead>
+                      <tbody id="whDetailsItemsTable">
+                        <tr>
+                          <td colspan="6">Đang tải dữ liệu...</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
+              </div>
             </div>
+
 
             <!-- Sub tab 2: Batches table -->
             <div
@@ -1385,11 +1633,22 @@
               style="display: none"
             >
               <section class="sk-card">
+                <div style="display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; margin-bottom:16px;">
+                  <div>
+                    <h3 style="margin:0 0 5px;">Lịch sử thay đổi kho</h3>
+                    <p style="margin:0; color:var(--muted); font-size:13px;">Dữ liệu được ghi từ database, cho biết tài khoản đã được nhập, giữ, bán hay trả lại kho.</p>
+                  </div>
+                  <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                    <span class="badge-status available"><i class="fa-solid fa-box" style="margin-right:5px"></i>Còn trong kho</span>
+                    <span class="badge-status reserved"><i class="fa-solid fa-clock" style="margin-right:5px"></i>Đang giữ</span>
+                    <span class="badge-status sold"><i class="fa-solid fa-circle-check" style="margin-right:5px"></i>Đã bán</span>
+                  </div>
+                </div>
                 <div class="sk-table-wrap">
                   <table class="sk-table">
                     <thead>
                       <tr>
-                        <th>ID</th>
+                        <th>Mã ghi nhận</th>
                         <th>Đợt nhập</th>
                         <th>Sản phẩm / Phân loại</th>
                         <th>Đơn giá nhập</th>
@@ -2683,10 +2942,10 @@
         </div>
       </div>
 
-      <script src="assets/js/icons.js"></script>
-      <script src="assets/js/common.js"></script>
-      <script src="assets/js/formatService.js"></script>
-      <script src="assets/js/admin.js"></script>
+      <script src="assets/js/common.js?v=20260716.3"></script>
+      <script src="assets/js/formatService.js?v=20260716.3"></script>
+      <script src="assets/vendor/chart.js/chart.umd.min.js?v=4.4.7"></script>
+      <script src="assets/js/admin.js?v=20260722.1"></script>
     </div>
   </body>
 </html>

@@ -9,6 +9,8 @@ const {
   makePublicCode,
   safeOrder,
   ORDER_PUBLIC_SELECT,
+  ORDER_PUBLIC_SELECT_WITH_COMPLETED,
+  isMissingColumnError,
   deductUserBalance,
   addUserBalance,
   writeWalletTransaction,
@@ -237,23 +239,37 @@ router.post('/orders', authMiddleware, checkoutLimiter, verifyTurnstile, async (
 
     // 4. Update order state to completed upon success
     const finalCost = fulfillment.totalCost !== undefined ? fulfillment.totalCost : costSnapshot.costAmount;
-    const { data: completedOrder, error: completeError } = await supabase
+    const completionPayload = {
+      status: fulfillment.orderStatus || 'completed',
+      completed_at: fulfillment.orderStatus === 'processing' ? null : new Date().toISOString(),
+      delivery_text: fulfillment.deliveryText,
+      delivery_json: fulfillment.deliveryJson || null,
+      cost_amount: finalCost,
+      profit: totalPrice - finalCost,
+      response_data: {
+        source: fulfillment.deliveryMethod,
+        vendor: fulfillment.vendor || null,
+        details: fulfillment.responseData || null
+      }
+    };
+    let { data: completedOrder, error: completeError } = await supabase
       .from('store_orders')
-      .update({
-        status: fulfillment.orderStatus || 'completed',
-        delivery_text: fulfillment.deliveryText,
-        delivery_json: fulfillment.deliveryJson || null,
-        cost_amount: finalCost,
-        profit: totalPrice - finalCost,
-        response_data: {
-          source: fulfillment.deliveryMethod,
-          vendor: fulfillment.vendor || null,
-          details: fulfillment.responseData || null
-        }
-      })
+      .update(completionPayload)
       .eq('id', order.id)
-      .select(ORDER_PUBLIC_SELECT)
+      .select(ORDER_PUBLIC_SELECT_WITH_COMPLETED)
       .single();
+
+    if (completeError && isMissingColumnError(completeError, 'completed_at')) {
+      const { completed_at: ignoredCompletedAt, ...legacyPayload } = completionPayload;
+      const legacyResult = await supabase
+        .from('store_orders')
+        .update(legacyPayload)
+        .eq('id', order.id)
+        .select(ORDER_PUBLIC_SELECT)
+        .single();
+      completedOrder = legacyResult.data;
+      completeError = legacyResult.error;
+    }
 
     if (completeError) {
       console.error('Complete order status update error:', completeError);

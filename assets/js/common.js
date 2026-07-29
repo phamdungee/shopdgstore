@@ -364,18 +364,190 @@
 
   window.updateHeaderCartCount = updateHeaderCartCount;
 
+  function preferredTheme() {
+    const saved = localStorage.getItem("dg-theme");
+    if (saved === "light" || saved === "dark") return saved;
+    return window.matchMedia("(prefers-color-scheme: light)").matches
+      ? "light"
+      : "dark";
+  }
+
+  function applyTheme(theme) {
+    const nextTheme = theme === "light" ? "light" : "dark";
+    document.documentElement.dataset.theme = nextTheme;
+    localStorage.setItem("dg-theme", nextTheme);
+    document.querySelectorAll(".sk-theme-toggle").forEach((button) => {
+      const isLight = nextTheme === "light";
+      button.setAttribute("aria-label", isLight ? "Bật giao diện tối" : "Bật giao diện sáng");
+      button.setAttribute("title", isLight ? "Giao diện tối" : "Giao diện sáng");
+      button.innerHTML = `<i class="fa-solid ${isLight ? "fa-moon" : "fa-sun"}" aria-hidden="true"></i>`;
+    });
+  }
+
+  function initThemeToggle() {
+    applyTheme(preferredTheme());
+    const topbarInner = document.querySelector(".sk-topbar-inner");
+    let toggles = [...document.querySelectorAll(".sk-theme-toggle")];
+    if (!toggles.length && topbarInner) {
+      const toggle = document.createElement("button");
+      toggle.type = "button";
+      toggle.className = "sk-icon-btn sk-theme-toggle";
+      const authActions = topbarInner.querySelector("#headerAuthActions, .sk-auth-actions");
+      if (authActions && authActions.parentElement) authActions.parentElement.insertBefore(toggle, authActions);
+      else topbarInner.appendChild(toggle);
+      toggles = [toggle];
+    }
+
+    toggles.forEach((toggle) => {
+      if (toggle.dataset.themeBound === "true") return;
+      toggle.dataset.themeBound = "true";
+      toggle.addEventListener("click", () => {
+        applyTheme(document.documentElement.dataset.theme === "light" ? "dark" : "light");
+      });
+    });
+    applyTheme(document.documentElement.dataset.theme);
+  }
+
+  function initSupportPanel() {
+    if (document.querySelector(".sk-support-launcher")) return;
+
+    const launcher = document.createElement("button");
+    launcher.type = "button";
+    launcher.className = "sk-support-launcher";
+    launcher.setAttribute("aria-controls", "storefrontSupportPanel");
+    launcher.setAttribute("aria-expanded", "false");
+    launcher.innerHTML = '<i class="fa-solid fa-headset" aria-hidden="true"></i><span>Hỗ trợ</span>';
+
+    const panel = document.createElement("section");
+    panel.id = "storefrontSupportPanel";
+    panel.className = "sk-support-panel";
+    panel.hidden = true;
+    panel.setAttribute("aria-label", "Hỗ trợ khách hàng");
+    panel.innerHTML = `
+      <div class="sk-support-head">
+        <div><h2>Hỗ trợ khách hàng</h2><p>Mô tả vấn đề, đội ngũ DG Store sẽ tiếp nhận thông tin.</p></div>
+        <button class="sk-icon-btn" type="button" data-support-close aria-label="Đóng hỗ trợ"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form class="sk-support-form">
+        <label>Mã đơn hàng (nếu có)<input class="sk-input" name="orderCode" autocomplete="off" placeholder="Ví dụ: DG123456"></label>
+        <label>Nội dung cần hỗ trợ<textarea name="message" required minlength="10" maxlength="1200" placeholder="Mô tả lỗi hoặc yêu cầu của bạn..."></textarea></label>
+        <button class="sk-btn sk-btn-primary" type="submit"><i class="fa-solid fa-paper-plane"></i> Tạo yêu cầu hỗ trợ</button>
+        <p class="sk-support-note">Thông tin sẽ được tạo thành nội dung liên hệ; không bao gồm mật khẩu hoặc dữ liệu đăng nhập sản phẩm.</p>
+      </form>`;
+
+    const setOpen = (open) => {
+      panel.hidden = !open;
+      launcher.setAttribute("aria-expanded", String(open));
+      if (open) panel.querySelector("textarea")?.focus();
+    };
+    launcher.addEventListener("click", () => setOpen(panel.hidden));
+    panel.querySelector("[data-support-close]").addEventListener("click", () => setOpen(false));
+    panel.querySelector("form").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const form = event.currentTarget;
+      const orderCode = form.elements.orderCode.value.trim();
+      const message = form.elements.message.value.trim();
+      const subject = orderCode ? `Hỗ trợ đơn hàng ${orderCode}` : "Yêu cầu hỗ trợ DG Store";
+      const body = `${subject}\n\n${message}`;
+      const token = localStorage.getItem("token");
+      if (token) {
+        const response = await fetch(`${API_BASE}/support/tickets`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+          body: JSON.stringify({
+            type: form.dataset.type === "warranty" ? "warranty" : "support",
+            orderId: form.dataset.orderId || null,
+            subject,
+            message,
+          }),
+        });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok || result.ok === false) {
+          showToast(result.message || "Không thể tạo yêu cầu hỗ trợ.", false);
+          return;
+        }
+        form.reset();
+        delete form.dataset.orderId;
+        delete form.dataset.type;
+        setOpen(false);
+        showToast("Đã gửi yêu cầu hỗ trợ thành công.");
+        return;
+      }
+      const supportEmail = String(window.DG_SUPPORT_EMAIL || "").trim();
+      if (supportEmail) {
+        window.location.href = `mailto:${encodeURIComponent(supportEmail)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      } else {
+        try {
+          await navigator.clipboard.writeText(body);
+          showToast("Đã sao chép nội dung hỗ trợ. Hãy gửi qua kênh liên hệ của DG Store.");
+        } catch {
+          showToast("Chưa cấu hình kênh tiếp nhận hỗ trợ.", false);
+        }
+      }
+    });
+
+    window.openStorefrontSupport = (options = {}) => {
+      formValue(panel, "orderCode", options.orderCode || options.orderId || "");
+      formValue(panel, "message", options.message || "");
+      const form = panel.querySelector("form");
+      form.dataset.type = options.type === "warranty" ? "warranty" : "support";
+      if (options.orderId) form.dataset.orderId = String(options.orderId);
+      else delete form.dataset.orderId;
+      setOpen(true);
+    };
+
+    document.body.append(panel, launcher);
+  }
+
+  function formValue(container, fieldName, value) {
+    const field = container.querySelector(`[name="${fieldName}"]`);
+    if (field) field.value = String(value || "");
+  }
+
+  window.isWarrantyEligible = function (order) {
+    if (!order || order.status !== "completed") return false;
+    const serverTimestamp = order.completedAt || order.completed_at || order.createdAt || order.created_at;
+    const completedTime = new Date(serverTimestamp).getTime();
+    if (!Number.isFinite(completedTime)) return false;
+    const elapsed = Date.now() - completedTime;
+    return elapsed >= 0 && elapsed <= 2 * 24 * 60 * 60 * 1000;
+  };
+
+  window.openWarrantyRequest = function (orderId, orderCode) {
+    if (typeof window.openStorefrontSupport !== "function") return;
+    window.openStorefrontSupport({
+      orderId,
+      orderCode: orderCode || orderId,
+      type: "warranty",
+      message: `Tôi cần yêu cầu bảo hành cho đơn hàng #${orderCode || orderId}.\nMô tả lỗi: `,
+    });
+  };
+
+  window.debounce = function (func, wait) {
+    let timeout;
+    return function (...args) {
+      const context = this;
+      clearTimeout(timeout);
+      timeout = setTimeout(() => func.apply(context, args), wait);
+    };
+  };
+
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", () => {
+      initThemeToggle();
       initMiniSidebar();
       syncHeaderAuth();
       hideGenericPreloader();
       updateHeaderCartCount();
+      initSupportPanel();
     });
   } else {
+    initThemeToggle();
     initMiniSidebar();
     syncHeaderAuth();
     hideGenericPreloader();
     updateHeaderCartCount();
+    initSupportPanel();
   }
 
   window.downloadDeliveryResult = function () {

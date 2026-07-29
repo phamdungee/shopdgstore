@@ -9,6 +9,13 @@ const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxUQLFSgSsXurtf
         let countdownTimer = null;
         let isSuccessNotified = false; 
 
+        function setLegacyText(id, value) {
+            const element = document.getElementById(id);
+            if (!element) return null;
+            element.innerText = value;
+            return element;
+        }
+
         // KHỞI TẠO HOÀN CẢNH GIAO DIỆN AUTH BAN ĐẦU
         function renderAuthUI() {
             const authZone = document.getElementById('header-auth-zone');
@@ -167,9 +174,19 @@ const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxUQLFSgSsXurtf
 
         // Khởi tạo hóa đơn nạp tiền kết nối GAS
         function createDepositOrder() {
-            const uid = document.getElementById('input-uid').value.trim();
-            const amount = document.getElementById('input-amount').value.trim();
+            const uidInput = document.getElementById('input-uid');
+            const amountInput = document.getElementById('input-amount');
             const btn = document.getElementById('btn-init-order');
+
+            // This legacy widget was removed from the current store page. If an
+            // old cached button still calls it, use the dedicated deposit page.
+            if (!uidInput || !amountInput || !btn) {
+                window.location.href = '/nap-tien.html';
+                return;
+            }
+
+            const uid = uidInput.value.trim();
+            const amount = amountInput.value.trim();
 
             if (!uid || !amount || amount < 10000) {
                 triggerToast("Vui lòng nhập UID tài khoản và số tiền nạp tối thiểu 10.000đ");
@@ -194,10 +211,10 @@ const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxUQLFSgSsXurtf
                     const order = data.order;
                     globalOrderId = order.orderId; 
                     
-                    document.getElementById('record-memo').innerText = order.payContent;
-                    document.getElementById('record-account').innerText = order.bank.acc;
-                    document.getElementById('record-owner').innerText = order.bank.owner;
-                    document.getElementById('record-bank').innerText = order.bank.name;
+                    setLegacyText('record-memo', order.payContent);
+                    setLegacyText('record-account', order.bank.acc);
+                    setLegacyText('record-owner', order.bank.owner);
+                    setLegacyText('record-bank', order.bank.name);
                     
                     const qrUrl = `https://img.vietqr.io/image/${order.bank.bin}-${order.bank.acc}-compact2.png?amount=${order.total}&addInfo=${encodeURIComponent(order.payContent)}&accountName=${encodeURIComponent(order.bank.owner)}`;
                     const qrImgDom = document.getElementById('img-vietqr');
@@ -209,8 +226,8 @@ const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxUQLFSgSsXurtf
 
                     document.getElementById('ping-indicator').className = "animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75";
                     document.getElementById('core-indicator').className = "relative inline-flex rounded-full h-2 w-2 bg-emerald-500";
-                    document.getElementById('txt-status').innerText = "Đang chờ thanh toán...";
-                    document.getElementById('txt-status').className = "text-emerald-600 animate-pulse font-medium truncate max-w-[150px] sm:max-w-[180px]";
+                    const waitingStatus = setLegacyText('txt-status', "Đang chờ thanh toán...");
+                    if (waitingStatus) waitingStatus.className = "text-emerald-600 animate-pulse font-medium truncate max-w-[150px] sm:max-w-[180px]";
 
                     startTimer();
                     startPolling(order.orderId);
@@ -257,8 +274,8 @@ const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxUQLFSgSsXurtf
                         
                         document.getElementById('ping-indicator').className = "absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-0";
                         document.getElementById('core-indicator').className = "relative inline-flex rounded-full h-2 w-2 bg-emerald-500";
-                        document.getElementById('txt-status').innerText = "Thành công! Đã cộng tiền.";
-                        document.getElementById('txt-status').className = "text-emerald-600 font-bold truncate max-w-[150px] sm:max-w-[180px]";
+                        const paidStatus = setLegacyText('txt-status', "Thành công! Đã cộng tiền.");
+                        if (paidStatus) paidStatus.className = "text-emerald-600 font-bold truncate max-w-[150px] sm:max-w-[180px]";
                         
                         const pBar = document.getElementById('progress-bar');
                         pBar.className = "bg-emerald-500 h-full transition-all duration-300";
@@ -290,6 +307,8 @@ const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxUQLFSgSsXurtf
             
             const label = document.getElementById('countdown-timer');
             const pBar = document.getElementById('progress-bar');
+
+            if (!label || !pBar) return;
             
             label.className = "text-emerald-600 font-mono text-xs border-l border-slate-200 pl-3 flex-shrink-0";
             pBar.className = "bg-gradient-to-r from-brand-blue to-brand-purple h-full w-full transition-all duration-1000 ease-linear";
@@ -308,8 +327,8 @@ const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxUQLFSgSsXurtf
                     clearInterval(pollingInterval);
                     label.innerText = "Hết hạn";
                     label.className = "text-red-500 font-mono text-xs border-l border-slate-200 pl-3 flex-shrink-0";
-                    document.getElementById('txt-status').innerText = "Hóa đơn đã quá hạn.";
-                    document.getElementById('txt-status').className = "text-red-500 font-medium truncate max-w-[150px] sm:max-w-[180px]";
+                    const expiredStatus = setLegacyText('txt-status', "Hóa đơn đã quá hạn.");
+                    if (expiredStatus) expiredStatus.className = "text-red-500 font-medium truncate max-w-[150px] sm:max-w-[180px]";
                     
                     pBar.className = "bg-red-500 h-full transition-all duration-300";
                     pBar.style.width = "0%";
@@ -367,7 +386,7 @@ const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxUQLFSgSsXurtf
    Ghi đè phần login giả lập cũ.
 ========================================================= */
 
-const AUTH_API_BASE = window.DG_API_BASE || window.SKYNET_API_BASE || '/api';
+const AUTH_API_BASE = window.DG_API_BASE || window.SKYNET_API_BASE || (window.location.protocol === 'file:' ? 'http://localhost:3000/api' : '/api');
 let currentAuthUser = JSON.parse(localStorage.getItem('user') || 'null');
 isLoggedIn = Boolean(localStorage.getItem('token'));
 
