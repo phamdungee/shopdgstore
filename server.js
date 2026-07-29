@@ -21,7 +21,9 @@ const allowedOrigins = new Set([
   `http://localhost:${PORT}`,
   `http://127.0.0.1:${PORT}`,
   'http://localhost:3000',
-  'http://127.0.0.1:3000'
+  'http://127.0.0.1:3000',
+  'https://dungicl.store',
+  'https://www.dungicl.store'
 ]);
 
 function isAllowedOrigin(origin) {
@@ -65,7 +67,10 @@ app.use((req, res, next) => {
 app.use(cors({
   origin(origin, callback) {
     if (isAllowedOrigin(origin)) return callback(null, true);
-    return callback(new Error('Origin is not allowed by CORS'));
+    const error = new Error(`Origin is not allowed by CORS: ${origin}`);
+    error.status = 403;
+    error.code = 'CORS_ORIGIN_DENIED';
+    return callback(error);
   },
   credentials: true
 }));
@@ -104,7 +109,11 @@ app.use('/api', (err, req, res, next) => {
   console.error(`[API ${requestId}] ${req.method} ${req.originalUrl}:`, err);
   return res.status(status).json({
     ok: false,
-    message: status === 400 ? 'Dữ liệu gửi lên máy chủ không hợp lệ' : 'Máy chủ gặp lỗi khi xử lý yêu cầu',
+    message: err && err.code === 'CORS_ORIGIN_DENIED'
+      ? 'Tên miền hiện tại chưa được máy chủ cho phép đăng nhập'
+      : status === 400
+        ? 'Dữ liệu gửi lên máy chủ không hợp lệ'
+        : 'Máy chủ gặp lỗi khi xử lý yêu cầu',
     requestId
   });
 });

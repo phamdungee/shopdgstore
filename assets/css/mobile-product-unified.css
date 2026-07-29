@@ -1,0 +1,124 @@
+/*
+ * One storefront layout for every phone width.
+ * This file is loaded after the page's inline styles so older 420/480/560px
+ * rules cannot switch screens at or below 680px to a different card layout.
+ */
+@media (max-width: 680px) {
+  .sk-layout {
+    padding-inline: 8px !important;
+  }
+
+  #products .sk-product-grid-vertical,
+  .sk-product-grid-vertical,
+  #shopeeProductsGrid.shopee-products-grid,
+  .shopee-products-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+    align-items: stretch !important;
+  }
+
+  .sk-product-card-vertical,
+  .shopee-product-card {
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 100% !important;
+    margin: 0 !important;
+    border-radius: 14px !important;
+  }
+
+  .sk-product-card-vertical > a,
+  .shopee-product-card .shopee-card-inner-body {
+    height: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+    padding: 10px !important;
+  }
+
+  .sk-product-card-vertical .card-img,
+  .shopee-product-media {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    aspect-ratio: 4 / 3 !important;
+    margin-bottom: 9px !important;
+    padding: 0 !important;
+    padding-top: 0 !important;
+    border-radius: 12px !important;
+  }
+
+  .sk-product-card-vertical .card-img img,
+  .shopee-product-media img {
+    width: 100% !important;
+    height: 100% !important;
+    display: block !important;
+    border-radius: 10px !important;
+    object-fit: cover !important;
+  }
+
+  .sk-product-card-vertical .card-info h3,
+  .shopee-product-card h3 {
+    display: -webkit-box !important;
+    min-height: 34px !important;
+    max-height: 34px !important;
+    line-height: 17px !important;
+    white-space: normal !important;
+    overflow: hidden !important;
+    -webkit-box-orient: vertical !important;
+    -webkit-line-clamp: 2 !important;
+    font-size: 12.5px !important;
+    font-weight: 800 !important;
+    margin: 0 !important;
+  }
+
+  .sk-product-card-vertical .card-info p {
+    display: none !important;
+  }
+
+  .sk-product-card-vertical .card-actions {
+    margin-top: auto !important;
+    padding-top: 8px !important;
+    gap: 5px !important;
+  }
+
+  .sk-product-card-vertical .card-price {
+    min-width: 0 !important;
+    font-size: 14px !important;
+    white-space: nowrap !important;
+  }
+
+  .sk-product-card-vertical .card-meta {
+    gap: 5px !important;
+    flex-shrink: 0 !important;
+  }
+
+  .sk-product-card-vertical .card-meta span {
+    font-size: 10px !important;
+  }
+
+  .sk-product-card-vertical .card-meta .sk-badge {
+    padding: 3px 6px !important;
+    font-size: 9.5px !important;
+  }
+
+  .shopee-product-card .shopee-card-inner-body {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  .shopee-product-card .shopee-card-inner-body > div:last-child {
+    margin-top: auto !important;
+  }
+}
+
+/* Final hard override: no earlier mobile breakpoint may collapse these grids. */
+@media screen and (max-width: 680px) {
+  html body #productGrid.sk-product-grid-vertical,
+  html body #shopeeProductsGrid.shopee-products-grid {
+    display: grid !important;
+    width: 100% !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    grid-auto-flow: row !important;
+    gap: 10px !important;
+  }
+}
