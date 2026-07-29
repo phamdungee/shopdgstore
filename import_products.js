@@ -20,6 +20,7 @@ const defaultProducts = [
     desc: 'Tài khoản Netflix Premium xem phim chất lượng cao, giao tự động sau thanh toán.',
     long_desc: 'Tài khoản Netflix Premium UltraHD 4K xem phim chất lượng cao nhất, hỗ trợ trên mọi thiết bị. Giao hàng tự động sau khi thanh toán thành công.',
     image: 'assets/img/ảnh sản phẩm/giao-dien-moi-netflix-tren-chromecast.png',
+    detail_background_image: 'https://cdn.dungicl.store/%E1%BA%A3nh%20s%E1%BA%A3n%20ph%E1%BA%A9m/6249078052071608432.webp',
     rate: '4.8',
     price: '15.000đ ~ 150.000đ',
     variants: [

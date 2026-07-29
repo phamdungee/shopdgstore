@@ -2,7 +2,10 @@ const express = require('express');
 const router = express.Router();
 const fs = require('fs');
 const path = require('path');
+const { ListObjectsV2Command } = require('@aws-sdk/client-s3');
 const supabase = require('../config/supabase');
+const env = require('../config/env');
+const { r2Client, isConfigured: isR2Configured } = require('../config/r2');
 const { authMiddleware, adminMiddleware } = require('../middlewares/authMiddleware');
 const { safeUser, moneyValue } = require('../services/storeService');
 const FormatService = require('../assets/js/formatService');
@@ -122,6 +125,10 @@ function productPayload(body, options = {}) {
     desc: normalizeText(body.desc),
     long_desc: normalizeText(firstDefined(body.long_desc, body.longDesc)),
     image: normalizeText(body.image),
+    detail_background_image: normalizeText(firstDefined(
+      body.detail_background_image,
+      body.detailBackgroundImage
+    )),
     rate: normalizeText(body.rate, '5.0'),
     price: moneyValue(body.price) || 0,
     variants: normalizeVariants(body.variants)
@@ -142,6 +149,18 @@ function productPayload(body, options = {}) {
   }
 
   return payload;
+}
+
+function omitMissingOptionalProductColumn(error, payload) {
+  const message = String(error?.message || '');
+  const optionalColumns = ['detail_background_image', 'data_format'];
+  const missingColumn = optionalColumns.find(column =>
+    Object.prototype.hasOwnProperty.call(payload, column) &&
+    message.includes(column)
+  );
+  if (!missingColumn) return '';
+  delete payload[missingColumn];
+  return missingColumn;
 }
 
 function formatDatabaseProduct(product) {
@@ -406,9 +425,11 @@ router.post('/products', authMiddleware, adminMiddleware, async (req, res) => {
     let newProduct = result.data;
     let error = result.error;
 
-    if (error && error.message && error.message.includes('data_format')) {
-      console.warn('data_format column is missing in database. Retrying product insert without data_format...');
-      delete payload.data_format;
+    const omittedCreateColumns = [];
+    let missingCreateColumn;
+    while (error && (missingCreateColumn = omitMissingOptionalProductColumn(error, payload))) {
+      omittedCreateColumns.push(missingCreateColumn);
+      console.warn(`${missingCreateColumn} is missing in database. Retrying product insert without it...`);
       const retryResult = await supabase
         .from('products')
         .insert(payload)
@@ -494,9 +515,11 @@ router.put('/products/:id', authMiddleware, adminMiddleware, async (req, res) =>
     let updatedProduct = result.data;
     let error = result.error;
 
-    if (error && error.message && error.message.includes('data_format')) {
-      console.warn('data_format column is missing in database. Retrying product update without data_format...');
-      delete updatePayload.data_format;
+    const omittedUpdateColumns = [];
+    let missingUpdateColumn;
+    while (error && (missingUpdateColumn = omitMissingOptionalProductColumn(error, updatePayload))) {
+      omittedUpdateColumns.push(missingUpdateColumn);
+      console.warn(`${missingUpdateColumn} is missing in database. Retrying product update without it...`);
       const retryResult = await supabase
         .from('products')
         .update(updatePayload)
@@ -656,23 +679,47 @@ router.delete('/products/:id', authMiddleware, adminMiddleware, async (req, res)
   }
 });
 
-// GET /api/admin/images - Lấy danh sách tệp ảnh trong assets/img/ảnh sản phẩm (Admin)
+// GET /api/admin/images - Thư viện ảnh R2 dùng chung cho sản phẩm và background.
 router.get('/images', authMiddleware, adminMiddleware, async (req, res) => {
   try {
-    const fs = require('fs');
-    const dirPath = path.join(__dirname, '..', 'assets', 'img', 'ảnh sản phẩm');
-    if (!fs.existsSync(dirPath)) {
-      return res.json({ ok: true, images: [] });
+    if (!isR2Configured || !r2Client || !env.R2_CUSTOM_DOMAIN) {
+      return res.status(503).json({ ok: false, message: 'R2 chưa được cấu hình' });
     }
-    const files = fs.readdirSync(dirPath);
-    const images = files
-      .filter(file => /\.(png|jpe?g|gif|svg|webp)$/i.test(file))
-      .map(file => `assets/img/ảnh sản phẩm/${file}`);
-    
+
+    const objects = [];
+    let continuationToken;
+    do {
+      const page = await r2Client.send(new ListObjectsV2Command({
+        Bucket: env.R2_BUCKET_NAME,
+        MaxKeys: 1000,
+        ContinuationToken: continuationToken
+      }));
+      objects.push(...(page.Contents || []));
+      continuationToken = page.IsTruncated ? page.NextContinuationToken : undefined;
+    } while (continuationToken);
+    const domain = String(env.R2_CUSTOM_DOMAIN)
+      .replace(/^https?:\/\//, '')
+      .replace(/\/$/, '');
+    const images = objects
+      .filter(item => {
+        const key = String(item.Key || '');
+        return key &&
+          !key.startsWith('users/') &&
+          /\.(png|jpe?g|gif|svg|webp|avif)$/i.test(key);
+      })
+      .sort((a, b) => new Date(b.LastModified || 0) - new Date(a.LastModified || 0))
+      .map(item => {
+        const encodedKey = String(item.Key)
+          .split('/')
+          .map(segment => encodeURIComponent(segment))
+          .join('/');
+        return `https://${domain}/${encodedKey}`;
+      });
+
     return res.json({ ok: true, images });
   } catch (err) {
-    console.error('List images error:', err);
-    return res.status(500).json({ ok: false, message: 'Lỗi server khi lấy danh sách ảnh' });
+    console.error('List R2 images error:', err);
+    return res.status(500).json({ ok: false, message: 'Không lấy được thư viện ảnh R2' });
   }
 });
 

@@ -15,6 +15,7 @@ const PRODUCT_TEXT_FIELDS = [
   'desc',
   'long_desc',
   'image',
+  'detail_background_image',
   'vendor_product_code',
   'delivery_type',
   'fallback_mode'

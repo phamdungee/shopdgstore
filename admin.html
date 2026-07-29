@@ -2124,7 +2124,7 @@
                     <input
                       class="sk-input"
                       id="prodImage"
-                      placeholder="Ví dụ: assets/img/ảnh sản phẩm/netflix.png"
+                      placeholder="URL ảnh từ R2"
                       style="flex: 1"
                     />
                     <button
@@ -2152,6 +2152,33 @@
                       style="display: none"
                     />
                   </div>
+                </div>
+              </div>
+
+              <div class="product-form-grid-2">
+                <div class="product-form-group">
+                  <label for="prodDetailBackgroundSelect">Chọn ảnh background</label>
+                  <select class="sk-input" id="prodDetailBackgroundSelect"
+                    onchange="onDetailBackgroundSelectChange()" style="width: 100%">
+                    <option value="">-- Chọn ảnh background sẵn có --</option>
+                  </select>
+                </div>
+                <div class="product-form-group">
+                  <label for="prodDetailBackground">Đường dẫn ảnh background</label>
+                  <div style="display: flex; gap: 8px">
+                    <input class="sk-input" id="prodDetailBackground"
+                      placeholder="URL CDN hoặc đường dẫn ảnh background" style="flex: 1" />
+                    <button type="button" class="sk-btn sk-btn-soft"
+                      onclick="document.getElementById('prodDetailBackgroundUploadInput').click()"
+                      style="padding: 0 12px; height: 38px">
+                      <i class="fa-solid fa-cloud-arrow-up"></i> Tải lên
+                    </button>
+                    <input type="file" id="prodDetailBackgroundUploadInput" accept="image/*"
+                      onchange="uploadProductImage(event, 'detailBackground')" style="display: none" />
+                  </div>
+                  <small style="color: var(--muted)">
+                    Chỉ dùng cho hero trang chi tiết; ảnh sản phẩm vẫn dùng ở danh sách.
+                  </small>
                 </div>
               </div>
 

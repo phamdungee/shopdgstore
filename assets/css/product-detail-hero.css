@@ -1,0 +1,182 @@
+﻿/* Netflix product hero. Loaded last to replace legacy hero rules only here. */
+body.sk-product-detail-body.has-detail-background main .sk-product-banner {
+  --detail-hero-surface: #0b101d;
+  position: relative;
+  isolation: isolate;
+  min-height: 540px;
+  padding: 20px clamp(24px, 4vw, 52px) 34px !important;
+  overflow: hidden;
+  border-color: rgba(124, 139, 178, 0.42) !important;
+  border-radius: 0 0 30px 30px !important;
+  background-color: var(--detail-hero-surface) !important;
+  background-image:
+    linear-gradient(90deg, rgba(7, 10, 18, 0.04) 0%, rgba(7, 10, 18, 0.18) 30%, rgba(11, 16, 29, 0.78) 52%, rgba(11, 16, 29, 0.97) 72%, #0b101d 100%),
+    linear-gradient(0deg, rgba(11, 16, 29, 0.9) 0%, transparent 38%),
+    var(--product-detail-background) !important;
+  background-repeat: no-repeat !important;
+  background-position: center, center, left center !important;
+  background-size: cover, cover, auto 100% !important;
+  box-shadow: 0 24px 60px rgba(2, 6, 23, 0.32) !important;
+}
+
+.has-detail-background .sk-product-banner::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 18% 45%, transparent 0 20%, rgba(4, 7, 14, 0.2) 48%, transparent 68%),
+    linear-gradient(180deg, rgba(3, 6, 13, 0.18), transparent 24%, transparent 72%, rgba(3, 6, 13, 0.46));
+}
+
+.has-detail-background .sk-product-banner .sk-breadcrumb,
+.has-detail-background .sk-product-banner .sk-product-banner-main {
+  position: relative;
+  z-index: 1;
+}
+
+.has-detail-background .sk-product-banner .sk-breadcrumb,
+.has-detail-background .sk-product-banner .sk-breadcrumb a {
+  color: rgba(226, 232, 240, 0.72) !important;
+}
+
+.has-detail-background .sk-product-banner .sk-breadcrumb span {
+  color: #fff !important;
+}
+
+.has-detail-background .sk-product-banner-main {
+  min-height: 440px;
+  grid-template-columns: minmax(300px, 0.9fr) minmax(420px, 1.1fr) !important;
+  align-items: center !important;
+  gap: clamp(28px, 5vw, 72px) !important;
+}
+
+.has-detail-background .sk-detail-media {
+  order: 0;
+  min-height: 410px !important;
+  aspect-ratio: auto !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  pointer-events: none;
+}
+
+/* The same CDN artwork is already the background; do not render it twice. */
+.has-detail-background .sk-detail-media > img,
+.has-detail-background .sk-detail-media > i {
+  visibility: hidden !important;
+}
+
+.has-detail-background .sk-product-overview-copy {
+  order: 1;
+  max-width: 680px;
+  padding: 28px clamp(0px, 1.5vw, 18px) 28px 0;
+  color: #f8fafc;
+}
+
+.has-detail-background .sk-product-overview-copy h1 {
+  margin-top: 18px;
+  color: #fff !important;
+  font-size: clamp(40px, 4.7vw, 66px);
+  line-height: 1;
+  text-shadow: 0 4px 30px rgba(0, 0, 0, 0.55);
+}
+
+.has-detail-background .sk-product-overview-copy > p {
+  color: rgba(226, 232, 240, 0.82) !important;
+  font-size: 15px;
+}
+
+.has-detail-background .sk-product-banner .sk-badge,
+.has-detail-background .sk-product-banner .sk-rating-line > span {
+  border-color: rgba(148, 163, 184, 0.3) !important;
+  background: rgba(23, 31, 51, 0.72) !important;
+  color: #dbe5ff !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+body.sk-product-detail-body.has-detail-background main .sk-product-banner-actions .sk-btn {
+  border-color: rgba(148, 163, 184, 0.34) !important;
+  background: rgba(23, 31, 51, 0.78) !important;
+  color: #f8fafc !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+body.sk-product-detail-body.has-detail-background main .sk-product-banner-actions .sk-btn-accent {
+  border-color: transparent !important;
+  background: linear-gradient(110deg, hsl(var(--product-hue) 76% 52%), #0891b2) !important;
+  box-shadow: 0 12px 28px color-mix(in srgb, hsl(var(--product-hue) 76% 52%) 30%, transparent) !important;
+}
+
+@media (max-width: 900px) {
+  .has-detail-background .sk-product-banner-main {
+    grid-template-columns: minmax(240px, 0.75fr) minmax(360px, 1.25fr) !important;
+    gap: 24px !important;
+  }
+}
+
+@media (max-width: 760px) {
+  body.sk-product-detail-body.has-detail-background main .sk-product-banner {
+    min-height: auto;
+    padding: 0 18px 26px !important;
+    border-radius: 0 0 22px 22px !important;
+    background-image:
+      linear-gradient(180deg, rgba(7, 10, 18, 0.02) 0%, rgba(11, 16, 29, 0.18) 28%, rgba(11, 16, 29, 0.88) 48%, #0b101d 63%),
+      var(--product-detail-background) !important;
+    background-position: center, right top !important;
+    background-size: cover, auto 330px !important;
+  }
+
+  .has-detail-background .sk-product-banner .sk-breadcrumb {
+    min-height: 42px;
+    margin: 0;
+    padding-top: 12px;
+  }
+
+  .has-detail-background .sk-product-banner-main {
+    min-height: 0;
+    grid-template-columns: 1fr !important;
+    gap: 0 !important;
+  }
+
+  .has-detail-background .sk-detail-media {
+    order: 0;
+    min-height: 260px !important;
+    max-height: none;
+  }
+
+  .has-detail-background .sk-product-overview-copy {
+    order: 1;
+    max-width: none;
+    padding: 4px 0 0;
+  }
+
+  .has-detail-background .sk-product-overview-copy h1 {
+    font-size: clamp(34px, 10vw, 46px);
+  }
+
+  .has-detail-background .sk-product-banner-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .has-detail-background .sk-product-banner-actions .sk-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 430px) {
+  body.sk-product-detail-body.has-detail-background main .sk-product-banner {
+    padding-inline: 14px !important;
+    background-size: cover, auto 285px !important;
+  }
+
+  .has-detail-background .sk-detail-media {
+    min-height: 220px !important;
+  }
+}
+

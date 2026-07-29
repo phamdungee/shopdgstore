@@ -3,12 +3,15 @@ const createBotMmoAdapter = require('./botmmoAdapter');
 const createClonenpaAdapter = require('./clonenpaAdapter');
 const createTramMmoAdapter = require('./trammmoAdapter');
 const createShopThanhPhucAdapter = require('./shopthanhphucAdapter');
+const createKhommoAdapter = require('./khommoAdapter');
+
 const ADAPTER_REGISTRY = {
   shopee68: createShopee68Adapter,
   botmmo: createBotMmoAdapter,
   clonenpa: createClonenpaAdapter,
   trammmo: createTramMmoAdapter,
-  shopthanhphuc: createShopThanhPhucAdapter
+  shopthanhphuc: createShopThanhPhucAdapter,
+  khommo: createKhommoAdapter
 };
 
 function normalizeAdapterKey(value) {

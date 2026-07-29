@@ -1845,6 +1845,7 @@
   </style>
   <link href="/assets/css/storefront-flat.css?v=20260722.2" rel="stylesheet" />
   <link href="/assets/css/site-recovery-theme.css?v=20260729.5" rel="stylesheet" />
+  <link href="/assets/css/product-detail-hero.css?v=20260730.1" rel="stylesheet" />
 </head>
 
 <body class="sk-product-detail-body">
@@ -2331,8 +2332,16 @@
     function applyProductAmbience(item) {
       const hue = productHue(item?.slug || item?.name);
       const image = absoluteProductImage(item);
+      const detailBackground = String(item?.detail_background_image || "").trim();
       document.body.style.setProperty("--product-hue", hue);
       document.body.style.setProperty("--product-image", image ? `url("${String(image).replaceAll('"', '%22')}")` : "none");
+      document.body.classList.toggle("has-detail-background", Boolean(detailBackground));
+      document.body.style.setProperty(
+        "--product-detail-background",
+        detailBackground
+          ? `url("${detailBackground.replaceAll('"', '%22')}")`
+          : "none"
+      );
     }
 
     function formatProductPrice(price) {

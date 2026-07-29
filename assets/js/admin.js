@@ -806,8 +806,13 @@ function openProductModal(prodId = '') {
   
   // Populate images dropdown dynamically
   const select = document.getElementById('prodImageSelect');
+  const detailBackgroundSelect = document.getElementById('prodDetailBackgroundSelect');
   if (select) {
     select.innerHTML = '<option value="">-- Chọn ảnh sẵn có --</option>' + 
+      adminImages.map(img => `<option value="${escapeAdminHtml(img)}">${escapeAdminHtml(img.split('/').pop())}</option>`).join('');
+  }
+  if (detailBackgroundSelect) {
+    detailBackgroundSelect.innerHTML = '<option value="">-- Chọn ảnh background sẵn có --</option>' +
       adminImages.map(img => `<option value="${escapeAdminHtml(img)}">${escapeAdminHtml(img.split('/').pop())}</option>`).join('');
   }
   
@@ -827,6 +832,7 @@ function openProductModal(prodId = '') {
       setVal('prodRate', rateValue === '' ? 5.0 : rateValue);
     }
     setVal('prodImage', prod.image || '');
+    setVal('prodDetailBackground', prod.detail_background_image || '');
     setVal('prodPrice', numberOrEmpty(prod.price));
     setVal('prodDesc', prod.desc || '');
     setVal('prodLongDesc', prod.long_desc || '');
@@ -838,6 +844,9 @@ function openProductModal(prodId = '') {
     
     if (select && prod.image) {
       select.value = prod.image;
+    }
+    if (detailBackgroundSelect && prod.detail_background_image) {
+      detailBackgroundSelect.value = prod.detail_background_image;
     }
     
     if (prod.variants && prod.variants.length > 0) {
@@ -862,6 +871,14 @@ function openProductModal(prodId = '') {
 function onImageSelectChange() {
   const select = document.getElementById('prodImageSelect');
   const input = document.getElementById('prodImage');
+  if (select && input && select.value) {
+    input.value = select.value;
+  }
+}
+
+function onDetailBackgroundSelectChange() {
+  const select = document.getElementById('prodDetailBackgroundSelect');
+  const input = document.getElementById('prodDetailBackground');
   if (select && input && select.value) {
     input.value = select.value;
   }
@@ -928,6 +945,7 @@ async function saveProduct(event) {
   const name = document.getElementById('prodName').value.trim();
   const rate = parseFloatOrZero(document.getElementById('prodRate').value);
   const image = document.getElementById('prodImage').value.trim();
+  const detailBackgroundImage = document.getElementById('prodDetailBackground').value.trim();
   const price = parseFloatOrZero(document.getElementById('prodPrice').value);
   const desc = document.getElementById('prodDesc').value.trim();
   const longDesc = document.getElementById('prodLongDesc').value.trim();
@@ -944,6 +962,7 @@ async function saveProduct(event) {
     desc,
     long_desc: longDesc,
     image,
+    detail_background_image: detailBackgroundImage,
     rate,
     price,
     delivery_type: deliveryType,
@@ -2330,7 +2349,7 @@ async function compressImage(file, { maxWidth = 1200, quality = 0.75 } = {}) {
   });
 }
 
-async function uploadProductImage(event) {
+async function uploadProductImage(event, target = 'productImage') {
   let file = event.target.files[0];
   if (!file) return;
 
@@ -2361,11 +2380,16 @@ async function uploadProductImage(event) {
     }
 
     // Set URL into the text input
-    const prodImageEl = document.getElementById('prodImage');
+    const isDetailBackground = target === 'detailBackground';
+    const prodImageEl = document.getElementById(
+      isDetailBackground ? 'prodDetailBackground' : 'prodImage'
+    );
     if (prodImageEl) prodImageEl.value = data.url;
     
     // Add to library dropdown if possible
-    const select = document.getElementById('prodImageSelect');
+    const select = document.getElementById(
+      isDetailBackground ? 'prodDetailBackgroundSelect' : 'prodImageSelect'
+    );
     if (select) {
       const opt = document.createElement('option');
       opt.value = data.url;
