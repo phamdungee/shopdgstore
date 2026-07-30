@@ -1961,45 +1961,34 @@
         <span id="breadcrumbProduct">Đang tải...</span>
       </nav>
 
-      <div class="sk-product-banner-main">
-        <div class="sk-product-overview-copy">
-          <span class="sk-badge sk-badge-accent"><i class="fa-solid fa-box-open"></i> Sản phẩm</span>
-          <h1 id="productTitle">Đang tải sản phẩm...</h1>
-          <p id="productDesc">Thông tin sản phẩm đang được cập nhật.</p>
-          <div class="sk-rating-line">
-            <span><i class="fa-solid fa-star" style="color: var(--accent)"></i>
-              <span id="productRate">4.8</span> / 5</span>
-            <span class="sk-badge"><i class="fa-solid fa-bolt"></i> Giao tự động</span>
-            <span class="sk-badge"><i class="fa-solid fa-shield-halved"></i> Bảo hành</span>
-          </div>
-          <div class="sk-product-banner-meta">
-            <span class="sk-badge sk-badge-accent"><i class="fa-solid fa-fire"></i> HOT</span>
-            <span class="sk-badge"><i class="fa-solid fa-cart-shopping"></i> 2.341 lượt mua</span>
-            <span class="sk-badge"><i class="fa-solid fa-boxes-stacked"></i> Còn hàng</span>
-            <span class="sk-badge"><i class="fa-solid fa-clock"></i> Giao trong vài phút</span>
-          </div>
-          <div class="sk-product-banner-actions">
-            <button class="sk-btn sk-btn-accent" type="button" onclick="
-                  document
-                    .getElementById('orderPanel')
-                    ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-                ">
-              <i class="fa-solid fa-bolt"></i> Mua nhanh
-            </button>
-            <a class="sk-btn" href="/profile.html#policy"><i class="fa-solid fa-shield-halved"></i> Chính sách bảo
-              hành</a>
-          </div>
+      <div class="sk-product-overview-copy">
+        <span class="sk-badge sk-badge-accent"><i class="fa-solid fa-box-open"></i> Sản phẩm</span>
+        <h1 id="productTitle">Đang tải sản phẩm...</h1>
+        <p id="productDesc">Thông tin sản phẩm đang được cập nhật.</p>
+        <div class="sk-rating-line">
+          <span><i class="fa-solid fa-star" style="color: var(--accent)"></i>
+            <span id="productRate">4.8</span> / 5</span>
+          <span class="sk-badge"><i class="fa-solid fa-bolt"></i> Giao tự động</span>
+          <span class="sk-badge"><i class="fa-solid fa-shield-halved"></i> Bảo hành</span>
         </div>
-        <div class="sk-detail-media" id="productMedia"></div>
+        <div class="sk-product-banner-meta">
+          <span class="sk-badge sk-badge-accent"><i class="fa-solid fa-fire"></i> HOT</span>
+          <span class="sk-badge"><i class="fa-solid fa-cart-shopping"></i> 2.341 lượt mua</span>
+          <span class="sk-badge"><i class="fa-solid fa-boxes-stacked"></i> Còn hàng</span>
+          <span class="sk-badge"><i class="fa-solid fa-clock"></i> Giao trong vài phút</span>
+        </div>
+        <div class="sk-product-banner-actions">
+          <button class="sk-btn sk-btn-accent" type="button" onclick="
+                document
+                  .getElementById('orderPanel')
+                  ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+              ">
+            <i class="fa-solid fa-bolt"></i> Mua nhanh
+          </button>
+          <a class="sk-btn" href="/profile.html#policy"><i class="fa-solid fa-shield-halved"></i> Chính sách bảo
+            hành</a>
+        </div>
       </div>
-    </section>
-
-    <section class="sk-trust-strip" aria-label="Thông tin uy tín">
-      <span class="sk-badge"><i class="fa-solid fa-circle-check"></i> 12.500+ đơn hàng thành
-        công</span>
-      <span class="sk-badge"><i class="fa-solid fa-star"></i> 4.9/5 từ khách hàng</span>
-      <span class="sk-badge"><i class="fa-solid fa-headset"></i> Hỗ trợ 24/7</span>
-      <span class="sk-badge"><i class="fa-solid fa-bolt"></i> Giao hàng tự động</span>
     </section>
 
     <section class="sk-buy-layout">
@@ -2136,27 +2125,26 @@
         <section class="sk-card" id="product-processing">
           <div class="sk-section-head">
             <div>
-              <span class="sk-kicker">Chi tiết gói</span>
-              <h2>Thông tin xử lý</h2>
+              <span class="sk-kicker">Quyền lợi dịch vụ</span>
+              <h2>Thông tin gói</h2>
             </div>
           </div>
-          <div class="sk-grid sk-grid-2">
-            <div class="sk-info-cell">
-              <span>Giao hàng</span><span>Tự động sau thanh toán</span>
+          <div class="sk-processing-grid">
+            <div class="sk-processing-item">
+              <span class="sk-processing-icon"><i class="fa-solid fa-bolt"></i></span>
+              <span class="sk-processing-copy"><small>Giao hàng</small><strong>Tự động sau thanh toán</strong></span>
             </div>
-            <div class="sk-info-cell">
-              <span>Bảo hành</span><span>1 đổi 1 khi lỗi</span>
+            <div class="sk-processing-item">
+              <span class="sk-processing-icon"><i class="fa-solid fa-shield-halved"></i></span>
+              <span class="sk-processing-copy"><small>Bảo hành</small><strong>1 đổi 1 khi lỗi</strong></span>
             </div>
-            <button class="sk-info-cell sk-info-action" type="button" onclick="buySelectedVariant()">
-              <span>Thanh toán</span><span>Số dư tài khoản
-                <i class="fa-solid fa-chevron-right" style="
-                      font-size: 10px;
-                      margin-left: 4px;
-                      color: var(--accent-light);
-                    "></i></span>
-            </button>
-            <div class="sk-info-cell">
-              <span>Hỗ trợ</span><span>24/7 theo đơn hàng</span>
+            <div class="sk-processing-item">
+              <span class="sk-processing-icon"><i class="fa-solid fa-wallet"></i></span>
+              <span class="sk-processing-copy"><small>Thanh toán</small><strong>Số dư tài khoản</strong></span>
+            </div>
+            <div class="sk-processing-item">
+              <span class="sk-processing-icon"><i class="fa-solid fa-headset"></i></span>
+              <span class="sk-processing-copy"><small>Hỗ trợ</small><strong>24/7 theo đơn hàng</strong></span>
             </div>
           </div>
         </section>
@@ -2320,7 +2308,23 @@
       return `<i class="fa-solid ${icon}"></i>`;
     }
 
-    function productHue(value) {
+    function productHue(value, name = "") {
+      const str = (String(value || "") + " " + String(name || "")).toLowerCase();
+      if (str.includes("netflix")) return 350; // Netflix Crimson Red
+      if (str.includes("chatgpt") || str.includes("openai") || str.includes("gpt")) return 162; // ChatGPT Emerald Teal
+      if (str.includes("spotify")) return 141; // Spotify Green
+      if (str.includes("youtube")) return 0; // YouTube Red
+      if (str.includes("shopee")) return 16; // Shopee Orange Red
+      if (str.includes("canva")) return 192; // Canva Cyan
+      if (str.includes("capcut")) return 210; // CapCut Electric Blue
+      if (str.includes("office") || str.includes("microsoft") || str.includes("windows")) return 205; // Microsoft Blue
+      if (str.includes("discord")) return 235; // Discord Blurple
+      if (str.includes("claude") || str.includes("anthropic")) return 28; // Terracotta
+      if (str.includes("adobe") || str.includes("photoshop")) return 345; // Magenta Red
+      if (str.includes("google") || str.includes("drive")) return 217; // Google Blue
+      if (str.includes("tiktok")) return 175; // Neon Cyan
+      if (str.includes("grammarly")) return 160; // Grammarly Green
+      if (str.includes("zoom")) return 210; // Zoom Blue
       return [...String(value || "DG Store")].reduce((sum, character) => sum + character.charCodeAt(0), 0) % 360;
     }
 
@@ -2330,18 +2334,33 @@
     }
 
     function applyProductAmbience(item) {
-      const hue = productHue(item?.slug || item?.name);
+      const hue = productHue(item?.slug || item?.name, item?.name);
       const image = absoluteProductImage(item);
       const detailBackground = String(item?.detail_background_image || "").trim();
+      const bgUrl = detailBackground || image;
+      document.documentElement.style.setProperty("--product-hue", hue);
       document.body.style.setProperty("--product-hue", hue);
       document.body.style.setProperty("--product-image", image ? `url("${String(image).replaceAll('"', '%22')}")` : "none");
-      document.body.classList.toggle("has-detail-background", Boolean(detailBackground));
+      document.body.classList.add("has-detail-background");
       document.body.style.setProperty(
         "--product-detail-background",
-        detailBackground
-          ? `url("${detailBackground.replaceAll('"', '%22')}")`
+        bgUrl
+          ? `url("${String(bgUrl).replaceAll('"', '%22')}")`
           : "none"
       );
+
+      if (bgUrl) {
+        const banner = document.querySelector(".sk-product-banner");
+        if (banner) {
+          const backgroundImage = document.createElement("img");
+          backgroundImage.className = "product-detail-background-image";
+          backgroundImage.src = bgUrl;
+          backgroundImage.alt = `Ảnh giới thiệu ${item?.name || "sản phẩm"}`;
+          backgroundImage.loading = "eager";
+          backgroundImage.decoding = "async";
+          banner.replaceChildren(backgroundImage);
+        }
+      }
     }
 
     function formatProductPrice(price) {

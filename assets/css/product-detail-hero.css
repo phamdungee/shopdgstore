@@ -1,182 +1,320 @@
-﻿/* Netflix product hero. Loaded last to replace legacy hero rules only here. */
-body.sk-product-detail-body.has-detail-background main .sk-product-banner {
-  --detail-hero-surface: #0b101d;
+/* DG Store Product Hero & Dynamic Theme Polish */
+
+/* Hide thumbnail image box in product details */
+body.sk-product-detail-body .sk-detail-media,
+body.sk-product-detail-body #productMedia {
+  display: none !important;
+}
+
+/* Atmospheric Ambient background using Product Artwork */
+body.sk-product-detail-body .product-ambient {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    radial-gradient(ellipse at 50% 0%, hsla(var(--product-hue, 240), 90%, 60%, 0.28) 0%, rgba(9, 13, 24, 0.85) 60%, #090d18 100%),
+    var(--product-detail-background, var(--product-image));
+  background-repeat: no-repeat;
+  background-position: center top;
+  background-size: cover;
+  opacity: 0.35;
+  filter: blur(60px);
+  transition: all 0.5s ease;
+}
+
+/* 100% Clear Background Image Showcase Banner with Floating Glass Title Card */
+body.sk-product-detail-body main .sk-product-banner {
   position: relative;
   isolation: isolate;
-  min-height: 540px;
-  padding: 20px clamp(24px, 4vw, 52px) 34px !important;
+  min-height: 440px !important;
+  padding: 24px clamp(20px, 4vw, 44px) !important;
   overflow: hidden;
-  border-color: rgba(124, 139, 178, 0.42) !important;
-  border-radius: 0 0 30px 30px !important;
-  background-color: var(--detail-hero-surface) !important;
+  border-radius: 28px !important;
+  border: 1px solid hsla(var(--product-hue, 240), 75%, 65%, 0.32) !important;
+  border-top: 3.5px solid hsl(var(--product-hue, 240), 90%, 65%) !important;
+
+  /* 100% Background Image Display with Left Dark Gradient to complement floating card */
+  background-color: #090d18 !important;
   background-image:
-    linear-gradient(90deg, rgba(7, 10, 18, 0.04) 0%, rgba(7, 10, 18, 0.18) 30%, rgba(11, 16, 29, 0.78) 52%, rgba(11, 16, 29, 0.97) 72%, #0b101d 100%),
-    linear-gradient(0deg, rgba(11, 16, 29, 0.9) 0%, transparent 38%),
-    var(--product-detail-background) !important;
+    linear-gradient(90deg, rgba(9, 13, 24, 0.88) 0%, rgba(9, 13, 24, 0.55) 45%, transparent 80%),
+    linear-gradient(180deg, rgba(9, 13, 24, 0.3) 0%, transparent 40%, rgba(9, 13, 24, 0.5) 100%),
+    var(--product-detail-background, var(--product-image)) !important;
   background-repeat: no-repeat !important;
-  background-position: center, center, left center !important;
-  background-size: cover, cover, auto 100% !important;
-  box-shadow: 0 24px 60px rgba(2, 6, 23, 0.32) !important;
+  background-position: center center !important;
+  background-size: cover !important;
+
+  box-shadow:
+    0 30px 70px -10px rgba(0, 0, 0, 0.65),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    0 0 45px -5px hsla(var(--product-hue, 240), 90%, 60%, 0.35) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  gap: 20px !important;
 }
 
-.has-detail-background .sk-product-banner::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background:
-    radial-gradient(circle at 18% 45%, transparent 0 20%, rgba(4, 7, 14, 0.2) 48%, transparent 68%),
-    linear-gradient(180deg, rgba(3, 6, 13, 0.18), transparent 24%, transparent 72%, rgba(3, 6, 13, 0.46));
+html[data-theme="light"] body.sk-product-detail-body main .sk-product-banner {
+  background-color: #ffffff !important;
+  background-image:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.88) 0%, rgba(255, 255, 255, 0.5) 50%, transparent 80%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.3) 0%, transparent 50%, rgba(255, 255, 255, 0.4) 100%),
+    var(--product-detail-background, var(--product-image)) !important;
+  border-color: hsla(var(--product-hue, 240), 60%, 75%, 0.35) !important;
 }
 
-.has-detail-background .sk-product-banner .sk-breadcrumb,
-.has-detail-background .sk-product-banner .sk-product-banner-main {
+/* Floating Breadcrumb Pill */
+body.sk-product-detail-body .sk-product-banner .sk-breadcrumb {
   position: relative;
-  z-index: 1;
+  z-index: 3;
+  background: rgba(9, 13, 24, 0.68);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 6px 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  width: fit-content;
+  margin: 0;
 }
 
-.has-detail-background .sk-product-banner .sk-breadcrumb,
-.has-detail-background .sk-product-banner .sk-breadcrumb a {
-  color: rgba(226, 232, 240, 0.72) !important;
+html[data-theme="light"] body.sk-product-detail-body .sk-product-banner .sk-breadcrumb {
+  background: rgba(255, 255, 255, 0.8);
+  border-color: rgba(0, 0, 0, 0.1);
 }
 
-.has-detail-background .sk-product-banner .sk-breadcrumb span {
-  color: #fff !important;
+/* Floating Glass Overlay Card at Bottom-Left for Title & Overview */
+body.sk-product-detail-body .sk-product-banner .sk-product-overview-copy {
+  max-width: 580px !important;
+  padding: 24px 28px !important;
+  margin-top: auto !important;
+  background: rgba(9, 14, 26, 0.82) !important;
+  backdrop-filter: blur(20px) saturate(140%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(140%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  border-radius: 22px !important;
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 0 25px hsla(var(--product-hue, 240), 85%, 60%, 0.25) !important;
+  z-index: 3;
+  position: relative;
 }
 
-.has-detail-background .sk-product-banner-main {
-  min-height: 440px;
-  grid-template-columns: minmax(300px, 0.9fr) minmax(420px, 1.1fr) !important;
-  align-items: center !important;
-  gap: clamp(28px, 5vw, 72px) !important;
+html[data-theme="light"] body.sk-product-detail-body .sk-product-banner .sk-product-overview-copy {
+  background: rgba(255, 255, 255, 0.88) !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.12) !important;
 }
 
-.has-detail-background .sk-detail-media {
-  order: 0;
-  min-height: 410px !important;
-  aspect-ratio: auto !important;
+body.sk-product-detail-body .sk-product-overview-copy h1 {
+  margin: 10px 0 12px !important;
+  font-size: clamp(26px, 3.5vw, 40px) !important;
+  line-height: 1.15 !important;
+  font-weight: 900 !important;
+  letter-spacing: -0.025em !important;
+  color: #ffffff !important;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
+}
+
+html[data-theme="light"] body.sk-product-detail-body .sk-product-overview-copy h1 {
+  color: #0f172a !important;
+  text-shadow: none;
+}
+
+body.sk-product-detail-body .sk-product-overview-copy > p {
+  font-size: 14.5px !important;
+  line-height: 1.65 !important;
+  color: rgba(248, 250, 252, 0.88) !important;
+  max-width: 520px !important;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
+}
+
+html[data-theme="light"] body.sk-product-detail-body .sk-product-overview-copy > p {
+  color: #475569 !important;
+  text-shadow: none;
+}
+
+@media (max-width: 760px) {
+  body.sk-product-detail-body main .sk-product-banner {
+    min-height: 380px !important;
+    padding: 16px !important;
+    border-radius: 20px !important;
+  }
+
+  body.sk-product-detail-body .sk-product-banner .sk-product-overview-copy {
+    max-width: 100% !important;
+    padding: 18px 20px !important;
+    border-radius: 18px !important;
+  }
+
+  body.sk-product-detail-body .sk-product-overview-copy h1 {
+    font-size: clamp(22px, 6.5vw, 30px) !important;
+  }
+}
+
+/* Products with a configured detail background use the banner as a clean,
+   image-only showcase. Product information remains in the sections below. */
+body.sk-product-detail-body.has-detail-background main .sk-product-banner {
+  min-height: 0 !important;
+  aspect-ratio: 16 / 9;
   padding: 0 !important;
   border: 0 !important;
-  background: transparent !important;
+  border-top: 0 !important;
+  border-radius: 24px !important;
+  background-color: #090d18 !important;
+  background-image: none !important;
   box-shadow: none !important;
-  pointer-events: none;
+  display: block !important;
 }
 
-/* The same CDN artwork is already the background; do not render it twice. */
-.has-detail-background .sk-detail-media > img,
-.has-detail-background .sk-detail-media > i {
-  visibility: hidden !important;
+body.sk-product-detail-body.has-detail-background main .sk-product-banner > img.product-detail-background-image {
+  display: block !important;
+  width: 100%;
+  height: calc(100% - 4px);
+  margin-block: 2px;
+  object-fit: contain;
+  object-position: center;
+  border: 0;
+  border-radius: 24px;
+  box-shadow: none;
 }
 
-.has-detail-background .sk-product-overview-copy {
-  order: 1;
-  max-width: 680px;
-  padding: 28px clamp(0px, 1.5vw, 18px) 28px 0;
-  color: #f8fafc;
+html[data-theme="light"] body.sk-product-detail-body.has-detail-background main .sk-product-banner {
+  background-color: #ffffff !important;
+  background-image: none !important;
 }
 
-.has-detail-background .sk-product-overview-copy h1 {
-  margin-top: 18px;
-  color: #fff !important;
-  font-size: clamp(40px, 4.7vw, 66px);
-  line-height: 1;
-  text-shadow: 0 4px 30px rgba(0, 0, 0, 0.55);
-}
-
-.has-detail-background .sk-product-overview-copy > p {
-  color: rgba(226, 232, 240, 0.82) !important;
-  font-size: 15px;
-}
-
-.has-detail-background .sk-product-banner .sk-badge,
-.has-detail-background .sk-product-banner .sk-rating-line > span {
-  border-color: rgba(148, 163, 184, 0.3) !important;
-  background: rgba(23, 31, 51, 0.72) !important;
-  color: #dbe5ff !important;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-}
-
-body.sk-product-detail-body.has-detail-background main .sk-product-banner-actions .sk-btn {
-  border-color: rgba(148, 163, 184, 0.34) !important;
-  background: rgba(23, 31, 51, 0.78) !important;
-  color: #f8fafc !important;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-}
-
-body.sk-product-detail-body.has-detail-background main .sk-product-banner-actions .sk-btn-accent {
-  border-color: transparent !important;
-  background: linear-gradient(110deg, hsl(var(--product-hue) 76% 52%), #0891b2) !important;
-  box-shadow: 0 12px 28px color-mix(in srgb, hsl(var(--product-hue) 76% 52%) 30%, transparent) !important;
-}
-
-@media (max-width: 900px) {
-  .has-detail-background .sk-product-banner-main {
-    grid-template-columns: minmax(240px, 0.75fr) minmax(360px, 1.25fr) !important;
-    gap: 24px !important;
-  }
+body.sk-product-detail-body.has-detail-background main .sk-product-banner::before,
+body.sk-product-detail-body.has-detail-background main .sk-product-banner::after {
+  display: none !important;
 }
 
 @media (max-width: 760px) {
   body.sk-product-detail-body.has-detail-background main .sk-product-banner {
-    min-height: auto;
-    padding: 0 18px 26px !important;
-    border-radius: 0 0 22px 22px !important;
-    background-image:
-      linear-gradient(180deg, rgba(7, 10, 18, 0.02) 0%, rgba(11, 16, 29, 0.18) 28%, rgba(11, 16, 29, 0.88) 48%, #0b101d 63%),
-      var(--product-detail-background) !important;
-    background-position: center, right top !important;
-    background-size: cover, auto 330px !important;
+    min-height: 0 !important;
+    aspect-ratio: 16 / 9;
+    padding: 0 !important;
+    border-radius: 18px !important;
   }
 
-  .has-detail-background .sk-product-banner .sk-breadcrumb {
-    min-height: 42px;
-    margin: 0;
-    padding-top: 12px;
-  }
-
-  .has-detail-background .sk-product-banner-main {
-    min-height: 0;
-    grid-template-columns: 1fr !important;
-    gap: 0 !important;
-  }
-
-  .has-detail-background .sk-detail-media {
-    order: 0;
-    min-height: 260px !important;
-    max-height: none;
-  }
-
-  .has-detail-background .sk-product-overview-copy {
-    order: 1;
-    max-width: none;
-    padding: 4px 0 0;
-  }
-
-  .has-detail-background .sk-product-overview-copy h1 {
-    font-size: clamp(34px, 10vw, 46px);
-  }
-
-  .has-detail-background .sk-product-banner-actions {
-    display: grid;
-    grid-template-columns: 1fr;
-  }
-
-  .has-detail-background .sk-product-banner-actions .sk-btn {
-    width: 100%;
+  body.sk-product-detail-body.has-detail-background main .sk-product-banner > img.product-detail-background-image {
+    border-radius: 18px;
   }
 }
 
 @media (max-width: 430px) {
   body.sk-product-detail-body.has-detail-background main .sk-product-banner {
-    padding-inline: 14px !important;
-    background-size: cover, auto 285px !important;
+    aspect-ratio: 16 / 9;
+    border-radius: 14px !important;
   }
 
-  .has-detail-background .sk-detail-media {
-    min-height: 220px !important;
+  body.sk-product-detail-body.has-detail-background main .sk-product-banner > img.product-detail-background-image {
+    border-radius: 14px;
   }
 }
 
+/* Clean processing summary */
+.sk-processing-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.sk-processing-item {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  min-height: 72px;
+  padding: 12px 14px;
+  border: 1px solid var(--detail-line);
+  border-radius: 14px;
+  background: var(--detail-soft);
+  color: var(--detail-text);
+  text-align: left;
+}
+
+.sk-processing-icon {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  background: var(--detail-brand-soft);
+  color: var(--detail-brand);
+}
+
+.sk-processing-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.sk-processing-copy small {
+  color: var(--detail-muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.sk-processing-copy strong {
+  color: var(--detail-text);
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+@media (max-width: 480px) {
+  .sk-processing-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Unified action-button language across the product-detail content. */
+body.sk-product-detail-body main .sk-btn {
+  min-height: 44px;
+  padding: 10px 18px;
+  border: 1px solid transparent !important;
+  border-radius: 12px !important;
+  background:
+    linear-gradient(
+      110deg,
+      hsl(var(--product-hue, 232) 76% 52%),
+      hsl(calc(var(--product-hue, 232) + 24) 72% 48%)
+    ) !important;
+  color: #ffffff !important;
+  font-weight: 800;
+  box-shadow: 0 10px 24px hsla(var(--product-hue, 232), 76%, 45%, 0.22) !important;
+  transition:
+    transform 0.18s ease,
+    filter 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+body.sk-product-detail-body main .sk-btn:hover:not(:disabled) {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+  box-shadow: 0 14px 30px hsla(var(--product-hue, 232), 76%, 45%, 0.3) !important;
+}
+
+body.sk-product-detail-body main .sk-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+body.sk-product-detail-body main .sk-btn:focus-visible {
+  outline: 3px solid hsla(var(--product-hue, 232), 82%, 68%, 0.42);
+  outline-offset: 3px;
+}
+
+body.sk-product-detail-body main .sk-btn:disabled,
+body.sk-product-detail-body main .sk-btn[aria-disabled="true"] {
+  cursor: not-allowed;
+  filter: saturate(0.35);
+  opacity: 0.52;
+  box-shadow: none !important;
+}
+
+body.sk-product-detail-body main .sk-btn i {
+  color: currentColor !important;
+}
