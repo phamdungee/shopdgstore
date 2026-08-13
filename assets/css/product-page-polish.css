@@ -1,0 +1,323 @@
+/* Product detail page polish: clear hierarchy, richer surfaces, mobile-safe spacing. */
+
+body.sk-product-detail-body {
+  --page-gutter: clamp(16px, 3vw, 42px);
+  background:
+    radial-gradient(circle at 75% 5%, rgba(56, 189, 248, 0.09), transparent 34rem),
+    var(--bg);
+}
+
+body.sk-product-detail-body .sk-layout {
+  width: min(100%, 1480px);
+  margin-inline: auto;
+  padding: 22px var(--page-gutter) 56px;
+  gap: 10px;
+}
+
+body.sk-product-detail-body .sk-product-banner {
+  min-height: 500px !important;
+  padding: 22px clamp(18px, 3vw, 42px) !important;
+  border-radius: 30px !important;
+  background-position: center !important;
+  background-size: cover !important;
+}
+
+/* Use a compact split hero when artwork exists. The artwork stays complete
+   with contain, while a soft cover layer fills the panel behind it. */
+body.sk-product-detail-body.has-detail-background main .sk-product-banner {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1.04fr) minmax(320px, 0.96fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  min-height: 420px !important;
+  aspect-ratio: auto !important;
+  padding: 22px clamp(18px, 3vw, 36px) !important;
+  background-image:
+    linear-gradient(90deg, rgba(5, 10, 24, 0.96) 0%, rgba(5, 10, 24, 0.78) 47%, rgba(5, 10, 24, 0.28) 100%),
+    var(--product-detail-background, var(--product-image)) !important;
+  background-position: center !important;
+  background-size: cover !important;
+}
+
+body.sk-product-detail-body.has-detail-background main .sk-product-banner::before {
+  content: "" !important;
+  display: block !important;
+  position: absolute;
+  inset: -28px;
+  z-index: 0;
+  pointer-events: none;
+  background: var(--product-detail-background, var(--product-image));
+  background-position: center;
+  background-size: cover;
+  filter: blur(24px) saturate(1.1);
+  opacity: 0.26;
+  transform: scale(1.08);
+}
+
+body.sk-product-detail-body.has-detail-background main .sk-product-banner::after {
+  display: block !important;
+  background: linear-gradient(90deg, rgba(5, 10, 24, 0.72), rgba(5, 10, 24, 0.12) 70%, rgba(5, 10, 24, 0.28)) !important;
+}
+
+body.sk-product-detail-body.has-detail-background .sk-product-banner > .product-detail-background-image {
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  right: clamp(14px, 2.5vw, 38px);
+  width: min(55%, 760px);
+  height: calc(100% - 44px);
+  margin: 0;
+  object-fit: contain;
+  object-position: center;
+  filter: drop-shadow(0 20px 28px rgba(0, 0, 0, 0.3));
+  transform: translateY(-50%);
+}
+
+body.sk-product-detail-body.has-detail-background .sk-product-banner > .sk-breadcrumb {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  z-index: 3;
+}
+
+body.sk-product-detail-body.has-detail-background .sk-product-banner > .sk-product-overview-copy {
+  grid-column: 1;
+  grid-row: 2;
+  align-self: end;
+  z-index: 3;
+  margin-top: 24px !important;
+}
+
+/* When a full artwork is configured, keep this area image-only. */
+body.sk-product-detail-body.has-detail-background main .sk-product-banner {
+  display: block !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  aspect-ratio: auto !important;
+  background: #080d1b !important;
+  border: 0 !important;
+  border-top: 0 !important;
+  box-shadow: 0 20px 52px rgba(2, 6, 23, 0.24) !important;
+}
+
+body.sk-product-detail-body.has-detail-background main .sk-product-banner::before,
+body.sk-product-detail-body.has-detail-background main .sk-product-banner::after {
+  display: none !important;
+}
+
+body.sk-product-detail-body.has-detail-background .sk-product-banner > .sk-breadcrumb,
+body.sk-product-detail-body.has-detail-background .sk-product-banner > .sk-product-overview-copy {
+  display: none !important;
+}
+
+body.sk-product-detail-body.has-detail-background .sk-product-banner > .product-detail-background-image {
+  position: relative !important;
+  inset: auto !important;
+  display: block !important;
+  width: 100% !important;
+  height: auto !important;
+  max-width: 100%;
+  max-height: none !important;
+  margin: 0 !important;
+  object-fit: contain !important;
+  object-position: center;
+  transform: none !important;
+  filter: none !important;
+  border-radius: 24px;
+}
+
+body.sk-product-detail-body .sk-product-banner::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(5, 10, 24, 0.08), rgba(5, 10, 24, 0.28));
+}
+
+body.sk-product-detail-body .sk-product-banner > * {
+  position: relative;
+  z-index: 1;
+}
+
+body.sk-product-detail-body .sk-product-banner .sk-breadcrumb {
+  box-shadow: 0 10px 28px rgba(2, 6, 23, 0.18);
+}
+
+body.sk-product-detail-body .sk-product-overview-copy {
+  width: min(680px, 100%);
+  padding: clamp(22px, 3vw, 34px) !important;
+  border-radius: 24px !important;
+}
+
+body.sk-product-detail-body .sk-product-overview-copy .sk-rating-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  align-items: center;
+}
+
+body.sk-product-detail-body .sk-product-banner-meta {
+  gap: 7px;
+}
+
+body.sk-product-detail-body .sk-product-banner-actions .sk-btn {
+  min-height: 44px;
+  padding-inline: 18px;
+  border-radius: 12px;
+}
+
+body.sk-product-detail-body .sk-buy-layout {
+  gap: 10px !important;
+  margin-bottom: 6px !important;
+}
+
+body.sk-product-detail-body .sk-buy-layout > .sk-card,
+body.sk-product-detail-body .sk-detail-blocks .sk-card {
+  overflow: hidden;
+}
+
+body.sk-product-detail-body .sk-card {
+  padding: clamp(18px, 2.5vw, 28px) !important;
+}
+
+body.sk-product-detail-body .sk-section-head {
+  align-items: flex-start;
+}
+
+body.sk-product-detail-body .sk-section-head h2 {
+  font-size: clamp(20px, 2vw, 27px) !important;
+  letter-spacing: -0.02em;
+}
+
+body.sk-product-detail-body .sk-variant-grid {
+  grid-template-columns: repeat(auto-fit, minmax(175px, 1fr)) !important;
+  gap: 12px !important;
+}
+
+body.sk-product-detail-body .sk-variant-option {
+  min-height: 92px;
+  padding: 16px !important;
+  text-align: left;
+}
+
+body.sk-product-detail-body .sk-variant-option strong {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+body.sk-product-detail-body .sk-product-order-panel {
+  top: 78px;
+  border-color: rgba(56, 189, 248, 0.4) !important;
+}
+
+body.sk-product-detail-body .sk-price-summary {
+  margin-top: 4px;
+  padding: 16px !important;
+  border-radius: 16px !important;
+}
+
+body.sk-product-detail-body .sk-order-actions {
+  gap: 10px !important;
+}
+
+body.sk-product-detail-body .sk-product-detail-nav {
+  position: sticky;
+  top: 76px;
+  z-index: 10;
+  padding: 8px;
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--surface) 82%, transparent);
+  box-shadow: 0 12px 28px rgba(2, 6, 23, 0.14);
+  backdrop-filter: blur(18px);
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+body.sk-product-detail-body .sk-product-detail-nav a {
+  border-radius: 10px;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+body.sk-product-detail-body .sk-product-detail-nav a:hover {
+  transform: translateY(-1px);
+  background: rgba(56, 189, 248, 0.12);
+  color: var(--site-brand);
+}
+
+body.sk-product-detail-body .sk-detail-blocks {
+  gap: 12px !important;
+  margin-top: 0 !important;
+}
+
+body.sk-product-detail-body .sk-processing-grid {
+  gap: 12px;
+}
+
+body.sk-product-detail-body .sk-processing-item {
+  min-height: 82px;
+  border-radius: 16px;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+body.sk-product-detail-body .sk-processing-item:hover {
+  transform: translateY(-2px);
+  border-color: rgba(56, 189, 248, 0.46);
+}
+
+@media (max-width: 760px) {
+  body.sk-product-detail-body .sk-layout {
+    padding-top: 14px;
+    padding-bottom: 42px;
+  }
+
+  body.sk-product-detail-body .sk-product-banner {
+    min-height: 470px !important;
+  }
+
+  body.sk-product-detail-body.has-detail-background main .sk-product-banner {
+    display: block !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+  }
+
+  body.sk-product-detail-body.has-detail-background .sk-product-banner > .product-detail-background-image {
+    position: relative !important;
+    inset: auto !important;
+    width: 100%;
+    height: auto !important;
+    min-height: 0;
+  }
+
+  body.sk-product-detail-body .sk-product-detail-nav {
+    top: 64px;
+    overflow-x: auto;
+    justify-content: flex-start;
+    white-space: nowrap;
+  }
+
+  body.sk-product-detail-body .sk-processing-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 460px) {
+  body.sk-product-detail-body .sk-product-banner {
+    min-height: 520px !important;
+    border-radius: 22px !important;
+  }
+
+  body.sk-product-detail-body .sk-product-overview-copy {
+    padding: 18px !important;
+  }
+
+  body.sk-product-detail-body .sk-product-banner-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  body.sk-product-detail-body .sk-product-banner-actions .sk-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}

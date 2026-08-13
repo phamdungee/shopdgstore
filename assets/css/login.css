@@ -245,32 +245,56 @@ body.sk-auth-body::after {
   box-shadow: 0 0 15px var(--brand-glow);
 }
 
+.sk-auth-copy .sk-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px !important;
+  margin-top: 24px !important;
+}
+
 .sk-auth-copy .sk-hero-card {
-  background: rgba(17, 24, 39, 0.4) !important;
-  border: 1px solid rgba(99, 102, 241, 0.12) !important;
-  border-radius: var(--radius) !important;
-  padding: 18px !important;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
-  transition: all 0.3s ease;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.04)) !important;
+  backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 16px !important;
+  padding: 16px 18px !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.25) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
 .sk-auth-copy .sk-hero-card:hover {
-  transform: translateY(-2px);
-  border-color: rgba(99, 102, 241, 0.3);
-  background: rgba(17, 24, 39, 0.6) !important;
-  box-shadow: 0 0 20px var(--brand-glow) !important;
+  transform: translateY(-4px) scale(1.02) !important;
+  border-color: rgba(147, 197, 253, 0.6) !important;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.08)) !important;
+  box-shadow: 0 14px 32px rgba(37, 99, 235, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.45) !important;
 }
 
-.sk-auth-copy .sk-hero-card b {
-  font-size: 22px !important;
-  color: var(--text-bright) !important;
+.sk-auth-copy .sk-hero-card .stat-icon-wrap {
+  font-size: 20px;
+  margin-bottom: 8px;
+  display: inline-block;
+  filter: drop-shadow(0 2px 8px currentColor);
+}
+
+.sk-auth-copy .sk-hero-card b,
+.sk-auth-copy .sk-hero-card .stat-number {
+  font-size: 26px !important;
+  font-weight: 900 !important;
+  line-height: 1.2 !important;
   display: block;
+  background: linear-gradient(135deg, #ffffff 30%, #93c5fd 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  letter-spacing: -0.02em !important;
 }
 
-.sk-auth-copy .sk-hero-card p {
-  margin: 4px 0 0 0 !important;
-  font-size: 12px !important;
-  color: var(--muted) !important;
+.sk-auth-copy .sk-hero-card p,
+.sk-auth-copy .sk-hero-card .stat-label {
+  margin: 6px 0 0 0 !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: #cbd5e1 !important;
+  line-height: 1.4 !important;
 }
 
 /* Right Forms Area */
@@ -295,26 +319,39 @@ body.sk-auth-body::after {
 
 /* Tab selector */
 .sk-auth-selector {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
   background: rgba(17, 24, 39, 0.6);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 99px;
-  padding: 4px;
+  border-radius: 9999px;
+  padding: 5px;
   margin-bottom: 24px;
   width: 100%;
+  box-sizing: border-box;
+  position: relative;
+  align-items: center;
 }
 
 .sk-auth-selector .selector-btn {
-  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 42px;
   background: transparent;
   border: none;
-  border-radius: 99px;
+  border-radius: 9999px;
   color: var(--muted);
+  font-family: "Outfit", sans-serif;
   font-size: 13.5px;
   font-weight: 800;
-  padding: 10px;
+  padding: 0 16px;
   cursor: pointer;
-  transition: all 0.3s var(--ease-smooth);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-sizing: border-box;
+  user-select: none;
+  outline: none;
 }
 
 .sk-auth-selector .selector-btn.active {
@@ -325,6 +362,7 @@ body.sk-auth-body::after {
 
 .sk-auth-selector .selector-btn:hover:not(.active) {
   color: var(--text-bright);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 /* Display / Switch Logic using display block/none to prevent collapsing */
@@ -389,17 +427,29 @@ body.sk-auth-body::after {
 }
 
 .form-container .sk-kicker {
-  color: var(--brand-light) !important;
-  font-weight: 850;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  font-size: 14px !important;
-  display: block;
-  text-align: center;
-  width: 100%;
-  margin-bottom: 24px !important;
-  text-shadow: 0 0 12px rgba(99, 102, 241, 0.4);
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 7px !important;
+  margin: 0 auto 16px auto !important;
+  padding: 5px 16px !important;
+  border-radius: 9999px !important;
+  background: rgba(99, 102, 241, 0.12) !important;
+  border: 1px solid rgba(99, 102, 241, 0.28) !important;
+  color: var(--brand-light, #a5b4fc) !important;
+  font-family: "Outfit", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.01em !important;
+  text-transform: none !important;
+  font-size: 13px !important;
+  box-shadow: 0 2px 10px rgba(99, 102, 241, 0.18) !important;
+  backdrop-filter: blur(10px) !important;
   opacity: 0; /* Let animation handle opacity */
+}
+
+.form-container .sk-kicker i {
+  font-size: 12px !important;
+  color: #818cf8 !important;
 }
 
 /* Trigger kicker animation on load and when active state changes */
@@ -532,32 +582,60 @@ body.sk-auth-body::after {
   background: linear-gradient(135deg, #6c6ff5, #b262fa) !important;
 }
 
-/* Social Login Icons */
+/* Social Login Buttons */
 .social-icons {
-  margin: 10px 0 16px 0 !important;
-  display: flex;
-  gap: 12px;
-  justify-content: flex-start;
+  margin: 10px 0 18px 0 !important;
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 12px !important;
+  width: 100% !important;
 }
 
+.social-icons .social-btn,
 .social-icons .icon {
-  width: 44px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 10px !important;
   height: 44px !important;
+  padding: 0 16px !important;
   background: rgba(17, 24, 39, 0.6) !important;
-  border: 1px solid rgba(99, 102, 241, 0.15) !important;
-  border-radius: var(--radius) !important;
-  color: var(--muted) !important;
-  transition: all 0.3s ease !important;
-  display: grid;
-  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 12px !important;
+  color: var(--text-bright, #ffffff) !important;
+  font-family: "Outfit", sans-serif !important;
+  font-size: 13.5px !important;
+  font-weight: 700 !important;
+  text-decoration: none !important;
+  cursor: pointer !important;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  box-sizing: border-box !important;
+  backdrop-filter: blur(10px) !important;
 }
 
-.social-icons .icon:hover {
-  background: var(--brand-soft) !important;
-  border-color: var(--brand) !important;
-  color: var(--text-bright) !important;
-  transform: rotate(6deg) scale(1.08) !important;
-  box-shadow: 0 0 15px var(--brand-glow) !important;
+.social-icons .social-btn svg {
+  flex-shrink: 0;
+  transition: transform 0.25s ease;
+}
+
+.social-icons .social-btn.btn-google-login-custom:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(66, 133, 244, 0.5) !important;
+  box-shadow: 0 6px 20px rgba(66, 133, 244, 0.25) !important;
+  transform: translateY(-2px) !important;
+}
+.social-icons .social-btn.btn-google-login-custom:hover svg {
+  transform: scale(1.12);
+}
+
+.social-icons .social-btn.btn-github-login-custom:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(255, 255, 255, 0.35) !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35) !important;
+  transform: translateY(-2px) !important;
+}
+.social-icons .social-btn.btn-github-login-custom:hover svg {
+  transform: scale(1.12);
 }
 
 /* Switch Text */

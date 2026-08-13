@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" data-theme="dark">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -106,18 +106,7 @@
           <i class="fa-solid fa-boxes-stacked"></i>
           <span class="nav-label">Sản phẩm</span>
         </a>
-        <a href="/index.html#shopee" class="nav-item" data-tooltip="Shopee">
-          <i class="fa-solid fa-bag-shopping" aria-hidden="true"></i>
-          <span class="nav-label">Shopee</span>
-        </a>
-        <a href="/tuongtacmxh.html" class="nav-item" data-tooltip="Tương tác MXH">
-          <i class="fa-solid fa-share-nodes"></i>
-          <span class="nav-label">Tương tác MXH</span>
-        </a>
-        <a href="/lichsudonmxh.html" class="nav-item nav-item-sub" data-tooltip="Lịch sử đơn MXH">
-          <i class="fa-solid fa-list-check"></i>
-          <span class="nav-label">Lịch sử đơn MXH</span>
-        </a>
+
       </div>
 
       <div class="sk-sidebar-new-nav">
@@ -214,133 +203,88 @@
     </footer>
   </main>
 
-  <!-- ═══ CHECKOUT FLOW MODAL — Redesigned ═══ -->
+  <!-- ═══ CHECKOUT CONFIRMATION MODAL ═══ -->
   <div class="sk-modal-backdrop" id="checkoutFlowModalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-    <div class="sk-flow-modal">
+    <div class="sk-flow-modal sk-checkout-modal-clean" style="max-width: 620px; width: 95vw;">
       <header class="sk-modal-header">
-        <h3 id="modalTitle"><i class="fa-solid fa-bolt"></i> Thanh toán tự động 3 giai đoạn <i class="fa-solid fa-shield-halved sk-flow-title-security" aria-hidden="true"></i></h3>
+        <h3 id="modalTitle"><i class="fa-solid fa-cart-shopping"></i> Xác nhận thanh toán giỏ hàng</h3>
         <button class="sk-modal-close-btn" onclick="closeCheckoutModal()" aria-label="Đóng hộp thoại">&times;</button>
       </header>
       <div class="sk-modal-body">
-        <!-- Order Summary -->
-        <div class="sk-order-summary-box">
-          <div class="sk-order-summary-grid">
-            <div class="sk-summary-item">
-              <p>Sản phẩm</p>
-              <b id="modalProductTitle">—</b>
+        <!-- Main Checkout Info Card -->
+        <div id="checkoutMainCard" class="sk-checkout-details-card">
+          <!-- Cart Items Summary List (Gộp toàn bộ sản phẩm) -->
+          <div class="sk-checkout-items-summary" style="margin-bottom: 16px;">
+            <div style="font-size: 12.5px; font-weight: 800; color: #818cf8; text-transform: uppercase; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; letter-spacing: 0.03em;">
+              <span><i class="fa-solid fa-boxes-stacked"></i> Danh sách sản phẩm (<span id="modalCartCount">0</span> loại)</span>
+              <span class="sk-checkout-tag"><i class="fa-solid fa-shield-halved"></i> Tự động 24/7</span>
             </div>
-            <div class="sk-summary-item">
-              <p>Phân loại</p>
-              <b id="modalVariantTitle">—</b>
+            <div id="modalCartItemsList" style="max-height: 220px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 4px;">
+              <!-- Dynamic cart items rendered here -->
             </div>
-            <div class="sk-summary-item">
-              <p>Tổng tiền</p>
-              <b id="modalTotalPrice" style="color:var(--accent-light)">—</b>
+          </div>
+
+          <!-- Total Breakdown -->
+          <div class="sk-checkout-breakdown" style="background: rgba(255,255,255,0.025); padding: 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.06);">
+            <div class="sk-breakdown-row" style="display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 13px;">
+              <span style="color: var(--muted);"><i class="fa-solid fa-cubes"></i> Tổng số lượng gói:</span>
+              <b id="modalTotalQuantity" style="color: var(--text-bright);">0</b>
             </div>
+            <div class="sk-breakdown-row" style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px;">
+              <span style="color: var(--muted);"><i class="fa-solid fa-credit-card"></i> Phương thức:</span>
+              <b class="text-emerald" style="color: #10b981;"><i class="fa-solid fa-wallet"></i> Ví DG Store (Trừ tự động)</b>
+            </div>
+            <div class="sk-breakdown-divider" style="margin: 8px 0; border-top: 1px dashed rgba(255,255,255,0.1);"></div>
+            <div class="sk-breakdown-row sk-total-row" style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-size: 14px; font-weight: 700;">Tổng tiền thanh toán:</span>
+              <b id="modalTotalPrice" class="sk-total-price-glow" style="font-size: 20px; font-weight: 900; color: #10b981;">0đ</b>
+            </div>
+          </div>
+
+          <div class="sk-checkout-instant-badge" style="margin-top: 12px; font-size: 12px; padding: 8px 12px; background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 8px; color: #38bdf8; display: flex; align-items: center; gap: 8px;">
+            <i class="fa-solid fa-bolt-lightning"></i>
+            <span>Tài khoản / key của toàn bộ sản phẩm sẽ được gửi trả tự động ngay lập tức sau khi xác nhận.</span>
           </div>
         </div>
-
-        <!-- Data Flow Visualization -->
-        <div class="sk-data-flow-container">
-          <div class="sk-data-flow-diagram">
-            <!-- Node 1: Web/Client -->
-            <div class="sk-flow-node is-active" id="nodeClient">
-              <i class="fa-solid fa-laptop"></i>
-              <span class="sk-flow-node-label">Web / Client</span>
-            </div>
-            <!-- Line 1 -->
-            <div class="sk-flow-line" id="lineClientServer">
-              <div class="sk-flow-line-fill" id="lineFill1"></div>
-              <div class="sk-flow-pulse"></div>
-            </div>
-            <!-- Node 2: DG Server -->
-            <div class="sk-flow-node" id="nodeServer">
-              <i class="fa-solid fa-server"></i>
-              <span class="sk-flow-node-label">DG Server</span>
-            </div>
-            <!-- Line 2 -->
-            <div class="sk-flow-line" id="lineServerProvider">
-              <div class="sk-flow-line-fill" id="lineFill2"></div>
-              <div class="sk-flow-pulse"></div>
-            </div>
-            <!-- Node 3: Provider -->
-            <div class="sk-flow-node" id="nodeProvider">
-              <i class="fa-solid fa-database"></i>
-              <span class="sk-flow-node-label" id="providerNodeLabel">Nhà cung cấp</span>
-            </div>
-          </div>
-
-          <!-- Stage Timeline -->
-          <div class="sk-flow-stages-list">
-            <!-- Stage 1 -->
-            <div class="sk-flow-stage-row is-active" id="stageRow1">
-              <div class="sk-stage-num"><span class="sk-stage-num-text">1</span></div>
-              <div class="sk-stage-content">
-                <h4>Giai đoạn 1 — Đặt hàng &amp; Xác thực</h4>
-                <p id="stageDesc1">Chuẩn bị gửi yêu cầu đặt hàng lên server trung gian...</p>
-              </div>
-              <span class="sk-stage-time" id="stageTime1"></span>
-            </div>
-            <!-- Stage 2 -->
-            <div class="sk-flow-stage-row" id="stageRow2">
-              <div class="sk-stage-num"><span class="sk-stage-num-text">2</span></div>
-              <div class="sk-stage-content">
-                <h4>Giai đoạn 2 — Xử lý &amp; Gọi API đối tác</h4>
-                <p id="stageDesc2">Đang chờ xử lý yêu cầu...</p>
-              </div>
-              <span class="sk-stage-time" id="stageTime2"></span>
-            </div>
-            <!-- Stage 3 -->
-            <div class="sk-flow-stage-row" id="stageRow3">
-              <div class="sk-stage-num"><span class="sk-stage-num-text">3</span></div>
-              <div class="sk-stage-content">
-                <h4>Giai đoạn 3 — Lưu trữ &amp; Kích hoạt trả hàng</h4>
-                <p id="stageDesc3">Chờ giai đoạn trước hoàn thành...</p>
-              </div>
-              <span class="sk-stage-time" id="stageTime3"></span>
-            </div>
-          </div>
-        </div>
-
 
         <!-- ── ERROR RESULT CARD ── -->
-        <div class="sk-error-result" id="errorResultBox">
-          <div class="sk-error-result-icon">
+        <div class="sk-error-result" id="errorResultBox" style="display: none;">
+          <div class="sk-error-result-icon" style="text-align: center; margin-bottom: 10px; font-size: 32px; color: #ef4444;">
             <i class="fa-solid fa-triangle-exclamation"></i>
           </div>
-          <h4>Thanh toán thất bại</h4>
-          <div class="sk-error-detail-box">
-            <i class="fa-solid fa-circle-info"></i>
+          <h4 id="errorResultHeading" style="text-align: center; margin: 0 0 10px; font-size: 17px; color: #ef4444;">Thanh toán không thành công</h4>
+          <div class="sk-error-detail-box" style="padding: 12px; background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 8px; font-size: 13px; color: #f87171; display: flex; align-items: flex-start; gap: 8px;">
+            <i class="fa-solid fa-circle-info" style="margin-top: 2px;"></i>
             <span id="errorDetailText">Chi tiết lỗi sẽ hiển thị ở đây.</span>
           </div>
-          <p id="errorGuideText" style="margin-top:14px; font-size:11.5px;">Vui lòng liên hệ <b>Admin</b> để được hỗ trợ.</p>
-          <div class="sk-error-actions">
-            <button class="sk-btn" type="button" onclick="closeCheckoutModal()"><i class="fa-solid fa-xmark"></i> Đóng</button>
-            <a id="depositErrorBtn" class="sk-btn sk-btn-primary" href="/nap-tien.html" style="display: none;"><i class="fa-solid fa-wallet"></i> Nạp tiền</a>
-            <a class="sk-btn sk-btn-soft" href="https://zalo.me/0774391888" target="_blank"><i class="fa-solid fa-headset"></i> Liên hệ hỗ trợ</a>
+          <p id="errorGuideText" style="margin-top:14px; font-size:12.5px; text-align: center; color: var(--muted);">Vui lòng kiểm tra lại số dư hoặc liên hệ <b>Admin</b> để được hỗ trợ.</p>
+          <div class="sk-error-actions" style="display: flex; gap: 10px; justify-content: center; margin-top: 16px; flex-wrap: wrap;">
+            <button class="sk-btn sk-btn-soft" type="button" onclick="closeCheckoutModal()"><i class="fa-solid fa-xmark"></i> Đóng</button>
+            <a id="depositErrorBtn" class="sk-btn sk-btn-primary" href="/nap-tien.html" style="display: none;"><i class="fa-solid fa-wallet"></i> Nạp tiền ngay</a>
+            <a class="sk-btn sk-btn-soft" href="https://zalo.me/0774391888" target="_blank"><i class="fa-solid fa-headset"></i> Hỗ trợ Zalo</a>
           </div>
         </div>
 
         <!-- ── SUCCESS DELIVERY RESULT ── -->
-        <div class="sk-delivery-result" id="deliveryResultBox">
-          <div class="sk-delivery-result-icon">
+        <div class="sk-delivery-result" id="deliveryResultBox" style="display: none;">
+          <div class="sk-delivery-result-icon" style="text-align: center; margin-bottom: 10px; font-size: 36px; color: #10b981;">
             <i class="fa-solid fa-circle-check"></i>
           </div>
-          <h4>Giao hàng tự động thành công!</h4>
-          <p class="sk-delivery-subtitle">Sao chép thông tin tài khoản hoặc mã dịch vụ bên dưới:</p>
-          <textarea class="sk-delivery-textarea" id="deliveryResultText" readonly></textarea>
-          <div class="sk-delivery-actions">
-            <button class="sk-btn sk-btn-accent" style="box-shadow: 0 0 20px var(--accent-glow);" type="button" onclick="copyDeliveryResult()"><i class="fa-solid fa-copy"></i> Sao chép</button>
-            <button class="sk-btn sk-btn-soft" type="button" onclick="downloadDeliveryResult()"><i class="fa-solid fa-download"></i> Xuất file TXT</button>
-            <a class="sk-btn" href="/index.html#orders"><i class="fa-solid fa-clock-rotate-left"></i> Lịch sử đơn hàng</a>
+          <h4 style="text-align: center; margin: 0 0 6px; font-size: 18px; color: #10b981;">Thanh toán & Giao hàng thành công!</h4>
+          <p class="sk-delivery-subtitle" style="text-align: center; margin: 0 0 12px; font-size: 13px; color: var(--muted);">Thông tin tài khoản / key cho các sản phẩm đã mua:</p>
+          <textarea class="sk-delivery-textarea" id="deliveryResultText" readonly style="width: 100%; min-height: 180px; font-family: monospace; font-size: 12.5px; background: rgba(0,0,0,0.4); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; padding: 12px; color: #f8fafc; line-height: 1.5; resize: vertical;"></textarea>
+          <div class="sk-delivery-actions" style="display: flex; gap: 10px; justify-content: center; margin-top: 14px; flex-wrap: wrap;">
+            <button class="sk-btn sk-btn-accent" style="box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);" type="button" onclick="copyDeliveryResult()"><i class="fa-solid fa-copy"></i> Sao chép tất cả</button>
+            <button class="sk-btn sk-btn-soft" type="button" onclick="downloadDeliveryResult()"><i class="fa-solid fa-download"></i> Tải file TXT</button>
+            <a class="sk-btn" href="/profile.html#orders"><i class="fa-solid fa-clock-rotate-left"></i> Quản lý đơn hàng</a>
           </div>
         </div>
       </div>
-      <footer class="sk-modal-footer" id="modalFooterActions" style="align-items: center; flex-wrap: wrap;">
+      <footer class="sk-modal-footer" id="modalFooterActions" style="align-items: center; flex-wrap: wrap; display: flex; justify-content: flex-end; gap: 10px; padding: 14px 20px; border-top: 1px solid rgba(255,255,255,0.08);">
         <!-- Turnstile Container -->
         <div id="checkout-turnstile" style="margin-right: auto;"></div>
-        <button class="sk-btn" type="button" onclick="closeCheckoutModal()" id="btnCancelCheckout">Hủy bỏ</button>
-        <button class="sk-btn sk-btn-primary" type="button" id="btnConfirmCheckout"><i class="fa-solid fa-shield-halved"></i> Xác nhận &amp; Thanh toán</button>
+        <button class="sk-btn sk-btn-soft" type="button" onclick="closeCheckoutModal()" id="btnCancelCheckout">Hủy bỏ</button>
+        <button class="sk-btn sk-btn-primary" type="button" id="btnConfirmCheckout"><i class="fa-solid fa-shield-halved"></i> Xác nhận thanh toán</button>
       </footer>
     </div>
   </div>

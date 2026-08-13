@@ -334,7 +334,7 @@ router.get('/auth/config', (req, res) => {
     ok: true,
     googleClientId: process.env.GOOGLE_CLIENT_ID || '',
     githubClientId: process.env.GITHUB_CLIENT_ID || '',
-    cloudflareTurnstileSiteKey: process.env.CLOUDFLARE_TURNSTILE_SITE_KEY || '1x00000000000000000000AA'
+    cloudflareTurnstileSiteKey: '' // Cloudflare Turnstile temporarily disabled
   });
 });
 

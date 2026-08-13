@@ -1368,10 +1368,12 @@ router.delete('/vendor-products/:id', authMiddleware, adminMiddleware, async (re
 
 router.post('/inventory/preview', authMiddleware, adminMiddleware, async (req, res) => {
   try {
-    const { content_raw, product_id } = req.body;
+    const { content_raw, product_id, duplicate_policy } = req.body;
     if (!content_raw) {
       return res.status(400).json({ ok: false, message: 'Nội dung nhập kho trống' });
     }
+
+    const policy = duplicate_policy || 'skip';
 
     // Get product's data_format
     let dataFormat = 'mail|pass';
@@ -1390,8 +1392,11 @@ router.post('/inventory/preview', authMiddleware, adminMiddleware, async (req, r
     const report = {
       totalLines: rawLines.length,
       validCount: 0,
+      replaceInDbCount: 0,
       duplicateInDbCount: 0,
       duplicateInFileCount: 0,
+      invalidCount: 0,
+      policy,
       lines: []
     };
 
@@ -1406,6 +1411,7 @@ router.post('/inventory/preview', authMiddleware, adminMiddleware, async (req, r
       const validation = FormatService.validateAccountLine(line, dataFormat);
       
       if (validation.status === 'error_invalid') {
+        report.invalidCount++;
         report.lines.push({
           lineNum,
           text: line,
@@ -1435,19 +1441,30 @@ router.post('/inventory/preview', authMiddleware, adminMiddleware, async (req, r
       // Check duplicate in Database
       const { data: dbMatches } = await supabase
         .from('inventory_items')
-        .select('id')
+        .select('id, status')
         .eq('content_hash', contentHash)
         .neq('status', 'deleted')
         .limit(1);
 
       if (dbMatches && dbMatches.length > 0) {
-        report.duplicateInDbCount++;
-        report.lines.push({
-          lineNum,
-          text: line,
-          status: 'duplicate_db',
-          message: 'Tài khoản đã tồn tại trong hệ thống (Trùng DB)'
-        });
+        if (policy === 'replace') {
+          report.validCount++;
+          report.replaceInDbCount++;
+          report.lines.push({
+            lineNum,
+            text: line,
+            status: 'replace_ready',
+            message: 'Trùng DB — Sẽ ghi đè & cập nhật vào kho (Replace)'
+          });
+        } else {
+          report.duplicateInDbCount++;
+          report.lines.push({
+            lineNum,
+            text: line,
+            status: 'duplicate_db',
+            message: 'Tài khoản đã tồn tại trong hệ thống (Sẽ bỏ qua)'
+          });
+        }
         continue;
       }
 
@@ -1518,6 +1535,8 @@ router.post('/inventory/import', authMiddleware, adminMiddleware, async (req, re
     const itemsToInsert = [];
     const report = {
       successCount: 0,
+      insertedCount: 0,
+      replacedCount: 0,
       duplicateCount: 0,
       invalidCount: 0
     };
@@ -1565,11 +1584,12 @@ router.post('/inventory/import', authMiddleware, adminMiddleware, async (req, re
               product_id,
               variant_id,
               status: 'available',
-              content: contentJson, // Save updated content JSON structure
+              content: contentJson,
               content_hash: contentHash,
               updated_at: new Date().toISOString()
             })
             .eq('id', dbMatches[0].id);
+          report.replacedCount++;
           report.successCount++;
           continue;
         }
@@ -1584,6 +1604,7 @@ router.post('/inventory/import', authMiddleware, adminMiddleware, async (req, re
         status: 'available',
         cost_price: Number(import_price || 0)
       });
+      report.insertedCount++;
       report.successCount++;
     }
 

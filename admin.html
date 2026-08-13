@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="vi">
+<html lang="vi" data-theme="dark">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -1005,26 +1005,7 @@
             <i class="fa-solid fa-boxes-stacked"></i>
             <span class="nav-label">Sản phẩm</span>
           </a>
-          <a href="/index.html#shopee" class="nav-item" data-tooltip="Shopee">
-            <i class="fa-solid fa-bag-shopping" aria-hidden="true"></i>
-            <span class="nav-label">Shopee</span>
-          </a>
-          <a
-            href="/tuongtacmxh.html"
-            class="nav-item"
-            data-tooltip="Tương tác MXH"
-          >
-            <i class="fa-solid fa-share-nodes"></i>
-            <span class="nav-label">Tương tác MXH</span>
-          </a>
-          <a
-            href="/lichsudonmxh.html"
-            class="nav-item nav-item-sub"
-            data-tooltip="Lịch sử đơn MXH"
-          >
-            <i class="fa-solid fa-list-check"></i>
-            <span class="nav-label">Lịch sử đơn MXH</span>
-          </a>
+
         </div>
 
         <div class="sk-sidebar-new-nav">
@@ -1455,13 +1436,6 @@
                   lịch sử nhập hàng.
                 </p>
               </div>
-              <button
-                class="sk-btn sk-btn-primary"
-                type="button"
-                onclick="openImportStockModal()"
-              >
-                <i class="fa-solid fa-file-import"></i> Nhập kho
-              </button>
             </section>
 
             <!-- Live stock stats row -->
@@ -1539,25 +1513,43 @@
 
             <!-- Sub tab 1: Current Stock with Drill-down -->
             <div id="wh-stock-subtab" class="wh-subtab-view">
-              <!-- Level 1: Products List View -->
+              <!-- Level 1: Products List View (Table Format) -->
               <div id="wh-stock-products-view">
                 <section class="sk-card">
-                  <div class="sk-section-head">
+                  <div class="sk-section-head" style="align-items: center; flex-wrap: wrap; gap: 14px;">
                     <div>
                       <span class="sk-kicker">Shop products</span>
                       <h2 style="margin-top: 4px">Sản phẩm đang bán tại Shop</h2>
                     </div>
-                    <input
-                      class="sk-input"
-                      id="whProductSearch"
-                      placeholder="Tìm kiếm sản phẩm..."
-                      style="max-width: 280px"
-                      oninput="renderWarehouseProducts()"
-                    />
+                    <div style="position: relative; max-width: 280px; width: 100%;">
+                      <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 13px;"></i>
+                      <input
+                        class="sk-input"
+                        id="whProductSearch"
+                        placeholder="Tìm kiếm sản phẩm..."
+                        style="padding-left: 34px; width: 100%;"
+                        oninput="renderWarehouseProducts()"
+                      />
+                    </div>
                   </div>
 
-                  <div id="whProductsGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; padding-top: 15px;">
-                    <!-- Rendered dynamically -->
+                  <div class="sk-table-wrap" style="margin-top: 15px;">
+                    <table class="sk-table" id="whProductsTable">
+                      <thead>
+                        <tr>
+                          <th style="min-width: 240px;">Sản phẩm</th>
+                          <th style="width: 140px; text-align: center;">Kiểu giao hàng</th>
+                          <th style="width: 130px; text-align: center;">Gói phân loại</th>
+                          <th style="width: 130px; text-align: center;">Còn trong kho</th>
+                          <th style="width: 110px; text-align: center;">Đang giữ</th>
+                          <th style="width: 110px; text-align: center;">Đã bán</th>
+                          <th style="width: 200px; text-align: right;">Hành động</th>
+                        </tr>
+                      </thead>
+                      <tbody id="whProductsTableBody">
+                        <!-- Rendered dynamically -->
+                      </tbody>
+                    </table>
                   </div>
                 </section>
               </div>
@@ -1994,11 +1986,20 @@
 
       <!-- Modal Thêm/Sửa Sản Phẩm -->
       <div id="productModal" class="sk-modal opacity-0 pointer-events-none">
-        <div class="sk-modal-card">
-          <div class="sk-section-head">
-            <h2 id="modalTitle">Thêm sản phẩm mới</h2>
+        <div class="sk-modal-card sk-product-modal-card">
+          <!-- Modern Modal Header -->
+          <div class="sk-pmodal-header">
+            <div class="sk-pmodal-title-group">
+              <div class="sk-pmodal-badge">
+                <i class="fa-solid fa-box-open"></i>
+              </div>
+              <div>
+                <h2 id="modalTitle">Thêm sản phẩm mới</h2>
+                <p>Thiết lập thông tin hiển thị, kho hàng và các gói phân loại dịch vụ cho sản phẩm.</p>
+              </div>
+            </div>
             <button
-              class="sk-icon-btn"
+              class="sk-icon-btn sk-pmodal-close-btn"
               type="button"
               onclick="closeProductModal()"
               aria-label="Đóng"
@@ -2010,38 +2011,38 @@
           <form id="productForm" onsubmit="saveProduct(event)">
             <input type="hidden" id="prodId" />
 
-            <div class="product-form-card">
-              <h3 class="product-form-title">
-                <i class="fa-solid fa-box"></i> Thông tin sản phẩm
-              </h3>
+            <!-- Card 1: Thông tin cơ bản & Định danh -->
+            <div class="sk-pform-card">
+              <div class="sk-pform-card-title">
+                <i class="fa-solid fa-circle-info"></i> 1. Thông tin cơ bản & Phân loại
+              </div>
 
-              <div class="product-form-grid-2">
+              <div class="sk-form-row">
                 <div class="product-form-group">
-                  <label for="prodName">Tên sản phẩm *</label>
+                  <label for="prodName"><i class="fa-solid fa-heading"></i> Tên sản phẩm *</label>
                   <input
                     class="sk-input"
                     id="prodName"
                     required
-                    placeholder="Ví dụ: Netflix Premium"
-                    style="width: 100%"
+                    placeholder="Ví dụ: Netflix Premium 4K"
+                    oninput="autoGenerateSlug()"
                   />
                 </div>
                 <div class="product-form-group">
-                  <label for="prodSlug">Slug duy nhất *</label>
+                  <label for="prodSlug"><i class="fa-solid fa-link"></i> Slug duy nhất *</label>
                   <input
                     class="sk-input"
                     id="prodSlug"
                     required
-                    placeholder="Ví dụ: netflix-premium"
-                    style="width: 100%"
+                    placeholder="Ví dụ: netflix-premium-4k"
                   />
                 </div>
               </div>
 
-              <div class="product-form-grid-3">
+              <div class="sk-form-row-3">
                 <div class="product-form-group">
-                  <label for="prodCat">Danh mục *</label>
-                  <div style="display: flex; gap: 8px; align-items: center">
+                  <label for="prodCat"><i class="fa-solid fa-folder-tree"></i> Danh mục *</label>
+                  <div style="display: flex; gap: 6px; align-items: center">
                     <select
                       class="sk-input"
                       id="prodCat"
@@ -2052,13 +2053,7 @@
                       type="button"
                       class="sk-btn sk-btn-soft"
                       onclick="promptAddCategory()"
-                      style="
-                        padding: 0 10px;
-                        height: 38px;
-                        display: inline-flex;
-                        align-items: center;
-                        justify-content: center;
-                      "
+                      style="padding: 0 10px; height: 38px; display: inline-flex; align-items: center; justify-content: center;"
                       title="Thêm danh mục mới"
                     >
                       <i class="fa-solid fa-plus"></i>
@@ -2067,13 +2062,7 @@
                       type="button"
                       class="sk-btn sk-btn-soft"
                       onclick="promptEditCategory()"
-                      style="
-                        padding: 0 10px;
-                        height: 38px;
-                        display: inline-flex;
-                        align-items: center;
-                        justify-content: center;
-                      "
+                      style="padding: 0 10px; height: 38px; display: inline-flex; align-items: center; justify-content: center;"
                       title="Sửa danh mục đang chọn"
                     >
                       <i class="fa-solid fa-pen"></i>
@@ -2081,17 +2070,16 @@
                   </div>
                 </div>
                 <div class="product-form-group">
-                  <label for="prodIcon">FontAwesome Icon</label>
+                  <label for="prodIcon"><i class="fa-solid fa-icons"></i> FontAwesome Icon</label>
                   <input
                     class="sk-input"
                     id="prodIcon"
                     placeholder="Ví dụ: fa-tv"
                     value="fa-box"
-                    style="width: 100%"
                   />
                 </div>
                 <div class="product-form-group">
-                  <label for="prodRate">Đánh giá mẫu</label>
+                  <label for="prodRate"><i class="fa-solid fa-star" style="color: #f59e0b;"></i> Đánh giá mẫu</label>
                   <input
                     class="sk-input"
                     id="prodRate"
@@ -2101,46 +2089,64 @@
                     step="0.1"
                     placeholder="Ví dụ: 4.8"
                     value="5.0"
-                    style="width: 100%"
                   />
                 </div>
               </div>
 
-              <div class="product-form-grid-2">
+              <div class="sk-form-row">
                 <div class="product-form-group">
-                  <label for="prodImageSelect">Chọn ảnh từ thư viện</label>
+                  <label for="prodPrice"><i class="fa-solid fa-coins"></i> Giá bán mặc định (VND)</label>
+                  <input
+                    class="sk-input"
+                    id="prodPrice"
+                    type="number"
+                    min="0"
+                    step="1"
+                    placeholder="Ví dụ: 65000"
+                  />
+                </div>
+                <div class="product-form-group">
+                  <label for="prodDesc"><i class="fa-solid fa-align-left"></i> Mô tả ngắn (Tóm tắt)</label>
+                  <input
+                    class="sk-input"
+                    id="prodDesc"
+                    placeholder="Mô tả tóm tắt tính năng sản phẩm..."
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 2: Hình ảnh sản phẩm & Background -->
+            <div class="sk-pform-card">
+              <div class="sk-pform-card-title">
+                <i class="fa-solid fa-image"></i> 2. Hình ảnh đại diện & Background Hero
+              </div>
+
+              <div class="sk-form-row">
+                <div class="product-form-group">
+                  <label for="prodImageSelect"><i class="fa-solid fa-images"></i> Chọn ảnh từ thư viện</label>
                   <select
                     class="sk-input"
                     id="prodImageSelect"
                     onchange="onImageSelectChange()"
-                    style="width: 100%"
                   >
                     <option value="">-- Chọn ảnh sẵn có --</option>
                   </select>
                 </div>
                 <div class="product-form-group">
-                  <label for="prodImage">Đường dẫn ảnh sản phẩm</label>
+                  <label for="prodImage"><i class="fa-solid fa-cloud-arrow-up"></i> Đường dẫn ảnh đại diện</label>
                   <div style="display: flex; gap: 8px">
                     <input
                       class="sk-input"
                       id="prodImage"
-                      placeholder="URL ảnh từ R2"
+                      placeholder="URL ảnh từ R2 / CDN"
                       style="flex: 1"
                     />
                     <button
                       type="button"
                       class="sk-btn sk-btn-soft"
-                      onclick="
-                        document.getElementById('prodImageUploadInput').click()
-                      "
-                      style="
-                        padding: 0 12px;
-                        height: 38px;
-                        display: inline-flex;
-                        align-items: center;
-                        justify-content: center;
-                        gap: 6px;
-                      "
+                      onclick="document.getElementById('prodImageUploadInput').click()"
+                      style="padding: 0 14px; height: 38px; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;"
                     >
                       <i class="fa-solid fa-cloud-arrow-up"></i> Tải lên
                     </button>
@@ -2155,58 +2161,76 @@
                 </div>
               </div>
 
-              <div class="product-form-grid-2">
+              <div class="sk-form-row">
                 <div class="product-form-group">
-                  <label for="prodDetailBackgroundSelect">Chọn ảnh background</label>
-                  <select class="sk-input" id="prodDetailBackgroundSelect"
-                    onchange="onDetailBackgroundSelectChange()" style="width: 100%">
+                  <label for="prodDetailBackgroundSelect"><i class="fa-solid fa-panorama"></i> Chọn ảnh background</label>
+                  <select
+                    class="sk-input"
+                    id="prodDetailBackgroundSelect"
+                    onchange="onDetailBackgroundSelectChange()"
+                  >
                     <option value="">-- Chọn ảnh background sẵn có --</option>
                   </select>
                 </div>
                 <div class="product-form-group">
-                  <label for="prodDetailBackground">Đường dẫn ảnh background</label>
+                  <label for="prodDetailBackground"><i class="fa-solid fa-cloud-arrow-up"></i> Đường dẫn ảnh background</label>
                   <div style="display: flex; gap: 8px">
-                    <input class="sk-input" id="prodDetailBackground"
-                      placeholder="URL CDN hoặc đường dẫn ảnh background" style="flex: 1" />
-                    <button type="button" class="sk-btn sk-btn-soft"
+                    <input
+                      class="sk-input"
+                      id="prodDetailBackground"
+                      placeholder="URL CDN hoặc ảnh hero"
+                      style="flex: 1"
+                    />
+                    <button
+                      type="button"
+                      class="sk-btn sk-btn-soft"
                       onclick="document.getElementById('prodDetailBackgroundUploadInput').click()"
-                      style="padding: 0 12px; height: 38px">
+                      style="padding: 0 14px; height: 38px; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;"
+                    >
                       <i class="fa-solid fa-cloud-arrow-up"></i> Tải lên
                     </button>
-                    <input type="file" id="prodDetailBackgroundUploadInput" accept="image/*"
-                      onchange="uploadProductImage(event, 'detailBackground')" style="display: none" />
+                    <input
+                      type="file"
+                      id="prodDetailBackgroundUploadInput"
+                      accept="image/*"
+                      onchange="uploadProductImage(event, 'detailBackground')"
+                      style="display: none"
+                    />
                   </div>
-                  <small style="color: var(--muted)">
-                    Chỉ dùng cho hero trang chi tiết; ảnh sản phẩm vẫn dùng ở danh sách.
+                  <small style="color: var(--muted); margin-top: 4px; display: block;">
+                    Chỉ dùng cho hero trang chi tiết; ảnh đại diện vẫn dùng ở danh sách.
                   </small>
                 </div>
               </div>
+            </div>
 
-              <div class="product-form-grid-2">
+            <!-- Card 3: Cấu hình giao hàng & Định dạng kho -->
+            <div class="sk-pform-card">
+              <div class="sk-pform-card-title">
+                <i class="fa-solid fa-truck-ramp-box"></i> 3. Cấu hình giao hàng & Định dạng tài khoản
+              </div>
+
+              <div class="sk-form-row">
                 <div class="product-form-group">
-                  <label for="prodDeliveryType">Kiểu giao hàng mặc định</label>
+                  <label for="prodDeliveryType"><i class="fa-solid fa-dolly"></i> Kiểu giao hàng mặc định</label>
                   <select
                     class="sk-input"
                     id="prodDeliveryType"
                     required
-                    style="width: 100%"
                   >
                     <option value="hybrid">
-                      Hybrid (Ưu tiên kho -> Hết gọi API)
+                      Hybrid (Ưu tiên kho -> Hết gọi API NCC)
                     </option>
                     <option value="inventory">Inventory (Chỉ xuất kho)</option>
                     <option value="api">API (Chỉ gọi API đối tác)</option>
                   </select>
                 </div>
                 <div class="product-form-group">
-                  <label for="prodFallbackMode"
-                    >Chế độ Fallback khi hết kho</label
-                  >
+                  <label for="prodFallbackMode"><i class="fa-solid fa-shield-halved"></i> Chế độ Fallback khi hết kho</label>
                   <select
                     class="sk-input"
                     id="prodFallbackMode"
                     required
-                    style="width: 100%"
                   >
                     <option value="api_when_out_of_stock">
                       Gọi API nhà cung cấp
@@ -2218,17 +2242,10 @@
                 </div>
               </div>
 
-              <div class="product-form-grid-2" style="margin-top: 14px">
+              <div class="sk-form-row" style="margin-top: 10px;">
                 <div class="product-form-group">
-                  <label
-                    for="prodDataFormat"
-                    style="
-                      display: flex;
-                      justify-content: space-between;
-                      align-items: center;
-                    "
-                  >
-                    <span>Định dạng tài khoản *</span>
+                  <label for="prodDataFormat">
+                    <span><i class="fa-solid fa-code"></i> Định dạng tài khoản *</span>
                   </label>
                   <div style="display: flex; gap: 8px">
                     <input
@@ -2237,7 +2254,7 @@
                       required
                       placeholder="Ví dụ: mail|pass|cookie"
                       value="mail|pass"
-                      style="flex: 1"
+                      style="flex: 1; font-family: monospace;"
                       oninput="updateFormatPreview()"
                     />
                     <button
@@ -2245,171 +2262,139 @@
                       class="sk-btn sk-btn-soft"
                       id="btnAutoDetectFormat"
                       onclick="autoDetectFormat()"
-                      style="
-                        padding: 0 10px;
-                        height: 38px;
-                        display: inline-flex;
-                        align-items: center;
-                        justify-content: center;
-                      "
+                      style="padding: 0 12px; height: 38px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap;"
                       title="Tự động nhận diện định dạng từ dữ liệu mẫu"
                     >
-                      <i class="fa-solid fa-wand-magic-sparkles"></i>
+                      <i class="fa-solid fa-wand-magic-sparkles"></i> Nhận diện
                     </button>
                   </div>
                 </div>
                 <div class="product-form-group">
-                  <label for="prodSampleData">Dữ liệu mẫu để xem trước</label>
+                  <label for="prodSampleData"><i class="fa-solid fa-flask"></i> Dữ liệu mẫu để xem trước</label>
                   <input
                     class="sk-input"
                     id="prodSampleData"
                     placeholder="Ví dụ: test@gmail.com|123456|cookie_xyz"
-                    style="width: 100%"
+                    style="font-family: monospace;"
                     oninput="updateFormatPreview()"
                   />
                 </div>
               </div>
+
               <div
                 class="product-form-group"
                 id="formatPreviewContainer"
                 style="
                   display: none;
                   margin-top: 8px;
-                  padding: 12px;
-                  background: rgba(255, 255, 255, 0.03);
-                  border: 1px dashed rgba(255, 255, 255, 0.1);
-                  border-radius: 6px;
-                  margin-bottom: 14px;
+                  padding: 12px 14px;
+                  background: rgba(56, 189, 248, 0.04);
+                  border: 1px dashed rgba(56, 189, 248, 0.25);
+                  border-radius: 8px;
                 "
               >
                 <div
                   style="
-                    font-size: 11px;
+                    font-size: 11.5px;
                     font-weight: 800;
-                    color: var(--brand-light);
-                    margin-bottom: 6px;
+                    color: #38bdf8;
+                    margin-bottom: 8px;
                     text-transform: uppercase;
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
                   "
                 >
-                  <i class="fa-solid fa-eye"></i> Xem trước hiển thị (Live
-                  Preview):
+                  <i class="fa-solid fa-eye"></i> Xem trước cấu trúc hiển thị (Live Preview):
                 </div>
                 <div
                   id="formatPreviewContent"
                   style="display: grid; gap: 8px; font-size: 12px"
                 ></div>
               </div>
+            </div>
 
-              <div class="product-form-grid-2">
-                <div class="product-form-group">
-                  <label for="prodPrice">Giá bán mặc định (VND)</label>
-                  <input
-                    class="sk-input"
-                    id="prodPrice"
-                    type="number"
-                    min="0"
-                    step="1"
-                    placeholder="Ví dụ: 65000"
-                    style="width: 100%"
-                  />
-                </div>
-                <div class="product-form-group">
-                  <!-- Keep grid balanced -->
-                </div>
+            <!-- Card 4: Mô tả chi tiết & Hướng dẫn -->
+            <div class="sk-pform-card">
+              <div class="sk-pform-card-title">
+                <i class="fa-solid fa-file-lines"></i> 4. Mô tả chi tiết & Hướng dẫn sử dụng
               </div>
-
-              <div class="product-form-group" style="margin-bottom: 14px">
-                <label for="prodDesc">Mô tả ngắn</label>
-                <textarea
-                  class="sk-input"
-                  id="prodDesc"
-                  rows="2"
-                  style="width: 100%"
-                  placeholder="Mô tả tóm tắt tính năng sản phẩm..."
-                ></textarea>
-              </div>
-
               <div class="product-form-group">
-                <label for="prodLongDesc">Mô tả chi tiết / Hướng dẫn</label>
                 <textarea
                   class="sk-input"
                   id="prodLongDesc"
                   rows="4"
-                  style="width: 100%"
-                  placeholder="Hướng dẫn sử dụng, bảo hành..."
+                  style="width: 100%; min-height: 100px; resize: vertical;"
+                  placeholder="Nhập hướng dẫn sử dụng, điều khoản bảo hành, lưu ý kích hoạt cho khách hàng..."
                 ></textarea>
               </div>
             </div>
 
-            <!-- QUẢN LÝ BIẾN THỂ (VARIANTS) VÀ API ĐỐI TÁC -->
-            <div
-              class="product-form-card"
-              style="
-                background: rgba(99, 102, 241, 0.06);
-                border-color: rgba(99, 102, 241, 0.2);
-                margin-bottom: 24px;
-              "
-            >
+            <!-- Card 5: Phân loại gói dịch vụ (Variants) -->
+            <div class="sk-pform-card sk-pform-variants-card">
               <div
                 style="
                   display: flex;
                   justify-content: space-between;
                   align-items: center;
+                  padding-bottom: 10px;
                   margin-bottom: 12px;
+                  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
                 "
               >
-                <h3 style="margin: 0; font-size: 13px; font-weight: 800">
-                  <i class="fa-solid fa-tags"></i> Phân loại gói dịch vụ
-                </h3>
+                <div class="sk-pform-card-title" style="border-bottom: none; padding-bottom: 0; margin-bottom: 0;">
+                  <i class="fa-solid fa-tags"></i> 5. Phân loại gói dịch vụ & Giá bán
+                </div>
                 <button
                   type="button"
-                  class="sk-btn sk-btn-soft"
-                  style="padding: 4px 10px; font-size: 11px"
+                  class="sk-btn sk-btn-primary"
+                  style="padding: 6px 14px; font-size: 12px; font-weight: 700;"
                   onclick="addVariantRow()"
                 >
                   <i class="fa-solid fa-plus"></i> Thêm gói
                 </button>
               </div>
+
+              <!-- Variants Table Header -->
               <div
-                class="variant-row"
+                class="sk-pvariant-table-header"
                 style="
-                  margin-bottom: 6px;
+                  display: grid;
+                  grid-template-columns: 2fr 1.3fr 1.3fr 1.3fr 0.8fr 40px;
+                  gap: 10px;
+                  margin-bottom: 8px;
+                  padding: 0 6px;
                   color: var(--muted);
-                  font-size: 10px;
-                  font-weight: 900;
+                  font-size: 11px;
+                  font-weight: 800;
                   text-transform: uppercase;
+                  letter-spacing: 0.03em;
                 "
               >
                 <span>Tên gói</span>
-                <span>Giá bán</span>
+                <span>Giá bán (đ)</span>
                 <span>Mã API NCC</span>
-                <span>Giá vốn mặc định</span>
-                <span>Kho (Live)</span>
+                <span>Giá vốn (đ)</span>
+                <span style="text-align: center;">Kho Live</span>
                 <span></span>
               </div>
+
               <div id="variantsContainer" style="display: grid; gap: 10px">
                 <!-- Dòng variant mẫu -->
               </div>
             </div>
 
-            <div
-              class="sk-actions"
-              style="
-                margin: 0;
-                display: flex;
-                justify-content: flex-end;
-                gap: 10px;
-              "
-            >
+            <!-- Modal Actions Footer -->
+            <div class="sk-pmodal-footer">
               <button
                 type="button"
                 class="sk-btn sk-btn-soft"
                 onclick="closeProductModal()"
               >
-                Hủy
+                <i class="fa-solid fa-xmark"></i> Hủy
               </button>
-              <button type="submit" class="sk-btn sk-btn-primary">
-                Lưu sản phẩm
+              <button type="submit" class="sk-btn sk-btn-primary sk-btn-product-submit">
+                <i class="fa-solid fa-floppy-disk"></i> Lưu sản phẩm
               </button>
             </div>
           </form>
@@ -2418,11 +2403,20 @@
 
       <!-- Modal Nhập Kho Tồn Kho (Import stock) -->
       <div id="importStockModal" class="sk-modal opacity-0 pointer-events-none">
-        <div class="sk-modal-card" style="max-width: 680px">
-          <div class="sk-section-head">
-            <h2>Nhập tài khoản/key vào kho hàng</h2>
+        <div class="sk-modal-card sk-import-stock-modal-card">
+          <!-- Modern Header -->
+          <div class="sk-import-modal-header">
+            <div class="sk-import-modal-title-group">
+              <div class="sk-import-modal-badge">
+                <i class="fa-solid fa-boxes-packing"></i>
+              </div>
+              <div>
+                <h2>Nhập tài khoản / Key vào kho hàng</h2>
+                <p>Nhập hàng loạt tài khoản hoặc key bản quyền, tự động kiểm tra định dạng và phân loại lưu kho.</p>
+              </div>
+            </div>
             <button
-              class="sk-icon-btn"
+              class="sk-icon-btn sk-import-close-btn"
               type="button"
               onclick="closeImportStockModal()"
               aria-label="Đóng"
@@ -2432,310 +2426,209 @@
           </div>
 
           <form id="importStockForm" onsubmit="submitImportStock(event)">
-            <div class="product-form-card">
-              <div class="product-form-grid-2">
-                <div class="product-form-group">
-                  <label for="importProdSelect">Sản phẩm *</label>
-                  <select
-                    class="sk-input"
-                    id="importProdSelect"
-                    required
-                    style="width: 100%"
-                    onchange="onImportProductSelectChange()"
-                  ></select>
-                </div>
-                <div class="product-form-group">
-                  <label for="importVarSelect">Phân loại / Biến thể *</label>
-                  <select
-                    class="sk-input"
-                    id="importVarSelect"
-                    required
-                    style="width: 100%"
-                  ></select>
-                </div>
-              </div>
+            <!-- 2-Column Responsive Layout -->
+            <div class="sk-import-modal-grid">
+              <!-- Left Column: Product & Batch Information -->
+              <div class="sk-import-col-meta">
+                <div class="sk-import-subcard">
+                  <div class="sk-import-card-title">
+                    <i class="fa-solid fa-layer-group"></i> 1. Thông tin sản phẩm & Đợt nhập
+                  </div>
 
-              <div class="product-form-grid-3">
-                <div class="product-form-group">
-                  <label for="importBatchName">Tên đợt nhập *</label>
-                  <input
-                    class="sk-input"
-                    id="importBatchName"
-                    required
-                    placeholder="Ví dụ: Batch 28/06"
-                    style="width: 100%"
-                  />
-                </div>
-                <div class="product-form-group">
-                  <label for="importSupplier">Nhà nhập hàng</label>
-                  <input
-                    class="sk-input"
-                    id="importSupplier"
-                    placeholder="Ví dụ: Supplier A"
-                    style="width: 100%"
-                  />
-                </div>
-                <div class="product-form-group">
-                  <label for="importPrice">Giá vốn đơn vị (đ)</label>
-                  <input
-                    class="sk-input"
-                    id="importPrice"
-                    type="number"
-                    min="0"
-                    step="1"
-                    placeholder="Ví dụ: 45000"
-                    style="width: 100%"
-                  />
-                </div>
-              </div>
+                  <div class="sk-form-row">
+                    <div class="product-form-group">
+                      <label for="importProdSelect"><i class="fa-solid fa-box"></i> Sản phẩm *</label>
+                      <select
+                        class="sk-input"
+                        id="importProdSelect"
+                        required
+                        onchange="onImportProductSelectChange()"
+                      ></select>
+                    </div>
+                    <div class="product-form-group">
+                      <label for="importVarSelect"><i class="fa-solid fa-tags"></i> Phân loại / Biến thể *</label>
+                      <select
+                        class="sk-input"
+                        id="importVarSelect"
+                        required
+                      ></select>
+                    </div>
+                  </div>
 
-              <div class="product-form-group" style="margin-bottom: 14px">
-                <label for="importNote">Ghi chú đợt nhập</label>
-                <input
-                  class="sk-input"
-                  id="importNote"
-                  placeholder="Ví dụ: Bảo hành 30 ngày..."
-                  style="width: 100%"
-                />
-              </div>
+                  <div class="sk-form-row-3">
+                    <div class="product-form-group">
+                      <label for="importBatchName"><i class="fa-solid fa-barcode"></i> Tên đợt nhập *</label>
+                      <input
+                        class="sk-input"
+                        id="importBatchName"
+                        required
+                        placeholder="Ví dụ: Batch 28/06"
+                      />
+                    </div>
+                    <div class="product-form-group">
+                      <label for="importSupplier"><i class="fa-solid fa-truck-field"></i> Nhà nhập hàng</label>
+                      <input
+                        class="sk-input"
+                        id="importSupplier"
+                        placeholder="Ví dụ: Supplier A"
+                      />
+                    </div>
+                    <div class="product-form-group">
+                      <label for="importPrice"><i class="fa-solid fa-coins"></i> Giá vốn đơn vị (đ)</label>
+                      <input
+                        class="sk-input"
+                        id="importPrice"
+                        type="number"
+                        min="0"
+                        step="1"
+                        placeholder="Ví dụ: 45000"
+                      />
+                    </div>
+                  </div>
 
-              <div class="product-form-group" style="margin-bottom: 14px">
-                <label>Duplicate Policy (Chính sách trùng lặp)</label>
-                <div style="display: flex; gap: 16px; margin-top: 6px">
-                  <label
-                    style="
-                      display: inline-flex;
-                      align-items: center;
-                      gap: 6px;
-                      cursor: pointer;
-                      text-transform: none;
-                      font-size: 13px;
-                    "
-                  >
+                  <div class="product-form-group">
+                    <label for="importNote"><i class="fa-solid fa-note-sticky"></i> Ghi chú đợt nhập</label>
                     <input
-                      type="radio"
-                      name="importDupPolicy"
-                      value="skip"
-                      checked
+                      class="sk-input"
+                      id="importNote"
+                      placeholder="Ví dụ: Bảo hành 30 ngày..."
                     />
-                    Bỏ qua trùng lặp (Skip)
-                  </label>
-                  <label
-                    style="
-                      display: inline-flex;
-                      align-items: center;
-                      gap: 6px;
-                      cursor: pointer;
-                      text-transform: none;
-                      font-size: 13px;
-                    "
-                  >
-                    <input
-                      type="radio"
-                      name="importDupPolicy"
-                      value="replace"
-                    />
-                    Ghi đè cập nhật (Replace)
-                  </label>
+                  </div>
+
+                  <!-- Duplicate Policy Interactive Cards -->
+                  <div class="product-form-group">
+                    <label><i class="fa-solid fa-clone"></i> Duplicate Policy (Chính sách trùng lặp) *</label>
+                    <div class="sk-dup-policy-group">
+                      <label class="sk-dup-policy-card">
+                        <input
+                          type="radio"
+                          name="importDupPolicy"
+                          value="skip"
+                          checked
+                        />
+                        <div class="sk-dup-policy-content">
+                          <div class="sk-dup-policy-title"><i class="fa-solid fa-forward-step"></i> Bỏ qua trùng lặp (Skip)</div>
+                          <div class="sk-dup-policy-desc">Tự động bỏ qua các dòng tài khoản đã tồn tại trong kho hoặc trùng lặp tệp.</div>
+                        </div>
+                      </label>
+                      <label class="sk-dup-policy-card">
+                        <input
+                          type="radio"
+                          name="importDupPolicy"
+                          value="replace"
+                        />
+                        <div class="sk-dup-policy-content">
+                          <div class="sk-dup-policy-title"><i class="fa-solid fa-rotate"></i> Ghi đè cập nhật (Replace)</div>
+                          <div class="sk-dup-policy-desc">Cập nhật đợt nhập, giá vốn mới và mở khóa sẵn sàng bán cho tài khoản đã có.</div>
+                        </div>
+                      </label>
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <!-- File upload drag-and-drop -->
-              <div class="product-form-group" style="margin-bottom: 14px">
-                <label>Tải tệp danh sách (.TXT / .CSV)</label>
-                <div
-                  id="importFileDropzone"
-                  style="
-                    border: 2px dashed rgba(255, 255, 255, 0.15);
-                    border-radius: 8px;
-                    padding: 20px;
-                    text-align: center;
-                    cursor: pointer;
-                    background: rgba(0, 0, 0, 0.1);
-                    margin-top: 6px;
-                    transition: all 0.2s ease;
-                  "
-                >
-                  <i
-                    class="fa-solid fa-cloud-arrow-up"
-                    style="
-                      font-size: 24px;
-                      color: var(--brand-light);
-                      margin-bottom: 8px;
-                    "
-                  ></i>
-                  <p style="margin: 0; font-size: 12px; color: var(--text)">
-                    Kéo & thả file vào đây hoặc bấm để chọn tệp
-                  </p>
-                  <input
-                    type="file"
-                    id="importFileInput"
-                    accept=".txt,.csv"
-                    style="display: none"
-                  />
-                </div>
-              </div>
+              <!-- Right Column: Account/Key Data List -->
+              <div class="sk-import-col-data">
+                <div class="sk-import-subcard">
+                  <div class="sk-import-card-title">
+                    <i class="fa-solid fa-list-check"></i> 2. Dữ liệu tài khoản / Key
+                  </div>
 
-              <div class="product-form-group" style="margin-bottom: 14px">
-                <label for="importContentRaw"
-                  >Danh sách tài khoản (Mỗi dòng một acc:
-                  email|pass|phone|cookie hoặc key)</label
-                >
-                <textarea
-                  class="sk-input"
-                  id="importContentRaw"
-                  rows="6"
-                  style="width: 100%; font-family: monospace; font-size: 12px"
-                  placeholder="Ví dụ:&#10;acc1@gmail.com|123456&#10;acc2@gmail.com|abcdef&#10;KEY-STEAM-X12345"
-                  oninput="triggerImportPreview()"
-                ></textarea>
-              </div>
+                  <!-- File upload drag-and-drop -->
+                  <div class="product-form-group">
+                    <label><i class="fa-solid fa-file-arrow-up"></i> Tải tệp danh sách (.TXT / .CSV)</label>
+                    <div id="importFileDropzone" class="sk-import-dropzone">
+                      <div class="sk-dropzone-icon">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                      </div>
+                      <div class="sk-dropzone-text">
+                        <strong>Kéo & thả file vào đây</strong>
+                        <span>hoặc bấm để chọn tệp .TXT / .CSV từ máy tính</span>
+                      </div>
+                      <input
+                        type="file"
+                        id="importFileInput"
+                        accept=".txt,.csv"
+                        style="display: none"
+                      />
+                    </div>
+                  </div>
 
-              <!-- Import validation preview -->
-              <div
-                id="importPreviewCard"
-                class="product-form-card"
-                style="
-                  display: none;
-                  background: rgba(255, 255, 255, 0.02);
-                  border-color: rgba(255, 255, 255, 0.08);
-                  padding: 14px;
-                  margin-bottom: 0;
-                "
-              >
-                <h4
-                  style="
-                    margin: 0 0 8px;
-                    font-size: 12px;
-                    font-weight: 800;
-                    color: var(--text-bright);
-                  "
-                >
-                  Xem trước phân tích tài khoản:
-                </h4>
-                <div
-                  style="
-                    display: grid;
-                    grid-template-columns: repeat(4, 1fr);
-                    gap: 8px;
-                    text-align: center;
-                    font-size: 11px;
-                    margin-bottom: 8px;
-                  "
-                >
-                  <div
-                    style="
-                      background: rgba(99, 102, 241, 0.1);
-                      padding: 6px;
-                      border-radius: 4px;
-                    "
-                  >
-                    Tổng số dòng: <b id="previewTotal">0</b>
+                  <!-- Raw Textarea with Line Counter & Syntax Hint -->
+                  <div class="product-form-group">
+                    <div class="sk-textarea-header">
+                      <label for="importContentRaw"><i class="fa-solid fa-code"></i> Nhập trực tiếp danh sách</label>
+                      <span class="sk-format-hint">Mỗi dòng 1 acc: <code>email|pass|...</code> hoặc <code>key</code></span>
+                    </div>
+                    <textarea
+                      class="sk-input sk-import-textarea"
+                      id="importContentRaw"
+                      rows="7"
+                      placeholder="Ví dụ:&#10;acc1@gmail.com|123456&#10;acc2@gmail.com|abcdef&#10;KEY-STEAM-X12345"
+                      oninput="triggerImportPreview()"
+                    ></textarea>
                   </div>
-                  <div
-                    style="
-                      background: rgba(16, 185, 129, 0.1);
-                      padding: 6px;
-                      border-radius: 4px;
-                      color: var(--success);
-                    "
-                  >
-                    ✓ Hợp lệ: <b id="previewValid">0</b>
-                  </div>
-                  <div
-                    style="
-                      background: rgba(239, 68, 68, 0.1);
-                      padding: 6px;
-                      border-radius: 4px;
-                      color: var(--danger);
-                    "
-                  >
-                    ✗ Trùng DB: <b id="previewDupDb">0</b>
-                  </div>
-                  <div
-                    style="
-                      background: rgba(249, 115, 22, 0.1);
-                      padding: 6px;
-                      border-radius: 4px;
-                      color: var(--warning);
-                    "
-                  >
-                    ⚠ Trùng tệp: <b id="previewDupFile">0</b>
-                  </div>
-                </div>
-
-                <!-- Table of previewed lines -->
-                <div
-                  style="
-                    max-height: 150px;
-                    overflow-y: auto;
-                    margin-top: 10px;
-                    border: 1px solid rgba(255, 255, 255, 0.05);
-                    border-radius: 4px;
-                    background: rgba(0, 0, 0, 0.15);
-                  "
-                >
-                  <table
-                    style="
-                      width: 100%;
-                      border-collapse: collapse;
-                      font-size: 11px;
-                      text-align: left;
-                    "
-                  >
-                    <thead>
-                      <tr
-                        style="
-                          background: rgba(255, 255, 255, 0.05);
-                          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-                        "
-                      >
-                        <th style="padding: 6px 10px; width: 45px">Dòng</th>
-                        <th
-                          style="
-                            padding: 6px 10px;
-                            width: 60px;
-                            text-align: center;
-                          "
-                        >
-                          Trạng thái
-                        </th>
-                        <th style="padding: 6px 10px">
-                          Chi tiết / Lỗi phân tích
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody id="importPreviewTableBody">
-                      <!-- Dynamic rendering -->
-                    </tbody>
-                  </table>
                 </div>
               </div>
             </div>
 
-            <div
-              class="sk-actions"
-              style="
-                margin: 0;
-                display: flex;
-                justify-content: flex-end;
-                gap: 10px;
-              "
-            >
+            <!-- Import validation preview Dashboard (Full Width) -->
+            <div id="importPreviewCard" class="sk-import-preview-box" style="display: none;">
+              <div class="sk-preview-header">
+                <h4><i class="fa-solid fa-chart-pie"></i> Xem trước phân tích tài khoản & Kiểm tra tính hợp lệ:</h4>
+              </div>
+              <div class="sk-preview-stats-grid">
+                <div class="sk-preview-stat-card total">
+                  <div class="stat-num" id="previewTotal">0</div>
+                  <div class="stat-label"><i class="fa-solid fa-list-ol"></i> Tổng số dòng</div>
+                </div>
+                <div class="sk-preview-stat-card valid">
+                  <div class="stat-num" id="previewValid">0</div>
+                  <div class="stat-label"><i class="fa-solid fa-circle-check"></i> Hợp lệ</div>
+                </div>
+                <div class="sk-preview-stat-card dup-db">
+                  <div class="stat-num" id="previewDupDb">0</div>
+                  <div class="stat-label"><i class="fa-solid fa-database"></i> Trùng DB</div>
+                </div>
+                <div class="sk-preview-stat-card dup-file">
+                  <div class="stat-num" id="previewDupFile">0</div>
+                  <div class="stat-label"><i class="fa-solid fa-triangle-exclamation"></i> Trùng tệp</div>
+                </div>
+              </div>
+
+              <!-- Table of previewed lines -->
+              <div class="sk-preview-table-wrap">
+                <table class="sk-preview-table">
+                  <thead>
+                    <tr>
+                      <th style="width: 55px; text-align: center">Dòng</th>
+                      <th style="width: 140px; text-align: center">Trạng thái</th>
+                      <th>Chi tiết phân tích / Dữ liệu</th>
+                    </tr>
+                  </thead>
+                  <tbody id="importPreviewTableBody">
+                    <!-- Dynamic rendering -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Actions Footer -->
+            <div class="sk-import-footer">
               <button
                 type="button"
                 class="sk-btn sk-btn-soft"
                 onclick="closeImportStockModal()"
               >
-                Hủy
+                <i class="fa-solid fa-xmark"></i> Hủy
               </button>
               <button
                 type="submit"
-                class="sk-btn sk-btn-primary"
+                class="sk-btn sk-btn-primary sk-btn-import-submit"
                 id="btnSubmitImport"
                 disabled
               >
-                Import vào kho
+                <i class="fa-solid fa-boxes-packing"></i> Import vào kho
               </button>
             </div>
           </form>
@@ -2972,7 +2865,7 @@
       <script src="assets/js/common.js?v=20260716.3"></script>
       <script src="assets/js/formatService.js?v=20260716.3"></script>
       <script src="assets/vendor/chart.js/chart.umd.min.js?v=4.4.7"></script>
-      <script src="assets/js/admin.js?v=20260722.1"></script>
+      <script src="assets/js/admin.js?v=20260814.2"></script>
     </div>
   </body>
 </html>

@@ -1,0 +1,203 @@
+/* ═════════════════════════════════════════════════════════════════
+   DG STORE — PRODUCT DETAIL UNIFIED THEME (ĐỒNG BỘ 1 KIỂU MÀU KHỐI)
+   ═════════════════════════════════════════════════════════════════ */
+
+:root,
+body.sk-product-detail-body {
+  --site-brand: #38bdf8;
+  --site-brand-rgb: 56, 189, 248;
+  --site-purple: #818cf8;
+  --site-cyan: #06b6d4;
+  --site-card-bg-dark: linear-gradient(165deg, rgba(15, 23, 42, 0.94) 0%, rgba(10, 15, 29, 0.98) 100%);
+  --site-card-border-dark: rgba(56, 189, 248, 0.28);
+  --site-card-top-dark: #38bdf8;
+  --site-inner-bg-dark: rgba(30, 41, 59, 0.65);
+  --site-inner-border-dark: rgba(255, 255, 255, 0.1);
+  --site-card-shadow-dark: 0 12px 35px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 0 20px rgba(56, 189, 248, 0.1);
+  
+  --site-card-bg-light: #ffffff;
+  --site-card-border-light: rgba(37, 99, 235, 0.22);
+  --site-card-top-light: #2563eb;
+  --site-inner-bg-light: #f8fafc;
+  --site-inner-border-light: #e2e8f0;
+  --site-card-shadow-light: 0 8px 24px rgba(37, 99, 235, 0.08), 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+/* ── ALL MAIN PRODUCT BLOCKS & CARDS ── */
+body.sk-product-detail-body .sk-product-banner,
+body.sk-product-detail-body .sk-trust-strip,
+body.sk-product-detail-body .sk-card,
+body.sk-product-detail-body .sk-order-block,
+body.sk-product-detail-body .sk-review-summary,
+body.sk-product-detail-body .sk-checkout-details-card {
+  position: relative !important;
+  background: var(--site-card-bg-dark) !important;
+  border: 1px solid var(--site-card-border-dark) !important;
+  border-top: 2.5px solid var(--site-card-top-dark) !important;
+  border-radius: 22px !important;
+  box-shadow: var(--site-card-shadow-dark) !important;
+  color: #f8fafc !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+body.sk-product-detail-body .sk-product-banner:hover,
+body.sk-product-detail-body .sk-card:hover,
+body.sk-product-detail-body .sk-order-block:hover {
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 0 28px rgba(56, 189, 248, 0.22) !important;
+  border-color: rgba(56, 189, 248, 0.45) !important;
+}
+
+/* ── LIGHT THEME SYNCHRONIZATION ── */
+html[data-theme="light"] body.sk-product-detail-body .sk-product-banner,
+html[data-theme="light"] body.sk-product-detail-body .sk-trust-strip,
+html[data-theme="light"] body.sk-product-detail-body .sk-card,
+html[data-theme="light"] body.sk-product-detail-body .sk-order-block,
+html[data-theme="light"] body.sk-product-detail-body .sk-review-summary,
+html[data-theme="light"] body.sk-product-detail-body .sk-checkout-details-card,
+body.light-mode.sk-product-detail-body .sk-product-banner,
+body.light-mode.sk-product-detail-body .sk-trust-strip,
+body.light-mode.sk-product-detail-body .sk-card,
+body.light-mode.sk-product-detail-body .sk-order-block,
+body.light-mode.sk-product-detail-body .sk-review-summary {
+  background: var(--site-card-bg-light) !important;
+  border: 1.5px solid var(--site-card-border-light) !important;
+  border-top: 3px solid var(--site-card-top-light) !important;
+  box-shadow: var(--site-card-shadow-light) !important;
+  color: #0f172a !important;
+}
+
+html[data-theme="light"] body.sk-product-detail-body .sk-product-banner:hover,
+html[data-theme="light"] body.sk-product-detail-body .sk-card:hover,
+html[data-theme="light"] body.sk-product-detail-body .sk-order-block:hover {
+  border-color: rgba(37, 99, 235, 0.6) !important;
+  box-shadow: 0 14px 34px rgba(37, 99, 235, 0.16), 0 0 16px rgba(37, 99, 235, 0.12) !important;
+}
+
+/* ── INNER CHIPS, OPTIONS & ROWS ── */
+body.sk-product-detail-body .sk-variant-option,
+body.sk-product-detail-body .sk-order-selected-row,
+body.sk-product-detail-body .sk-quantity-selector,
+body.sk-product-detail-body .sk-discount-select,
+body.sk-product-detail-body .sk-review-item,
+body.sk-product-detail-body .sk-trust-strip .sk-badge,
+body.sk-product-detail-body .sk-order-field-empty {
+  background: var(--site-inner-bg-dark) !important;
+  border: 1px solid var(--site-inner-border-dark) !important;
+  border-radius: 14px !important;
+  color: #f8fafc !important;
+  transition: all 0.25s ease !important;
+}
+
+html[data-theme="light"] body.sk-product-detail-body .sk-variant-option,
+html[data-theme="light"] body.sk-product-detail-body .sk-order-selected-row,
+html[data-theme="light"] body.sk-product-detail-body .sk-quantity-selector,
+html[data-theme="light"] body.sk-product-detail-body .sk-discount-select,
+html[data-theme="light"] body.sk-product-detail-body .sk-review-item,
+html[data-theme="light"] body.sk-product-detail-body .sk-trust-strip .sk-badge,
+html[data-theme="light"] body.sk-product-detail-body .sk-order-field-empty {
+  background: var(--site-inner-bg-light) !important;
+  border: 1px solid var(--site-inner-border-light) !important;
+  color: #0f172a !important;
+}
+
+/* ── ACTIVE / SELECTED VARIANT ── */
+body.sk-product-detail-body .sk-variant-option:hover {
+  background: rgba(56, 189, 248, 0.12) !important;
+  border-color: rgba(56, 189, 248, 0.6) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 18px rgba(56, 189, 248, 0.2) !important;
+}
+
+body.sk-product-detail-body .sk-variant-option.is-active {
+  background: rgba(56, 189, 248, 0.18) !important;
+  border: 1.5px solid #38bdf8 !important;
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.35) !important;
+  color: #ffffff !important;
+}
+
+html[data-theme="light"] body.sk-product-detail-body .sk-variant-option:hover {
+  background: rgba(37, 99, 235, 0.06) !important;
+  border-color: #2563eb !important;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.15) !important;
+}
+
+html[data-theme="light"] body.sk-product-detail-body .sk-variant-option.is-active {
+  background: rgba(37, 99, 235, 0.12) !important;
+  border: 1.5px solid #2563eb !important;
+  box-shadow: 0 0 16px rgba(37, 99, 235, 0.25) !important;
+  color: #2563eb !important;
+}
+
+/* ── TRUST STRIP UNIFORMITY ── */
+body.sk-product-detail-body .sk-trust-strip {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) !important;
+  gap: 12px !important;
+  padding: 14px 18px !important;
+}
+
+body.sk-product-detail-body .sk-trust-strip .sk-badge {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  padding: 10px 14px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+}
+
+/* ── ACTION BUTTONS ── */
+body.sk-product-detail-body .sk-btn-primary,
+body.sk-product-detail-body #btnBuyNow {
+  background: linear-gradient(135deg, #0284c7, #2563eb) !important;
+  color: #ffffff !important;
+  border: none !important;
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.35) !important;
+  font-weight: 700 !important;
+}
+
+body.sk-product-detail-body .sk-btn-primary:hover,
+body.sk-product-detail-body #btnBuyNow:hover {
+  transform: translateY(-2px) scale(1.01) !important;
+  box-shadow: 0 8px 26px rgba(37, 99, 235, 0.5) !important;
+}
+
+body.sk-product-detail-body .sk-btn-soft,
+body.sk-product-detail-body #btnAddCart {
+  background: rgba(56, 189, 248, 0.12) !important;
+  border: 1px solid rgba(56, 189, 248, 0.3) !important;
+  color: #38bdf8 !important;
+  font-weight: 700 !important;
+}
+
+html[data-theme="light"] body.sk-product-detail-body .sk-btn-soft,
+html[data-theme="light"] body.sk-product-detail-body #btnAddCart {
+  background: rgba(37, 99, 235, 0.08) !important;
+  border-color: rgba(37, 99, 235, 0.25) !important;
+  color: #2563eb !important;
+}
+
+/* ── SECTION HEADINGS ── */
+body.sk-product-detail-body .sk-section-head {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  padding-bottom: 12px !important;
+  margin-bottom: 18px !important;
+}
+
+html[data-theme="light"] body.sk-product-detail-body .sk-section-head {
+  border-bottom-color: #e2e8f0 !important;
+}
+
+body.sk-product-detail-body .sk-section-head h2,
+body.sk-product-detail-body .sk-card h2,
+body.sk-product-detail-body .sk-card h3 {
+  color: #f8fafc !important;
+}
+
+html[data-theme="light"] body.sk-product-detail-body .sk-section-head h2,
+html[data-theme="light"] body.sk-product-detail-body .sk-card h2,
+html[data-theme="light"] body.sk-product-detail-body .sk-card h3 {
+  color: #0f172a !important;
+}

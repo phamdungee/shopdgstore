@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="vi">
+<html lang="vi" data-theme="dark">
 
 <head>
   <meta charset="utf-8" />
@@ -1846,6 +1846,9 @@
   <link href="/assets/css/storefront-flat.css?v=20260722.2" rel="stylesheet" />
   <link href="/assets/css/site-recovery-theme.css?v=20260729.5" rel="stylesheet" />
   <link href="/assets/css/product-detail-hero.css?v=20260730.1" rel="stylesheet" />
+  <link href="/assets/css/checkout-flow-polish.css?v=20260814.1" rel="stylesheet" />
+  <link href="/assets/css/product-unified-theme.css?v=20260814.1" rel="stylesheet" />
+  <link href="/assets/css/product-page-polish.css?v=20260814.3" rel="stylesheet" />
 </head>
 
 <body class="sk-product-detail-body">
@@ -1903,18 +1906,7 @@
         <i class="fa-solid fa-boxes-stacked"></i>
         <span class="nav-label">Sản phẩm</span>
       </a>
-      <a href="/index.html#shopee" class="nav-item" data-tooltip="Shopee">
-        <i class="fa-solid fa-bag-shopping" aria-hidden="true"></i>
-        <span class="nav-label">Shopee</span>
-      </a>
-      <a href="/tuongtacmxh.html" class="nav-item" data-tooltip="Tương tác MXH">
-        <i class="fa-solid fa-share-nodes"></i>
-        <span class="nav-label">Tương tác MXH</span>
-      </a>
-      <a href="/lichsudonmxh.html" class="nav-item nav-item-sub" data-tooltip="Lịch sử đơn MXH">
-        <i class="fa-solid fa-list-check"></i>
-        <span class="nav-label">Lịch sử đơn MXH</span>
-      </a>
+
     </div>
 
     <div class="sk-sidebar-new-nav">
@@ -2189,7 +2181,7 @@
     let product = null;
     let selectedVariant = null;
     let selectedUnitPrice = 0;
-    const API_BASE = window.DG_API_BASE || window.SKYNET_API_BASE || (window.location.protocol === "file:" ? "http://localhost:3000/api" : "/api");
+    const API_BASE = window.DG_API_BASE || window.SKYNET_API_BASE || (window.location.protocol === "file:" ? "http://localhost:4000/api" : "/api");
 
     function getAuthToken() {
       return localStorage.getItem("token");
@@ -2341,7 +2333,6 @@
       document.documentElement.style.setProperty("--product-hue", hue);
       document.body.style.setProperty("--product-hue", hue);
       document.body.style.setProperty("--product-image", image ? `url("${String(image).replaceAll('"', '%22')}")` : "none");
-      document.body.classList.add("has-detail-background");
       document.body.style.setProperty(
         "--product-detail-background",
         bgUrl
@@ -2349,16 +2340,23 @@
           : "none"
       );
 
-      if (bgUrl) {
-        const banner = document.querySelector(".sk-product-banner");
-        if (banner) {
-          const backgroundImage = document.createElement("img");
-          backgroundImage.className = "product-detail-background-image";
+      const banner = document.querySelector(".sk-product-banner");
+      if (banner) {
+        let backgroundImage = banner.querySelector(".product-detail-background-image");
+        if (bgUrl) {
+          if (!backgroundImage) {
+            backgroundImage = document.createElement("img");
+            backgroundImage.className = "product-detail-background-image";
+            banner.prepend(backgroundImage);
+          }
           backgroundImage.src = bgUrl;
           backgroundImage.alt = `Ảnh giới thiệu ${item?.name || "sản phẩm"}`;
           backgroundImage.loading = "eager";
           backgroundImage.decoding = "async";
-          banner.replaceChildren(backgroundImage);
+          document.body.classList.add("has-detail-background");
+        } else {
+          backgroundImage?.remove();
+          document.body.classList.remove("has-detail-background");
         }
       }
     }
@@ -2644,12 +2642,20 @@
         return;
       }
 
-      document.getElementById("modalProductTitle").innerText = product.name;
-      document.getElementById("modalVariantTitle").innerText =
-        `${selectedVariant.name} (x${totals.quantity})`;
-      document.getElementById("modalTotalPrice").innerText = formatVnd(
-        totals.total,
-      );
+      const prodTitle = document.getElementById("modalProductTitle");
+      if (prodTitle) prodTitle.innerText = product.name;
+      
+      const varTitle = document.getElementById("modalVariantTitle");
+      if (varTitle) varTitle.innerText = selectedVariant.name;
+      
+      const varDetail = document.getElementById("modalVariantDetail");
+      if (varDetail) varDetail.innerText = selectedVariant.name;
+      
+      const qtyDetail = document.getElementById("modalQuantityDetail");
+      if (qtyDetail) qtyDetail.innerText = totals.quantity;
+
+      const totalPrice = document.getElementById("modalTotalPrice");
+      if (totalPrice) totalPrice.innerText = formatVnd(totals.total);
 
       // Reset modal state
       resetModalFlow();
@@ -2668,16 +2674,64 @@
     let productCheckoutTurnstileWidgetId = null;
 
     function resetModalFlow() {
+      // Logo / Image
+      const imgNode = document.getElementById("modalProductImg");
+      const iconNode = document.getElementById("modalProductIcon");
+      const prodImg = (product && (product.image || product.thumbnail || product.imageUrl)) || "";
+      const prodIcon = (product && product.icon) || "fa-box-open";
+
+      if (imgNode && iconNode) {
+        if (prodImg) {
+          imgNode.src = prodImg;
+          imgNode.style.display = "block";
+          imgNode.onerror = function () {
+            this.style.display = "none";
+            if (iconNode) {
+              iconNode.className = `fa-solid ${prodIcon.startsWith("fa-") ? prodIcon : "fa-" + prodIcon}`;
+              iconNode.style.display = "inline-block";
+            }
+          };
+          iconNode.style.display = "none";
+        } else {
+          imgNode.src = "";
+          imgNode.style.display = "none";
+          iconNode.className = `fa-solid ${prodIcon.startsWith("fa-") ? prodIcon : "fa-" + prodIcon}`;
+          iconNode.style.display = "inline-block";
+        }
+      }
+
+      // Main Card & Result Box visibility
+      const mainCard = document.getElementById("checkoutMainCard");
+      if (mainCard) mainCard.style.display = "block";
+
+      const deliveryBox = document.getElementById("deliveryResultBox");
+      if (deliveryBox) deliveryBox.style.display = "none";
+      const deliveryText = document.getElementById("deliveryResultText");
+      if (deliveryText) deliveryText.value = "";
+
+      const errorBox = document.getElementById("errorResultBox");
+      if (errorBox) errorBox.style.display = "none";
+      const errorDetail = document.getElementById("errorDetailText");
+      if (errorDetail) errorDetail.innerText = "";
+      const depBtn = document.getElementById("depositErrorBtn");
+      if (depBtn) depBtn.style.display = "none";
+      const guideText = document.getElementById("errorGuideText");
+      if (guideText) guideText.innerHTML = "Vui lòng kiểm tra lại số dư hoặc liên hệ <b>Admin</b> để được hỗ trợ.";
+
       // Buttons
       const btnConfirm = document.getElementById("btnConfirmCheckout");
       const btnCancel = document.getElementById("btnCancelCheckout");
 
-      btnConfirm.style.display = "inline-flex";
-      btnConfirm.innerHTML =
-        '<i class="fa-solid fa-shield-halved"></i> Xác nhận & Thanh toán';
-      btnCancel.disabled = false;
-      btnCancel.innerText = "Hủy bỏ";
-      document.getElementById("modalFooterActions").style.display = "flex";
+      if (btnConfirm) {
+        btnConfirm.style.display = "inline-flex";
+        btnConfirm.innerHTML = '<i class="fa-solid fa-shield-halved"></i> Xác nhận thanh toán';
+      }
+      if (btnCancel) {
+        btnCancel.disabled = false;
+        btnCancel.innerText = "Hủy bỏ";
+      }
+      const footerActions = document.getElementById("modalFooterActions");
+      if (footerActions) footerActions.style.display = "flex";
 
       // Render Turnstile
       const tContainer = document.getElementById(
@@ -2720,65 +2774,16 @@
           renderWhenReady();
         } else {
           productCheckoutTurnstileWidgetId = null;
-          btnConfirm.disabled = false;
+          if (btnConfirm) btnConfirm.disabled = false;
         }
       } else {
-        btnConfirm.disabled = false;
+        if (btnConfirm) btnConfirm.disabled = false;
       }
-
-      // Nodes
-      document.getElementById("nodeClient").className =
-        "sk-flow-node is-active";
-      document.getElementById("nodeServer").className = "sk-flow-node";
-      document.getElementById("nodeProvider").className = "sk-flow-node";
-      document.getElementById("providerNodeLabel").innerText = "Nhà cung cấp";
-
-      // Lines
-      document.getElementById("lineFill1").style.width = "0%";
-      document.getElementById("lineFill1").className = "sk-flow-line-fill";
-      document.getElementById("lineClientServer").className = "sk-flow-line";
-
-      document.getElementById("lineFill2").style.width = "0%";
-      document.getElementById("lineFill2").className = "sk-flow-line-fill";
-      document.getElementById("lineServerProvider").className =
-        "sk-flow-line";
-
-      // Stage rows
-      document.getElementById("stageRow1").className =
-        "sk-flow-stage-row is-active";
-      document.getElementById("stageDesc1").innerText =
-        "Chuẩn bị gửi yêu cầu đặt hàng lên server trung gian...";
-
-      document.getElementById("stageRow2").className = "sk-flow-stage-row";
-      document.getElementById("stageDesc2").innerText =
-        "Đang chờ xử lý yêu cầu...";
-
-      document.getElementById("stageRow3").className = "sk-flow-stage-row";
-      document.getElementById("stageDesc3").innerText =
-        "Chờ giai đoạn trước hoàn thành...";
-
-      // Result boxes
-      document.getElementById("deliveryResultBox").style.display = "none";
-      document.getElementById("deliveryResultText").value = "";
-      document.getElementById("errorResultBox").style.display = "none";
-      document.getElementById("errorDetailText").innerText = "";
-      const depBtn = document.getElementById("depositErrorBtn");
-      if (depBtn) depBtn.style.display = "none";
-      const guideText = document.getElementById("errorGuideText");
-      if (guideText) guideText.innerHTML = "Vui lòng liên hệ <b>Admin</b> để được hỗ trợ.";
 
       if (window.replaceIcons)
         window.replaceIcons(
           document.getElementById("checkoutFlowModalBackdrop"),
         );
-    }
-
-    function getTimeNow() {
-      return new Date().toLocaleTimeString("vi-VN", {
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-      });
     }
 
     async function confirmCheckout() {
@@ -2808,40 +2813,14 @@
         } else {
           alert("Vui lòng hoàn thành xác thực chống bot (Turnstile).");
         }
-        btnConfirm.disabled = true; // Wait for them to solve it
+        btnConfirm.disabled = true;
         btnCancel.disabled = false;
         btnConfirm.innerHTML =
-          '<i class="fa-solid fa-shield-halved"></i> Xác nhận & Thanh toán';
+          '<i class="fa-solid fa-shield-halved"></i> Xác nhận thanh toán';
         if (window.replaceIcons) window.replaceIcons(btnConfirm);
         return;
       }
 
-      // --- STAGE 1: CLIENT SEND REQUEST ---
-      document.getElementById("stageDesc1").innerText =
-        "Đang gửi yêu cầu và thanh toán bằng số dư ví...";
-      document.getElementById("lineClientServer").classList.add("is-active");
-      document.getElementById("lineFill1").style.width = "100%";
-
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      document.getElementById("nodeClient").className =
-        "sk-flow-node is-success";
-      document.getElementById("nodeServer").className =
-        "sk-flow-node is-active";
-      document.getElementById("stageRow1").className =
-        "sk-flow-stage-row is-success";
-      document.getElementById("stageDesc1").innerText =
-        "Hoàn thành — Đã gửi request đặt hàng từ Web/Client.";
-      const time1 = document.getElementById("stageTime1");
-      if (time1) time1.innerText = getTimeNow();
-
-      // --- STAGE 2: SERVER PROCESSING ---
-      document.getElementById("stageRow2").className =
-        "sk-flow-stage-row is-active";
-      document.getElementById("stageDesc2").innerText =
-        "Server đang phân tích gói hàng, trừ số dư và kiểm tra kho...";
-
-      // Call API
       let orderResponse = null;
       let orderError = null;
       const totals = calculateOrderTotals();
@@ -2864,13 +2843,16 @@
         orderError = err;
       }
 
-      // Pulse flow line between Server and Provider
-      document
-        .getElementById("lineServerProvider")
-        .classList.add("is-active");
-      document.getElementById("lineFill2").style.width = "100%";
+      const mainCard = document.getElementById("checkoutMainCard");
+      const footerActions = document.getElementById("modalFooterActions");
 
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      if (btnConfirm) {
+        btnConfirm.disabled = false;
+        btnConfirm.innerHTML = '<i class="fa-solid fa-shield-halved"></i> Xác nhận thanh toán';
+      }
+      if (btnCancel) {
+        btnCancel.disabled = false;
+      }
 
       if (orderError) {
         if (productCheckoutTurnstileWidgetId !== null) {
@@ -2878,32 +2860,9 @@
             turnstile.reset(productCheckoutTurnstileWidgetId);
           } catch (te) { }
         }
-        // ── ERROR HANDLING ──
-        // Mark stage 2 as error
-        document.getElementById("nodeServer").className =
-          "sk-flow-node is-error";
-        document.getElementById("lineFill1").className =
-          "sk-flow-line-fill is-error";
-        document.getElementById("lineFill2").className =
-          "sk-flow-line-fill is-error";
-        document.getElementById("lineClientServer").className =
-          "sk-flow-line";
-        document.getElementById("lineServerProvider").className =
-          "sk-flow-line";
-        document.getElementById("stageRow2").className =
-          "sk-flow-stage-row is-error";
-        document.getElementById("stageDesc2").innerText =
-          "Thất bại — Không thể xử lý đơn hàng tại server.";
-        const time2err = document.getElementById("stageTime2");
-        if (time2err) time2err.innerText = getTimeNow();
 
-        // Mark stage 3 as skipped (NOT waiting)
-        document.getElementById("nodeProvider").className =
-          "sk-flow-node is-skipped";
-        document.getElementById("stageRow3").className =
-          "sk-flow-stage-row is-skipped";
-        document.getElementById("stageDesc3").innerText =
-          "Bỏ qua — Giai đoạn trước thất bại.";
+        if (mainCard) mainCard.style.display = "none";
+        if (footerActions) footerActions.style.display = "none";
 
         // Show error result card
         const errorBox = document.getElementById("errorResultBox");
@@ -2923,9 +2882,6 @@
           guideText.innerHTML = isBalanceError ? "Vui lòng <b>Nạp tiền</b> để tiếp tục thanh toán." : "Vui lòng liên hệ <b>Admin</b> để được hỗ trợ.";
         }
 
-        // Hide confirm, show close
-        document.getElementById("modalFooterActions").style.display = "none";
-
         if (window.replaceIcons)
           window.replaceIcons(
             document.getElementById("checkoutFlowModalBackdrop"),
@@ -2934,61 +2890,18 @@
       }
 
       // ── SUCCESS FLOW ──
-      const flow = orderResponse.flow || {};
       const order = orderResponse.order || {};
+      const deliveryContent = order.deliveryText || orderResponse.deliveryText || orderResponse.delivery_text || orderResponse.message || "Đơn hàng hoàn tất thành công!";
 
-      // Update Provider Node details
-      const providerName =
-        flow.stage2 && flow.stage2.provider
-          ? flow.stage2.provider
-          : "Nhà cung cấp";
-      document.getElementById("providerNodeLabel").innerText = providerName;
-
-      // Update Node & Stage states
-      document.getElementById("nodeServer").className =
-        "sk-flow-node is-success";
-      document.getElementById("nodeProvider").className =
-        "sk-flow-node is-active";
-      document.getElementById("stageRow2").className =
-        "sk-flow-stage-row is-success";
-      document.getElementById("stageDesc2").innerText =
-        `Hoàn thành — ${(flow.stage2 && flow.stage2.message) || "Kết nối API đối tác thành công."}`;
-      const time2 = document.getElementById("stageTime2");
-      if (time2) time2.innerText = getTimeNow();
-
-      // --- STAGE 3: DATABASE SAVE & DELIVER ---
-      document.getElementById("stageRow3").className =
-        "sk-flow-stage-row is-active";
-      document.getElementById("stageDesc3").innerText =
-        "Đang cập nhật CSDL, lưu vết ví và kích hoạt trả hàng tự động...";
-
-      await new Promise((resolve) => setTimeout(resolve, 800));
-
-      document.getElementById("nodeProvider").className =
-        "sk-flow-node is-success";
-      document.getElementById("lineFill1").className =
-        "sk-flow-line-fill is-success";
-      document.getElementById("lineFill2").className =
-        "sk-flow-line-fill is-success";
-      document.getElementById("lineClientServer").className = "sk-flow-line";
-      document.getElementById("lineServerProvider").className =
-        "sk-flow-line";
-      document.getElementById("stageRow3").className =
-        "sk-flow-stage-row is-success";
-      document.getElementById("stageDesc3").innerText =
-        `Hoàn thành — ${(flow.stage3 && flow.stage3.message) || orderResponse.message || "CSDL cập nhật thành công. Đơn hàng kích hoạt!"}`;
-      const time3 = document.getElementById("stageTime3");
-      if (time3) time3.innerText = getTimeNow();
+      if (mainCard) mainCard.style.display = "none";
+      if (footerActions) footerActions.style.display = "none";
 
       // Render Result
-      document.getElementById("deliveryResultText").value =
-        order.deliveryText || "";
-      document.getElementById("deliveryResultBox").style.display = "block";
+      document.getElementById("deliveryResultText").value = deliveryContent;
+      const successBox = document.getElementById("deliveryResultBox");
+      if (successBox) successBox.style.display = "block";
       if (window.replaceIcons)
         window.replaceIcons(document.getElementById("deliveryResultBox"));
-
-      // Hide footer actions
-      document.getElementById("modalFooterActions").style.display = "none";
 
       // Confetti effect
       triggerConfetti();
@@ -3426,132 +3339,82 @@
   <link href="/assets/css/checkout-flow-polish.css?v=20260729.2" rel="stylesheet" />
   <div class="sk-modal-backdrop" id="checkoutFlowModalBackdrop" role="dialog" aria-modal="true"
     aria-labelledby="modalTitle">
-    <div class="sk-flow-modal">
+    <div class="sk-flow-modal sk-checkout-modal-clean">
       <header class="sk-modal-header">
-        <h3 id="modalTitle">
-          <i class="fa-solid fa-bolt"></i> Thanh toán tự động 3 giai đoạn
-          <i class="fa-solid fa-shield-halved sk-flow-title-security" aria-hidden="true"></i>
-        </h3>
+        <h3 id="modalTitle"><i class="fa-solid fa-cart-shopping"></i> Xác nhận thanh toán đơn hàng</h3>
         <button class="sk-modal-close-btn" onclick="closeCheckoutModal()" aria-label="Đóng hộp thoại">
           &times;
         </button>
       </header>
       <div class="sk-modal-body">
-        <!-- Order Summary -->
-        <div class="sk-order-summary-box">
-          <div class="sk-order-summary-grid">
-            <div class="sk-summary-item">
-              <p>Sản phẩm</p>
-              <b id="modalProductTitle">—</b>
+        <!-- Main Checkout Info Card -->
+        <div id="checkoutMainCard" class="sk-checkout-details-card">
+          <div class="sk-checkout-prod-header">
+            <div class="sk-checkout-prod-icon" id="modalProductLogoBox">
+              <img id="modalProductImg" src="" alt="Product Logo" style="display: none; width: 100%; height: 100%; object-fit: cover; border-radius: inherit;" />
+              <i id="modalProductIcon" class="fa-solid fa-box-open"></i>
             </div>
-            <div class="sk-summary-item">
-              <p>Phân loại</p>
-              <b id="modalVariantTitle">—</b>
-            </div>
-            <div class="sk-summary-item">
-              <p>Tổng tiền</p>
-              <b id="modalTotalPrice" style="color: var(--accent-light)">—</b>
-            </div>
-          </div>
-        </div>
-
-        <!-- Data Flow Visualization -->
-        <div class="sk-data-flow-container">
-          <div class="sk-data-flow-diagram">
-            <!-- Node 1: Web/Client -->
-            <div class="sk-flow-node is-active" id="nodeClient">
-              <i class="fa-solid fa-laptop"></i>
-              <span class="sk-flow-node-label">Web / Client</span>
-            </div>
-            <!-- Line 1 -->
-            <div class="sk-flow-line" id="lineClientServer">
-              <div class="sk-flow-line-fill" id="lineFill1"></div>
-              <div class="sk-flow-pulse"></div>
-            </div>
-            <!-- Node 2: DG Server -->
-            <div class="sk-flow-node" id="nodeServer">
-              <i class="fa-solid fa-server"></i>
-              <span class="sk-flow-node-label">DG Server</span>
-            </div>
-            <!-- Line 2 -->
-            <div class="sk-flow-line" id="lineServerProvider">
-              <div class="sk-flow-line-fill" id="lineFill2"></div>
-              <div class="sk-flow-pulse"></div>
-            </div>
-            <!-- Node 3: Provider -->
-            <div class="sk-flow-node" id="nodeProvider">
-              <i class="fa-solid fa-database"></i>
-              <span class="sk-flow-node-label" id="providerNodeLabel">Nhà cung cấp</span>
+            <div class="sk-checkout-prod-meta">
+              <span class="sk-checkout-tag"><i class="fa-solid fa-shield-halved"></i> Đơn hàng tự động 24/7</span>
+              <h4 id="modalProductTitle">—</h4>
+              <p id="modalVariantTitle">—</p>
             </div>
           </div>
 
-          <!-- Stage Timeline -->
-          <div class="sk-flow-stages-list">
-            <!-- Stage 1 -->
-            <div class="sk-flow-stage-row is-active" id="stageRow1">
-              <div class="sk-stage-num">
-                <span class="sk-stage-num-text">1</span>
-              </div>
-              <div class="sk-stage-content">
-                <h4>Giai đoạn 1 — Đặt hàng &amp; Xác thực</h4>
-                <p id="stageDesc1">
-                  Chuẩn bị gửi yêu cầu đặt hàng lên server trung gian...
-                </p>
-              </div>
-              <span class="sk-stage-time" id="stageTime1"></span>
+          <!-- Product Details Breakdown -->
+          <div class="sk-checkout-breakdown">
+            <div class="sk-breakdown-row">
+              <span><i class="fa-solid fa-layer-group"></i> Phân loại:</span>
+              <b id="modalVariantDetail">—</b>
             </div>
-            <!-- Stage 2 -->
-            <div class="sk-flow-stage-row" id="stageRow2">
-              <div class="sk-stage-num">
-                <span class="sk-stage-num-text">2</span>
-              </div>
-              <div class="sk-stage-content">
-                <h4>Giai đoạn 2 — Xử lý &amp; Gọi API đối tác</h4>
-                <p id="stageDesc2">Đang chờ xử lý yêu cầu...</p>
-              </div>
-              <span class="sk-stage-time" id="stageTime2"></span>
+            <div class="sk-breakdown-row">
+              <span><i class="fa-solid fa-cubes"></i> Số lượng:</span>
+              <b id="modalQuantityDetail">1</b>
             </div>
-            <!-- Stage 3 -->
-            <div class="sk-flow-stage-row" id="stageRow3">
-              <div class="sk-stage-num">
-                <span class="sk-stage-num-text">3</span>
-              </div>
-              <div class="sk-stage-content">
-                <h4>Giai đoạn 3 — Lưu trữ &amp; Kích hoạt trả hàng</h4>
-                <p id="stageDesc3">Chờ giai đoạn trước hoàn thành...</p>
-              </div>
-              <span class="sk-stage-time" id="stageTime3"></span>
+            <div class="sk-breakdown-row">
+              <span><i class="fa-solid fa-credit-card"></i> Phương thức:</span>
+              <b class="text-emerald"><i class="fa-solid fa-wallet"></i> Ví DG Store (Trừ tự động)</b>
             </div>
+            <div class="sk-breakdown-divider"></div>
+            <div class="sk-breakdown-row sk-total-row">
+              <span>Tổng tiền thanh toán:</span>
+              <b id="modalTotalPrice" class="sk-total-price-glow">—</b>
+            </div>
+          </div>
+
+          <div class="sk-checkout-instant-badge">
+            <i class="fa-solid fa-bolt-lightning"></i>
+            <span>Tài khoản / mã dịch vụ sẽ được bàn giao ngay lập tức sau khi bấm xác nhận.</span>
           </div>
         </div>
 
         <!-- ── ERROR RESULT CARD ── -->
-        <div class="sk-error-result" id="errorResultBox">
+        <div class="sk-error-result" id="errorResultBox" style="display: none;">
           <div class="sk-error-result-icon">
             <i class="fa-solid fa-triangle-exclamation"></i>
           </div>
-          <h4>Thanh toán thất bại</h4>
+          <h4>Thanh toán không thành công</h4>
 
           <div class="sk-error-detail-box">
             <i class="fa-solid fa-circle-info"></i>
             <span id="errorDetailText">Chi tiết lỗi sẽ hiển thị ở đây.</span>
           </div>
-          <p id="errorGuideText" style="margin-top: 14px; font-size: 11.5px">
-            Vui lòng liên hệ <b>Admin</b> để được hỗ trợ.
+          <p id="errorGuideText" style="margin-top: 14px; font-size: 12.5px">
+            Vui lòng kiểm tra lại số dư hoặc liên hệ <b>Admin</b> để được hỗ trợ.
           </p>
           <div class="sk-error-actions">
-            <button class="sk-btn" type="button" onclick="closeCheckoutModal()">
+            <button class="sk-btn sk-btn-soft" type="button" onclick="closeCheckoutModal()">
               <i class="fa-solid fa-xmark"></i> Đóng
             </button>
             <a id="depositErrorBtn" class="sk-btn sk-btn-primary" href="/nap-tien.html" style="display: none;"><i
-                class="fa-solid fa-wallet"></i> Nạp tiền</a>
+                class="fa-solid fa-wallet"></i> Nạp tiền ngay</a>
             <a class="sk-btn sk-btn-soft" href="https://zalo.me/0774391888" target="_blank"><i
-                class="fa-solid fa-headset"></i> Liên hệ hỗ trợ</a>
+                class="fa-solid fa-headset"></i> Hỗ trợ Zalo</a>
           </div>
         </div>
 
         <!-- ── SUCCESS DELIVERY RESULT ── -->
-        <div class="sk-delivery-result" id="deliveryResultBox">
+        <div class="sk-delivery-result" id="deliveryResultBox" style="display: none;">
           <div class="sk-delivery-result-icon">
             <i class="fa-solid fa-circle-check"></i>
           </div>

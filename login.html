@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi" data-theme="light">
+<html lang="vi" data-theme="dark">
 
 <head>
   <meta charset="utf-8" />
@@ -49,15 +49,16 @@
     <section class="sk-auth-panel sk-auth-copy">
       <span class="sk-badge sk-badge-accent"><i class="fa-solid fa-shield-halved"></i> Auto delivery 24/7</span>
       <h1>Quản lý tài khoản dịch vụ trong một hệ thống thống nhất.</h1>
-      <p>Đăng nhập để mua sản phẩm, theo dõi đơn hàng, quản lý số dư và nạp tiền qua VietQR tự động.</p>
       <div class="sk-grid sk-grid-2">
         <div class="sk-hero-card">
-          <b>120+</b>
-          <p>Sản phẩm số đang bán</p>
+          <div class="stat-icon-wrap" style="color: #60a5fa;"><i class="fa-solid fa-boxes-stacked"></i></div>
+          <b class="stat-number">120+</b>
+          <p class="stat-label">Sản phẩm số có sẵn</p>
         </div>
         <div class="sk-hero-card">
-          <b>1 phút</b>
-          <p>Xác nhận nạp tiền tự động</p>
+          <div class="stat-icon-wrap" style="color: #fbbf24;"><i class="fa-solid fa-bolt-lightning"></i></div>
+          <b class="stat-number">~1 phút</b>
+          <p class="stat-label">Xác nhận nạp tự động</p>
         </div>
       </div>
       <div class="sk-auth-tabs">
@@ -69,17 +70,29 @@
     <section class="sk-auth-forms">
       <div class="form-container sign-up">
         <form action="#" id="form-signup">
-          <span class="sk-kicker">Tạo tài khoản</span>
+          <span class="sk-kicker"><i class="fa-solid fa-sparkles"></i> Tạo tài khoản mới</span>
           <div class="sk-auth-selector">
             <button type="button" class="selector-btn"
               onclick="document.getElementById('container').classList.remove('active')">Đăng nhập</button>
             <button type="button" class="selector-btn active"
               onclick="document.getElementById('container').classList.add('active')">Đăng ký</button>
           </div>
-          <h1>Đăng ký DG Store</h1>
           <div class="social-icons">
-            <a class="icon btn-google-login-custom" href="#" aria-label="Google"><i class="fa-brands fa-google"></i></a>
-            <a class="icon btn-github-login-custom" href="#" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
+            <a class="social-btn btn-google-login-custom" href="#" aria-label="Đăng ký bằng Google">
+              <svg class="social-svg" viewBox="0 0 24 24" width="20" height="20">
+                <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/>
+                <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.27 21.43 7.35 24 12 24z"/>
+                <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/>
+                <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.35 0 3.27 2.57 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+              </svg>
+              <span>Google</span>
+            </a>
+            <a class="social-btn btn-github-login-custom" href="#" aria-label="Đăng ký bằng GitHub">
+              <svg class="social-svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+              </svg>
+              <span>GitHub</span>
+            </a>
           </div>
           <samp>Hoặc dùng email để tạo tài khoản thành viên.</samp>
           <input id="signup-name" placeholder="Tên hiển thị" required type="text" />
@@ -117,17 +130,29 @@
 
       <div class="form-container sign-in">
         <form action="#" id="form-signin">
-          <span class="sk-kicker">Chào mừng trở lại</span>
+          <span class="sk-kicker"><i class="fa-solid fa-sparkles"></i> Chào mừng trở lại</span>
           <div class="sk-auth-selector">
             <button type="button" class="selector-btn active"
               onclick="document.getElementById('container').classList.remove('active')">Đăng nhập</button>
             <button type="button" class="selector-btn"
               onclick="document.getElementById('container').classList.add('active')">Đăng ký</button>
           </div>
-          <h1>Đăng nhập</h1>
           <div class="social-icons">
-            <a class="icon btn-google-login-custom" href="#" aria-label="Google"><i class="fa-brands fa-google"></i></a>
-            <a class="icon btn-github-login-custom" href="#" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
+            <a class="social-btn btn-google-login-custom" href="#" aria-label="Đăng nhập bằng Google">
+              <svg class="social-svg" viewBox="0 0 24 24" width="20" height="20">
+                <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/>
+                <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.27 21.43 7.35 24 12 24z"/>
+                <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/>
+                <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.35 0 3.27 2.57 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+              </svg>
+              <span>Google</span>
+            </a>
+            <a class="social-btn btn-github-login-custom" href="#" aria-label="Đăng nhập bằng GitHub">
+              <svg class="social-svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+              </svg>
+              <span>GitHub</span>
+            </a>
           </div>
           <samp>Hoặc sử dụng tài khoản DG Store đã tạo.</samp>
           <input id="signin-uid" placeholder="Email" required type="text" />

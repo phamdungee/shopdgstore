@@ -234,71 +234,96 @@ function closeCheckoutModal() {
   document.getElementById('checkoutFlowModalBackdrop').classList.remove('is-visible');
 }
 
-function resetModalFlow(item) {
-  const totals = item.unitPrice * item.quantity;
+function downloadDeliveryResult() {
+  const text = document.getElementById('deliveryResultText').value;
+  if (!text) return;
+  const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `DGStore_DonHang_${Date.now()}.txt`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+function resetModalFlow(cartItems) {
+  const totals = cartTotals();
   
-  document.getElementById('modalProductTitle').innerText = item.productName;
-  document.getElementById('modalVariantTitle').innerText = `${item.variantName} (x${item.quantity})`;
-  document.getElementById('modalTotalPrice').innerText = formatVnd(totals);
+  const countEl = document.getElementById('modalCartCount');
+  if (countEl) countEl.innerText = cartItems.length;
+
+  const totalQtyEl = document.getElementById('modalTotalQuantity');
+  if (totalQtyEl) totalQtyEl.innerText = totals.quantity.toLocaleString('vi-VN');
+
+  const totalPriceEl = document.getElementById('modalTotalPrice');
+  if (totalPriceEl) totalPriceEl.innerText = formatVnd(totals.subtotal);
+
+  // Render items list inside modal
+  const itemsContainer = document.getElementById('modalCartItemsList');
+  if (itemsContainer) {
+    itemsContainer.innerHTML = cartItems.map(item => {
+      const itemImg = item.image ? (window.getAbsoluteImageUrl ? window.getAbsoluteImageUrl(item.image) : item.image) : '';
+      const imgHtml = itemImg
+        ? `<img src="${escapeHtml(itemImg)}" alt="${escapeHtml(item.productName)}" style="width:100%;height:100%;object-fit:cover;" onerror="this.replaceWith(Object.assign(document.createElement('i'), { className: 'fa-solid ${escapeHtml(item.icon || 'fa-box-open')}' }))" />`
+        : `<i class="fa-solid ${escapeHtml(item.icon || 'fa-box-open')}" style="color:var(--brand-light);font-size:15px;"></i>`;
+
+      return `
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px;">
+          <div style="display: flex; align-items: center; gap: 10px; min-width: 0;">
+            <div style="width: 32px; height: 32px; border-radius: 6px; overflow: hidden; background: rgba(0,0,0,0.3); display: grid; place-items: center; flex-shrink: 0;">
+              ${imgHtml}
+            </div>
+            <div style="min-width: 0;">
+              <div style="font-weight: 700; font-size: 13px; color: var(--text-bright); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${escapeHtml(item.productName)}">${escapeHtml(item.productName)}</div>
+              <div style="font-size: 11px; color: var(--muted);">${escapeHtml(item.variantName)} · <b style="color: #38bdf8;">x${item.quantity}</b></div>
+            </div>
+          </div>
+          <div style="font-weight: 800; font-size: 13px; color: #10b981; white-space: nowrap;">${formatVnd(item.unitPrice * item.quantity)}</div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // Main Card & Result Box visibility
+  const mainCard = document.getElementById('checkoutMainCard');
+  if (mainCard) mainCard.style.display = 'block';
+
+  const deliveryBox = document.getElementById('deliveryResultBox');
+  if (deliveryBox) deliveryBox.style.display = 'none';
+  const deliveryText = document.getElementById('deliveryResultText');
+  if (deliveryText) deliveryText.value = '';
+
+  const errorBox = document.getElementById('errorResultBox');
+  if (errorBox) errorBox.style.display = 'none';
+  const errorDetail = document.getElementById('errorDetailText');
+  if (errorDetail) errorDetail.innerText = '';
+  const depBtn = document.getElementById('depositErrorBtn');
+  if (depBtn) depBtn.style.display = 'none';
+  const guideText = document.getElementById('errorGuideText');
+  if (guideText) guideText.innerHTML = 'Vui lòng kiểm tra lại số dư hoặc liên hệ <b>Admin</b> để được hỗ trợ.';
 
   // Buttons
   const btnConfirm = document.getElementById('btnConfirmCheckout');
   const btnCancel = document.getElementById('btnCancelCheckout');
   
-  if (turnstileSiteKey) {
-    btnConfirm.disabled = true; // Wait for Turnstile to verify
-  } else {
-    btnConfirm.disabled = false;
+  if (btnConfirm) {
+    btnConfirm.disabled = turnstileSiteKey ? true : false;
+    btnConfirm.style.display = 'inline-flex';
+    btnConfirm.innerHTML = '<i class="fa-solid fa-shield-halved"></i> Xác nhận thanh toán';
   }
-  
-  btnConfirm.style.display = 'inline-flex';
-  btnConfirm.innerHTML = '<i class="fa-solid fa-shield-halved"></i> Xác nhận & Thanh toán';
-  btnCancel.disabled = false;
-  btnCancel.innerText = 'Hủy bỏ';
-  document.getElementById('modalFooterActions').style.display = 'flex';
-
-  // Nodes
-  document.getElementById('nodeClient').className = 'sk-flow-node is-active';
-  document.getElementById('nodeServer').className = 'sk-flow-node';
-  document.getElementById('nodeProvider').className = 'sk-flow-node';
-  document.getElementById('providerNodeLabel').innerText = 'Nhà cung cấp';
-
-  // Lines
-  document.getElementById('lineFill1').style.width = '0%';
-  document.getElementById('lineFill1').className = 'sk-flow-line-fill';
-  document.getElementById('lineClientServer').className = 'sk-flow-line';
-
-  document.getElementById('lineFill2').style.width = '0%';
-  document.getElementById('lineFill2').className = 'sk-flow-line-fill';
-  document.getElementById('lineServerProvider').className = 'sk-flow-line';
-
-  // Stage rows
-  document.getElementById('stageRow1').className = 'sk-flow-stage-row is-active';
-  document.getElementById('stageDesc1').innerText = 'Chuẩn bị gửi yêu cầu đặt hàng lên server trung gian...';
-  document.getElementById('stageTime1').innerText = '';
-
-  document.getElementById('stageRow2').className = 'sk-flow-stage-row';
-  document.getElementById('stageDesc2').innerText = 'Đang chờ xử lý yêu cầu...';
-  document.getElementById('stageTime2').innerText = '';
-
-  document.getElementById('stageRow3').className = 'sk-flow-stage-row';
-  document.getElementById('stageDesc3').innerText = 'Chờ giai đoạn trước hoàn thành...';
-  document.getElementById('stageTime3').innerText = '';
-
-  // Result boxes
-  document.getElementById('deliveryResultBox').style.display = 'none';
-  document.getElementById('deliveryResultText').value = '';
-  document.getElementById('errorResultBox').style.display = 'none';
-  document.getElementById('errorDetailText').innerText = '';
-  const depBtn = document.getElementById('depositErrorBtn');
-  if (depBtn) depBtn.style.display = 'none';
-  const guideText = document.getElementById('errorGuideText');
-  if (guideText) guideText.innerHTML = 'Vui lòng liên hệ <b>Admin</b> để được hỗ trợ.';
+  if (btnCancel) {
+    btnCancel.disabled = false;
+    btnCancel.innerText = 'Hủy bỏ';
+  }
+  const modalFooter = document.getElementById('modalFooterActions');
+  if (modalFooter) modalFooter.style.display = 'flex';
 
   // Reset and render Turnstile widget
   const container = document.getElementById('checkout-turnstile');
   if (container) {
-    container.innerHTML = ''; // Clear previous widget
+    container.innerHTML = '';
     if (turnstileSiteKey) {
       const renderWhenReady = () => {
         if (window.turnstile) {
@@ -392,191 +417,139 @@ async function checkoutCart() {
     return;
   }
 
-  const totals = cartTotals();
-  if (!confirm(`Thanh toán ${totals.quantity} sản phẩm với tổng ${formatVnd(totals.subtotal)}?`)) return;
+  // Preserve cart - DO NOT CLEAR CART HERE!
+  const itemsToCheckout = [...cart];
+  resetModalFlow(itemsToCheckout);
+  document.getElementById('checkoutFlowModalBackdrop').classList.add('is-visible');
 
-  const checkoutItems = [...cart];
-  cart = [];
-  saveCart();
-  renderCart();
+  const btnConfirm = document.getElementById('btnConfirmCheckout');
+  const btnCancel = document.getElementById('btnCancelCheckout');
 
-  let currentIndex = 0;
+  btnConfirm.onclick = async () => {
+    btnConfirm.disabled = true;
+    btnCancel.disabled = true;
+    btnConfirm.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang xử lý thanh toán...';
+    if (window.replaceIcons) window.replaceIcons(btnConfirm);
 
-  async function processNextItem() {
-    if (currentIndex >= checkoutItems.length) {
-      showToast('Hoàn tất toàn bộ giỏ hàng!');
+    const turnstileToken = checkoutTurnstileWidgetId !== null ? turnstile.getResponse(checkoutTurnstileWidgetId) : '';
+    if (turnstileSiteKey && !turnstileToken) {
+      showToast('Vui lòng hoàn thành xác thực chống bot (Turnstile).', false);
+      btnConfirm.disabled = true;
+      btnCancel.disabled = false;
+      btnConfirm.innerHTML = '<i class="fa-solid fa-shield-halved"></i> Xác nhận thanh toán';
+      if (window.replaceIcons) window.replaceIcons(btnConfirm);
       return;
     }
 
-    const item = checkoutItems[currentIndex];
-    resetModalFlow(item);
-    document.getElementById('checkoutFlowModalBackdrop').classList.add('is-visible');
+    const successfulItems = [];
+    const failedItems = [];
+    const deliveryOutputs = [];
 
-    const btnConfirm = document.getElementById('btnConfirmCheckout');
-    const btnCancel = document.getElementById('btnCancelCheckout');
-
-    btnConfirm.onclick = async () => {
-      btnConfirm.disabled = true;
-      btnCancel.disabled = true;
-      btnConfirm.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang xử lý...';
-      if (window.replaceIcons) window.replaceIcons(btnConfirm);
-
-      const turnstileToken = checkoutTurnstileWidgetId !== null ? turnstile.getResponse(checkoutTurnstileWidgetId) : '';
-      if (turnstileSiteKey && !turnstileToken) {
-        showToast('Vui lòng hoàn thành xác thực chống bot (Turnstile).', false);
-        btnConfirm.disabled = true; // Wait for them to solve it
-        btnCancel.disabled = false;
-        btnConfirm.innerHTML = '<i class="fa-solid fa-shield-halved"></i> Xác nhận & Thanh toán';
-        if (window.replaceIcons) window.replaceIcons(btnConfirm);
-        return;
-      }
-
-      // --- STAGE 1: CLIENT SEND REQUEST ---
-      document.getElementById('stageDesc1').innerText = 'Đang gửi yêu cầu và thanh toán bằng số dư ví...';
-      document.getElementById('lineClientServer').classList.add('is-active');
-      document.getElementById('lineFill1').style.width = '100%';
-
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      document.getElementById('nodeClient').className = 'sk-flow-node is-success';
-      document.getElementById('nodeServer').className = 'sk-flow-node is-active';
-      document.getElementById('stageRow1').className = 'sk-flow-stage-row is-success';
-      document.getElementById('stageDesc1').innerText = 'Hoàn thành — Đã gửi request đặt hàng từ Web/Client.';
-      document.getElementById('stageTime1').innerText = getTimeNow();
-
-      // --- STAGE 2: SERVER PROCESSING ---
-      document.getElementById('stageRow2').className = 'sk-flow-stage-row is-active';
-      document.getElementById('stageDesc2').innerText = 'Server đang phân tích gói hàng, trừ số dư và kiểm tra kho...';
-
-      let orderResponse = null;
-      let orderError = null;
-
+    // Process all items in batch
+    for (const item of itemsToCheckout) {
       try {
-        orderResponse = await createOrder(item, turnstileToken);
+        const orderResponse = await createOrder(item, turnstileToken);
+        successfulItems.push(item);
+        const text = orderResponse.deliveryText || orderResponse.delivery_text || 'Đơn hàng hoàn tất thành công!';
+        deliveryOutputs.push({
+          productName: item.productName,
+          variantName: item.variantName,
+          quantity: item.quantity,
+          deliveryText: text
+        });
       } catch (err) {
-        orderError = err;
+        failedItems.push({
+          item,
+          error: err.message || 'Lỗi xử lý đơn hàng'
+        });
+      }
+    }
+
+    const mainCard = document.getElementById('checkoutMainCard');
+    const footerActions = document.getElementById('modalFooterActions');
+
+    // Remove ONLY successful items from cart
+    if (successfulItems.length > 0) {
+      cart = cart.filter(cartItem => {
+        return !successfulItems.some(si => 
+          si.productSlug === cartItem.productSlug && 
+          si.variantName === cartItem.variantName
+        );
+      });
+      saveCart();
+      renderCart();
+    }
+
+    if (btnConfirm) {
+      btnConfirm.disabled = false;
+      btnConfirm.innerHTML = '<i class="fa-solid fa-shield-halved"></i> Xác nhận thanh toán';
+    }
+    if (btnCancel) {
+      btnCancel.disabled = false;
+    }
+
+    // Case 1: ALL FAILED
+    if (successfulItems.length === 0) {
+      if (checkoutTurnstileWidgetId !== null) {
+        try { turnstile.reset(checkoutTurnstileWidgetId); } catch (te) {}
+      }
+      
+      if (mainCard) mainCard.style.display = 'none';
+      if (footerActions) footerActions.style.display = 'none';
+
+      const errorBox = document.getElementById('errorResultBox');
+      const errorDetail = document.getElementById('errorDetailText');
+      const firstError = failedItems[0]?.error || 'Lỗi không xác định';
+      if (errorDetail) errorDetail.innerText = firstError;
+      if (errorBox) errorBox.style.display = 'block';
+
+      const depBtn = document.getElementById('depositErrorBtn');
+      const guideText = document.getElementById('errorGuideText');
+      const isBalanceError = firstError.includes('Số dư không đủ') || firstError.toLowerCase().includes('không đủ số dư') || firstError.toLowerCase().includes('số dư của bạn không đủ');
+      if (depBtn) {
+        depBtn.style.display = isBalanceError ? 'inline-flex' : 'none';
+      }
+      if (guideText) {
+        guideText.innerHTML = isBalanceError ? 'Vui lòng <b>nạp tiền</b> để tiếp tục thanh toán.' : 'Vui lòng liên hệ <b>Admin</b> để được hỗ trợ.';
       }
 
-      // Pulse flow line between Server and Provider
-      document.getElementById('lineServerProvider').classList.add('is-active');
-      document.getElementById('lineFill2').style.width = '100%';
-
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      if (orderError) {
-        if (checkoutTurnstileWidgetId !== null) {
-          try {
-            turnstile.reset(checkoutTurnstileWidgetId);
-          } catch (te) {}
-        }
-        // ── ERROR HANDLING ──
-        document.getElementById('nodeServer').className = 'sk-flow-node is-error';
-        document.getElementById('lineFill1').className = 'sk-flow-line-fill is-error';
-        document.getElementById('lineFill2').className = 'sk-flow-line-fill is-error';
-        document.getElementById('lineClientServer').className = 'sk-flow-line';
-        document.getElementById('lineServerProvider').className = 'sk-flow-line';
-        document.getElementById('stageRow2').className = 'sk-flow-stage-row is-error';
-        document.getElementById('stageDesc2').innerText = 'Thất bại — Không thể xử lý đơn hàng tại server.';
-        document.getElementById('stageTime2').innerText = getTimeNow();
-
-        document.getElementById('nodeProvider').className = 'sk-flow-node is-skipped';
-        document.getElementById('stageRow3').className = 'sk-flow-stage-row is-skipped';
-        document.getElementById('stageDesc3').innerText = 'Bỏ qua — Giai đoạn trước thất bại.';
-
-        const errorBox = document.getElementById('errorResultBox');
-        const errorDetail = document.getElementById('errorDetailText');
-        const errorMsg = orderError.message || 'Lỗi không xác định';
-        if (errorDetail) errorDetail.innerText = errorMsg;
-        if (errorBox) errorBox.style.display = 'block';
-
-        const depBtn = document.getElementById('depositErrorBtn');
-        const guideText = document.getElementById('errorGuideText');
-        const isBalanceError = errorMsg.includes('Số dư không đủ') || errorMsg.toLowerCase().includes('không đủ số dư') || errorMsg.toLowerCase().includes('số dư của bạn không đủ');
-        if (depBtn) {
-          depBtn.style.display = isBalanceError ? 'inline-flex' : 'none';
-        }
-        if (guideText) {
-          guideText.innerHTML = isBalanceError ? 'Vui lòng <b>nạp tiền</b> để tiếp tục thanh toán.' : 'Vui lòng liên hệ <b>Admin</b> để được hỗ trợ.';
-        }
-
-        document.getElementById('modalFooterActions').style.display = 'none';
-
-        const closeBtn = errorBox.querySelector('.sk-error-actions button');
-        if (closeBtn) {
-          if (currentIndex < checkoutItems.length - 1) {
-            closeBtn.innerHTML = '<i class="fa-solid fa-forward"></i> Tiếp tục sản phẩm tiếp theo';
-            closeBtn.className = 'sk-btn sk-btn-primary';
-            closeBtn.onclick = () => {
-              closeCheckoutModal();
-              currentIndex++;
-              processNextItem();
-            };
-          } else {
-            closeBtn.innerHTML = '<i class="fa-solid fa-xmark"></i> Đóng';
-            closeBtn.className = 'sk-btn';
-            closeBtn.onclick = () => {
-              closeCheckoutModal();
-            };
-          }
-        }
-        if (window.replaceIcons) window.replaceIcons(document.getElementById('checkoutFlowModalBackdrop'));
-        return;
-      }
-
-      // ── SUCCESS FLOW ──
-      const deliveryText = orderResponse.deliveryText || orderResponse.delivery_text || 'Đơn hàng hoàn tất.';
-
-      document.getElementById('nodeServer').className = 'sk-flow-node is-success';
-      document.getElementById('nodeProvider').className = 'sk-flow-node is-active';
-      document.getElementById('stageRow2').className = 'sk-flow-stage-row is-success';
-      document.getElementById('stageDesc2').innerText = 'Hoàn thành — Kết nối API đối tác/kho hàng thành công.';
-      document.getElementById('stageTime2').innerText = getTimeNow();
-
-      // --- STAGE 3: DATABASE SAVE & DELIVER ---
-      document.getElementById('stageRow3').className = 'sk-flow-stage-row is-active';
-      document.getElementById('stageDesc3').innerText = 'Đang cập nhật CSDL, lưu vết ví và kích hoạt trả hàng tự động...';
-
-      await new Promise(resolve => setTimeout(resolve, 800));
-
-      document.getElementById('nodeProvider').className = 'sk-flow-node is-success';
-      document.getElementById('lineFill1').className = 'sk-flow-line-fill is-success';
-      document.getElementById('lineFill2').className = 'sk-flow-line-fill is-success';
-      document.getElementById('lineClientServer').className = 'sk-flow-line';
-      document.getElementById('lineServerProvider').className = 'sk-flow-line';
-      document.getElementById('stageRow3').className = 'sk-flow-stage-row is-success';
-      document.getElementById('stageDesc3').innerText = 'Hoàn thành — CSDL cập nhật thành công. Đơn hàng kích hoạt!';
-      document.getElementById('stageTime3').innerText = getTimeNow();
-
-      // Render Result
-      document.getElementById('deliveryResultText').value = deliveryText;
-      const successBox = document.getElementById('deliveryResultBox');
-      successBox.style.display = 'block';
-
-      const historyLink = successBox.querySelector('.sk-delivery-actions a');
-      if (historyLink) {
-        if (currentIndex < checkoutItems.length - 1) {
-          historyLink.innerHTML = '<i class="fa-solid fa-forward"></i> Tiếp theo';
-          historyLink.href = 'javascript:void(0);';
-          historyLink.onclick = () => {
-            closeCheckoutModal();
-            currentIndex++;
-            processNextItem();
-          };
-        } else {
-          historyLink.innerHTML = '<i class="fa-solid fa-clock-rotate-left"></i> Lịch sử đơn hàng';
-          historyLink.href = '/index.html#orders';
-          historyLink.onclick = null;
-        }
-      }
-
-      document.getElementById('modalFooterActions').style.display = 'none';
-
-      triggerConfetti();
       if (window.replaceIcons) window.replaceIcons(document.getElementById('checkoutFlowModalBackdrop'));
-    };
-  }
+      return;
+    }
 
-  processNextItem();
+    // Case 2: ALL SUCCESS or PARTIAL SUCCESS
+    if (mainCard) mainCard.style.display = 'none';
+    if (footerActions) footerActions.style.display = 'none';
+
+    let formattedResult = `🎉 DG STORE — GIAO DỊCH THÀNH CÔNG (${getTimeNow()})\n`;
+    formattedResult += `==================================================\n\n`;
+
+    deliveryOutputs.forEach((out, idx) => {
+      formattedResult += `📦 [${idx + 1}] ${out.productName} — ${out.variantName} (x${out.quantity}):\n`;
+      formattedResult += `${out.deliveryText}\n\n`;
+    });
+
+    if (failedItems.length > 0) {
+      formattedResult += `⚠️ MỘT SỐ SẢN PHẨM CHƯA THANH TOÁN ĐƯỢC (ĐÃ GIỮ TRONG GIỎ HÀNG):\n`;
+      failedItems.forEach(fi => {
+        formattedResult += `• ${fi.item.productName} (${fi.item.variantName}): ${fi.error}\n`;
+      });
+      formattedResult += `\n`;
+    }
+
+    formattedResult += `==================================================\n`;
+    formattedResult += `📌 Thông tin đơn hàng đã được lưu tự động tại mục "Quản lý đơn hàng". Cảm ơn quý khách!`;
+
+    const deliveryTextArea = document.getElementById('deliveryResultText');
+    if (deliveryTextArea) deliveryTextArea.value = formattedResult;
+
+    const successBox = document.getElementById('deliveryResultBox');
+    if (successBox) successBox.style.display = 'block';
+
+    triggerConfetti();
+    showToast(`Đã thanh toán thành công ${successfulItems.length} sản phẩm!`);
+    if (window.replaceIcons) window.replaceIcons(document.getElementById('checkoutFlowModalBackdrop'));
+  };
 }
 
 function syncCartCheckoutButton() {

@@ -1,3 +1,13 @@
+// Initialize Dark Theme by default for all visitors
+(function () {
+  try {
+    const savedTheme = localStorage.getItem('theme') || localStorage.getItem('dg_theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+  } catch (e) {
+    document.documentElement.setAttribute('data-theme', 'dark');
+  }
+})();
+
 (function () {
   function initMiniSidebar() {
     const nav = document.querySelector(".sk-sidebar-new");
@@ -409,7 +419,7 @@
   }
 
   function initSupportPanel() {
-    if (document.querySelector(".sk-support-launcher")) return;
+    return; // Disabled corner support button as requested
 
     const launcher = document.createElement("button");
     launcher.type = "button";

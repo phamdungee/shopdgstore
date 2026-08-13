@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="vi">
+<html lang="vi" data-theme="dark">
 
 <head>
   <meta charset="utf-8" />
@@ -209,34 +209,40 @@
       display: inline-flex !important;
       align-items: center !important;
       gap: 8px !important;
-      background: rgba(255, 255, 255, 0.02) !important;
-      border: 1.5px solid rgba(255, 255, 255, 0.07) !important;
+      background: rgba(15, 23, 42, 0.75) !important;
+      border: 1px solid rgba(56, 189, 248, 0.2) !important;
       border-radius: 99px !important;
       padding: 6px 14px !important;
-      font-weight: 700 !important;
-      color: var(--text-sub) !important;
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+      font-weight: 600 !important;
+      font-size: 13.5px !important;
+      color: #e2e8f0 !important;
+      transition: all 0.25s ease !important;
       white-space: nowrap !important;
+      backdrop-filter: blur(10px) !important;
+      -webkit-backdrop-filter: blur(10px) !important;
     }
 
     .cat-chip:hover {
-      border-color: var(--accent) !important;
-      background: rgba(34, 211, 238, 0.08) !important;
-      box-shadow: 0 0 15px rgba(34, 211, 238, 0.25) !important;
+      border-color: #38bdf8 !important;
+      background: rgba(56, 189, 248, 0.15) !important;
+      box-shadow: 0 0 16px rgba(56, 189, 248, 0.3) !important;
       transform: translateY(-2px);
       color: #fff !important;
     }
 
+    /* Seamless Logo Container — No white box, no hanging frame */
     .cat-chip-icon {
-      width: 20px !important;
-      height: 20px !important;
+      width: 22px !important;
+      height: 22px !important;
       border-radius: 50% !important;
-      overflow: hidden !important;
-      display: grid !important;
-      place-items: center !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
       flex-shrink: 0 !important;
-      background: rgba(99, 102, 241, 0.15) !important;
-      color: var(--brand-light) !important;
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      overflow: hidden !important;
     }
 
     .cat-chip-icon img {
@@ -244,6 +250,39 @@
       height: 100% !important;
       object-fit: cover !important;
       border-radius: 50% !important;
+      display: block !important;
+      transition: transform 0.25s ease !important;
+    }
+
+    .cat-chip:hover .cat-chip-icon img {
+      transform: scale(1.15) !important;
+    }
+
+    .cat-chip-icon i {
+      font-size: 14px !important;
+      line-height: 1 !important;
+      filter: drop-shadow(0 0 6px currentColor) !important;
+    }
+
+    html[data-theme="light"] .cat-chip,
+    body.light-mode .cat-chip {
+      background: #ffffff !important;
+      border: 1.5px solid rgba(37, 99, 235, 0.2) !important;
+      color: #0f172a !important;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+    }
+
+    html[data-theme="light"] .cat-chip:hover,
+    body.light-mode .cat-chip:hover {
+      border-color: #2563eb !important;
+      background: rgba(37, 99, 235, 0.08) !important;
+      box-shadow: 0 4px 16px rgba(37, 99, 235, 0.2) !important;
+    }
+
+    html[data-theme="light"] .cat-chip-icon,
+    body.light-mode .cat-chip-icon {
+      background: transparent !important;
+      border: none !important;
     }
 
     /* ── SLICK SEARCH BAR ─────────────────── */
@@ -1436,19 +1475,7 @@
           <i class="fa-solid fa-boxes-stacked"></i>
           <span class="nav-label">Sản phẩm</span>
         </button>
-        <button class="nav-item menu-link" type="button" data-page="shopee" onclick="showPage('shopee')"
-          data-tooltip="Shopee">
-          <i class="fa-solid fa-bag-shopping" aria-hidden="true"></i>
-          <span class="nav-label">Shopee</span>
-        </button>
-        <a href="/tuongtacmxh.html" class="nav-item" data-tooltip="Tương tác MXH">
-          <i class="fa-solid fa-share-nodes"></i>
-          <span class="nav-label">Tương tác MXH</span>
-        </a>
-        <a href="/lichsudonmxh.html" class="nav-item nav-item-sub" data-tooltip="Lịch sử đơn MXH">
-          <i class="fa-solid fa-list-check"></i>
-          <span class="nav-label">Lịch sử đơn MXH</span>
-        </a>
+
       </div>
 
       <div class="sk-sidebar-new-nav">
@@ -1553,34 +1580,46 @@
               </div>
               <div class="sk-hero-banners-column">
                 <!-- Banner lớn: Kho tài nguyên -->
-                <div class="banner-big">
-                  <div class="banner-glow"></div>
+                <div class="banner-big" style="
+                      border: 1px solid rgba(245, 158, 11, 0.4) !important;
+                      background: rgba(15, 23, 42, 0.92) !important;
+                      border-radius: 16px !important;
+                      backdrop-filter: blur(16px) !important;
+                      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35) !important;
+                    ">
+                  <div class="banner-glow" style="background: radial-gradient(circle, rgba(245, 158, 11, 0.18) 0%, transparent 70%);"></div>
                   <span class="banner-tag" style="
-                        background: rgba(99, 102, 241, 0.15);
-                        border: 1px solid rgba(99, 102, 241, 0.3);
-                        color: #a78bfa;
+                        display: inline-flex !important;
+                        align-items: center;
+                        gap: 4px;
+                        width: fit-content !important;
+                        background: rgba(245, 158, 11, 0.2) !important;
+                        border: 1px solid rgba(245, 158, 11, 0.5) !important;
+                        color: #fbbf24 !important;
+                        -webkit-text-fill-color: #fbbf24 !important;
                         font-weight: 800;
-                        font-size: 10px;
+                        font-size: 10.5px;
                         text-transform: uppercase;
-                        padding: 3px 8px;
+                        padding: 4px 10px;
                         border-radius: 6px;
-                        display: inline-block;
                         margin-bottom: 8px;
                         letter-spacing: 0.05em;
-                        margin-top: 4px;
-                      ">Premium Hub</span>
+                      "><i class="fa-solid fa-crown" style="margin-right: 3px;"></i> PREMIUM HUB</span>
                   <h3 style="
-                        font-size: 16px;
-                        font-weight: 900;
-                        color: var(--text-bright);
+                        font-size: 16px !important;
+                        font-weight: 900 !important;
+                        color: #fbbf24 !important;
+                        -webkit-text-fill-color: #fbbf24 !important;
                         margin-bottom: 6px;
                         letter-spacing: 0.05em;
+                        text-shadow: 0 2px 10px rgba(245, 158, 11, 0.3);
                       ">
                     KHO TÀI NGUYÊN
                   </h3>
                   <p style="
-                        font-size: 11.5px;
-                        color: var(--muted);
+                        font-size: 12px !important;
+                        color: #cbd5e1 !important;
+                        -webkit-text-fill-color: #cbd5e1 !important;
                         margin-bottom: 12px;
                         line-height: 1.5;
                       ">
@@ -1589,52 +1628,63 @@
                   </p>
                   <button class="sk-btn" type="button" onclick="showProductCategory('all')" style="
                         align-self: flex-start;
-                        height: 34px;
-                        font-size: 12px;
-                        font-weight: 800;
-                        padding: 0 16px;
-                        border-radius: 6px;
-                        background: rgba(99, 102, 241, 0.1);
-                        border: 1px solid rgba(99, 102, 241, 0.3);
-                        color: #a78bfa;
+                        height: 34px !important;
+                        font-size: 12px !important;
+                        font-weight: 800 !important;
+                        padding: 0 16px !important;
+                        border-radius: 6px !important;
+                        background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+                        border: 1px solid rgba(251, 191, 36, 0.5) !important;
+                        color: #ffffff !important;
+                        -webkit-text-fill-color: #ffffff !important;
+                        box-shadow: 0 4px 14px rgba(245, 158, 11, 0.4) !important;
                         transition: all 0.3s;
                         cursor: pointer;
                         display: inline-flex;
                         align-items: center;
                         gap: 6px;
                       " onmouseover="
-                        this.style.background = 'rgba(99, 102, 241, 0.2)';
-                        this.style.transform = 'translateY(-1px)';
+                        this.style.transform = 'translateY(-2px)';
+                        this.style.boxShadow = '0 6px 20px rgba(245, 158, 11, 0.6)';
                       " onmouseout="
-                        this.style.background = 'rgba(99, 102, 241, 0.1)';
                         this.style.transform = 'none';
+                        this.style.boxShadow = '0 4px 14px rgba(245, 158, 11, 0.4)';
                       ">
                     <i class="fa-solid fa-compass"></i> Khám phá ngay
                   </button>
                 </div>
 
                 <!-- Banner nhỏ: Nạp tiền nhanh -->
-                <div class="banner-small">
+                <div class="banner-small" style="
+                      border: 1px solid rgba(16, 185, 129, 0.4) !important;
+                      background: rgba(15, 23, 42, 0.92) !important;
+                      border-radius: 16px !important;
+                      backdrop-filter: blur(16px) !important;
+                      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35) !important;
+                    ">
                   <div class="card-header-ic" style="
                         display: flex;
                         align-items: center;
                         gap: 8px;
                         margin-bottom: 6px;
                       ">
-                    <i class="fa-solid fa-wallet" style="color: #10b981"></i>
+                    <i class="fa-solid fa-wallet" style="font-size: 14px; color: #34d399 !important; -webkit-text-fill-color: #34d399 !important;"></i>
                     <h4 style="
-                          font-size: 13px;
-                          font-weight: 800;
-                          color: var(--text-bright);
+                          font-size: 13px !important;
+                          font-weight: 800 !important;
+                          color: #34d399 !important;
+                          -webkit-text-fill-color: #34d399 !important;
                           margin: 0;
                           letter-spacing: 0.04em;
+                          text-shadow: 0 2px 10px rgba(16, 185, 129, 0.3);
                         ">
                       NẠP TIỀN TỰ ĐỘNG
                     </h4>
                   </div>
                   <p style="
-                        font-size: 11.5px;
-                        color: var(--muted);
+                        font-size: 12px !important;
+                        color: #cbd5e1 !important;
+                        -webkit-text-fill-color: #cbd5e1 !important;
                         line-height: 1.4;
                         margin: 0 0 12px 0;
                       ">
@@ -1642,54 +1692,64 @@
                     giây hoạt động 24/7.
                   </p>
                   <a href="nap-tien.html" class="sk-btn" style="
-                        width: 100%;
+                        width: 100% !important;
                         justify-content: center;
-                        height: 34px;
-                        font-size: 12px;
-                        font-weight: 800;
-                        border-radius: 6px;
-                        background: linear-gradient(135deg, #10b981, #059669);
-                        border: 1px solid rgba(255, 255, 255, 0.15);
-                        color: #ffffff;
-                        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+                        height: 34px !important;
+                        font-size: 12px !important;
+                        font-weight: 800 !important;
+                        border-radius: 6px !important;
+                        background: linear-gradient(135deg, #10b981, #059669) !important;
+                        border: 1px solid rgba(52, 211, 153, 0.5) !important;
+                        color: #ffffff !important;
+                        -webkit-text-fill-color: #ffffff !important;
+                        box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4) !important;
                         transition: all 0.3s;
                         display: inline-flex;
                         align-items: center;
                         gap: 6px;
                         text-decoration: none;
                       " onmouseover="
-                        this.style.transform = 'translateY(-1.5px)';
+                        this.style.transform = 'translateY(-2px)';
                         this.style.boxShadow =
-                          '0 6px 16px rgba(16, 185, 129, 0.35)';
+                          '0 6px 20px rgba(16, 185, 129, 0.6)';
                       " onmouseout="
                         this.style.transform = 'none';
                         this.style.boxShadow =
-                          '0 4px 12px rgba(16, 185, 129, 0.2)';
+                          '0 4px 14px rgba(16, 185, 129, 0.4)';
                       "><i class="fa-solid fa-credit-card"></i> Nạp tiền ngay</a>
                 </div>
 
                 <!-- Banner nhỏ: Săn sale giờ vàng -->
-                <div class="banner-small">
+                <div class="banner-small" style="
+                      border: 1px solid rgba(244, 63, 94, 0.4) !important;
+                      background: rgba(15, 23, 42, 0.92) !important;
+                      border-radius: 16px !important;
+                      backdrop-filter: blur(16px) !important;
+                      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35) !important;
+                    ">
                   <div class="card-header-ic" style="
                         display: flex;
                         align-items: center;
                         gap: 8px;
                         margin-bottom: 6px;
                       ">
-                    <i class="fa-solid fa-bolt" style="color: #f97316"></i>
+                    <i class="fa-solid fa-bolt" style="font-size: 14px; color: #fb7185 !important; -webkit-text-fill-color: #fb7185 !important;"></i>
                     <h4 style="
-                          font-size: 13px;
-                          font-weight: 800;
-                          color: var(--text-bright);
+                          font-size: 13px !important;
+                          font-weight: 800 !important;
+                          color: #fb7185 !important;
+                          -webkit-text-fill-color: #fb7185 !important;
                           margin: 0;
                           letter-spacing: 0.04em;
+                          text-shadow: 0 2px 10px rgba(244, 63, 94, 0.3);
                         ">
                       SĂN SALE GIỜ VÀNG
                     </h4>
                   </div>
                   <p style="
-                        font-size: 11.5px;
-                        color: var(--muted);
+                        font-size: 12px !important;
+                        color: #cbd5e1 !important;
+                        -webkit-text-fill-color: #cbd5e1 !important;
                         line-height: 1.4;
                         margin: 0 0 12px 0;
                       ">
@@ -1697,29 +1757,30 @@
                     làm việc.
                   </p>
                   <button class="sk-btn" style="
-                        width: 100%;
+                        width: 100% !important;
                         justify-content: center;
-                        height: 34px;
-                        font-size: 12px;
-                        font-weight: 800;
-                        border-radius: 6px;
-                        background: linear-gradient(135deg, #f97316, #ea580c);
-                        border: 1px solid rgba(255, 255, 255, 0.15);
-                        color: #ffffff;
-                        box-shadow: 0 4px 12px rgba(249, 115, 22, 0.2);
+                        height: 34px !important;
+                        font-size: 12px !important;
+                        font-weight: 800 !important;
+                        border-radius: 6px !important;
+                        background: linear-gradient(135deg, #f43f5e, #e11d48) !important;
+                        border: 1px solid rgba(251, 113, 133, 0.5) !important;
+                        color: #ffffff !important;
+                        -webkit-text-fill-color: #ffffff !important;
+                        box-shadow: 0 4px 14px rgba(244, 63, 94, 0.4) !important;
                         transition: all 0.3s;
                         display: inline-flex;
                         align-items: center;
                         gap: 6px;
                         cursor: pointer;
                       " onclick="showProductCategory('ai')" onmouseover="
-                        this.style.transform = 'translateY(-1.5px)';
+                        this.style.transform = 'translateY(-2px)';
                         this.style.boxShadow =
-                          '0 6px 16px rgba(249, 115, 22, 0.35)';
+                          '0 6px 20px rgba(244, 63, 94, 0.6)';
                       " onmouseout="
                         this.style.transform = 'none';
                         this.style.boxShadow =
-                          '0 4px 12px rgba(249, 115, 22, 0.2)';
+                          '0 4px 14px rgba(244, 63, 94, 0.4)';
                       ">
                     <i class="fa-solid fa-bolt"></i> Săn Deal AI
                   </button>
@@ -3134,22 +3195,64 @@
       return `<i class="fa-solid ${product.icon}"></i>`;
     }
 
+    function getProductBrandIcon(product) {
+      const name = (product.name || '').toLowerCase();
+      if (name.includes('chatgpt') || name.includes('gpt') || name.includes('openai')) {
+        return { icon: 'fa-solid fa-robot', color: '#10b981' };
+      }
+      if (name.includes('spotify')) {
+        return { icon: 'fa-brands fa-spotify', color: '#1ed760' };
+      }
+      if (name.includes('netflix')) {
+        return { icon: 'fa-solid fa-film', color: '#ef4444' };
+      }
+      if (name.includes('gemini') || name.includes('google')) {
+        return { icon: 'fa-solid fa-wand-magic-sparkles', color: '#38bdf8' };
+      }
+      if (name.includes('capcut')) {
+        return { icon: 'fa-solid fa-scissors', color: '#06b6d4' };
+      }
+      if (name.includes('hotmail') || name.includes('outlook') || name.includes('mail')) {
+        return { icon: 'fa-solid fa-envelope', color: '#3b82f6' };
+      }
+      if (name.includes('youtube')) {
+        return { icon: 'fa-brands fa-youtube', color: '#ef4444' };
+      }
+      if (name.includes('canva')) {
+        return { icon: 'fa-solid fa-palette', color: '#06b6d4' };
+      }
+      if (name.includes('discord')) {
+        return { icon: 'fa-brands fa-discord', color: '#6366f1' };
+      }
+      if (name.includes('telegram')) {
+        return { icon: 'fa-brands fa-telegram', color: '#0ea5e9' };
+      }
+      const rawIcon = product.icon || 'fa-box';
+      const fullIcon = rawIcon.includes(' ') ? rawIcon : `fa-solid ${rawIcon.startsWith('fa-') ? rawIcon : 'fa-' + rawIcon}`;
+      return { icon: fullIcon, color: '#38bdf8' };
+    }
+
     function productSliderIcon(product) {
       const safeName = escapeHtml(product.name);
       const safeUrl = escapeHtml(productUrl(product));
+      const brand = getProductBrandIcon(product);
+
       if (product.image) {
         const imageUrl = window.getAbsoluteImageUrl
           ? window.getAbsoluteImageUrl(product.image)
           : product.image;
         return `<a href="${safeUrl}" class="cat-chip" title="${safeName}">
           <span class="cat-chip-icon">
-            <img src="${imageUrl}" width="22" height="22" alt="${safeName}" loading="lazy" onerror="const i=Object.assign(document.createElement('i'), {className:'fa-solid ${product.icon}'}); this.replaceWith(i); if (window.replaceIcons) window.replaceIcons(i.parentNode);">
+            <img src="${imageUrl}" width="22" height="22" alt="${safeName}" loading="lazy" onerror="const i=Object.assign(document.createElement('i'), {className:'${brand.icon}'}); i.style.color='${brand.color}'; this.replaceWith(i);">
           </span>
           <span>${safeName}</span>
         </a>`;
       }
+
       return `<a href="${safeUrl}" class="cat-chip" title="${safeName}">
-        <span class="cat-chip-icon"><i class="fa-solid ${product.icon}"></i></span>
+        <span class="cat-chip-icon" style="color: ${brand.color};">
+          <i class="${brand.icon}"></i>
+        </span>
         <span>${safeName}</span>
       </a>`;
     }

@@ -241,21 +241,53 @@ body.sk-auth-body::after {
 .sk-auth-copy .sk-grid {
   position: relative;
   z-index: 1;
-  gap: 10px !important;
-  margin-top: 22px;
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 14px !important;
+  margin-top: 24px;
 }
 
-.sk-auth-copy .sk-hero-card,
+.sk-auth-copy .sk-hero-card {
+  padding: 16px 18px !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 16px !important;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.04)) !important;
+  backdrop-filter: blur(16px) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.25) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
 .sk-auth-copy .sk-hero-card:hover {
-  padding: 14px !important;
-  border: 1px solid rgba(255, 255, 255, 0.14) !important;
-  border-radius: 14px !important;
-  background: rgba(255, 255, 255, 0.08) !important;
-  box-shadow: none !important;
+  transform: translateY(-4px) scale(1.02) !important;
+  border-color: rgba(147, 197, 253, 0.6) !important;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.08)) !important;
+  box-shadow: 0 14px 32px rgba(37, 99, 235, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.45) !important;
 }
 
-.sk-auth-copy .sk-hero-card b { color: #fff !important; }
-.sk-auth-copy .sk-hero-card p { color: rgba(255, 255, 255, 0.68) !important; }
+.sk-auth-copy .sk-hero-card .stat-icon-wrap {
+  font-size: 20px;
+  margin-bottom: 8px;
+  display: inline-block;
+}
+
+.sk-auth-copy .sk-hero-card b,
+.sk-auth-copy .sk-hero-card .stat-number {
+  font-size: 26px !important;
+  font-weight: 900 !important;
+  line-height: 1.2 !important;
+  display: block;
+  color: #ffffff !important;
+  letter-spacing: -0.02em !important;
+}
+
+.sk-auth-copy .sk-hero-card p,
+.sk-auth-copy .sk-hero-card .stat-label {
+  margin: 6px 0 0 0 !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: rgba(255, 255, 255, 0.82) !important;
+  line-height: 1.4 !important;
+}
 
 .sk-auth-forms {
   min-width: 0;
@@ -274,11 +306,28 @@ body.sk-auth-body::after {
 }
 
 .form-container .sk-kicker {
-  margin-bottom: 13px !important;
-  color: var(--auth-brand-dark) !important;
-  font-size: 10px !important;
-  letter-spacing: 0.12em;
-  text-shadow: none;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 7px !important;
+  margin: 0 auto 16px auto !important;
+  padding: 5px 16px !important;
+  border-radius: 9999px !important;
+  background: var(--auth-brand-soft, rgba(37, 99, 235, 0.08)) !important;
+  border: 1px solid rgba(37, 99, 235, 0.22) !important;
+  color: var(--auth-brand, #2563eb) !important;
+  font-family: "Outfit", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.01em !important;
+  text-transform: none !important;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.08) !important;
+  text-shadow: none !important;
+}
+
+.form-container .sk-kicker i {
+  font-size: 11px !important;
+  color: var(--auth-brand, #2563eb) !important;
 }
 
 .form-container h1 {
@@ -300,19 +349,46 @@ body.sk-auth-body::after {
 }
 
 .sk-auth-selector {
-  margin-bottom: 26px;
-  border: 1px solid var(--auth-line);
-  background: var(--auth-soft);
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 6px !important;
+  margin-bottom: 26px !important;
+  padding: 5px !important;
+  border: 1px solid var(--auth-line) !important;
+  border-radius: 9999px !important;
+  background: var(--auth-soft) !important;
+  box-sizing: border-box !important;
+  align-items: center !important;
 }
 
-.sk-auth-selector .selector-btn { color: var(--auth-muted); }
+.sk-auth-selector .selector-btn {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  height: 42px !important;
+  padding: 0 16px !important;
+  border: none !important;
+  border-radius: 9999px !important;
+  color: var(--auth-muted) !important;
+  font-family: "Outfit", sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+  transition: all 0.25s ease !important;
+  background: transparent !important;
+}
+
 .sk-auth-selector .selector-btn.active {
-  background: var(--auth-brand) !important;
-  box-shadow: 0 7px 18px rgba(37, 99, 235, 0.2);
+  background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35) !important;
 }
 
 .sk-auth-selector .selector-btn:hover:not(.active) {
-  color: var(--auth-text);
+  color: var(--auth-text) !important;
+  background: rgba(148, 163, 184, 0.12) !important;
 }
 
 .form-container input,
@@ -373,23 +449,60 @@ body.sk-auth-body::after {
 }
 
 .social-icons {
-  justify-content: flex-start;
-  margin: 6px 0 16px !important;
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 12px !important;
+  width: 100% !important;
+  margin: 6px 0 18px !important;
 }
 
+.social-icons .social-btn,
 .social-icons .icon {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 10px !important;
+  height: 44px !important;
+  padding: 0 16px !important;
   border: 1px solid var(--auth-line) !important;
   border-radius: 12px !important;
   background: var(--auth-surface-solid) !important;
   color: var(--auth-text) !important;
+  font-family: "Outfit", sans-serif !important;
+  font-size: 13.5px !important;
+  font-weight: 700 !important;
+  text-decoration: none !important;
+  cursor: pointer !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04) !important;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  box-sizing: border-box !important;
 }
 
-.social-icons .icon:hover {
-  border-color: var(--auth-brand) !important;
+.social-icons .social-btn svg {
+  flex-shrink: 0;
+  transition: transform 0.25s ease;
+}
+
+.social-icons .social-btn.btn-google-login-custom:hover {
+  border-color: rgba(66, 133, 244, 0.5) !important;
   background: var(--auth-brand-soft) !important;
   color: var(--auth-brand) !important;
-  box-shadow: none !important;
-  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 18px rgba(66, 133, 244, 0.15) !important;
+  transform: translateY(-2px) !important;
+}
+.social-icons .social-btn.btn-google-login-custom:hover svg {
+  transform: scale(1.12);
+}
+
+.social-icons .social-btn.btn-github-login-custom:hover {
+  border-color: var(--auth-text) !important;
+  background: var(--auth-soft) !important;
+  color: var(--auth-text) !important;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12) !important;
+  transform: translateY(-2px) !important;
+}
+.social-icons .social-btn.btn-github-login-custom:hover svg {
+  transform: scale(1.12);
 }
 
 .mobile-switch-text { color: var(--auth-muted) !important; }

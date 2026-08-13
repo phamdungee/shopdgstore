@@ -180,3 +180,98 @@ body.light-mode ::selection {
   background: rgba(79, 70, 229, .2);
   color: #1e1b4b;
 }
+
+/* ── PREMIUM HUB BANNERS THEME RULES ── */
+.sk-banner-gold {
+  border: 1px solid rgba(245, 158, 11, 0.35) !important;
+  background: rgba(245, 158, 11, 0.08) !important;
+}
+.sk-banner-gold .banner-tag {
+  background: rgba(245, 158, 11, 0.2) !important;
+  border: 1px solid rgba(245, 158, 11, 0.4) !important;
+  color: #fbbf24 !important;
+}
+.sk-banner-gold h3 {
+  color: #fbbf24 !important;
+}
+.sk-banner-gold p {
+  color: #94a3b8 !important;
+}
+
+.sk-banner-emerald {
+  border: 1px solid rgba(16, 185, 129, 0.35) !important;
+  background: rgba(16, 185, 129, 0.06) !important;
+}
+.sk-banner-emerald h4, .sk-banner-emerald i.fa-wallet {
+  color: #34d399 !important;
+}
+.sk-banner-emerald p {
+  color: #94a3b8 !important;
+}
+
+.sk-banner-rose {
+  border: 1px solid rgba(244, 63, 94, 0.35) !important;
+  background: rgba(244, 63, 94, 0.06) !important;
+}
+.sk-banner-rose h4, .sk-banner-rose i.fa-bolt {
+  color: #fb7185 !important;
+}
+.sk-banner-rose p {
+  color: #94a3b8 !important;
+}
+
+/* Light Mode Overrides for Crisp Contrast on White Background */
+html[data-theme="light"] .sk-banner-gold,
+body.light-mode .sk-banner-gold {
+  background: #fffbeb !important;
+  border-color: rgba(217, 119, 6, 0.35) !important;
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.08) !important;
+}
+html[data-theme="light"] .sk-banner-gold .banner-tag,
+body.light-mode .sk-banner-gold .banner-tag {
+  background: rgba(245, 158, 11, 0.2) !important;
+  border-color: rgba(217, 119, 6, 0.4) !important;
+  color: #b45309 !important;
+}
+html[data-theme="light"] .sk-banner-gold h3,
+body.light-mode .sk-banner-gold h3 {
+  color: #b45309 !important;
+}
+html[data-theme="light"] .sk-banner-gold p,
+body.light-mode .sk-banner-gold p {
+  color: #334155 !important;
+}
+
+html[data-theme="light"] .sk-banner-emerald,
+body.light-mode .sk-banner-emerald {
+  background: #ecfdf5 !important;
+  border-color: rgba(5, 150, 105, 0.35) !important;
+  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.08) !important;
+}
+html[data-theme="light"] .sk-banner-emerald h4,
+body.light-mode .sk-banner-emerald h4,
+html[data-theme="light"] .sk-banner-emerald i.fa-wallet,
+body.light-mode .sk-banner-emerald i.fa-wallet {
+  color: #047857 !important;
+}
+html[data-theme="light"] .sk-banner-emerald p,
+body.light-mode .sk-banner-emerald p {
+  color: #334155 !important;
+}
+
+html[data-theme="light"] .sk-banner-rose,
+body.light-mode .sk-banner-rose {
+  background: #fff1f2 !important;
+  border-color: rgba(225, 29, 72, 0.35) !important;
+  box-shadow: 0 4px 12px rgba(225, 29, 72, 0.08) !important;
+}
+html[data-theme="light"] .sk-banner-rose h4,
+body.light-mode .sk-banner-rose h4,
+html[data-theme="light"] .sk-banner-rose i.fa-bolt,
+body.light-mode .sk-banner-rose i.fa-bolt {
+  color: #be123c !important;
+}
+html[data-theme="light"] .sk-banner-rose p,
+body.light-mode .sk-banner-rose p {
+  color: #334155 !important;
+}

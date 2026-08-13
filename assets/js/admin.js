@@ -2,10 +2,9 @@
 // Dashboard riêng cho tài khoản admin.
 
 const isLocalHost = ['localhost', '127.0.0.1', '::1'].includes(window.location.hostname);
-const isNotServerPort = window.location.port !== '3000';
 const ADMIN_API_BASE = window.DG_API_BASE || window.SKYNET_API_BASE || (
-  (window.location.protocol === 'file:' || (isLocalHost && isNotServerPort))
-    ? 'http://localhost:3000/api'
+  (window.location.protocol === 'file:' || isLocalHost)
+    ? 'http://localhost:4000/api'
     : '/api'
 );
 let adminUsers = [];
@@ -868,6 +867,22 @@ function openProductModal(prodId = '') {
   modal.classList.remove('opacity-0', 'pointer-events-none');
 }
 
+function autoGenerateSlug() {
+  const prodId = document.getElementById('prodId')?.value;
+  if (prodId) return; // Không tự sinh slug khi đang chỉnh sửa sản phẩm cũ
+  const nameInput = document.getElementById('prodName');
+  const slugInput = document.getElementById('prodSlug');
+  if (!nameInput || !slugInput) return;
+  const val = nameInput.value.trim().toLowerCase();
+  slugInput.value = val
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'd')
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/[\s-]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
 function onImageSelectChange() {
   const select = document.getElementById('prodImageSelect');
   const input = document.getElementById('prodImage');
@@ -1421,8 +1436,9 @@ async function loadWarehouseProductItems() {
 }
 
 async function renderWarehouseProducts() {
+  const tbody = document.getElementById('whProductsTableBody');
   const grid = document.getElementById('whProductsGrid');
-  if (!grid) return;
+  if (!tbody && !grid) return;
   
   const query = (document.getElementById('whProductSearch')?.value || '').trim().toLowerCase();
   
@@ -1432,10 +1448,14 @@ async function renderWarehouseProducts() {
   });
   
   // Show loading state first
-  grid.innerHTML = `<div style="text-align: center; padding: 40px; color: var(--muted); grid-column: 1 / -1;"><i class="fa-solid fa-spinner fa-spin" style="font-size: 24px; display: block; margin-bottom: 8px;"></i> Đang tải dữ liệu kho từ database...</div>`;
+  if (tbody) {
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 36px; color: var(--muted);"><i class="fa-solid fa-spinner fa-spin" style="font-size: 22px; display: block; margin-bottom: 8px;"></i> Đang tải dữ liệu tồn kho từ database...</td></tr>`;
+  }
+  if (grid) {
+    grid.innerHTML = `<div style="text-align: center; padding: 40px; color: var(--muted); grid-column: 1 / -1;"><i class="fa-solid fa-spinner fa-spin" style="font-size: 24px; display: block; margin-bottom: 8px;"></i> Đang tải dữ liệu kho từ database...</div>`;
+  }
 
-  // Fetch an authoritative aggregate from the database. The backend paginates
-  // every inventory row, so this remains correct beyond PostgREST's row limit.
+  // Fetch an authoritative aggregate from the database.
   const stockMap = {};
   let stockSummaryLoaded = false;
   try {
@@ -1443,8 +1463,6 @@ async function renderWarehouseProducts() {
     if (summaryRes.ok && Array.isArray(summaryRes.productSummary)) {
       stockSummaryLoaded = true;
 
-      // Initialize all products to zero. A missing aggregate means the product
-      // genuinely has no inventory, not that stock_cache should be trusted.
       for (const product of adminProducts) {
         stockMap[String(product.id)] = { available: 0, reserved: 0, sold: 0, total: 0 };
       }
@@ -1463,78 +1481,196 @@ async function renderWarehouseProducts() {
   }
   
   if (filtered.length === 0) {
-    grid.innerHTML = '<div style="text-align: center; padding: 32px; color: var(--muted); grid-column: 1 / -1;"><i class="fa-solid fa-folder-open" style="font-size: 24px; display: block; margin-bottom: 8px;"></i> Không tìm thấy sản phẩm nào.</div>';
+    if (tbody) {
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 32px; color: var(--muted);"><i class="fa-solid fa-folder-open" style="font-size: 22px; display: block; margin-bottom: 8px;"></i> Không tìm thấy sản phẩm nào.</td></tr>';
+    }
+    if (grid) {
+      grid.innerHTML = '<div style="text-align: center; padding: 32px; color: var(--muted); grid-column: 1 / -1;"><i class="fa-solid fa-folder-open" style="font-size: 24px; display: block; margin-bottom: 8px;"></i> Không tìm thấy sản phẩm nào.</div>';
+    }
     return;
   }
 
-  grid.innerHTML = filtered.map(prod => {
-    const variants = Array.isArray(prod.variants) ? prod.variants : [];
-    const iconClass = safeAdminIconClass(prod.icon);
-    const isApiOnly = prod.delivery_type === 'api' || (variants.length > 0 && variants.every(v => v.delivery_type === 'api'));
-    
-    // Use real DB stock if available, otherwise fall back to stock_cache
-    const realStock = stockMap[String(prod.id)];
-    let stockDisplay;
-    let reservedDisplay = 0;
-    let soldDisplay = 0;
-    if (isApiOnly) {
-      stockDisplay = '∞ (API)';
-    } else if (stockSummaryLoaded && realStock) {
-      stockDisplay = realStock.available.toLocaleString('vi-VN');
-      reservedDisplay = realStock.reserved;
-      soldDisplay = realStock.sold;
-    } else {
-      // Fallback to stock_cache sum
-      let totalFromCache = 0;
-      variants.forEach(v => { if (v.delivery_type !== 'api') totalFromCache += Number(v.stock || 0); });
-      if (variants.length === 0) totalFromCache = prod.stock || 0;
-      stockDisplay = totalFromCache.toLocaleString('vi-VN');
-    }
-    
-    const imageSrc = adminImageSrc(prod.image);
-    const imgHtml = imageSrc
-      ? `<img src="${escapeAdminHtml(imageSrc)}" alt="${escapeAdminHtml(prod.name || 'Sản phẩm')}" data-fallback-icon="${escapeAdminHtml(iconClass)}" class="sk-prod-avatar" style="width:40px; height:40px; margin-right:0;"/>`
-      : adminProductIconFallback(iconClass).replace(/style="[^"]*"/, 'class="sk-prod-avatar" style="width:40px; height:40px; font-size:18px; margin-right:0;"');
+  if (tbody) {
+    tbody.innerHTML = filtered.map(prod => {
+      const variants = Array.isArray(prod.variants) ? prod.variants : [];
+      const iconClass = safeAdminIconClass(prod.icon);
+      const isApiOnly = prod.delivery_type === 'api' || (variants.length > 0 && variants.every(v => v.delivery_type === 'api'));
+      
+      // Use real DB stock if available, otherwise fall back to stock_cache
+      const realStock = stockMap[String(prod.id)];
+      let stockDisplay;
+      let reservedDisplay = 0;
+      let soldDisplay = 0;
+      let stockColor = '#10b981';
+      let stockBg = 'rgba(16, 185, 129, 0.12)';
 
-    return `
-      <div class="sk-product-admin-card" style="margin: 0; display: flex; flex-direction: column; justify-content: space-between; min-height: 180px;">
-        <div>
-          <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 12px;">
-            ${imgHtml}
-            <div>
-              <h3 style="margin: 0; font-size: 15px; font-weight: 800; color: var(--text-bright);">${escapeAdminHtml(prod.name)}</h3>
-              <span class="sk-badge ${escapeAdminHtml(prod.cat)}" style="font-size: 9px; padding: 2px 6px; text-transform: uppercase;">${escapeAdminHtml(prod.cat)}</span>
+      if (isApiOnly) {
+        stockDisplay = '∞ (API)';
+        stockColor = '#38bdf8';
+        stockBg = 'rgba(56, 189, 248, 0.12)';
+      } else if (stockSummaryLoaded && realStock) {
+        stockDisplay = realStock.available.toLocaleString('vi-VN');
+        reservedDisplay = realStock.reserved;
+        soldDisplay = realStock.sold;
+        if (realStock.available === 0) {
+          stockColor = '#ef4444';
+          stockBg = 'rgba(239, 68, 68, 0.12)';
+        }
+      } else {
+        // Fallback to stock_cache sum
+        let totalFromCache = 0;
+        variants.forEach(v => { if (v.delivery_type !== 'api') totalFromCache += Number(v.stock || 0); });
+        if (variants.length === 0) totalFromCache = prod.stock || 0;
+        stockDisplay = totalFromCache.toLocaleString('vi-VN');
+        if (totalFromCache === 0) {
+          stockColor = '#ef4444';
+          stockBg = 'rgba(239, 68, 68, 0.12)';
+        }
+      }
+      
+      const imageSrc = adminImageSrc(prod.image);
+      const imgHtml = imageSrc
+        ? `<img src="${escapeAdminHtml(imageSrc)}" alt="${escapeAdminHtml(prod.name || 'Sản phẩm')}" data-fallback-icon="${escapeAdminHtml(iconClass)}" class="sk-prod-avatar" style="width:38px; height:38px; border-radius:8px; object-fit:cover; flex-shrink:0;"/>`
+        : adminProductIconFallback(iconClass).replace(/style="[^"]*"/, 'class="sk-prod-avatar" style="width:38px; height:38px; border-radius:8px; font-size:18px; flex-shrink:0;"');
+
+      const deliveryTypeLabel = {
+        hybrid: '<span class="sk-badge" style="background:rgba(99, 102, 241, 0.15); color:#818cf8; font-size:11px;"><i class="fa-solid fa-shuffle"></i> Hybrid</span>',
+        inventory: '<span class="sk-badge" style="background:rgba(16, 185, 129, 0.15); color:#10b981; font-size:11px;"><i class="fa-solid fa-box"></i> Kho hàng</span>',
+        api: '<span class="sk-badge" style="background:rgba(56, 189, 248, 0.15); color:#38bdf8; font-size:11px;"><i class="fa-solid fa-cloud"></i> API NCC</span>'
+      }[prod.delivery_type] || `<span class="sk-badge">${escapeAdminHtml(prod.delivery_type || 'auto')}</span>`;
+
+      return `
+        <tr>
+          <td>
+            <div style="display:flex; align-items:center; gap:12px;">
+              ${imgHtml}
+              <div>
+                <div style="font-weight:700; font-size:14px; color:var(--text-bright); line-height:1.3;">${escapeAdminHtml(prod.name)}</div>
+                <div style="display:flex; align-items:center; gap:6px; margin-top:3px;">
+                  <span class="sk-badge ${escapeAdminHtml(prod.cat)}" style="font-size:9px; padding:1px 6px; text-transform:uppercase;">${escapeAdminHtml(prod.cat)}</span>
+                  <span style="font-size:11px; color:var(--muted); font-family:monospace;">${escapeAdminHtml(prod.slug)}</span>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td style="text-align:center;">${deliveryTypeLabel}</td>
+          <td style="text-align:center;">
+            <span style="display:inline-flex; align-items:center; gap:4px; font-weight:700; font-size:12px; color:var(--brand-light); background:rgba(255,255,255,0.04); padding:3px 8px; border-radius:6px;">
+              <i class="fa-solid fa-tags"></i> ${variants.length} gói
+            </span>
+          </td>
+          <td style="text-align:center;">
+            <span style="display:inline-block; min-width:65px; padding:4px 10px; border-radius:99px; font-size:12.5px; font-weight:800; background:${stockBg}; color:${stockColor};">
+              <i class="fa-solid fa-box"></i> ${stockDisplay}
+            </span>
+          </td>
+          <td style="text-align:center;">
+            <span style="display:inline-block; min-width:45px; padding:4px 8px; border-radius:99px; font-size:12px; font-weight:700; background:rgba(245, 158, 11, 0.12); color:#f59e0b;">
+              <i class="fa-solid fa-clock"></i> ${reservedDisplay.toLocaleString('vi-VN')}
+            </span>
+          </td>
+          <td style="text-align:center;">
+            <span style="display:inline-block; min-width:45px; padding:4px 8px; border-radius:99px; font-size:12px; font-weight:700; background:rgba(239, 68, 68, 0.12); color:#f87171;">
+              <i class="fa-solid fa-circle-check"></i> ${soldDisplay.toLocaleString('vi-VN')}
+            </span>
+          </td>
+          <td style="text-align:right;">
+            <div style="display:flex; justify-content:flex-end; gap:6px;">
+              <button class="sk-btn sk-btn-soft" onclick="openWarehouseProductDetails('${prod.id}')" style="padding:5px 10px; font-size:12px; font-weight:700;" title="Xem danh sách tài khoản trong kho">
+                <i class="fa-solid fa-folder-open"></i> Chi tiết
+              </button>
+              <button class="sk-btn sk-btn-primary" onclick="openImportStockModal('${prod.id}')" style="padding:5px 10px; font-size:12px; font-weight:700;" title="Nhập thêm tài khoản/key vào kho">
+                <i class="fa-solid fa-plus"></i> Nhập kho
+              </button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join('');
+
+    tbody.querySelectorAll('img.sk-prod-avatar').forEach(image => {
+      image.addEventListener('error', () => {
+        const wrapper = document.createElement('div');
+        wrapper.innerHTML = adminProductIconFallback(image.dataset.fallbackIcon);
+        const fallbackNode = wrapper.firstElementChild;
+        fallbackNode.classList.add('sk-prod-avatar');
+        fallbackNode.style.width = '38px';
+        fallbackNode.style.height = '38px';
+        fallbackNode.style.borderRadius = '8px';
+        fallbackNode.style.fontSize = '18px';
+        fallbackNode.style.flexShrink = '0';
+        image.replaceWith(fallbackNode);
+      }, { once: true });
+    });
+  }
+
+  if (grid) {
+    grid.innerHTML = filtered.map(prod => {
+      const variants = Array.isArray(prod.variants) ? prod.variants : [];
+      const iconClass = safeAdminIconClass(prod.icon);
+      const isApiOnly = prod.delivery_type === 'api' || (variants.length > 0 && variants.every(v => v.delivery_type === 'api'));
+      
+      // Use real DB stock if available, otherwise fall back to stock_cache
+      const realStock = stockMap[String(prod.id)];
+      let stockDisplay;
+      let reservedDisplay = 0;
+      let soldDisplay = 0;
+      if (isApiOnly) {
+        stockDisplay = '∞ (API)';
+      } else if (stockSummaryLoaded && realStock) {
+        stockDisplay = realStock.available.toLocaleString('vi-VN');
+        reservedDisplay = realStock.reserved;
+        soldDisplay = realStock.sold;
+      } else {
+        // Fallback to stock_cache sum
+        let totalFromCache = 0;
+        variants.forEach(v => { if (v.delivery_type !== 'api') totalFromCache += Number(v.stock || 0); });
+        if (variants.length === 0) totalFromCache = prod.stock || 0;
+        stockDisplay = totalFromCache.toLocaleString('vi-VN');
+      }
+      
+      const imageSrc = adminImageSrc(prod.image);
+      const imgHtml = imageSrc
+        ? `<img src="${escapeAdminHtml(imageSrc)}" alt="${escapeAdminHtml(prod.name || 'Sản phẩm')}" data-fallback-icon="${escapeAdminHtml(iconClass)}" class="sk-prod-avatar" style="width:40px; height:40px; margin-right:0;"/>`
+        : adminProductIconFallback(iconClass).replace(/style="[^"]*"/, 'class="sk-prod-avatar" style="width:40px; height:40px; font-size:18px; margin-right:0;"');
+
+      return `
+        <div class="sk-product-admin-card" style="margin: 0; display: flex; flex-direction: column; justify-content: space-between; min-height: 180px;">
+          <div>
+            <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 12px;">
+              ${imgHtml}
+              <div>
+                <h3 style="margin: 0; font-size: 15px; font-weight: 800; color: var(--text-bright);">${escapeAdminHtml(prod.name)}</h3>
+                <span class="sk-badge ${escapeAdminHtml(prod.cat)}" style="font-size: 9px; padding: 2px 6px; text-transform: uppercase;">${escapeAdminHtml(prod.cat)}</span>
+              </div>
+            </div>
+            <div style="background: rgba(255,255,255,0.02); padding: 8px 12px; border-radius: 6px; margin-bottom: 15px; font-size: 12px; border: 1px solid rgba(255,255,255,0.04);">
+              <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                <span style="color: var(--muted);">Còn trong kho:</span>
+                <b style="color: #10b981;">${stockDisplay}</b>
+              </div>
+              <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                <span style="color: var(--muted);">Đang giữ:</span>
+                <b style="color: #f59e0b;">${reservedDisplay.toLocaleString('vi-VN')}</b>
+              </div>
+              <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                <span style="color: var(--muted);">Đã bán:</span>
+                <b style="color: #ef4444;">${soldDisplay.toLocaleString('vi-VN')}</b>
+              </div>
+              <div style="display: flex; justify-content: space-between;">
+                <span style="color: var(--muted);">Phân loại gói:</span>
+                <span style="font-weight:600; color:var(--brand-light);">${variants.length} gói</span>
+              </div>
             </div>
           </div>
-          <div style="background: rgba(255,255,255,0.02); padding: 8px 12px; border-radius: 6px; margin-bottom: 15px; font-size: 12px; border: 1px solid rgba(255,255,255,0.04);">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-              <span style="color: var(--muted);">Còn trong kho:</span>
-              <b style="color: #10b981;">${stockDisplay}</b>
-            </div>
-            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-              <span style="color: var(--muted);">Đang giữ:</span>
-              <b style="color: #f59e0b;">${reservedDisplay.toLocaleString('vi-VN')}</b>
-            </div>
-            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-              <span style="color: var(--muted);">Đã bán:</span>
-              <b style="color: #ef4444;">${soldDisplay.toLocaleString('vi-VN')}</b>
-            </div>
-            <div style="display: flex; justify-content: space-between;">
-              <span style="color: var(--muted);">Phân loại gói:</span>
-              <span style="font-weight:600; color:var(--brand-light);">${variants.length} gói</span>
-            </div>
-          </div>
+          <button class="sk-btn sk-btn-soft" onclick="openWarehouseProductDetails('${prod.id}')" style="width: 100%; justify-content: center; font-size: 12px; height: 32px; font-weight: 700;">
+            <i class="fa-solid fa-folder-open"></i> Xem chi tiết kho
+          </button>
         </div>
-        <button class="sk-btn sk-btn-soft" onclick="openWarehouseProductDetails('${prod.id}')" style="width: 100%; justify-content: center; font-size: 12px; height: 32px; font-weight: 700;">
-          <i class="fa-solid fa-folder-open"></i> Xem chi tiết kho
-        </button>
-      </div>
-    `;
-  }).join('');
-  
-  const gridNode = document.getElementById('whProductsGrid');
-  if (gridNode) {
-    gridNode.querySelectorAll('img.sk-prod-avatar').forEach(image => {
+      `;
+    }).join('');
+    
+    grid.querySelectorAll('img.sk-prod-avatar').forEach(image => {
       image.addEventListener('error', () => {
         const wrapper = document.createElement('div');
         wrapper.innerHTML = adminProductIconFallback(image.dataset.fallbackIcon);
@@ -1982,7 +2118,6 @@ function setupImportDragDrop() {
 
   dropzone.addEventListener('dragleave', () => {
     dropzone.style.borderColor = 'rgba(255,255,255,0.15)';
-    dropzone.style.background = 'rgba(0,0,0,0.1)';
   });
 
   dropzone.addEventListener('drop', (e) => {
@@ -2019,6 +2154,7 @@ async function triggerImportPreview() {
   const previewCard = document.getElementById('importPreviewCard');
   const btn = document.getElementById('btnSubmitImport');
   const product_id = document.getElementById('importProdSelect').value;
+  const duplicate_policy = document.querySelector('input[name="importDupPolicy"]:checked')?.value || 'skip';
   
   if (!content) {
     if (previewCard) previewCard.style.display = 'none';
@@ -2034,7 +2170,7 @@ async function triggerImportPreview() {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`
       },
-      body: JSON.stringify({ content_raw: content, product_id })
+      body: JSON.stringify({ content_raw: content, product_id, duplicate_policy })
     });
     
     const data = await res.json();
@@ -2045,7 +2181,15 @@ async function triggerImportPreview() {
       const previewValidEl = document.getElementById('previewValid');
       if (previewValidEl) previewValidEl.innerText = data.report.validCount;
       const previewDupDbEl = document.getElementById('previewDupDb');
-      if (previewDupDbEl) previewDupDbEl.innerText = data.report.duplicateInDbCount;
+      if (previewDupDbEl) {
+        if (duplicate_policy === 'replace') {
+          previewDupDbEl.innerText = `${data.report.replaceInDbCount || 0} (Ghi đè)`;
+          previewDupDbEl.parentElement.style.color = '#38bdf8';
+        } else {
+          previewDupDbEl.innerText = data.report.duplicateInDbCount || 0;
+          previewDupDbEl.parentElement.style.color = 'var(--danger)';
+        }
+      }
       const previewDupFileEl = document.getElementById('previewDupFile');
       if (previewDupFileEl) previewDupFileEl.innerText = data.report.duplicateInFileCount;
 
@@ -2056,32 +2200,53 @@ async function triggerImportPreview() {
         lines.forEach(line => {
           let dot = '🔴';
           let textColor = '#ef4444';
+          let badgeText = 'Lỗi';
+          let badgeBg = 'rgba(239, 68, 68, 0.15)';
           
           if (line.status === 'success') {
             dot = '🟢';
-            textColor = 'var(--success)';
+            textColor = '#10b981';
+            badgeText = 'Hợp lệ';
+            badgeBg = 'rgba(16, 185, 129, 0.15)';
+          } else if (line.status === 'replace_ready') {
+            dot = '🔄';
+            textColor = '#38bdf8';
+            badgeText = 'Ghi đè (Replace)';
+            badgeBg = 'rgba(56, 189, 248, 0.15)';
           } else if (line.status === 'warning_extra') {
             dot = '🟡';
             textColor = 'var(--warning)';
+            badgeText = 'Thừa trường';
+            badgeBg = 'rgba(245, 158, 11, 0.15)';
           } else if (line.status === 'warning_missing') {
             dot = '🟠';
             textColor = '#f97316';
+            badgeText = 'Thiếu trường';
+            badgeBg = 'rgba(249, 115, 22, 0.15)';
           } else if (line.status === 'duplicate_file') {
             dot = '🟡';
             textColor = 'var(--warning)';
+            badgeText = 'Trùng tệp';
+            badgeBg = 'rgba(245, 158, 11, 0.15)';
           } else if (line.status === 'duplicate_db') {
             dot = '🔴';
             textColor = 'var(--danger)';
+            badgeText = 'Trùng DB (Bỏ qua)';
+            badgeBg = 'rgba(239, 68, 68, 0.15)';
           }
           
           tbodyHtml += `
-            <tr style="border-bottom: 1px solid rgba(255,255,255,0.03);">
-              <td style="padding: 6px 10px; color: var(--muted);">${line.lineNum}</td>
-              <td style="padding: 6px 10px; text-align: center; font-size: 14px;" title="${escapeAdminHtml(line.status)}">${dot}</td>
-              <td style="padding: 6px 10px; color: ${textColor}; word-break: break-all;">
-                ${escapeAdminHtml(line.message)} 
-                <span style="display:block; font-size:10px; color:var(--muted); font-family:monospace; margin-top:2px;">
-                  ${escapeAdminHtml(line.text.substring(0, 60))}${line.text.length > 60 ? '...' : ''}
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
+              <td style="padding: 7px 10px; color: var(--muted); text-align: center; font-weight: 700;">#${line.lineNum}</td>
+              <td style="padding: 7px 10px; text-align: center;">
+                <span style="display: inline-block; padding: 2px 8px; border-radius: 99px; font-size: 11px; font-weight: 700; background: ${badgeBg}; color: ${textColor};">
+                  ${dot} ${badgeText}
+                </span>
+              </td>
+              <td style="padding: 7px 10px; color: ${textColor}; word-break: break-all;">
+                <span style="font-weight: 600;">${escapeAdminHtml(line.message)}</span>
+                <span style="display:block; font-size:11px; color:var(--muted); font-family:monospace; margin-top:2px; background: rgba(0,0,0,0.25); padding: 2px 6px; border-radius: 4px;">
+                  ${escapeAdminHtml(line.text.substring(0, 80))}${line.text.length > 80 ? '...' : ''}
                 </span>
               </td>
             </tr>
@@ -2089,13 +2254,13 @@ async function triggerImportPreview() {
         });
         
         if (lines.length === 0) {
-          tbodyHtml = '<tr><td colspan="3" style="text-align:center; padding:12px; color:var(--muted);">Không có dữ liệu hợp lệ</td></tr>';
+          tbodyHtml = '<tr><td colspan="3" style="text-align:center; padding:16px; color:var(--muted);">Chưa có dữ liệu phân tích</td></tr>';
         }
         tableBody.innerHTML = tbodyHtml;
       }
 
       if (btn) {
-        const importableCount = (data.report.lines || []).filter(l => ['success', 'warning_extra', 'warning_missing'].includes(l.status)).length;
+        const importableCount = (data.report.lines || []).filter(l => ['success', 'replace_ready', 'warning_extra', 'warning_missing'].includes(l.status)).length;
         btn.disabled = importableCount === 0;
       }
     }
@@ -2129,6 +2294,11 @@ function openImportStockModal(productId = '', variantId = '') {
     onImportProductSelectChange();
   }
   setupImportDragDrop();
+
+  // Re-run preview if policy radio changes
+  document.querySelectorAll('input[name="importDupPolicy"]').forEach(radio => {
+    radio.onchange = () => triggerImportPreview();
+  });
   
   modal.classList.remove('opacity-0', 'pointer-events-none');
 }
@@ -2151,6 +2321,12 @@ async function submitImportStock(event) {
   const import_price = parseFloatOrZero(document.getElementById('importPrice').value);
   const note = document.getElementById('importNote').value.trim();
   const duplicate_policy = document.querySelector('input[name="importDupPolicy"]:checked')?.value || 'skip';
+
+  const submitBtn = document.getElementById('btnSubmitImport');
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang xử lý import...';
+  }
 
   try {
     const res = await fetch(`${ADMIN_API_BASE}/admin/inventory/import`, {
