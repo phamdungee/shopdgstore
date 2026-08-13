@@ -3,7 +3,7 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const supabase = require('../config/supabase');
-const { APP_BASE_URL, PASSWORD_RESET_TTL_MINUTES } = require('../config/env');
+const { APP_BASE_URL, PASSWORD_RESET_TTL_MINUTES, CLOUDFLARE_TURNSTILE_SITE_KEY } = require('../config/env');
 const { sendPasswordResetEmail } = require('../services/emailService');
 const { googleLogin, githubLogin } = require('../controllers/authController');
 const { loginLimiter, registerLimiter } = require('../middlewares/rateLimitMiddleware');
@@ -334,7 +334,7 @@ router.get('/auth/config', (req, res) => {
     ok: true,
     googleClientId: process.env.GOOGLE_CLIENT_ID || '',
     githubClientId: process.env.GITHUB_CLIENT_ID || '',
-    cloudflareTurnstileSiteKey: '' // Cloudflare Turnstile temporarily disabled
+    cloudflareTurnstileSiteKey: CLOUDFLARE_TURNSTILE_SITE_KEY || ''
   });
 });
 
