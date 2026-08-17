@@ -261,24 +261,14 @@ async function apiVendorAdapterWithConfig({ supabase, vendorId, vendorProductCod
           response: result.raw || result,
           responseTime
         });
-      } else {
-        return {
-          ok: true,
-          orderStatus: 'processing',
-          vendor: vendorRecord.name || vendorRecord.adapter_key || String(vendorRecord.id),
-          vendorId: vendorRecord.id,
-          apiLogId: apiLogId,
-          responseTime,
-          deliveryText: `Đơn hàng đang chờ xử lý thủ công (Lỗi kết nối đối tác: ${result.message || 'Lỗi không xác định'}). Vui lòng liên hệ Admin.`,
-          responseData: {
-            source: 'vendor_api',
-            vendorId: vendorRecord.id,
-            adapterKey: vendorRecord.adapter_key,
-            productCode: config.productCode,
-            response: result.raw || result
-          }
-        };
       }
+
+      return failure(result.message || 'Đối tác không thể xử lý sản phẩm', 'VENDOR_PURCHASE_FAILED', {
+        vendorId: vendorRecord.id,
+        adapterKey: vendorRecord.adapter_key,
+        response: result.raw || result,
+        responseTime
+      });
     }
 
     recordVendorSuccess(vendorRecord.id);

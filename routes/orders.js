@@ -20,26 +20,6 @@ const {
 const { checkoutLimiter } = require('../middlewares/rateLimitMiddleware');
 const verifyTurnstile = require('../middlewares/turnstileMiddleware');
 
-function isManualPartnerFailure(fulfillment) {
-  const text = [
-    fulfillment?.message,
-    fulfillment?.responseData?.error,
-    fulfillment?.responseData?.response?.message,
-    fulfillment?.responseData?.response?.error,
-    fulfillment?.fallback?.message,
-    fulfillment?.fallback?.responseData?.error
-  ]
-    .filter(Boolean)
-    .join(' ')
-    .toLowerCase();
-
-  return text.includes('product not found') ||
-    text.includes('not found or inactive') ||
-    text.includes('product is inactive') ||
-    text.includes('sản phẩm không tồn tại') ||
-    text.includes('sản phẩm đã bị ẩn');
-}
-
 router.post('/orders', authMiddleware, checkoutLimiter, verifyTurnstile, async (req, res) => {
   let order = null;
   let product = null;
@@ -205,20 +185,6 @@ router.post('/orders', authMiddleware, checkoutLimiter, verifyTurnstile, async (
       user: dbUser
     });
 
-    // A partner can reject a product code even after payment has been
-    // reserved. Keep the order paid and visible as manual processing so the
-    // admin can fulfill it, instead of refunding and showing a false failure.
-    if (!fulfillment.ok && isManualPartnerFailure(fulfillment)) {
-      const partnerReason = fulfillment.message || 'Product not found or inactive.';
-      fulfillment = {
-        ...fulfillment,
-        ok: true,
-        orderStatus: 'processing',
-        deliveryMethod: 'api',
-        deliveryText: `Đơn hàng đang chờ xử lý thủ công (Lỗi kết nối đối tác: ${partnerReason}). Vui lòng liên hệ Admin.`
-      };
-    }
-
     if (!fulfillment.ok) {
       // Release inventory items if reserved
       if (Array.isArray(fulfillment.stockIds) && fulfillment.stockIds.length > 0) {
@@ -244,8 +210,8 @@ router.post('/orders', authMiddleware, checkoutLimiter, verifyTurnstile, async (
         p_refund_transaction_code: refundTransactionCode
       });
 
-      if (refundErr) {
-        console.error('Transactional refund error:', refundErr);
+      if (refundErr || refundOk === false) {
+        console.error('Transactional refund error:', refundErr || 'Refund RPC returned false');
       }
 
       const { data: failedOrder } = await supabase
@@ -266,7 +232,9 @@ router.post('/orders', authMiddleware, checkoutLimiter, verifyTurnstile, async (
 
       return res.status(400).json({
         ok: false,
-        message: fulfillment.message || 'Giao hàng thất bại, ví đã được hoàn tiền',
+        message: refundErr || refundOk === false
+          ? `${fulfillment.message || 'Đối tác không xử lý được sản phẩm'}. Thanh toán thất bại nhưng hệ thống chưa thể hoàn tiền tự động; vui lòng liên hệ Admin.`
+          : `${fulfillment.message || 'Đối tác không xử lý được sản phẩm'}. Thanh toán thất bại, hệ thống đã hoàn tiền vào ví của bạn.`,
         order: failedOrder ? safeOrder(failedOrder) : null
       });
     }
