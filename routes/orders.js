@@ -20,6 +20,26 @@ const {
 const { checkoutLimiter } = require('../middlewares/rateLimitMiddleware');
 const verifyTurnstile = require('../middlewares/turnstileMiddleware');
 
+function isManualPartnerFailure(fulfillment) {
+  const text = [
+    fulfillment?.message,
+    fulfillment?.responseData?.error,
+    fulfillment?.responseData?.response?.message,
+    fulfillment?.responseData?.response?.error,
+    fulfillment?.fallback?.message,
+    fulfillment?.fallback?.responseData?.error
+  ]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase();
+
+  return text.includes('product not found') ||
+    text.includes('not found or inactive') ||
+    text.includes('product is inactive') ||
+    text.includes('sản phẩm không tồn tại') ||
+    text.includes('sản phẩm đã bị ẩn');
+}
+
 router.post('/orders', authMiddleware, checkoutLimiter, verifyTurnstile, async (req, res) => {
   let order = null;
   let product = null;
@@ -173,7 +193,7 @@ router.post('/orders', authMiddleware, checkoutLimiter, verifyTurnstile, async (
     const { data: dbUser } = await supabase.from('users').select('*').eq('id', userId).single();
 
     // 3. Trigger actual delivery fulfillment (local stock or API routing)
-    const fulfillment = await fulfillOrder({
+    let fulfillment = await fulfillOrder({
       supabase,
       product,
       variant,
@@ -184,6 +204,20 @@ router.post('/orders', authMiddleware, checkoutLimiter, verifyTurnstile, async (
       orderId: order.id,
       user: dbUser
     });
+
+    // A partner can reject a product code even after payment has been
+    // reserved. Keep the order paid and visible as manual processing so the
+    // admin can fulfill it, instead of refunding and showing a false failure.
+    if (!fulfillment.ok && isManualPartnerFailure(fulfillment)) {
+      const partnerReason = fulfillment.message || 'Product not found or inactive.';
+      fulfillment = {
+        ...fulfillment,
+        ok: true,
+        orderStatus: 'processing',
+        deliveryMethod: 'api',
+        deliveryText: `Đơn hàng đang chờ xử lý thủ công (Lỗi kết nối đối tác: ${partnerReason}). Vui lòng liên hệ Admin.`
+      };
+    }
 
     if (!fulfillment.ok) {
       // Release inventory items if reserved

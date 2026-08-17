@@ -507,12 +507,13 @@ async function failoverApiAdapter({ supabase, productId, variantId, quantity, or
             vendor_id: vendorId,
             api_log_id: apiResult.apiLogId,
             delivery_method: 'api',
-            status: 'success',
+            status: apiResult.orderStatus === 'processing' ? 'processing' : 'success',
             response_time_ms: apiResult.responseTime
           });
 
         return {
           ok: true,
+          orderStatus: apiResult.orderStatus || 'completed',
           deliveryMethod: 'api',
           deliveryText: apiResult.deliveryText,
           deliveryJson: {
@@ -567,12 +568,13 @@ async function failoverApiAdapter({ supabase, productId, variantId, quantity, or
           vendor_id: numericVendorId,
           api_log_id: apiResult.apiLogId,
           delivery_method: 'api',
-          status: 'success',
+          status: apiResult.orderStatus === 'processing' ? 'processing' : 'success',
           response_time_ms: apiResult.responseTime
         });
 
       return {
         ok: true,
+        orderStatus: apiResult.orderStatus || 'completed',
         deliveryMethod: 'api',
         deliveryText: apiResult.deliveryText,
         deliveryJson: {

@@ -2705,6 +2705,8 @@
 
       const deliveryBox = document.getElementById("deliveryResultBox");
       if (deliveryBox) deliveryBox.style.display = "none";
+      const deliveryHeading = document.getElementById("deliveryResultHeading");
+      if (deliveryHeading) deliveryHeading.innerText = "Giao hàng tự động thành công!";
       const deliveryText = document.getElementById("deliveryResultText");
       if (deliveryText) deliveryText.value = "";
 
@@ -2891,9 +2893,18 @@
       // ── SUCCESS FLOW ──
       const order = orderResponse.order || {};
       const deliveryContent = order.deliveryText || orderResponse.deliveryText || orderResponse.delivery_text || orderResponse.message || "Đơn hàng hoàn tất thành công!";
+      const isManualProcessing = order.status === "processing" ||
+        String(deliveryContent).toLowerCase().includes("đang chờ xử lý thủ công");
 
       if (mainCard) mainCard.style.display = "none";
       if (footerActions) footerActions.style.display = "none";
+
+      const deliveryHeading = document.getElementById("deliveryResultHeading");
+      if (deliveryHeading) {
+        deliveryHeading.innerText = isManualProcessing
+          ? "Đơn hàng đã được ghi nhận"
+          : "Giao hàng tự động thành công!";
+      }
 
       // Render Result
       document.getElementById("deliveryResultText").value = deliveryContent;
@@ -3416,7 +3427,7 @@
           <div class="sk-delivery-result-icon">
             <i class="fa-solid fa-circle-check"></i>
           </div>
-          <h4>Giao hàng tự động thành công!</h4>
+          <h4 id="deliveryResultHeading">Giao hàng tự động thành công!</h4>
           <p class="sk-delivery-subtitle">
             Sao chép thông tin tài khoản hoặc mã dịch vụ bên dưới:
           </p>

@@ -292,6 +292,8 @@ function resetModalFlow(cartItems) {
 
   const deliveryBox = document.getElementById('deliveryResultBox');
   if (deliveryBox) deliveryBox.style.display = 'none';
+  const deliveryHeading = document.getElementById('deliveryResultHeading');
+  if (deliveryHeading) deliveryHeading.innerText = 'Thanh toán & Giao hàng thành công!';
   const deliveryText = document.getElementById('deliveryResultText');
   if (deliveryText) deliveryText.value = '';
 
@@ -455,7 +457,8 @@ async function checkoutCart() {
           productName: item.productName,
           variantName: item.variantName,
           quantity: item.quantity,
-          deliveryText: text
+          deliveryText: text,
+          orderStatus: orderResponse.status || 'completed'
         });
       } catch (err) {
         failedItems.push({
@@ -537,6 +540,17 @@ async function checkoutCart() {
 
     const deliveryTextArea = document.getElementById('deliveryResultText');
     if (deliveryTextArea) deliveryTextArea.value = formattedResult;
+
+    const hasManualProcessing = deliveryOutputs.some(out =>
+      out.orderStatus === 'processing' ||
+      String(out.deliveryText || '').toLowerCase().includes('đang chờ xử lý thủ công')
+    );
+    const deliveryHeading = document.getElementById('deliveryResultHeading');
+    if (deliveryHeading) {
+      deliveryHeading.innerText = hasManualProcessing
+        ? 'Thanh toán đã được ghi nhận'
+        : 'Thanh toán & Giao hàng thành công!';
+    }
 
     const successBox = document.getElementById('deliveryResultBox');
     if (successBox) successBox.style.display = 'block';
