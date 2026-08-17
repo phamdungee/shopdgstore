@@ -557,12 +557,19 @@ router.put('/products/:id', authMiddleware, adminMiddleware, async (req, res) =>
         const inserts = [];
         const updates = [];
 
-        for (const v of variants) {
+        for (const [variantIndex, v] of variants.entries()) {
           const lowerName = v.name.trim().toLowerCase();
           const requestedId = Number(v.id);
+          const existingByPosition = !Number.isInteger(requestedId) && variants.length === existingVariants.length
+            ? existingVariants[variantIndex]
+            : null;
           const existing = Number.isInteger(requestedId) && requestedId > 0
             ? existingById.get(String(requestedId))
-            : existingMap.get(lowerName);
+            : existingMap.get(lowerName) || (
+              existingByPosition && !keptIds.has(existingByPosition.id)
+                ? existingByPosition
+                : null
+            );
           if (existing) {
             keptIds.add(existing.id);
             updates.push({
