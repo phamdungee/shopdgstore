@@ -913,6 +913,9 @@ function addVariantRow(variant = {}) {
   const apiCode = data.vendor_product_code || data.provider_service_id || '';
   const row = document.createElement('div');
   row.className = 'variant-row';
+  if (data.id !== undefined && data.id !== null && String(data.id).trim() !== '') {
+    row.dataset.variantId = String(data.id);
+  }
   row.innerHTML = `
     <input class="sk-input var-name" required placeholder="Tên gói (Ví dụ: 1 tháng)" value="${escapeAdminHtml(data.name || '')}"/>
     <input class="sk-input var-price" type="number" min="0" step="1" required placeholder="Giá bán" value="${numberOrEmpty(data.price)}"/>
@@ -934,14 +937,19 @@ function getVariantsData() {
     const price = parseFloatOrZero(row.querySelector('.var-price').value);
     const apiCode = row.querySelector('.var-code').value.trim();
     const costPrice = parseFloatOrZero(row.querySelector('.var-cost').value);
+    const variantId = Number(row.dataset.variantId);
     
     if (name && price >= 0) {
-      variants.push({
+      const variantPayload = {
         name,
         price,
         vendor_product_code: apiCode,
         cost_price: costPrice
-      });
+      };
+      if (Number.isInteger(variantId) && variantId > 0) {
+        variantPayload.id = variantId;
+      }
+      variants.push(variantPayload);
     }
   });
   

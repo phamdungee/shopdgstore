@@ -81,6 +81,11 @@ function normalizeVariants(value) {
       ));
       const variant = { name, price };
 
+      const variantId = Number(item.id);
+      if (Number.isInteger(variantId) && variantId > 0) {
+        variant.id = variantId;
+      }
+
       if (vendorProductCode) {
         variant.vendor_product_code = vendorProductCode;
         variant.provider_service_id = normalizeApiCode(vendorProductCode);
@@ -547,13 +552,17 @@ router.put('/products/:id', authMiddleware, adminMiddleware, async (req, res) =>
         console.error('Fetch existing variants error:', fetchErr.message);
       } else {
         const existingMap = new Map((existingVariants || []).map(v => [v.name.trim().toLowerCase(), v]));
+        const existingById = new Map((existingVariants || []).map(v => [String(v.id), v]));
         const keptIds = new Set();
         const inserts = [];
         const updates = [];
 
         for (const v of variants) {
           const lowerName = v.name.trim().toLowerCase();
-          const existing = existingMap.get(lowerName);
+          const requestedId = Number(v.id);
+          const existing = Number.isInteger(requestedId) && requestedId > 0
+            ? existingById.get(String(requestedId))
+            : existingMap.get(lowerName);
           if (existing) {
             keptIds.add(existing.id);
             updates.push({
@@ -587,6 +596,27 @@ router.put('/products/:id', authMiddleware, adminMiddleware, async (req, res) =>
           .map(v => v.id);
 
         if (idsToDelete.length > 0) {
+          // Never remove a variant that still owns warehouse records. This is
+          // the safety net for older clients that do not send variant.id when
+          // a package is renamed.
+          const { count: linkedInventoryCount, error: inventoryCheckError } = await supabase
+            .from('inventory_items')
+            .select('id', { count: 'exact', head: true })
+            .in('variant_id', idsToDelete)
+            .neq('status', 'deleted');
+
+          if (inventoryCheckError) {
+            console.error('Check variant inventory before delete error:', inventoryCheckError.message);
+            return res.status(500).json({ ok: false, message: 'Không thể kiểm tra kho trước khi cập nhật phân loại' });
+          }
+
+          if (Number(linkedInventoryCount || 0) > 0) {
+            return res.status(409).json({
+              ok: false,
+              message: 'Không thể xóa phân loại đang có dữ liệu kho. Hãy tải lại trang quản trị rồi thử đổi tên lại.'
+            });
+          }
+
           const { error: delErr } = await supabase
             .from('product_variants')
             .delete()
