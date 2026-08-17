@@ -25,6 +25,8 @@ html[data-theme="dark"] #checkoutFlowModalBackdrop {
 #checkoutFlowModalBackdrop .sk-flow-modal {
   width: min(540px, calc(100vw - 28px)) !important;
   max-height: min(92vh, 800px) !important;
+  display: flex !important;
+  flex-direction: column !important;
   border: 1px solid var(--flow-line) !important;
   border-radius: 20px !important;
   background: var(--flow-panel) !important;
@@ -42,6 +44,7 @@ html[data-theme="dark"] #checkoutFlowModalBackdrop {
 }
 
 #checkoutFlowModalBackdrop .sk-modal-header {
+  flex: 0 0 auto !important;
   padding: 16px 20px !important;
   border-bottom: 1px solid var(--flow-line) !important;
   background: var(--flow-panel) !important;
@@ -87,7 +90,34 @@ html[data-theme="dark"] #checkoutFlowModalBackdrop {
 }
 
 #checkoutFlowModalBackdrop .sk-modal-body {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  overscroll-behavior: contain !important;
   padding: 20px !important;
+}
+
+/* Keep the scrollbar on the content area, not on the modal footer. */
+#checkoutFlowModalBackdrop .sk-modal-body {
+  scrollbar-width: auto;
+  scrollbar-color: rgba(56, 189, 248, .72) rgba(148, 163, 184, .12);
+}
+
+#checkoutFlowModalBackdrop .sk-modal-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+#checkoutFlowModalBackdrop .sk-modal-body::-webkit-scrollbar-track {
+  background: rgba(148, 163, 184, .1);
+  border-radius: 999px;
+}
+
+#checkoutFlowModalBackdrop .sk-modal-body::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #38bdf8, #2563eb);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  border-radius: 999px;
 }
 
 /* Checkout Details Card */
@@ -253,6 +283,7 @@ html[data-theme="light"] .sk-total-price-glow {
 
 /* Modal Footer Actions */
 #checkoutFlowModalBackdrop .sk-modal-footer {
+  flex: 0 0 auto !important;
   padding: 14px 20px !important;
   border-top: 1px solid var(--flow-line) !important;
   background: var(--flow-soft) !important;

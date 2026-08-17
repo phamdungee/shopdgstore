@@ -23,6 +23,29 @@ function normalizeDeliveryData(value) {
   return String(value || '').trim();
 }
 
+// Inventory content is imported with `raw_text`, which is the exact product
+// data supplied by the admin. Use it for customer delivery without adding
+// labels, emojis, metadata, or a second "raw data" section.
+function originalInventoryData(content) {
+  let value = content;
+  if (typeof value === 'string') {
+    try {
+      value = JSON.parse(value);
+    } catch {
+      return value;
+    }
+  }
+
+  if (value && typeof value === 'object') {
+    if (typeof value.raw_text === 'string') return value.raw_text;
+    if (value.fields && typeof value.fields === 'object') {
+      return Object.values(value.fields).map(item => String(item ?? '')).join('|');
+    }
+  }
+
+  return String(value ?? '').trim();
+}
+
 function failure(message, code, details = {}) {
   return {
     ok: false,
@@ -420,41 +443,10 @@ async function reserveInventoryAdapter({ supabase, productId, variantId, quantit
       };
     });
 
-    const emojiMap = {
-      mail: '📧', email: '📧',
-      pass: '🔑', password: '🔑',
-      uid: '🆔', cookie: '🍪',
-      token: '🔄', refresh_token: '🔄',
-      client_id: '🆔', client_secret: '🔒',
-      phone: '📱', key: '🔑',
-      proxy: '🌐', note: '📝', backup_code: '🔐'
-    };
-
-    const deliveryText = `Cảm ơn bạn đã mua hàng! Dưới đây là thông tin tài khoản của bạn:\n\n` +
-      formattedItems.map((item, index) => {
-        let block = `=== Tài khoản #${index + 1} ===\n`;
-        
-        parsedFormat.forEach(f => {
-          if (!f.hidden) {
-            const val = item.fields[f.key] || '(Trống)';
-            const emoji = emojiMap[f.key.toLowerCase()] || '🏷️';
-            block += `${emoji} ${f.label}: ${val}\n`;
-          }
-        });
-        
-        if (item.extras && item.extras.length > 0) {
-          block += `\n📦 Dữ liệu ngoài định dạng:\n`;
-          item.extras.forEach(ext => {
-            block += `Trường #${ext.position}: ${ext.value}\n`;
-          });
-        }
-        
-        if (item.raw_text) {
-          block += `\n📄 Dữ liệu gốc:\n${item.raw_text}\n`;
-        }
-        
-        return block;
-      }).join('\n──────────────────────────────\n\n');
+    const deliveryText = reservedItems
+      .map(item => originalInventoryData(item.content))
+      .filter(Boolean)
+      .join('\n');
 
     return {
       ok: true,

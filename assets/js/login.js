@@ -1,7 +1,7 @@
 // assets/js/login.js
 // Kết nối login.html với backend server.js
 
-const API_BASE = window.DG_API_BASE || window.SKYNET_API_BASE || (window.location.protocol === 'file:' ? 'http://localhost:3000/api' : '/api');
+const API_BASE = window.DG_API_BASE || window.SKYNET_API_BASE || (window.location.protocol === 'file:' ? 'http://localhost:4000/api' : '/api');
 const HOME_PAGE_URL = 'index.html';
 
 function togglePasswordVisibility(inputId, button) {

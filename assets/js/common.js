@@ -164,7 +164,7 @@
     const isLocalDev =
       window.location.protocol === "file:" || (isLocalHost && isNotServerPort);
     if (isLocalDev && !res.startsWith("http")) {
-      res = "http://localhost:3000" + res;
+      res = "http://localhost:4000" + res;
     }
     return encodeURI(res);
   }
@@ -174,7 +174,7 @@
     window.DG_API_BASE ||
     window.SKYNET_API_BASE ||
     (window.location.protocol === "file:"
-      ? "http://localhost:3000/api"
+      ? "http://localhost:4000/api"
       : "/api");
 
   function formatMoney(amount) {

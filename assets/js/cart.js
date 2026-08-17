@@ -521,24 +521,19 @@ async function checkoutCart() {
     if (mainCard) mainCard.style.display = 'none';
     if (footerActions) footerActions.style.display = 'none';
 
-    let formattedResult = `🎉 DG STORE — GIAO DỊCH THÀNH CÔNG (${getTimeNow()})\n`;
-    formattedResult += `==================================================\n\n`;
-
-    deliveryOutputs.forEach((out, idx) => {
-      formattedResult += `📦 [${idx + 1}] ${out.productName} — ${out.variantName} (x${out.quantity}):\n`;
-      formattedResult += `${out.deliveryText}\n\n`;
-    });
+    // Show only the exact product payload returned by the server.
+    let formattedResult = deliveryOutputs
+      .map(out => out.deliveryText)
+      .filter(Boolean)
+      .join('\n');
 
     if (failedItems.length > 0) {
-      formattedResult += `⚠️ MỘT SỐ SẢN PHẨM CHƯA THANH TOÁN ĐƯỢC (ĐÃ GIỮ TRONG GIỎ HÀNG):\n`;
+      if (formattedResult) formattedResult += '\n\n';
+      formattedResult += 'Một số sản phẩm chưa thanh toán được (đã giữ trong giỏ hàng):\n';
       failedItems.forEach(fi => {
         formattedResult += `• ${fi.item.productName} (${fi.item.variantName}): ${fi.error}\n`;
       });
-      formattedResult += `\n`;
     }
-
-    formattedResult += `==================================================\n`;
-    formattedResult += `📌 Thông tin đơn hàng đã được lưu tự động tại mục "Quản lý đơn hàng". Cảm ơn quý khách!`;
 
     const deliveryTextArea = document.getElementById('deliveryResultText');
     if (deliveryTextArea) deliveryTextArea.value = formattedResult;

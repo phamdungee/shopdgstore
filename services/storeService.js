@@ -226,9 +226,9 @@ function safeOrder(order) {
     unitPrice: Number(order.unit_price || 0),
     totalPrice: Number(order.total_price || 0),
     status: order.status,
-    deliveryText: order.delivery_text,
-    deliveryJson: order.delivery_json || null,
-    responseData: order.response_data || null,
+    // Only expose the customer-facing product payload. Keep delivery_json
+    // and response_data private because they may contain vendor/raw metadata.
+    deliveryText: typeof order.delivery_text === 'string' ? order.delivery_text : '',
     costAmount: Number(order.cost_amount || 0),
     profit: Number(order.profit || 0),
     createdAt: order.created_at,
