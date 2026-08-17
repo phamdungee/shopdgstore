@@ -287,9 +287,32 @@ html[data-theme="light"] .sk-total-price-glow {
   padding: 14px 20px !important;
   border-top: 1px solid var(--flow-line) !important;
   background: var(--flow-soft) !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+}
+
+#checkoutFlowModalBackdrop #product-checkout-turnstile {
+  width: 100%;
+  min-height: 65px;
   display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+#checkoutFlowModalBackdrop .sk-modal-actions {
+  display: flex;
+  align-items: center;
   justify-content: flex-end;
   gap: 10px;
+  width: 100%;
+}
+
+#checkoutFlowModalBackdrop .sk-modal-actions .sk-btn {
+  flex: 0 0 auto;
+  min-height: 40px;
+  white-space: nowrap;
 }
 
 #checkoutFlowModalBackdrop .sk-modal-footer[style*="display: none"],
@@ -414,5 +437,16 @@ html[data-theme="light"] .sk-total-price-glow {
   }
   #checkoutFlowModalBackdrop .sk-modal-footer {
     padding: 12px 14px !important;
+  }
+}
+
+@media (max-width: 380px) {
+  #checkoutFlowModalBackdrop .sk-modal-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  #checkoutFlowModalBackdrop .sk-modal-actions .sk-btn {
+    width: 100%;
   }
 }

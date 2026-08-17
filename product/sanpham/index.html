@@ -1845,7 +1845,7 @@
   </style>
   <link href="/assets/css/site-recovery-theme.css?v=20260817.1" rel="stylesheet" />
   <link href="/assets/css/product-detail-hero.css?v=20260817.1" rel="stylesheet" />
-  <link href="/assets/css/checkout-flow-polish.css?v=20260817.1" rel="stylesheet" />
+  <link href="/assets/css/checkout-flow-polish.css?v=20260817.2" rel="stylesheet" />
   <link href="/assets/css/product-unified-theme.css?v=20260817.1" rel="stylesheet" />
   <link href="/assets/css/product-page-polish.css?v=20260817.1" rel="stylesheet" />
 </head>
@@ -3434,15 +3434,17 @@
           </div>
         </div>
       </div>
-      <footer class="sk-modal-footer" id="modalFooterActions" style="align-items: center; flex-wrap: wrap">
+      <footer class="sk-modal-footer" id="modalFooterActions">
         <!-- Turnstile Container -->
-        <div id="product-checkout-turnstile" style="margin-right: auto"></div>
-        <button class="sk-btn" type="button" onclick="closeCheckoutModal()" id="btnCancelCheckout">
-          Hủy bỏ
-        </button>
-        <button class="sk-btn sk-btn-primary" type="button" onclick="confirmCheckout()" id="btnConfirmCheckout">
-          <i class="fa-solid fa-shield-halved"></i> Xác nhận &amp; Thanh toán
-        </button>
+        <div id="product-checkout-turnstile"></div>
+        <div class="sk-modal-actions">
+          <button class="sk-btn" type="button" onclick="closeCheckoutModal()" id="btnCancelCheckout">
+            Hủy bỏ
+          </button>
+          <button class="sk-btn sk-btn-primary" type="button" onclick="confirmCheckout()" id="btnConfirmCheckout">
+            <i class="fa-solid fa-shield-halved"></i> Xác nhận &amp; Thanh toán
+          </button>
+        </div>
       </footer>
     </div>
   </div>
